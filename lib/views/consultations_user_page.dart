@@ -1,3 +1,4 @@
+import 'package:consultation_app/models/room_model.dart';
 import 'package:consultation_app/models/slot_model.dart';
 import 'package:consultation_app/utils/constants.dart';
 import 'package:consultation_app/utils/helper_functions.dart';
@@ -21,22 +22,26 @@ class _ConsultationsUserPageState extends State<ConsultationsUserPage> {
   HelperFunctions helperFunctions = HelperFunctions();
   final ConsultationsViewmodel _consultationsViewmodel =
       ConsultationsViewmodel();
-  int roomId = 0;
+
   Map<int, List<SlotModel?>?> slotsInBlocks = {};
+  String selectedRoom = "1";
+  List<RoomModel>? rooms = [];
   @override
   void initState() {
     super.initState();
-    _loadData();
+    _loadData(selectedRoom);
   }
 
-  // TODO
-  void _loadData() async {
-    await _consultationsViewmodel.fetchData(widget.token, roomId);
-    slotsInBlocks = _consultationsViewmodel.slotsInBlocks;
+  void _loadData(String roomId) async {
     setState(() {
+      slotsInBlocks = {};
+    });
+    await _consultationsViewmodel.fetchData(widget.token, int.parse(roomId));
+    slotsInBlocks = _consultationsViewmodel.slotsInBlocks;
+
+    setState(() {
+      rooms = _consultationsViewmodel.rooms;
       slotsInBlocks = _consultationsViewmodel.slotsInBlocks;
-      roomId = 2;
-      // slots = _consultationsViewmodel.slots;
     });
   }
 
@@ -50,6 +55,28 @@ class _ConsultationsUserPageState extends State<ConsultationsUserPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            SizedBox(height: 80),
+            Center(
+              child: DropdownButton<String>(
+                hint: Text("Select a Room"),
+                value: selectedRoom.toString(),
+                items: (rooms == null)
+                    ? []
+                    : rooms!.map((RoomModel value) {
+                        return DropdownMenuItem<String>(
+                          value: value.id.toString(),
+                          child: Text(value.title),
+                        );
+                      }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectedRoom = newValue!;
+                  });
+                  _loadData(selectedRoom);
+                },
+              ),
+            ),
+
             SizedBox(height: 80),
             Center(
               child: Text(

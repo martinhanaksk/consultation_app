@@ -1,4 +1,5 @@
 import 'package:consultation_app/models/block_model.dart';
+import 'package:consultation_app/models/room_model.dart';
 import 'package:consultation_app/models/slot_model.dart';
 import 'package:consultation_app/models/user_model.dart';
 import 'package:consultation_app/utils/dialogs.dart';
@@ -10,12 +11,18 @@ class ConsultationsViewmodel {
   Dialogs dialogs = Dialogs();
   HelperFunctions _helperFunctions = HelperFunctions();
   List<UserModel>? users = [];
+  List<RoomModel>? rooms = [];
   Map<int, List<SlotModel>?> slotsInBlocks = {};
   List<BlockModel> blocks = [];
   Future<void> fetchData(String token, int roomId) async {
+    users = [];
+    rooms = [];
+    blocks = [];
+    slotsInBlocks = {};
     users = await getUsers(token);
+    rooms = await getRooms(token);
     blocks = await getBlocks(token, roomId);
-   
+
     //to get slots parallel
     List<Future<void>> futures = [];
     for (var block in blocks) {
@@ -129,6 +136,32 @@ class ConsultationsViewmodel {
       return slotsForBlock;
     } else {
       throw Exception('Failed to fetch users: ${response.statusCode}');
+    }
+  }
+
+  Future<List<RoomModel>> getRooms(String token) async {
+    final Uri url = Uri.parse(
+      'https://consultations-backend.onrender.com/room/get',
+    );
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> decoded = jsonDecode(response.body);
+      final List<dynamic> roomsJson = decoded['rooms'];
+      List<RoomModel> rooms = roomsJson
+          .map((json) => RoomModel.fromJson(json))
+          .toList();
+
+      return rooms;
+    } else {
+      throw Exception('Failed to fetch rooms: ${response.statusCode}');
     }
   }
 }
