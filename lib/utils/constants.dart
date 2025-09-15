@@ -8,7 +8,7 @@ class Constants {
   Color defaultBlue = Color.fromARGB(255, 48, 197, 255);
   Color defaultLightGrey = Color.fromARGB(255, 217, 217, 217);
   Color defaultWhite = Color.fromARGB(255, 255, 255, 255);
-  double fontSizeBig = 50;
-  double fontSizeMedium = 30;
-  double fontSizeSmall = 20;
+  double fontSizeBig = 45;
+  double fontSizeMedium = 35;
+  double fontSizeSmall = 25;
 }

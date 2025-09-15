@@ -22,7 +22,10 @@ class AppRouter {
       case login:
         return MaterialPageRoute(builder: (_) => const LoginPage());
       case cousultationsUserPage:
-        return MaterialPageRoute(builder: (_) => const ConsultationsUserPage());
+        final token = settings.arguments as String;
+        return MaterialPageRoute(
+          builder: (_) => ConsultationsUserPage(token: token),
+        );
       case verifyOtp:
         final email = settings.arguments as String;
         return MaterialPageRoute(builder: (_) => VerifyOtpPage(email: email));

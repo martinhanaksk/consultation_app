@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Consultations',
       theme: ThemeData(primarySwatch: Colors.blue),
-      initialRoute: AppRouter.cousultationsUserPage,
+      initialRoute: AppRouter.login,
       onGenerateRoute: AppRouter.generateRoute,
     );
   }

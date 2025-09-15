@@ -11,10 +11,12 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
-  LoginViewmodel _lvm = LoginViewmodel();Constants _constants = Constants();
+  LoginViewmodel _lvm = LoginViewmodel();
+  Constants _constants = Constants();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(backgroundColor: _constants.bgLight,
+    return Scaffold(
+      backgroundColor: _constants.bgLight,
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -45,16 +47,19 @@ class _LoginPageState extends State<LoginPage> {
               width: 500,
               height: 50,
               child: ElevatedButton(
-                onPressed: () {
-                  _lvm.continueToVerify(context, emailController.text.trim());
+                onPressed: () async {
+                  await _lvm.continueToVerify(
+                    context,
+                    emailController.text.trim(),
+                  );
                 },
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
+                  backgroundColor: WidgetStateProperty.all(
                     const Color(0xFF10A64A),
                   ),
                 ),
                 child: const Text(
-                  'Verify',
+                  'Login',
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w500,
@@ -72,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
                   _lvm.redirectToRegister(context);
                 },
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
+                  backgroundColor: WidgetStateProperty.all(
                     const Color.fromARGB(255, 0, 106, 255),
                   ),
                 ),

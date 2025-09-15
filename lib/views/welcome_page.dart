@@ -1,4 +1,5 @@
 import 'package:consultation_app/utils/constants.dart';
+import 'package:consultation_app/utils/dialogs.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -12,7 +13,9 @@ class WelcomePage extends StatefulWidget {
 }
 
 class _WelcomePageState extends State<WelcomePage> {
-  dynamic data;Constants _constants = Constants();
+  final Dialogs dialogs = Dialogs();
+  dynamic data;
+  Constants _constants = Constants();
   Future<void> showUsers() async {
     final bearerToken = widget.token;
     final response = await http.get(
@@ -28,7 +31,10 @@ class _WelcomePageState extends State<WelcomePage> {
         data = jsonDecode(response.body);
       });
     } else {
-      print("Failed to load users: ${response.statusCode}");
+      dialogs.showErrorDialog(
+        context,
+        "Failed to load users: ${response.statusCode}",
+      );
     }
   }
 
@@ -40,7 +46,8 @@ class _WelcomePageState extends State<WelcomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(backgroundColor: _constants.bgLight,
+    return Scaffold(
+      backgroundColor: _constants.bgLight,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

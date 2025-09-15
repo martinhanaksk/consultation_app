@@ -1,7 +1,11 @@
+import 'package:consultation_app/models/user_model.dart';
 import 'package:consultation_app/utils/constants.dart';
+import 'package:consultation_app/utils/validator.dart';
+import 'package:consultation_app/viewmodels/register_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});
 
@@ -10,13 +14,17 @@ class RegistrationPage extends StatefulWidget {
 }
 
 class _RegistrationPageState extends State<RegistrationPage> {
-  final TextEditingController emailController = TextEditingController();Constants _constants = Constants();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController surnameController = TextEditingController();
+  final TextEditingController visitReasonController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final RegisterViewmodel _rvm = RegisterViewmodel();
+  final Constants _constants = Constants();
+  final Validator _validator = Validator();
   Future<void> registerUser(String email) async {
     final email = emailController.text.trim();
     final response = await http.post(
-      Uri.parse(
-        'https://consultations-backend.onrender.com/users/register',
-      ),
+      Uri.parse('https://consultations-backend.onrender.com/users/register'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'email': email}),
     );
@@ -38,9 +46,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
       );
     }
   }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(backgroundColor: _constants.bgLight,
+    return Scaffold(
+      backgroundColor: _constants.bgLight,
+
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -60,6 +71,30 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
             SizedBox(height: 16),
             TextField(
+              controller: nameController,
+              decoration: const InputDecoration(
+                hintText: 'Name',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 16),
+            TextField(
+              controller: surnameController,
+              decoration: const InputDecoration(
+                hintText: 'Surname',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 16),
+            TextField(
+              controller: visitReasonController,
+              decoration: const InputDecoration(
+                hintText: 'Visit reason',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 16),
+            TextField(
               controller: emailController,
               decoration: const InputDecoration(
                 hintText: 'Email',
@@ -71,9 +106,42 @@ class _RegistrationPageState extends State<RegistrationPage> {
               width: 500,
               height: 50,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () async {
+                  if (_validator.validateNotEmpty(
+                        emailController.text.trim(),
+                        'E-mail',
+                        context,
+                      ) &&
+                      _validator.validateNotEmpty(
+                        nameController.text.trim(),
+                        'Name',
+                        context,
+                      ) &&
+                      _validator.validateNotEmpty(
+                        surnameController.text.trim(),
+                        'Surname',
+                        context,
+                      ) &&
+                      _validator.validateNotEmpty(
+                        visitReasonController.text.trim(),
+                        'Visit reason',
+                        context,
+                      ) &&
+                      _validator.validateEmail(
+                        emailController.text.trim(),
+                        context,
+                      )) {
+                    UserModel um = UserModel(
+                      name: nameController.text.trim(),
+                      surname: surnameController.text.trim(),
+                      email: emailController.text.trim(),
+                      visitReason: visitReasonController.text.trim(),
+                    );
+                    await _rvm.registerUser(context, um);
+                  }
+                },
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
+                  backgroundColor: WidgetStateProperty.all(
                     const Color(0xFF10A64A),
                   ),
                 ),

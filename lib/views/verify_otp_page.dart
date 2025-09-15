@@ -12,12 +12,13 @@ class VerifyOtpPage extends StatefulWidget {
 
 class _VerifyOtpPageState extends State<VerifyOtpPage> {
   final TextEditingController otpcontroller = TextEditingController();
-  VerifyOtpViewmodel _vovm = VerifyOtpViewmodel();Constants _constants = Constants();
-  
+  final VerifyOtpViewmodel _vovm = VerifyOtpViewmodel();
+  final Constants _constants = Constants();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(backgroundColor: _constants.bgLight,
+    return Scaffold(
+      backgroundColor: _constants.bgLight,
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -53,7 +54,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                   );
                 },
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
+                  backgroundColor: WidgetStateProperty.all(
                     const Color(0xFF10A64A),
                   ),
                 ),
