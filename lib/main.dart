@@ -16,6 +16,7 @@ class MyApp extends StatelessWidget {
       title: 'Consultations',
       theme: ThemeData(primarySwatch: Colors.blue),
       initialRoute: AppRouter.login,
+      debugShowCheckedModeBanner: false,
       onGenerateRoute: AppRouter.generateRoute,
     );
   }
