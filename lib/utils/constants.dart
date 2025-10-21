@@ -11,4 +11,5 @@ class Constants {
   double fontSizeBig = 45;
   double fontSizeMedium = 35;
   double fontSizeSmall = 25;
+  String url = "https://consultations-backend.onrender.com";
 }

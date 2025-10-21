@@ -19,7 +19,7 @@ class _WelcomePageState extends State<WelcomePage> {
   Future<void> showUsers() async {
     final bearerToken = widget.token;
     final response = await http.get(
-      Uri.parse('https://consultations-backend.onrender.com/users'),
+      Uri.parse('${_constants.url}/users'),
       headers: {
         'Authorization': 'Bearer $bearerToken',
         'Content-Type': 'application/json',

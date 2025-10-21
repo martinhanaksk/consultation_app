@@ -6,7 +6,7 @@ class SlotModel {
   final int valid;
   final String? takenBy;
   final String? history;
-  final String note;
+  final String? note;
 
   SlotModel({
     required this.id,
