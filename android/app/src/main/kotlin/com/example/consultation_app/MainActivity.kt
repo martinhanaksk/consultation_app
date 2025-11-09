@@ -1,4 +1,4 @@
-package com.example.consultation_app
+package com.mhanak.consultation_app
 
 import io.flutter.embedding.android.FlutterActivity
 

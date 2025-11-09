@@ -31,7 +31,7 @@ class ConsultationsViewmodel {
         final slots = await _apiService.getSlotsForBlock(block.id, token);
         if (slots != null) {
           slots.sort((a, b) {
-            return a.datetime.compareTo(b.datetime);
+            return _helperFunctions.compareTimeStringsDesc(a.startTime, b.startTime);
           });
         }
         slotsInBlocks[block.id] = slots;
@@ -46,8 +46,7 @@ class ConsultationsViewmodel {
         if (tmpUser.email == emailToFind) {
           return tmpUser;
         } else {
-          print("emailss");
-          print(tmpUser.email);
+          
         }
       }
     }

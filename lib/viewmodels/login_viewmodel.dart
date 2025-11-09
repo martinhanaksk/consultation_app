@@ -7,15 +7,13 @@ import 'package:consultation_app/routes/app_router.dart';
 
 class LoginViewmodel {
   Dialogs dialogs = Dialogs();
-    Constants _constants = Constants();
+  Constants _constants = Constants();
 
   Future<void> continueToVerify(BuildContext context, String email) async {
     dialogs.showLoadingDialog(context, "Sending OTP...");
     try {
       final response = await http.post(
-        Uri.parse(
-          '${_constants.url}/auth/request-login-otp/',
-        ),
+        Uri.parse('${_constants.url}/auth/request-login-otp'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'email': email}),
       );

@@ -8,8 +8,8 @@ import 'package:consultation_app/models/block_model.dart';
 import 'package:consultation_app/models/slot_model.dart';
 
 class ApiService {
-    Constants _constants = Constants();
-
+  Constants _constants = Constants();
+  UserPreferences _userPreferences = UserPreferences();
   //verify
   Future<String> connect(String email, String otp) async {
     final Uri url = Uri.parse('${_constants.url}/auth/verify-login-otp');
@@ -19,9 +19,11 @@ class ApiService {
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'email': email, 'otp': otp}),
     );
-   await UserPreferences.saveUser(email, true);
+
     final data = jsonDecode(response.body);
     if (response.statusCode == 200) {
+      await _userPreferences.saveItem('email', email);
+      await _userPreferences.saveItem('token', data['token']);
       return data['token'];
     } else {
       return '';
@@ -30,7 +32,7 @@ class ApiService {
 
   //register
   Future<String> registerUser(UserModel um) async {
-    final Uri url = Uri.parse('${_constants.url}/users/register?email=${um.email}');
+    final Uri url = Uri.parse('${_constants.url}/users/register');
 
     final response = await http.post(
       url,
@@ -42,9 +44,11 @@ class ApiService {
         "visit_reason": um.visitReason,
       }),
     );
-    await UserPreferences.saveUser(um.email, true);
+
     final data = jsonDecode(response.body);
     if (response.statusCode == 200) {
+      await _userPreferences.saveItem('email', um.email);
+      await _userPreferences.saveItem('token', data['token']);
       return data['token'];
     } else {
       return '';
@@ -111,8 +115,9 @@ class ApiService {
     }
   }
 
+  //TODO http://office-hours.fit.vutbr.cz:8000/slot/get?id=1&option=True optional
   Future<List<SlotModel>?> getSlotsForBlock(int blockId, String token) async {
-    final Uri url = Uri.parse('${_constants.url}/slot/get?block_id=$blockId');
+    final Uri url = Uri.parse('${_constants.url}/slot/get?id=$blockId');
 
     final response = await http.get(
       url,
@@ -130,10 +135,12 @@ class ApiService {
       throw Exception('Failed to fetch slots: ${response.statusCode}');
     }
   }
-  
+
   //slot
   Future<void> takeSlot(String token, int id, String note) async {
-    final Uri url = Uri.parse('${_constants.url}/slot/take?slot_id=$id&note=$note');
+    final Uri url = Uri.parse(
+      '${_constants.url}/slot/take?slot_id=$id&note=$note',
+    );
 
     final response = await http.post(
       url,

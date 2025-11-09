@@ -5,6 +5,24 @@ class HelperFunctions {
     return dateTime.toIso8601String().split('.').first;
   }
 
+  int compareTimeStringsDesc(String t1, String t2) {
+  Duration toDuration(String t) {
+    final parts = t.split(':');
+    return Duration(
+      hours: int.parse(parts[0]),
+      minutes: int.parse(parts[1]),
+      seconds: int.parse(parts[2]),
+    );
+  }
+
+  final d1 = toDuration(t1);
+  final d2 = toDuration(t2);
+
+  // descending: return positive if d2 > d1
+  return d1.compareTo(d2);
+}
+
+
   String getTimeOnlySimple(DateTime dateTime) {
     return "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}";
   }

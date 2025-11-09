@@ -11,7 +11,7 @@ class AppRouter {
   static const String verifyOtp = '/verifyOtp';
   static const String register = '/register';
   static const String detail = '/detail';
-  static const String cousultationsUserPage = '/cousultationsUserPage';
+  static const String consultationsUserPage = '/consultationsUserPage';
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case welcome:
@@ -21,7 +21,7 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const RegistrationPage());
       case login:
         return MaterialPageRoute(builder: (_) => const LoginPage());
-      case cousultationsUserPage:
+      case consultationsUserPage:
         final args = settings.arguments as ConsultationsUserPageArgs;
         return MaterialPageRoute(
           builder: (_) => ConsultationsUserPage(

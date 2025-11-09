@@ -52,9 +52,10 @@ class _SlotWidgetState extends State<SlotWidget> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      widget.helperFunctions.getTimeOnlySimple(
-                        widget.slot.datetime,
-                      ),
+                      widget.slot.startTime.split(":")[0] +
+                          ":" +
+                          widget.slot.startTime.split(":")[1],
+
                       style: TextStyle(
                         color: widget.constants.defaultDarkGrey,
                         fontSize: widget.constants.fontSizeSmall,
@@ -96,7 +97,10 @@ class _SlotWidgetState extends State<SlotWidget> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "${widget.helperFunctions.getTimeOnlySimple(widget.slot.datetime)}  ${widget.consultationsViewmodel.getUserByEmail(widget.slot.takenBy!)!.name} ${widget.consultationsViewmodel.getUserByEmail(widget.slot.takenBy!)!.surname}",
+                            widget.slot.startTime.split(":")[0] +
+                                ":" +
+                                widget.slot.startTime.split(":")[1] +
+                                " ${widget.consultationsViewmodel.getUserByEmail(widget.slot.takenBy!)!.name} ${widget.consultationsViewmodel.getUserByEmail(widget.slot.takenBy!)!.surname}",
                             style: TextStyle(
                               color: widget.constants.defaultDarkGrey,
                               fontSize: widget.constants.fontSizeSmall,
@@ -143,7 +147,10 @@ class _SlotWidgetState extends State<SlotWidget> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "${widget.helperFunctions.getTimeOnlySimple(widget.slot.datetime)}  ${widget.consultationsViewmodel.getUserByEmail(widget.slot.takenBy!)!.name} ${widget.consultationsViewmodel.getUserByEmail(widget.slot.takenBy!)!.surname}",
+                            widget.slot.startTime.split(":")[0] +
+                                ":" +
+                                widget.slot.startTime.split(":")[1] +
+                                " ${widget.consultationsViewmodel.getUserByEmail(widget.slot.takenBy!)!.name} ${widget.consultationsViewmodel.getUserByEmail(widget.slot.takenBy!)!.surname}",
                             style: TextStyle(
                               color: widget.constants.defaultDarkGrey,
                               fontSize: widget.constants.fontSizeSmall,

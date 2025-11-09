@@ -1,6 +1,11 @@
+import 'package:consultation_app/routes/app_router.dart';
+import 'package:consultation_app/services/user_preferences.dart';
 import 'package:consultation_app/utils/constants.dart';
 import 'package:consultation_app/viewmodels/login_viewmodel.dart';
+import 'package:consultation_app/views/consultations_user_page.dart';
 import 'package:flutter/material.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -13,6 +18,36 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   LoginViewmodel _lvm = LoginViewmodel();
   Constants _constants = Constants();
+  UserPreferences _userPreferences = UserPreferences();
+  bool connected = false;
+  @override
+  void initState() {
+    super.initState();
+    checkIfInSharedPreferences();
+  }
+
+  void checkIfInSharedPreferences() async {
+    String? token = await _userPreferences.getItem('token');
+    String? email = await _userPreferences.getItem('email');
+
+    if (token != null && email != null) {
+      bool isExpired = JwtDecoder.isExpired(token);
+
+      if (!isExpired) {
+        Navigator.pushNamed(
+          context,
+          AppRouter.consultationsUserPage,
+          arguments: ConsultationsUserPageArgs(token: token, email: email),
+        );
+      } else {
+        // Optionally clear expired token
+        await _userPreferences.removeItem('token');
+        await _userPreferences.removeItem('email');
+        print("Token expired, not navigating.");
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

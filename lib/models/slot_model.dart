@@ -1,31 +1,37 @@
 class SlotModel {
   final int id;
   final int blockId;
-  final DateTime datetime;
+  final String startTime;
   final int duration;
   final int valid;
   final String? takenBy;
+  final String? takenByName;
+  final String? takenByReason;
   final String? history;
   final String? note;
 
   SlotModel({
     required this.id,
     required this.blockId,
-    required this.datetime,
+    required this.startTime,
     required this.duration,
     required this.valid,
     this.takenBy,
+    this.takenByName,
+    this.takenByReason,
     this.history,
-    required this.note,
+    this.note,
   });
 
   factory SlotModel.fromJson(Map<String, dynamic> json) => SlotModel(
     id: json['id'],
     blockId: json['block_id'],
-    datetime: DateTime.parse(json['datetime']),
+    startTime: json['start_time'],
     duration: json['duration'],
     valid: json['valid'],
     takenBy: json['taken_by'],
+    takenByName: json['taken_by_name'],
+    takenByReason: json['taken_by_reason'],
     history: json['history'],
     note: json['note'],
   );
@@ -33,10 +39,12 @@ class SlotModel {
   Map<String, dynamic> toJson() => {
     "id": id,
     "block_id": blockId,
-    "datetime": datetime.toIso8601String(),
+    "start_time": startTime,
     "duration": duration,
     "valid": valid,
     "taken_by": takenBy,
+    "taken_by_name": takenByName,
+    "taken_by_reason": takenByReason,
     "history": history,
     "note": note,
   };

@@ -16,7 +16,7 @@ class RegisterViewmodel {
     if (token != '') {
       Navigator.pushNamed(
         context,
-        AppRouter.cousultationsUserPage,
+        AppRouter.consultationsUserPage,
         arguments: ConsultationsUserPageArgs(
     token: token,
     email: um.email,

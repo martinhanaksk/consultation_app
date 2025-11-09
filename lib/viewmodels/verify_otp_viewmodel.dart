@@ -15,7 +15,7 @@ class VerifyOtpViewmodel {
     if (token != "") {
       Navigator.pushNamed(
         context,
-        AppRouter.cousultationsUserPage,
+        AppRouter.consultationsUserPage,
         arguments: ConsultationsUserPageArgs(token: token, email: email),
       );
     } else {

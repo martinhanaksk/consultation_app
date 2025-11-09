@@ -42,6 +42,10 @@ dependencies:
   intl: ^0.18.1
   shared_preferences: ^2.5.3
   overlay_kit: ^1.1.2
+  connectivity_plus: ^6.0.0
+  jwt_decoder: ^2.0.1
+  flutter_launcher_icons: ^0.14.4
+ 
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -53,6 +57,11 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
 
+flutter_launcher_icons:
+  android: "launcher_icons"
+  ios: false
+  image_path: "assets/images/icon_consultations.png"
+  adaptive_icon_foreground: "#ffffff"
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

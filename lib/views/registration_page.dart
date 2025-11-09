@@ -21,6 +21,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final RegisterViewmodel _rvm = RegisterViewmodel();
   final Constants _constants = Constants();
   final Validator _validator = Validator();
+  bool _isLoading = false;
+
   Future<void> registerUser(String email) async {
     final email = emailController.text.trim();
     final response = await http.post(
@@ -51,7 +53,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _constants.bgLight,
-      resizeToAvoidBottomInset: true, // ensures layout adjusts for keyboard
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -72,6 +74,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
               const SizedBox(height: 16),
               TextField(
                 controller: nameController,
+                enabled: !_isLoading,
                 decoration: const InputDecoration(
                   hintText: 'Name',
                   border: OutlineInputBorder(),
@@ -80,6 +83,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
               const SizedBox(height: 16),
               TextField(
                 controller: surnameController,
+                enabled: !_isLoading,
                 decoration: const InputDecoration(
                   hintText: 'Surname',
                   border: OutlineInputBorder(),
@@ -88,6 +92,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
               const SizedBox(height: 16),
               TextField(
                 controller: visitReasonController,
+                enabled: !_isLoading,
                 decoration: const InputDecoration(
                   hintText: 'Visit reason',
                   border: OutlineInputBorder(),
@@ -96,6 +101,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
               const SizedBox(height: 16),
               TextField(
                 controller: emailController,
+                enabled: !_isLoading,
                 decoration: const InputDecoration(
                   hintText: 'Email',
                   border: OutlineInputBorder(),
@@ -106,53 +112,80 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: () async {
-                    if (_validator.validateNotEmpty(
-                          emailController.text.trim(),
-                          'E-mail',
-                          context,
-                        ) &&
-                        _validator.validateNotEmpty(
-                          nameController.text.trim(),
-                          'Name',
-                          context,
-                        ) &&
-                        _validator.validateNotEmpty(
-                          surnameController.text.trim(),
-                          'Surname',
-                          context,
-                        ) &&
-                        _validator.validateNotEmpty(
-                          visitReasonController.text.trim(),
-                          'Visit reason',
-                          context,
-                        ) &&
-                        _validator.validateEmail(
-                          emailController.text.trim(),
-                          context,
-                        )) {
-                      UserModel um = UserModel(
-                        name: nameController.text.trim(),
-                        surname: surnameController.text.trim(),
-                        email: emailController.text.trim(),
-                        visitReason: visitReasonController.text.trim(),
-                      );
-                      await _rvm.registerUser(context, um);
-                    }
-                  },
+                  onPressed: _isLoading
+                      ? null
+                      : () async {
+                          if (_validator.validateNotEmpty(
+                                emailController.text.trim(),
+                                'E-mail',
+                                context,
+                              ) &&
+                              _validator.validateNotEmpty(
+                                nameController.text.trim(),
+                                'Name',
+                                context,
+                              ) &&
+                              _validator.validateNotEmpty(
+                                surnameController.text.trim(),
+                                'Surname',
+                                context,
+                              ) &&
+                              _validator.validateNotEmpty(
+                                visitReasonController.text.trim(),
+                                'Visit reason',
+                                context,
+                              ) &&
+                              _validator.validateEmail(
+                                emailController.text.trim(),
+                                context,
+                              )) {
+                            setState(() {
+                              _isLoading = true;
+                            });
+
+                            try {
+                              UserModel um = UserModel(
+                                name: nameController.text.trim(),
+                                surname: surnameController.text.trim(),
+                                email: emailController.text.trim(),
+                                visitReason: visitReasonController.text.trim(),
+                              );
+                              await _rvm.registerUser(context, um);
+                            } finally {
+                              if (mounted) {
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                              }
+                            }
+                          }
+                        },
                   style: ButtonStyle(
                     backgroundColor: WidgetStateProperty.all(
-                      const Color(0xFF10A64A),
+                      _isLoading
+                          ? const Color(0xFF10A64A).withOpacity(0.6)
+                          : const Color(0xFF10A64A),
                     ),
                   ),
-                  child: const Text(
-                    'Register',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
-                    ),
-                  ),
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 24,
+                          width: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                          ),
+                        )
+                      : const Text(
+                          'Register',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white,
+                          ),
+                        ),
                 ),
               ),
             ],

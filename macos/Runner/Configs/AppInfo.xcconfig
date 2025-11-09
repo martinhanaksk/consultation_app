@@ -8,7 +8,7 @@
 PRODUCT_NAME = consultation_app
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.consultationApp
+PRODUCT_BUNDLE_IDENTIFIER = com.mhanak.consultationApp
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2025 com.example. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2025 com.mhanak. All rights reserved.
