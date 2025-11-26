@@ -9,22 +9,11 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       actionsPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-      leading: Builder(
-        builder: (context) => Padding(
-          padding: const EdgeInsets.only(left: 12),
-          child: GestureDetector(
-            child: SizedBox(
-              child: SvgPicture.asset(
-                'assets/images/hamburger-menu.svg',
-                height: 10,
-              ),
-            ),
-
-            onTap: () {
-              Scaffold.of(context).openDrawer();
-            },
-          ),
-        ),
+      leading: IconButton(
+        icon: Icon(Icons.menu, size: 50.0),
+        onPressed: () {
+          Scaffold.of(context).openDrawer();
+        },
       ),
       actions: [
         Container(
@@ -37,7 +26,7 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
             icon: Icon(Icons.person),
             color: _constants.defaultWhite,
             onPressed: () {
-             // print("profile opened");
+              // print("profile opened");
             },
           ),
         ),

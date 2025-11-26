@@ -1,10 +1,22 @@
 import 'package:consultation_app/utils/constants.dart';
-import 'package:consultation_app/viewmodels/verify_otp_viewmodel.dart';
+import 'package:consultation_app/viewmodels/verifyOtp_viewmodel.dart';
 import 'package:flutter/material.dart';
+
+class VerifyOtpPageArgs {
+  final String email;
+  final String testingToken;
+
+  VerifyOtpPageArgs({required this.email, required this.testingToken});
+}
 
 class VerifyOtpPage extends StatefulWidget {
   final String email;
-  const VerifyOtpPage({super.key, required this.email});
+  final String testingToken;
+  const VerifyOtpPage({
+    super.key,
+    required this.email,
+    required this.testingToken,
+  });
 
   @override
   State<VerifyOtpPage> createState() => _VerifyOtpPageState();
@@ -14,6 +26,18 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
   final TextEditingController otpcontroller = TextEditingController();
   final VerifyOtpViewmodel _vovm = VerifyOtpViewmodel();
   final Constants _constants = Constants();
+  @override
+  void initState() {
+    super.initState();
+    if (widget.testingToken.isNotEmpty) {
+      otpcontroller.text = widget.testingToken.substring(
+        1,
+        widget.testingToken.length - 1,
+      );
+
+      _vovm.connect(context, widget.email, otpcontroller.text.trim());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

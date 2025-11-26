@@ -1,3 +1,5 @@
+import 'package:consultation_app/routes/app_router.dart';
+import 'package:consultation_app/services/user_preferences.dart';
 import 'package:consultation_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -11,10 +13,12 @@ class RightSliderMenu extends StatefulWidget {
 
 class _RightSliderMenuState extends State<RightSliderMenu> {
   bool isOpen = false;
+  UserPreferences _userPreferences = UserPreferences();
   Constants _constants = Constants();
   @override
   Widget build(BuildContext context) {
     return Drawer(
+      width: 220,
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: 50, horizontal: 20),
         child: Column(
@@ -24,27 +28,83 @@ class _RightSliderMenuState extends State<RightSliderMenu> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "Consultations",
-                  style: TextStyle(
-                    color: _constants.defaultDarkGrey,
-                    fontSize: _constants.fontSizeMedium,
-                    fontWeight: FontWeight.w500,
-                  ),
+                SizedBox(height: 20),
+                Image.asset(
+                  'assets/images/applogo.png',
+
+                  width: 100,
+                  fit: BoxFit.cover,
                 ),
-                SizedBox(height: 10),
-                Text("Account"),
-                SizedBox(height: 10),
-                Text("Join Consultation"),
-                SizedBox(height: 10),
-                Text("Create Consultations"),
-                SizedBox(height: 10),
-                Text("Support"),
-                SizedBox(height: 10),
-                Text("Feedback"),
+
+                SizedBox(height: 20),
+                GestureDetector(
+                  child: Container(
+                    child: Text("Account", style: TextStyle(fontSize: 20)),
+                  ),
+                  onTap: () {
+                    //todo
+                  },
+                ),
+
+                SizedBox(height: 20),
+                GestureDetector(
+                  child: Container(
+                    child: Text("Join Room", style: TextStyle(fontSize: 20)),
+                  ),
+                  onTap: () {
+                    //todo
+                  },
+                ),
+                SizedBox(height: 20),
+                GestureDetector(
+                  child: Container(
+                    child: Text("Support", style: TextStyle(fontSize: 20)),
+                  ),
+                  onTap: () {
+                    //todo
+                  },
+                ),
+                SizedBox(height: 20),
+                GestureDetector(
+                  child: Container(
+                    child: Text("Feedback", style: TextStyle(fontSize: 20)),
+                  ),
+                  onTap: () {
+                    //todo
+                  },
+                ),
               ],
             ),
-            Text("Settings"),
+            Column(
+              children: [
+                GestureDetector(
+                  child: Text("Settings", style: TextStyle(fontSize: 20)),
+
+                  onTap: () {
+                    //todo
+                  },
+                ),
+                SizedBox(height: 20),
+                GestureDetector(
+                  child: Text(
+                    "Log out",
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.red,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+
+                  onTap: () async {
+                    await _userPreferences.removeItem('token');
+                    await _userPreferences.removeItem('email');
+
+                    // Navigate to login and clear all previous routes
+                    Navigator.pushNamed(context, AppRouter.login);
+                  },
+                ),
+              ],
+            ),
           ],
         ),
       ),

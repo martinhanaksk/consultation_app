@@ -1,5 +1,5 @@
 import 'package:consultation_app/utils/constants.dart';
-import 'package:consultation_app/utils/dialogs.dart';
+import 'package:consultation_app/utils/notifyUserUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -13,7 +13,7 @@ class WelcomePage extends StatefulWidget {
 }
 
 class _WelcomePageState extends State<WelcomePage> {
-  final Dialogs dialogs = Dialogs();
+  final NotifyUserUtils dialogs = NotifyUserUtils();
   dynamic data;
   Constants _constants = Constants();
   Future<void> showUsers() async {
@@ -31,10 +31,7 @@ class _WelcomePageState extends State<WelcomePage> {
         data = jsonDecode(response.body);
       });
     } else {
-      dialogs.showErrorDialog(
-        context,
-        "Failed to load users: ${response.statusCode}",
-      );
+      dialogs.showToast("Failed to load users: ${response.statusCode}");
     }
   }
 

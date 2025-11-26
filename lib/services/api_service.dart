@@ -87,9 +87,9 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> decoded = jsonDecode(response.body);
-      final List<dynamic> roomsJson = decoded['rooms'];
-      return roomsJson.map((json) => RoomModel.fromJson(json)).toList();
+      final List<dynamic> decoded = jsonDecode(response.body);
+
+      return decoded.map((json) => RoomModel.fromJson(json)).toList();
     } else {
       throw Exception('Failed to fetch rooms: ${response.statusCode}');
     }
@@ -107,9 +107,9 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> decoded = jsonDecode(response.body);
-      final List<dynamic> blocksJson = decoded['blocks'];
-      return blocksJson.map((json) => BlockModel.fromJson(json)).toList();
+      final List<dynamic> decoded = jsonDecode(response.body);
+
+      return decoded.map((json) => BlockModel.fromJson(json)).toList();
     } else {
       throw Exception('Failed to fetch blocks: ${response.statusCode}');
     }
@@ -128,9 +128,9 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> decoded = jsonDecode(response.body);
-      final List<dynamic> slotsJson = decoded['slots'];
-      return slotsJson.map((json) => SlotModel.fromJson(json)).toList();
+      final List< dynamic> decoded = jsonDecode(response.body);
+      
+      return decoded.map((json) => SlotModel.fromJson(json)).toList();
     } else {
       throw Exception('Failed to fetch slots: ${response.statusCode}');
     }

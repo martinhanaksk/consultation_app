@@ -1,5 +1,6 @@
 import 'package:consultation_app/models/user_model.dart';
 import 'package:consultation_app/utils/constants.dart';
+import 'package:consultation_app/utils/notifyUserUtils.dart';
 import 'package:consultation_app/utils/validator.dart';
 import 'package:consultation_app/viewmodels/register_viewmodel.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final RegisterViewmodel _rvm = RegisterViewmodel();
   final Constants _constants = Constants();
   final Validator _validator = Validator();
+  final NotifyUserUtils dialogs = NotifyUserUtils();
   bool _isLoading = false;
 
   Future<void> registerUser(String email) async {
@@ -33,19 +35,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
     if (response.statusCode == 200) {
       //todo
     } else {
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: const Text('Error'),
-          content: Text('Failed to send OTP. Try again.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
+      dialogs.showToast('Failed to send OTP. Try again.');
     }
   }
 

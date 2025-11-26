@@ -1,6 +1,6 @@
-import 'package:consultation_app/views/consultations_user_page.dart';
-import 'package:consultation_app/views/login_page.dart';
-import 'package:consultation_app/views/verify_otp_page.dart';
+import 'package:consultation_app/views/consultationsStudent_page.dart';
+import 'package:consultation_app/views/emailInput_page.dart';
+import 'package:consultation_app/views/verifyOtp_page.dart';
 import 'package:consultation_app/views/welcome_page.dart';
 import 'package:consultation_app/views/registration_page.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +20,7 @@ class AppRouter {
       case register:
         return MaterialPageRoute(builder: (_) => const RegistrationPage());
       case login:
-        return MaterialPageRoute(builder: (_) => const LoginPage());
+        return MaterialPageRoute(builder: (_) => const EmailInputPage());
       case consultationsUserPage:
         final args = settings.arguments as ConsultationsUserPageArgs;
         return MaterialPageRoute(
@@ -30,8 +30,12 @@ class AppRouter {
           ),
         );
       case verifyOtp:
-        final email = settings.arguments as String;
-        return MaterialPageRoute(builder: (_) => VerifyOtpPage(email: email));
+        final args = settings.arguments as VerifyOtpPageArgs;
+        return MaterialPageRoute(
+          builder: (_) =>
+              VerifyOtpPage(email: args.email, testingToken: args.testingToken),
+        );
+
       default:
         return MaterialPageRoute(
           builder: (_) =>

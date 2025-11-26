@@ -11,5 +11,21 @@ class Constants {
   double fontSizeBig = 40;
   double fontSizeMedium = 30;
   double fontSizeSmall = 20;
-  String url = "http://office-hours.fit.vutbr.cz:8000";
+  bool testing = false;
+  String url = '';
+  static final Constants _instance = Constants._internal();
+  factory Constants() => _instance;
+  Constants._internal();
+  void checkIfTestingServer(isTesting) {
+    if (isTesting) {
+      testing = true;
+      url = "https://consultations-backend.onrender.com";
+    } else {
+      testing = false;
+      url = "http://office-hours.fit.vutbr.cz:8000";
+    }
+  }
+  //school server:
+
+  //testing url:
 }

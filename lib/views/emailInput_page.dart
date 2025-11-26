@@ -1,24 +1,27 @@
 import 'package:consultation_app/routes/app_router.dart';
 import 'package:consultation_app/services/user_preferences.dart';
 import 'package:consultation_app/utils/constants.dart';
-import 'package:consultation_app/viewmodels/login_viewmodel.dart';
-import 'package:consultation_app/views/consultations_user_page.dart';
+import 'package:consultation_app/utils/notifyUserUtils.dart';
+import 'package:consultation_app/utils/validator.dart';
+import 'package:consultation_app/viewmodels/emailInput_viewmodel.dart';
+import 'package:consultation_app/views/consultationsStudent_page.dart';
 import 'package:flutter/material.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class EmailInputPage extends StatefulWidget {
+  const EmailInputPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<EmailInputPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<EmailInputPage> {
   final TextEditingController emailController = TextEditingController();
-  LoginViewmodel _lvm = LoginViewmodel();
+  EmailInputViewmodel _lvm = EmailInputViewmodel();
   Constants _constants = Constants();
+  NotifyUserUtils dialogs = NotifyUserUtils();
   UserPreferences _userPreferences = UserPreferences();
+  Validator _validator = Validator();
   bool connected = false;
   @override
   void initState() {
@@ -57,19 +60,17 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 150),
+            SizedBox(height: 50),
             Center(
-              child: Text(
-                'Join Consultation',
-                style: TextStyle(
-                  fontSize: 42,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF3D3D3D),
-                ),
+              child: Image.asset(
+                'assets/images/applogo.png',
+
+                width: 230,
+                fit: BoxFit.cover,
               ),
             ),
 
-            SizedBox(height: 16),
+            SizedBox(height: 50),
             TextField(
               controller: emailController,
               decoration: const InputDecoration(
@@ -77,47 +78,33 @@ class _LoginPageState extends State<LoginPage> {
                 border: OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: 25),
             SizedBox(
               width: 500,
               height: 50,
               child: ElevatedButton(
                 onPressed: () async {
-                  await _lvm.continueToVerify(
-                    context,
-                    emailController.text.trim(),
-                  );
+                  if (emailController.text.trim().isEmpty) {
+                    dialogs.showToast('Please type in your email.');
+                  } else {
+                    if (_validator.validateEmail(
+                      emailController.text.trim(),
+                      context,
+                    )) {
+                      await _lvm.continueToVerify(
+                        context,
+                        emailController.text.trim(),
+                      );
+                    }
+                  }
                 },
                 style: ButtonStyle(
                   backgroundColor: WidgetStateProperty.all(
-                    const Color(0xFF10A64A),
+                    const Color(0xff0071e2),
                   ),
                 ),
                 child: const Text(
-                  'Login',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xffffffff),
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-            SizedBox(
-              width: 500,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: () {
-                  _lvm.redirectToRegister(context);
-                },
-                style: ButtonStyle(
-                  backgroundColor: WidgetStateProperty.all(
-                    const Color.fromARGB(255, 0, 106, 255),
-                  ),
-                ),
-                child: const Text(
-                  'Register',
+                  'Next',
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w500,

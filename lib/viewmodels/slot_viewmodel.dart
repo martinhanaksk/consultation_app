@@ -1,13 +1,13 @@
 import 'package:consultation_app/models/slot_model.dart';
 import 'package:consultation_app/services/api_service.dart';
-import 'package:consultation_app/utils/dialogs.dart';
+import 'package:consultation_app/utils/notifyUserUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:consultation_app/routes/app_router.dart';
 
 class SlotViewmodel extends ChangeNotifier {
-  Dialogs dialogs = Dialogs();
+  NotifyUserUtils dialogs = NotifyUserUtils();
   bool isLoading = false;
   final ApiService _apiService = ApiService();
   Future<void> takeSlot(String token, int id, String note) async {

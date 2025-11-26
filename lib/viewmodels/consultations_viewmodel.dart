@@ -3,13 +3,12 @@ import 'package:consultation_app/models/room_model.dart';
 import 'package:consultation_app/models/slot_model.dart';
 import 'package:consultation_app/models/user_model.dart';
 import 'package:consultation_app/services/api_service.dart';
-import 'package:consultation_app/utils/dialogs.dart';
+import 'package:consultation_app/utils/notifyUserUtils.dart';
 import 'package:consultation_app/utils/helper_functions.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+
 
 class ConsultationsViewmodel {
-  Dialogs dialogs = Dialogs();
+  NotifyUserUtils dialogs = NotifyUserUtils();
   HelperFunctions _helperFunctions = HelperFunctions();
   final ApiService _apiService = ApiService();
   List<UserModel>? users = [];

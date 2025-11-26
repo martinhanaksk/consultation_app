@@ -1,11 +1,14 @@
+import 'package:consultation_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:consultation_app/routes/app_router.dart';
 import 'package:overlay_kit/overlay_kit.dart';
 
 // Author: Martin Hanak
 // email:  xhanakm00@stud.fit.vut.cz
+Constants _constants = Constants();
 void main() {
   runApp(const MyApp());
+  _constants.checkIfTestingServer(true);
 }
 
 class MyApp extends StatelessWidget {

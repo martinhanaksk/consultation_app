@@ -1,11 +1,11 @@
-import 'package:consultation_app/utils/dialogs.dart';
+import 'package:consultation_app/utils/notifyUserUtils.dart';
 import 'package:flutter/material.dart';
 
 class Validator {
-  final Dialogs dialogs = Dialogs();
+  final NotifyUserUtils dialogs = NotifyUserUtils();
   bool validateNotEmpty(String? value, String fieldName, BuildContext context) {
     if (value == null || value.trim().isEmpty) {
-      dialogs.showErrorDialog(context, '$fieldName is required');
+      dialogs.showToast('$fieldName is required');
       return false;
     }
     return true;
@@ -13,12 +13,12 @@ class Validator {
 
   bool validateEmail(String? value, BuildContext context) {
     if (value == null || value.trim().isEmpty) {
-      dialogs.showErrorDialog(context, "Email is required");
+      dialogs.showToast("Email is required");
       return false;
     }
     final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
     if (!emailRegex.hasMatch(value.trim())) {
-      dialogs.showErrorDialog(context, 'Enter a valid email address');
+      dialogs.showToast('Enter a valid email address');
       return false;
     }
     return true;

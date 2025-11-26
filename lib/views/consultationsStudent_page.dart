@@ -50,13 +50,10 @@ class _ConsultationsUserPageState extends State<ConsultationsUserPage> {
   }
 
   void loadData(String roomId) async {
-    isLoading = true;
-    OverlayLoadingProgress.start(
-      widget: const Center(
-        child: CircularProgressIndicator(color: Colors.blue, strokeWidth: 3),
-      ),
-      barrierColor: Colors.transparent,
-    );
+    setState(() {
+      isLoading = true;
+    });
+
     await _consultationsViewmodel.fetchData(widget.token, int.parse(roomId));
 
     setState(() {
@@ -64,7 +61,6 @@ class _ConsultationsUserPageState extends State<ConsultationsUserPage> {
       rooms = _consultationsViewmodel.rooms;
 
       isLoading = false;
-      OverlayLoadingProgress.stop();
     });
   }
 
