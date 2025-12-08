@@ -1,10 +1,10 @@
 import 'package:consultation_app/models/slot_model.dart';
-import 'package:consultation_app/services/api_service.dart';
+import 'package:consultation_app/services/apiService.dart';
 import 'package:consultation_app/utils/notifyUserUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:consultation_app/routes/app_router.dart';
+import 'package:consultation_app/routes/appRouter.dart';
 
 class SlotViewmodel extends ChangeNotifier {
   NotifyUserUtils dialogs = NotifyUserUtils();

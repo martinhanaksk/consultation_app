@@ -2,9 +2,9 @@ import 'package:consultation_app/models/block_model.dart';
 import 'package:consultation_app/models/room_model.dart';
 import 'package:consultation_app/models/slot_model.dart';
 import 'package:consultation_app/models/user_model.dart';
-import 'package:consultation_app/services/api_service.dart';
+import 'package:consultation_app/services/apiService.dart';
 import 'package:consultation_app/utils/notifyUserUtils.dart';
-import 'package:consultation_app/utils/helper_functions.dart';
+import 'package:consultation_app/utils/helperFunctions.dart';
 
 
 class ConsultationsViewmodel {

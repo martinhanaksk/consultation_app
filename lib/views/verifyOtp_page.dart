@@ -5,17 +5,23 @@ import 'package:flutter/material.dart';
 class VerifyOtpPageArgs {
   final String email;
   final String testingToken;
-
-  VerifyOtpPageArgs({required this.email, required this.testingToken});
+  final bool rememberMe;
+  VerifyOtpPageArgs({
+    required this.email,
+    required this.testingToken,
+    required this.rememberMe,
+  });
 }
 
 class VerifyOtpPage extends StatefulWidget {
   final String email;
-  final String testingToken;
+  final String token;
+  final bool rememberMe;
   const VerifyOtpPage({
     super.key,
     required this.email,
-    required this.testingToken,
+    required this.token,
+    required this.rememberMe,
   });
 
   @override
@@ -29,13 +35,10 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
   @override
   void initState() {
     super.initState();
-    if (widget.testingToken.isNotEmpty) {
-      otpcontroller.text = widget.testingToken.substring(
-        1,
-        widget.testingToken.length - 1,
-      );
+    if (widget.token.isNotEmpty) {
+      otpcontroller.text = widget.token.substring(1, widget.token.length - 1);
 
-      _vovm.connect(context, widget.email, otpcontroller.text.trim());
+      _vovm.connect(context, widget.email, otpcontroller.text.trim(),widget.rememberMe);
     }
   }
 
@@ -44,11 +47,11 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
     return Scaffold(
       backgroundColor: _constants.bgLight,
       body: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(24.0),
         child: Column(
           children: [
-            const SizedBox(height: 16),
-            const Text(
+            SizedBox(height: 200),
+            Text(
               'Verification',
               style: TextStyle(
                 fontSize: 32,
@@ -56,35 +59,48 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                 color: Color(0xFF3D3D3D),
               ),
             ),
-            const SizedBox(height: 16),
-
+            SizedBox(height: 16),
+            Text(
+              'Please enter the OTP from your email.',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF3D3D3D),
+              ),
+            ),
+            SizedBox(height: 20),
             TextField(
               controller: otpcontroller,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                hintText: 'eg.1234',
+              decoration: InputDecoration(
+                hintText: 'eg. 1234',
                 border: OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: 32),
             SizedBox(
               width: double.infinity,
+              height: 50,
               child: ElevatedButton(
                 onPressed: () async {
                   _vovm.connect(
                     context,
                     widget.email,
-                    otpcontroller.text.trim(),
+                    otpcontroller.text.trim(),widget.rememberMe
                   );
                 },
                 style: ButtonStyle(
                   backgroundColor: WidgetStateProperty.all(
-                    const Color(0xFF10A64A),
+                    _constants.primaryColor,
                   ),
                 ),
-                child: const Text(
+                child: Text(
                   'Connect',
-                  style: TextStyle(color: Color(0xffffffff)),
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xffffffff),
+                  ),
                 ),
               ),
             ),

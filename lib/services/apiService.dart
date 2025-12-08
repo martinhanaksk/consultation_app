@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:consultation_app/services/user_preferences.dart';
+import 'package:consultation_app/services/userPreferences.dart';
 import 'package:consultation_app/utils/constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:consultation_app/models/user_model.dart';
@@ -11,8 +11,8 @@ class ApiService {
   Constants _constants = Constants();
   UserPreferences _userPreferences = UserPreferences();
   //verify
-  Future<String> connect(String email, String otp) async {
-    final Uri url = Uri.parse('${_constants.url}/auth/verify-login-otp');
+  Future<bool> connect(String email, String otp, bool rememberMe) async {
+    final Uri url = getVerifyLoginOtpUrl(rememberMe);
 
     final response = await http.post(
       url,
@@ -24,10 +24,18 @@ class ApiService {
     if (response.statusCode == 200) {
       await _userPreferences.saveItem('email', email);
       await _userPreferences.saveItem('token', data['token']);
-      return data['token'];
+      await _userPreferences.saveItem('role', data['role']);
+      return true;
     } else {
-      return '';
+      return false;
     }
+  }
+
+  Uri getVerifyLoginOtpUrl(bool rememberMe) {
+    if (rememberMe) {
+      return Uri.parse('${_constants.url}/auth/verify-login-otp-long');
+    }
+    return Uri.parse('${_constants.url}/auth/verify-login-otp');
   }
 
   //register
@@ -49,6 +57,7 @@ class ApiService {
     if (response.statusCode == 200) {
       await _userPreferences.saveItem('email', um.email);
       await _userPreferences.saveItem('token', data['token']);
+      await _userPreferences.saveItem('role', data['role']);
       return data['token'];
     } else {
       return '';
@@ -128,8 +137,8 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
-      final List< dynamic> decoded = jsonDecode(response.body);
-      
+      final List<dynamic> decoded = jsonDecode(response.body);
+
       return decoded.map((json) => SlotModel.fromJson(json)).toList();
     } else {
       throw Exception('Failed to fetch slots: ${response.statusCode}');

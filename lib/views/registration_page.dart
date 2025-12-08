@@ -8,7 +8,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class RegistrationPage extends StatefulWidget {
-  const RegistrationPage({super.key});
+  final String email;
+  const RegistrationPage({super.key, required this.email});
 
   @override
   State<RegistrationPage> createState() => _RegistrationPageState();
@@ -40,6 +41,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    emailController.text=widget.email;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _constants.bgLight,
@@ -59,6 +66,15 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF3D3D3D),
                   ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: emailController,
+                enabled: !_isLoading,
+                decoration: const InputDecoration(
+                  hintText: 'Email',
+                  border: OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 16),
@@ -88,15 +104,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   border: OutlineInputBorder(),
                 ),
               ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: emailController,
-                enabled: !_isLoading,
-                decoration: const InputDecoration(
-                  hintText: 'Email',
-                  border: OutlineInputBorder(),
-                ),
-              ),
+
               const SizedBox(height: 32),
               SizedBox(
                 width: double.infinity,
@@ -135,10 +143,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
                             try {
                               UserModel um = UserModel(
+                                email: emailController.text.trim(),
                                 name: nameController.text.trim(),
                                 surname: surnameController.text.trim(),
-                                email: emailController.text.trim(),
+                                role: '',
                                 visitReason: visitReasonController.text.trim(),
+                                visible: 0,
                               );
                               await _rvm.registerUser(context, um);
                             } finally {

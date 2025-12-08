@@ -4,14 +4,18 @@ import 'package:consultation_app/views/verifyOtp_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:consultation_app/routes/app_router.dart';
+import 'package:consultation_app/routes/appRouter.dart';
 
 class EmailInputViewmodel {
   NotifyUserUtils dialogs = NotifyUserUtils();
   Constants _constants = Constants();
 
-  Future<void> continueToVerify(BuildContext context, String email) async {
-    dialogs.showToast("Sending OTP...");
+  Future<void> continueToVerify(
+    BuildContext context,
+    String email,
+    bool rememberMe,
+  ) async {
+    dialogs.showToast("Checking email...");
     try {
       final response = await http.post(
         Uri.parse('${_constants.url}/auth/request-login-otp'),
@@ -19,10 +23,9 @@ class EmailInputViewmodel {
         body: jsonEncode({'email': email}),
       );
       if (_constants.testing) {
-        print("----->" + response.runtimeType.toString());
-        handleTestingServer(response, context, email);
+        handleTestingServer(response, context, email, rememberMe);
       } else {
-        handleServer(response, context, email);
+        handleServer(response, context, email, rememberMe);
       }
     } catch (e) {
       dialogs.showToast("Please, check your internet connection.");
@@ -33,15 +36,20 @@ class EmailInputViewmodel {
     http.Response response,
     BuildContext context,
     String email,
+    bool rememberMe,
   ) {
     if (response.statusCode == 200) {
       Navigator.pushNamed(
         context,
         AppRouter.verifyOtp,
-        arguments: VerifyOtpPageArgs(email: email, testingToken: response.body),
+        arguments: VerifyOtpPageArgs(
+          email: email,
+          testingToken: response.body,
+          rememberMe: rememberMe,
+        ),
       );
     } else if (response.statusCode == 400) {
-      redirectToRegister(context);
+      redirectToRegister(context, email);
     }
   }
 
@@ -49,13 +57,18 @@ class EmailInputViewmodel {
     http.Response response,
     BuildContext context,
     String email,
+    bool rememberMe,
   ) async {
     if (response.statusCode == 200) {
       //Navigator.pop(context);
       Navigator.pushNamed(
         context,
         AppRouter.verifyOtp,
-        arguments: VerifyOtpPageArgs(email: email, testingToken: ''),
+        arguments: VerifyOtpPageArgs(
+          email: email,
+          testingToken: '',
+          rememberMe: rememberMe,
+        ),
       );
     } else if (response.statusCode == 307) {
       // Handle redirect manually
@@ -76,7 +89,11 @@ class EmailInputViewmodel {
           Navigator.pushNamed(
             context,
             AppRouter.verifyOtp,
-            arguments: VerifyOtpPageArgs(email: email, testingToken: ''),
+            arguments: VerifyOtpPageArgs(
+              email: email,
+              testingToken: '',
+              rememberMe: rememberMe,
+            ),
           );
         } else {
           dialogs.showToast(
@@ -89,13 +106,17 @@ class EmailInputViewmodel {
         );
       }
     } else if (response.statusCode == 400) {
-      redirectToRegister(context);
+      redirectToRegister(context, email);
     } else {
       dialogs.showToast('Failed to send OTP. Try again.');
     }
   }
 
-  void redirectToRegister(BuildContext context) {
-    Navigator.pushNamed(context, AppRouter.register);
+  void redirectToRegister(BuildContext context, String email) {
+    Navigator.pushNamed(
+      context,
+      AppRouter.register,
+      arguments: {'email': email},
+    );
   }
 }

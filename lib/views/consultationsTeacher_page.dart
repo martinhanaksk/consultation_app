@@ -9,30 +9,27 @@ import 'package:consultation_app/views/custom_widgets/appBarMenu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slot_widget.dart';
 import 'package:flutter/material.dart';
 
-class ConsultationsStudentPageArgs {
+class ConsultationsTeacherPageArgs {
   final String token;
   final String email;
-
-  ConsultationsStudentPageArgs({
-    required this.token,
-    required this.email
-  });
+  ConsultationsTeacherPageArgs({required this.token, required this.email});
 }
 
-class ConsultationsStudentPage extends StatefulWidget {
+class ConsultationsTeacherPage extends StatefulWidget {
   final String token;
   final String email;
-  const ConsultationsStudentPage({
+  const ConsultationsTeacherPage({
     super.key,
     required this.token,
-    required this.email
+    required this.email,
   });
 
   @override
-  State<ConsultationsStudentPage> createState() => _ConsultationsUserPageState();
+  State<ConsultationsTeacherPage> createState() =>
+      _ConsultationsUserPageState();
 }
 
-class _ConsultationsUserPageState extends State<ConsultationsStudentPage> {
+class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
   final TextEditingController emailController = TextEditingController();
   final Constants _constants = Constants();
   HelperFunctions helperFunctions = HelperFunctions();
@@ -53,13 +50,10 @@ class _ConsultationsUserPageState extends State<ConsultationsStudentPage> {
     setState(() {
       isLoading = true;
     });
-
     await _consultationsViewmodel.fetchData(widget.token, int.parse(roomId));
-
     setState(() {
       slotsInBlocks = _consultationsViewmodel.slotsInBlocks;
       rooms = _consultationsViewmodel.rooms;
-
       isLoading = false;
     });
   }
@@ -105,7 +99,7 @@ class _ConsultationsUserPageState extends State<ConsultationsStudentPage> {
                 SizedBox(height: 80),
                 Center(
                   child: Text(
-                    "Write your self here",
+                    "Slots",
                     style: TextStyle(
                       color: _constants.defaultDarkGrey,
                       fontSize: _constants.fontSizeBig,

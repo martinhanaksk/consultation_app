@@ -1,10 +1,11 @@
-import 'package:consultation_app/routes/app_router.dart';
-import 'package:consultation_app/services/user_preferences.dart';
+import 'package:consultation_app/routes/appRouter.dart';
+import 'package:consultation_app/services/userPreferences.dart';
 import 'package:consultation_app/utils/constants.dart';
 import 'package:consultation_app/utils/notifyUserUtils.dart';
 import 'package:consultation_app/utils/validator.dart';
 import 'package:consultation_app/viewmodels/emailInput_viewmodel.dart';
 import 'package:consultation_app/views/consultationsStudent_page.dart';
+import 'package:consultation_app/views/consultationsTeacher_page.dart';
 import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
@@ -22,6 +23,7 @@ class _LoginPageState extends State<EmailInputPage> {
   NotifyUserUtils dialogs = NotifyUserUtils();
   UserPreferences _userPreferences = UserPreferences();
   Validator _validator = Validator();
+  bool isChecked = false;
   bool connected = false;
   @override
   void initState() {
@@ -32,21 +34,34 @@ class _LoginPageState extends State<EmailInputPage> {
   void checkIfInSharedPreferences() async {
     String? token = await _userPreferences.getItem('token');
     String? email = await _userPreferences.getItem('email');
-
-    if (token != null && email != null) {
+    String? role = await _userPreferences.getItem('role');
+    if (token != null &&
+        email != null &&
+        role != null &&
+        role.isNotEmpty &&
+        token.isNotEmpty &&
+        email.isNotEmpty) {
       bool isExpired = JwtDecoder.isExpired(token);
 
       if (!isExpired) {
-        Navigator.pushNamed(
-          context,
-          AppRouter.consultationsUserPage,
-          arguments: ConsultationsUserPageArgs(token: token, email: email),
-        );
+        if (role == 'teacher') {
+          Navigator.pushNamed(
+            context,
+            AppRouter.consultationsTeacherPage,
+            arguments: ConsultationsTeacherPageArgs(token: token, email: email),
+          );
+        } else if (role == 'student') {
+          Navigator.pushNamed(
+            context,
+            AppRouter.consultationsStudentPage,
+            arguments: ConsultationsStudentPageArgs(token: token, email: email),
+          );
+        }
       } else {
         // Optionally clear expired token
         await _userPreferences.removeItem('token');
         await _userPreferences.removeItem('email');
-        print("Token expired, not navigating.");
+        await _userPreferences.removeItem('role');
       }
     }
   }
@@ -60,7 +75,7 @@ class _LoginPageState extends State<EmailInputPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 50),
+            SizedBox(height: 100),
             Center(
               child: Image.asset(
                 'assets/images/applogo.png',
@@ -69,7 +84,6 @@ class _LoginPageState extends State<EmailInputPage> {
                 fit: BoxFit.cover,
               ),
             ),
-
             SizedBox(height: 50),
             TextField(
               controller: emailController,
@@ -78,9 +92,23 @@ class _LoginPageState extends State<EmailInputPage> {
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 25),
+            SizedBox(height: 15),
+            Row(
+              children: [
+                Checkbox(
+                  value: isChecked,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      isChecked = value ?? false;
+                    });
+                  },
+                ),
+                Text('Remember me'),
+              ],
+            ),
+            SizedBox(height: 15),
             SizedBox(
-              width: 500,
+              width: double.infinity,
               height: 50,
               child: ElevatedButton(
                 onPressed: () async {
@@ -93,14 +121,14 @@ class _LoginPageState extends State<EmailInputPage> {
                     )) {
                       await _lvm.continueToVerify(
                         context,
-                        emailController.text.trim(),
+                        emailController.text.trim(),isChecked
                       );
                     }
                   }
                 },
                 style: ButtonStyle(
                   backgroundColor: WidgetStateProperty.all(
-                    const Color(0xff0071e2),
+                    _constants.primaryColor,
                   ),
                 ),
                 child: const Text(

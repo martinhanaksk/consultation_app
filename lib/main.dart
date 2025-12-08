@@ -1,6 +1,6 @@
 import 'package:consultation_app/utils/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:consultation_app/routes/app_router.dart';
+import 'package:consultation_app/routes/appRouter.dart';
 import 'package:overlay_kit/overlay_kit.dart';
 
 // Author: Martin Hanak
@@ -8,7 +8,7 @@ import 'package:overlay_kit/overlay_kit.dart';
 Constants _constants = Constants();
 void main() {
   runApp(const MyApp());
-  _constants.checkIfTestingServer(true);
+  _constants.checkIfTestingServer(false);
 }
 
 class MyApp extends StatelessWidget {

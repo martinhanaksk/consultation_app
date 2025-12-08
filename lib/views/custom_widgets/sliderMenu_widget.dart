@@ -1,17 +1,17 @@
-import 'package:consultation_app/routes/app_router.dart';
-import 'package:consultation_app/services/user_preferences.dart';
+import 'package:consultation_app/routes/appRouter.dart';
+import 'package:consultation_app/services/userPreferences.dart';
 import 'package:consultation_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class RightSliderMenu extends StatefulWidget {
-  const RightSliderMenu({super.key});
+class SliderMenu extends StatefulWidget {
+  const SliderMenu({super.key});
 
   @override
-  State<RightSliderMenu> createState() => _RightSliderMenuState();
+  State<SliderMenu> createState() => _SliderMenuState();
 }
 
-class _RightSliderMenuState extends State<RightSliderMenu> {
+class _SliderMenuState extends State<SliderMenu> {
   bool isOpen = false;
   UserPreferences _userPreferences = UserPreferences();
   Constants _constants = Constants();
@@ -39,20 +39,10 @@ class _RightSliderMenuState extends State<RightSliderMenu> {
                 SizedBox(height: 20),
                 GestureDetector(
                   child: Container(
-                    child: Text("Account", style: TextStyle(fontSize: 20)),
-                  ),
-                  onTap: () {
-                    //todo
-                  },
-                ),
-
-                SizedBox(height: 20),
-                GestureDetector(
-                  child: Container(
                     child: Text("Join Room", style: TextStyle(fontSize: 20)),
                   ),
                   onTap: () {
-                    //todo
+                    Navigator.pushNamed(context, AppRouter.joinRoom);
                   },
                 ),
                 SizedBox(height: 20),
@@ -61,7 +51,7 @@ class _RightSliderMenuState extends State<RightSliderMenu> {
                     child: Text("Support", style: TextStyle(fontSize: 20)),
                   ),
                   onTap: () {
-                    //todo
+                    Navigator.pushNamed(context, AppRouter.support);
                   },
                 ),
                 SizedBox(height: 20),
@@ -70,7 +60,7 @@ class _RightSliderMenuState extends State<RightSliderMenu> {
                     child: Text("Feedback", style: TextStyle(fontSize: 20)),
                   ),
                   onTap: () {
-                    //todo
+                    Navigator.pushNamed(context, AppRouter.provideFeedback);
                   },
                 ),
               ],
@@ -81,7 +71,7 @@ class _RightSliderMenuState extends State<RightSliderMenu> {
                   child: Text("Settings", style: TextStyle(fontSize: 20)),
 
                   onTap: () {
-                    //todo
+                    Navigator.pushNamed(context, AppRouter.changeSettings);
                   },
                 ),
                 SizedBox(height: 20),
@@ -98,7 +88,7 @@ class _RightSliderMenuState extends State<RightSliderMenu> {
                   onTap: () async {
                     await _userPreferences.removeItem('token');
                     await _userPreferences.removeItem('email');
-
+                    await _userPreferences.removeItem('role');
                     // Navigate to login and clear all previous routes
                     Navigator.pushNamed(context, AppRouter.login);
                   },
