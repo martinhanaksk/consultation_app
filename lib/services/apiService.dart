@@ -64,6 +64,23 @@ class ApiService {
     }
   }
 
+  Future<void> joinRoomById(String token, String sid) async {
+    int? id = int.tryParse(sid);
+    if (id != null) {
+      final Uri url = Uri.parse('${_constants.url}/room/join?room_id=$id');
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+      if (response.statusCode != 200) {
+        throw Exception('Failed to join room: ${response.statusCode}');
+      }
+    }
+  }
+
   //consultations
   Future<List<UserModel>> getUsers(String token) async {
     final Uri url = Uri.parse('${_constants.url}/users');
@@ -84,9 +101,23 @@ class ApiService {
     }
   }
 
-  Future<List<RoomModel>> getRooms(String token) async {
+  Future<List<RoomModel>> getMyRooms(String token) async {
+    final Uri urlToGetRooms = Uri.parse('${_constants.url}/users/my-rooms');
+    final responseToGetRooms = await http.get(
+      urlToGetRooms,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+    List<int> roomIds = [];
+    if (responseToGetRooms.statusCode == 200) {
+      final List<dynamic> jsonList = jsonDecode(responseToGetRooms.body);
+      roomIds = jsonList.map((json) => json['room_id'] as int).toList();
+    } else {
+      return [];
+    }
     final Uri url = Uri.parse('${_constants.url}/room/get');
-
     final response = await http.get(
       url,
       headers: {
@@ -98,7 +129,10 @@ class ApiService {
     if (response.statusCode == 200) {
       final List<dynamic> decoded = jsonDecode(response.body);
 
-      return decoded.map((json) => RoomModel.fromJson(json)).toList();
+      return decoded
+          .map((json) => RoomModel.fromJson(json))
+          .where((room) => roomIds.contains(room.id))
+          .toList();
     } else {
       throw Exception('Failed to fetch rooms: ${response.statusCode}');
     }

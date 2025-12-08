@@ -6,7 +6,6 @@ import 'package:consultation_app/services/apiService.dart';
 import 'package:consultation_app/utils/notifyUserUtils.dart';
 import 'package:consultation_app/utils/helperFunctions.dart';
 
-
 class ConsultationsViewmodel {
   NotifyUserUtils dialogs = NotifyUserUtils();
   HelperFunctions _helperFunctions = HelperFunctions();
@@ -21,7 +20,12 @@ class ConsultationsViewmodel {
     blocks = [];
     slotsInBlocks = {};
     users = await _apiService.getUsers(token);
-    rooms = await _apiService.getRooms(token);
+    rooms = await _apiService.getMyRooms(token);
+    if (rooms != null) {
+      if (rooms!.isEmpty) {
+        return;
+      }
+    }
     blocks = await _apiService.getBlocks(token, roomId);
     //to get slots parallel
     List<Future<void>> futures = [];
@@ -30,7 +34,10 @@ class ConsultationsViewmodel {
         final slots = await _apiService.getSlotsForBlock(block.id, token);
         if (slots != null) {
           slots.sort((a, b) {
-            return _helperFunctions.compareTimeStringsDesc(a.startTime, b.startTime);
+            return _helperFunctions.compareTimeStringsDesc(
+              a.startTime,
+              b.startTime,
+            );
           });
         }
         slotsInBlocks[block.id] = slots;
@@ -44,9 +51,7 @@ class ConsultationsViewmodel {
       for (var tmpUser in users!) {
         if (tmpUser.email == emailToFind) {
           return tmpUser;
-        } else {
-          
-        }
+        } else {}
       }
     }
     return null;

@@ -54,6 +54,11 @@ class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
     setState(() {
       slotsInBlocks = _consultationsViewmodel.slotsInBlocks;
       rooms = _consultationsViewmodel.rooms;
+      if (rooms != null) {
+        if (rooms!.isEmpty) {
+          isLoading = false;
+        }
+      }
       isLoading = false;
     });
   }
@@ -62,13 +67,20 @@ class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBarMenu(),
-      drawer: SliderMenu(),
+      drawer: SliderMenu(token:widget.token),
       backgroundColor: _constants.bgLight,
       body: isLoading
           ? Center(
               child: CircularProgressIndicator(
                 color: Colors.blue,
                 strokeWidth: 3,
+              ),
+            )
+          : (rooms != null && rooms!.isEmpty)
+          ? Center(
+              child: Text(
+                "No rooms found.",
+                style: TextStyle(fontSize: _constants.fontSizeBig),
               ),
             )
           : Column(
@@ -107,7 +119,7 @@ class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
                     ),
                   ),
                 ),
-                SizedBox(height: 80),
+                SizedBox(height: 40),
                 Expanded(
                   child: isLoading
                       ? SizedBox.shrink()

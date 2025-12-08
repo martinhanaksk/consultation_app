@@ -52,7 +52,9 @@ class AppRouter {
           ),
         );
       case joinRoom:
-        return MaterialPageRoute(builder: (_) => JoinRoom());
+        final args = settings.arguments as Map<String, dynamic>;
+        final token = args['token'] as String;
+        return MaterialPageRoute(builder: (_) => JoinRoom(token:token));
       case support:
         return MaterialPageRoute(builder: (_) => Support());
       case provideFeedback:

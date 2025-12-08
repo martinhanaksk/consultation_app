@@ -6,22 +6,21 @@ class HelperFunctions {
   }
 
   int compareTimeStringsDesc(String t1, String t2) {
-  Duration toDuration(String t) {
-    final parts = t.split(':');
-    return Duration(
-      hours: int.parse(parts[0]),
-      minutes: int.parse(parts[1]),
-      seconds: int.parse(parts[2]),
-    );
+    Duration toDuration(String t) {
+      final parts = t.split(':');
+      return Duration(
+        hours: int.parse(parts[0]),
+        minutes: int.parse(parts[1]),
+        seconds: int.parse(parts[2]),
+      );
+    }
+
+    final d1 = toDuration(t1);
+    final d2 = toDuration(t2);
+
+    // descending: return positive if d2 > d1
+    return d1.compareTo(d2);
   }
-
-  final d1 = toDuration(t1);
-  final d2 = toDuration(t2);
-
-  // descending: return positive if d2 > d1
-  return d1.compareTo(d2);
-}
-
 
   String getTimeOnlySimple(DateTime dateTime) {
     return "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}";
@@ -31,5 +30,12 @@ class HelperFunctions {
     String weekday = DateFormat('EEEE').format(dateTime); // Thursday
     String dayMonth = DateFormat('d.M').format(dateTime); // 4.1
     return "$weekday $dayMonth";
+  }
+
+  bool isNumeric(String s) {
+    if (s == null) {
+      return false;
+    }
+    return int.tryParse(s) != null;
   }
 }

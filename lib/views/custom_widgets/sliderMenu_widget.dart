@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class SliderMenu extends StatefulWidget {
-  const SliderMenu({super.key});
+  final String token;
+  const SliderMenu({super.key,required this.token});
 
   @override
   State<SliderMenu> createState() => _SliderMenuState();
@@ -42,7 +43,11 @@ class _SliderMenuState extends State<SliderMenu> {
                     child: Text("Join Room", style: TextStyle(fontSize: 20)),
                   ),
                   onTap: () {
-                    Navigator.pushNamed(context, AppRouter.joinRoom);
+                    Navigator.pushNamed(
+                      context,
+                      AppRouter.joinRoom,
+                      arguments: {'token': widget.token},
+                    );
                   },
                 ),
                 SizedBox(height: 20),
