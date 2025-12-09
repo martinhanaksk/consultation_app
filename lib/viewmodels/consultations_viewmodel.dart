@@ -69,4 +69,17 @@ class ConsultationsViewmodel {
     }
     return "";
   }
+  Future<bool> isTeacher(
+   
+    String token,
+    String email,
+  ) async {
+    try {
+      String result = await _apiService.getRole(token, email);
+      return result == "teacher" ? true : false;
+    } catch (e) {
+      dialogs.showToast('Error while acquiring role.');
+      return false;
+    }
+  }
 }

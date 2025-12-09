@@ -101,22 +101,7 @@ class ApiService {
     }
   }
 
-  Future<List<RoomModel>> getMyRooms(String token) async {
-    final Uri urlToGetRooms = Uri.parse('${_constants.url}/users/my-rooms');
-    final responseToGetRooms = await http.get(
-      urlToGetRooms,
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-    );
-    List<int> roomIds = [];
-    if (responseToGetRooms.statusCode == 200) {
-      final List<dynamic> jsonList = jsonDecode(responseToGetRooms.body);
-      roomIds = jsonList.map((json) => json['room_id'] as int).toList();
-    } else {
-      return [];
-    }
+  Future<List<RoomModel>> getAllRooms(String token) async {
     final Uri url = Uri.parse('${_constants.url}/room/get');
     final response = await http.get(
       url,
@@ -128,14 +113,33 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final List<dynamic> decoded = jsonDecode(response.body);
-
-      return decoded
-          .map((json) => RoomModel.fromJson(json))
-          .where((room) => roomIds.contains(room.id))
-          .toList();
+      return decoded.map((json) => RoomModel.fromJson(json)).toList();
     } else {
       throw Exception('Failed to fetch rooms: ${response.statusCode}');
     }
+  }
+
+  Future<List<RoomModel>> getMyRooms(String token) async {
+    final Uri urlToGetRooms = Uri.parse('${_constants.url}/users/my-rooms');
+    final responseToGetRooms = await http.get(
+      urlToGetRooms,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    List<int> roomIds = [];
+    if (responseToGetRooms.statusCode == 200) {
+      final List<dynamic> jsonList = jsonDecode(responseToGetRooms.body);
+      roomIds = jsonList.map((json) => json['room_id'] as int).toList();
+    } else {
+      return [];
+    }
+
+    final List<RoomModel> allRooms = await getAllRooms(token);
+
+    return allRooms.where((room) => roomIds.contains(room.id)).toList();
   }
 
   Future<List<BlockModel>> getBlocks(String token, int roomId) async {
@@ -209,6 +213,25 @@ class ApiService {
     );
     if (response.statusCode != 200) {
       throw Exception('Failed to release slot: ${response.statusCode}');
+    }
+  }
+
+  Future<String> getRole(String token, String email) async {
+    final Uri url = Uri.parse('${_constants.url}/users?email=$email');
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['role'].toString();
+    } else {
+      throw Exception('Failed to fetch role: ${response.statusCode}');
     }
   }
 }

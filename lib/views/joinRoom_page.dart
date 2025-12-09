@@ -50,7 +50,7 @@ class _JoinRoomState extends State<JoinRoom> {
                         await _jrvm.joinRoom(
                           context,
                           widget.token,
-                          idControllerloadData(selectedRoom);.text.trim(),
+                          idController.text.trim(),
                         );
                       }
                     }

@@ -40,17 +40,35 @@ class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
   String selectedRoom = "1";
   List<RoomModel>? rooms = [];
   bool isLoading = false;
+  bool isTeacher = false;
   @override
   void initState() {
     super.initState();
-    loadData(selectedRoom);
+     _checkRole();
+    loadData();
   }
 
-  void loadData(String roomId) async {
+  void _checkRole() async {
+    bool result = await _consultationsViewmodel.isTeacher(
+      widget.token,
+      widget.email,
+    );
+    if (mounted) {
+      setState(() {
+        isTeacher = result;
+      });
+    }
+  }
+
+  void loadData() async {
+   
     setState(() {
       isLoading = true;
     });
-    await _consultationsViewmodel.fetchData(widget.token, int.parse(roomId));
+    await _consultationsViewmodel.fetchData(
+      widget.token,
+      int.parse(selectedRoom),
+    );
     setState(() {
       slotsInBlocks = _consultationsViewmodel.slotsInBlocks;
       rooms = _consultationsViewmodel.rooms;
@@ -67,7 +85,11 @@ class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBarMenu(),
-      drawer: SliderMenu(token:widget.token),
+      drawer: SliderMenu(
+        token: widget.token,
+        email: widget.email,
+        isTeacher: isTeacher,
+      ),
       backgroundColor: _constants.bgLight,
       body: isLoading
           ? Center(
@@ -77,10 +99,41 @@ class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
               ),
             )
           : (rooms != null && rooms!.isEmpty)
-          ? Center(
-              child: Text(
-                "No rooms found.",
-                style: TextStyle(fontSize: _constants.fontSizeBig),
+          ? Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Center(
+                child: Column(
+                  children: [
+                    SizedBox(height: 80),
+                    Text(
+                      "No rooms found.",
+                      style: TextStyle(fontSize: _constants.fontSizeBig),
+                    ),
+                    SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          loadData();
+                        },
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStateProperty.all(
+                            _constants.primaryColor,
+                          ),
+                        ),
+                        child: const Text(
+                          'Refresh',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xffffffff),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             )
           : Column(
@@ -103,7 +156,7 @@ class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
                       setState(() {
                         selectedRoom = newValue!;
                       });
-                      loadData(selectedRoom);
+                      loadData();
                     },
                   ),
                 ),
@@ -171,9 +224,7 @@ class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
                                                         roomId: selectedRoom,
                                                         context: context,
                                                         loadData: () =>
-                                                            loadData(
-                                                              selectedRoom,
-                                                            ),
+                                                            loadData(),
                                                       ),
                                               )
                                               .toList(),

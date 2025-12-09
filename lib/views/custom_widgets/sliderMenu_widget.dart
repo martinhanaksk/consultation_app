@@ -2,11 +2,12 @@ import 'package:consultation_app/routes/appRouter.dart';
 import 'package:consultation_app/services/userPreferences.dart';
 import 'package:consultation_app/utils/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class SliderMenu extends StatefulWidget {
   final String token;
-  const SliderMenu({super.key,required this.token});
+  final String email;
+  final bool isTeacher;
+  const SliderMenu({super.key, required this.token, required this.email,required this.isTeacher,});
 
   @override
   State<SliderMenu> createState() => _SliderMenuState();
@@ -15,7 +16,10 @@ class SliderMenu extends StatefulWidget {
 class _SliderMenuState extends State<SliderMenu> {
   bool isOpen = false;
   UserPreferences _userPreferences = UserPreferences();
+  
   Constants _constants = Constants();
+ 
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -51,6 +55,28 @@ class _SliderMenuState extends State<SliderMenu> {
                   },
                 ),
                 SizedBox(height: 20),
+                widget.isTeacher
+                    ? Column(
+                        children: [
+                          GestureDetector(
+                            child: Container(
+                              child: Text(
+                                "Create Room",
+                                style: TextStyle(fontSize: 20),
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.pushNamed(
+                                context,
+                                AppRouter.createRoom,
+                                arguments: {'token': widget.token,'email': widget.email},
+                              );
+                            },
+                          ),
+                          SizedBox(height: 20),
+                        ],
+                      )
+                    : SizedBox(height: 0),
                 GestureDetector(
                   child: Container(
                     child: Text("Support", style: TextStyle(fontSize: 20)),

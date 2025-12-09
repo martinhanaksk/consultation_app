@@ -1,5 +1,6 @@
 import 'package:consultation_app/views/consultationsStudent_page.dart';
 import 'package:consultation_app/views/consultationsTeacher_page.dart';
+import 'package:consultation_app/views/createRoom_widget.dart';
 import 'package:consultation_app/views/emailInput_page.dart';
 import 'package:consultation_app/views/provideFeedback_page.dart';
 import 'package:consultation_app/views/joinRoom_page.dart';
@@ -15,6 +16,7 @@ class AppRouter {
   static const String register = '/register';
   static const String detail = '/detail';
   static const String joinRoom = '/joinroom';
+  static const String createRoom = '/createRoom';
   static const String support = '/support';
   static const String provideFeedback = '/provideFeedback';
   static const String changeSettings = '/changeSettings';
@@ -54,7 +56,11 @@ class AppRouter {
       case joinRoom:
         final args = settings.arguments as Map<String, dynamic>;
         final token = args['token'] as String;
-        return MaterialPageRoute(builder: (_) => JoinRoom(token:token));
+        return MaterialPageRoute(builder: (_) => JoinRoom(token: token));
+      case createRoom:
+        final args = settings.arguments as Map<String, dynamic>;
+        final token = args['token'] as String;
+        return MaterialPageRoute(builder: (_) => CreateRoom(token: token));
       case support:
         return MaterialPageRoute(builder: (_) => Support());
       case provideFeedback:
