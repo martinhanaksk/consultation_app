@@ -93,7 +93,8 @@ class _ConsultationsUserPageState extends State<ConsultationsStudentPage> {
         isTeacher: isTeacher,
       ),
       backgroundColor: _constants.bgLight,
-      body: isLoading
+      body: SafeArea(
+        child: isLoading
           ? Center(
               child: CircularProgressIndicator(
                 color: Colors.blue,
@@ -238,7 +239,7 @@ class _ConsultationsUserPageState extends State<ConsultationsStudentPage> {
                         ),
                 ),
               ],
-            ),
+            ),)
     );
   }
 }

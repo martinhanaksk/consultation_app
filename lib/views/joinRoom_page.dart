@@ -1,6 +1,8 @@
+import 'package:consultation_app/models/room_model.dart';
 import 'package:consultation_app/utils/constants.dart';
 import 'package:consultation_app/utils/helperFunctions.dart';
 import 'package:consultation_app/utils/notifyUserUtils.dart';
+import 'package:consultation_app/viewmodels/consultations_viewmodel.dart';
 import 'package:consultation_app/viewmodels/joinRoom_viewmodel.dart';
 import 'package:flutter/material.dart';
 
@@ -17,12 +19,32 @@ class _JoinRoomState extends State<JoinRoom> {
   HelperFunctions helperFunctions = HelperFunctions();
   NotifyUserUtils dialogs = NotifyUserUtils();
   JoinRoomViewmodel _jrvm = JoinRoomViewmodel();
+  String? selectedRoomId;
+  List<RoomModel>? allRooms = [];
+  int? selectedId;
   final TextEditingController idController = TextEditingController();
+  final ConsultationsViewmodel _consultationsViewmodel =
+      ConsultationsViewmodel();
+  @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
+
+  Future<void> loadData() async {
+    await _consultationsViewmodel.fetchAllRooms(widget.token);
+
+    setState(() {
+      allRooms = _consultationsViewmodel.allRooms;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _constants.bgLight,
-      body: Padding(
+      body: SafeArea(
+        child: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Center(
           child: Column(
@@ -30,12 +52,24 @@ class _JoinRoomState extends State<JoinRoom> {
               SizedBox(height: 50),
               Text("Join Room"),
               SizedBox(height: 20),
-              TextField(
-                controller: idController,
-                decoration: const InputDecoration(
-                  hintText: 'Type in room id',
-                  border: OutlineInputBorder(),
-                ),
+              DropdownButton<String>(
+                hint: Text("Select a Room"),
+                value: selectedRoomId,
+                items: (allRooms == null)
+                    ? []
+                    : allRooms!.map((RoomModel value) {
+                        return DropdownMenuItem<String>(
+                          value: value.id.toString(),
+                          child: Text(value.title),
+                        );
+                      }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectedRoomId = newValue;
+                    selectedId = int.tryParse(newValue!) ?? -1;
+                  });
+                  loadData();
+                },
               ),
               SizedBox(height: 20),
               SizedBox(
@@ -43,16 +77,10 @@ class _JoinRoomState extends State<JoinRoom> {
                 height: 50,
                 child: ElevatedButton(
                   onPressed: () async {
-                    if (idController.text.trim().isEmpty) {
-                      dialogs.showToast('Please type in your email.');
+                    if (selectedId != -1) {
+                      await _jrvm.joinRoom(context, widget.token, selectedId!);
                     } else {
-                      if (helperFunctions.isNumeric(idController.text.trim())) {
-                        await _jrvm.joinRoom(
-                          context,
-                          widget.token,
-                          idController.text.trim(),
-                        );
-                      }
+                      dialogs.showToast('Select room to join');
                     }
                   },
                   style: ButtonStyle(
@@ -73,7 +101,7 @@ class _JoinRoomState extends State<JoinRoom> {
             ],
           ),
         ),
-      ),
+      ),)
     );
   }
 }

@@ -12,6 +12,7 @@ class ConsultationsViewmodel {
   final ApiService _apiService = ApiService();
   List<UserModel>? users = [];
   List<RoomModel>? rooms = [];
+  List<RoomModel>? allRooms = [];
   Map<int, List<SlotModel>?> slotsInBlocks = {};
   List<BlockModel> blocks = [];
   Future<void> fetchData(String token, int roomId) async {
@@ -21,6 +22,7 @@ class ConsultationsViewmodel {
     slotsInBlocks = {};
     users = await _apiService.getUsers(token);
     rooms = await _apiService.getMyRooms(token);
+
     if (rooms != null) {
       if (rooms!.isEmpty) {
         return;
@@ -46,6 +48,10 @@ class ConsultationsViewmodel {
     await Future.wait(futures);
   }
 
+  Future<void> fetchAllRooms(String token) async {
+    allRooms = await _apiService.getAllRooms(token);
+  }
+
   UserModel? getUserByEmail(String emailToFind) {
     if (users != null) {
       for (var tmpUser in users!) {
@@ -69,11 +75,8 @@ class ConsultationsViewmodel {
     }
     return "";
   }
-  Future<bool> isTeacher(
-   
-    String token,
-    String email,
-  ) async {
+
+  Future<bool> isTeacher(String token, String email) async {
     try {
       String result = await _apiService.getRole(token, email);
       return result == "teacher" ? true : false;

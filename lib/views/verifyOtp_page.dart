@@ -46,7 +46,8 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _constants.bgLight,
-      body: Padding(
+      body: SafeArea(
+        child: Padding(
         padding: EdgeInsets.all(24.0),
         child: Column(
           children: [
@@ -106,7 +107,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
             ),
           ],
         ),
-      ),
+      ),)
     );
   }
 }

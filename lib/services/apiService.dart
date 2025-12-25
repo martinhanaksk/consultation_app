@@ -64,8 +64,7 @@ class ApiService {
     }
   }
 
-  Future<void> joinRoomById(String token, String sid) async {
-    int? id = int.tryParse(sid);
+  Future<void> joinRoomById(String token, int id) async {
     if (id != null) {
       final Uri url = Uri.parse('${_constants.url}/room/join?room_id=$id');
       final response = await http.post(

@@ -20,7 +20,8 @@ class _CreateRoomState extends State<CreateRoom> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _constants.bgLight,
-      body: Padding(
+      body:SafeArea(
+        child:  Padding(
         padding: const EdgeInsets.all(24.0),
         child: Center(
           child: Column(
@@ -31,7 +32,7 @@ class _CreateRoomState extends State<CreateRoom> {
             ],
           ),
         ),
-      ),
+      ),)
     );
   }
 }

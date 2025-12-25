@@ -10,7 +10,7 @@ import 'package:consultation_app/routes/appRouter.dart';
 class JoinRoomViewmodel {
   NotifyUserUtils dialogs = NotifyUserUtils();
   final ApiService _apiService = ApiService();
-  Future<void> joinRoom(BuildContext context,String token, String id) async {
+  Future<void> joinRoom(BuildContext context,String token, int id) async {
     try {
       await _apiService.joinRoomById(token, id);
       dialogs.showToast('Room joined.');

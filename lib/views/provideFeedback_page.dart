@@ -8,10 +8,11 @@ class ProvideFeedback extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _constants.bgLight,
-      body: Padding(
+      body: SafeArea(
+        child: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Center(child: Text("Provide Feedback")),
-      ),
+      ),)
     );
   }
 }

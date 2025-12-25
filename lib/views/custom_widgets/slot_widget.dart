@@ -43,7 +43,7 @@ class _SlotWidgetState extends State<SlotWidget> {
       children: [
         if (widget.slot.takenBy == null)
           Container(
-            padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+            padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
             width: 350,
             decoration: BoxDecoration(color: widget.constants.defaultLightGrey),
             child: Column(
@@ -65,7 +65,11 @@ class _SlotWidgetState extends State<SlotWidget> {
 
                     GestureDetector(
                       child: Container(
-                        color: widget.constants.defaultWhite,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(6)),
+                        ),
+
                         padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
                         child: Text("Take"),
                       ),
@@ -86,7 +90,7 @@ class _SlotWidgetState extends State<SlotWidget> {
         if (widget.slot.takenBy != null)
           widget.slot.takenBy == widget.userEmail
               ? Container(
-                  padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                  padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
                   width: 350,
                   decoration: BoxDecoration(
                     color: widget.constants.defaultWhite,
@@ -136,7 +140,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                   ),
                 )
               : Container(
-                  padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                  padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
                   width: 350,
                   decoration: BoxDecoration(
                     color: widget.constants.defaultWhite,

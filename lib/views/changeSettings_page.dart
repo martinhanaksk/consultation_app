@@ -8,9 +8,11 @@ class ChangeSettings extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _constants.bgLight,
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Center(child: Text("Change Settings")),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Center(child: Text("Change Settings")),
+        ),
       ),
     );
   }
