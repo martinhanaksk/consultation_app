@@ -43,7 +43,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   @override
   void initState() {
     super.initState();
-    emailController.text=widget.email;
+    emailController.text = widget.email;
   }
 
   @override
@@ -57,7 +57,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 150),
+              const SizedBox(height: 70),
               Center(
                 child: Text(
                   'Register',
@@ -162,9 +162,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         },
                   style: ButtonStyle(
                     backgroundColor: WidgetStateProperty.all(
-                      _isLoading
-                          ? const Color(0xFF10A64A).withOpacity(0.6)
-                          : const Color(0xFF10A64A),
+                      const Color(0xFF10A64A),
                     ),
                   ),
                   child: _isLoading

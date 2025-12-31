@@ -101,7 +101,7 @@ class _SliderMenuState extends State<SliderMenu> {
                     },
                   ),
                   SizedBox(height: 20),
-                  (isTeacher!)
+                  (isTeacher != null && isTeacher!)
                       ? Column(
                           children: [
                             GestureDetector(

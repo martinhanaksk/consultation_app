@@ -8,7 +8,7 @@ import 'package:overlay_kit/overlay_kit.dart';
 Constants _constants = Constants();
 void main() {
   runApp(const MyApp());
-  _constants.checkIfTestingServer(true);
+  _constants.checkIfTestingServer(false);
 }
 
 class MyApp extends StatelessWidget {
