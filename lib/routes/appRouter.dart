@@ -60,7 +60,7 @@ class AppRouter {
       case createRoom:
         final args = settings.arguments as Map<String, dynamic>;
         final token = args['token'] as String;
-        return MaterialPageRoute(builder: (_) => CreateRoom(token: token));
+        return MaterialPageRoute(builder: (_) => CreateRoom());
       case support:
         return MaterialPageRoute(builder: (_) => Support());
       case provideFeedback:

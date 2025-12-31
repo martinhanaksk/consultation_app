@@ -88,9 +88,7 @@ class _ConsultationsUserPageState extends State<ConsultationsStudentPage> {
     return Scaffold(
       appBar: AppBarMenu(),
       drawer: SliderMenu(
-        token: widget.token,
-        email: widget.email,
-        isTeacher: isTeacher,
+       
       ),
       backgroundColor: _constants.bgLight,
       body: SafeArea(

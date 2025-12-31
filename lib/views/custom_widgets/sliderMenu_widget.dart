@@ -1,18 +1,12 @@
 import 'package:consultation_app/routes/appRouter.dart';
 import 'package:consultation_app/services/userPreferences.dart';
 import 'package:consultation_app/utils/constants.dart';
+import 'package:consultation_app/views/consultationsStudent_page.dart';
+import 'package:consultation_app/views/consultationsTeacher_page.dart';
 import 'package:flutter/material.dart';
 
 class SliderMenu extends StatefulWidget {
-  final String token;
-  final String email;
-  final bool isTeacher;
-  const SliderMenu({
-    super.key,
-    required this.token,
-    required this.email,
-    required this.isTeacher,
-  });
+  const SliderMenu({super.key});
 
   @override
   State<SliderMenu> createState() => _SliderMenuState();
@@ -21,8 +15,34 @@ class SliderMenu extends StatefulWidget {
 class _SliderMenuState extends State<SliderMenu> {
   bool isOpen = false;
   UserPreferences _userPreferences = UserPreferences();
-
+  String? token = "";
+  String? email = "";
+  bool? isTeacher;
   Constants _constants = Constants();
+  @override
+  void initState() {
+    super.initState();
+    checkIfInSharedPreferences();
+  }
+
+  Future<bool> getIsTeacher() async {
+    String? role = await _userPreferences.getItem('role');
+    if (role == 'teacher') {
+      return true;
+    }
+    return false;
+  }
+
+  void checkIfInSharedPreferences() async {
+    token = await _userPreferences.getItem('token');
+    email = await _userPreferences.getItem('email');
+    bool isTeacherTemp = await getIsTeacher();
+    if (mounted) {
+      setState(() {
+        isTeacher = isTeacherTemp;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,11 +59,32 @@ class _SliderMenuState extends State<SliderMenu> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: 20),
-                  Image.asset(
-                    'assets/images/applogo.png',
+                  GestureDetector(
+                    child: Image.asset(
+                      'assets/images/applogo.png',
 
-                    width: 100,
-                    fit: BoxFit.cover,
+                      width: 100,
+                      fit: BoxFit.cover,
+                    ),
+                    onTap: () {
+                      isTeacher!
+                          ? Navigator.pushNamed(
+                              context,
+                              AppRouter.consultationsTeacherPage,
+                              arguments: ConsultationsTeacherPageArgs(
+                                token: token!,
+                                email: email!,
+                              ),
+                            )
+                          : Navigator.pushNamed(
+                              context,
+                              AppRouter.consultationsStudentPage,
+                              arguments: ConsultationsStudentPageArgs(
+                                token: token!,
+                                email: email!,
+                              ),
+                            );
+                    },
                   ),
 
                   SizedBox(height: 20),
@@ -55,12 +96,12 @@ class _SliderMenuState extends State<SliderMenu> {
                       Navigator.pushNamed(
                         context,
                         AppRouter.joinRoom,
-                        arguments: {'token': widget.token},
+                        arguments: {'token': token},
                       );
                     },
                   ),
                   SizedBox(height: 20),
-                  widget.isTeacher
+                  (isTeacher!)
                       ? Column(
                           children: [
                             GestureDetector(
@@ -74,10 +115,7 @@ class _SliderMenuState extends State<SliderMenu> {
                                 Navigator.pushNamed(
                                   context,
                                   AppRouter.createRoom,
-                                  arguments: {
-                                    'token': widget.token,
-                                    'email': widget.email,
-                                  },
+                                  arguments: {'token': token, 'email': email},
                                 );
                               },
                             ),

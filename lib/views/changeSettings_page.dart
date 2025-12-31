@@ -1,12 +1,48 @@
+import 'dart:ffi';
+
+import 'package:consultation_app/services/userPreferences.dart';
 import 'package:consultation_app/utils/constants.dart';
+import 'package:consultation_app/views/custom_widgets/appBarMenu_widget.dart';
+import 'package:consultation_app/views/custom_widgets/sliderMenu_widget.dart';
 import 'package:flutter/material.dart';
 
-class ChangeSettings extends StatelessWidget {
-  ChangeSettings({super.key});
+class ChangeSettings extends StatefulWidget {
+  const ChangeSettings({super.key});
+
+  @override
+  State<ChangeSettings> createState() => _ChangeSettingsState();
+}
+
+class _ChangeSettingsState extends State<ChangeSettings> {
   final Constants _constants = Constants();
+  String? token = "";
+  String? email = "";
+  bool? isTeacher;
+  UserPreferences _userPreferences = UserPreferences();
+  @override
+  void initState() {
+    super.initState();
+    checkIfInSharedPreferences();
+  }
+
+  void checkIfInSharedPreferences() async {
+     token = await _userPreferences.getItem('token');
+     email = await _userPreferences.getItem('email');
+    String? role = await _userPreferences.getItem('role');
+    if (role == 'teacher') {
+      isTeacher = true;
+    } else {
+      isTeacher = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBarMenu(),
+      drawer: SliderMenu(
+       
+      ),
       backgroundColor: _constants.bgLight,
       body: SafeArea(
         child: Padding(

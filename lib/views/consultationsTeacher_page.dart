@@ -37,7 +37,7 @@ class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
       ConsultationsViewmodel();
   final SlotViewmodel _slotViewmodel = SlotViewmodel();
   Map<int, List<SlotModel?>?> slotsInBlocks = {};
-  String selectedRoom = "1";
+  String? selectedRoom;
   List<RoomModel>? rooms = [];
   bool isLoading = false;
   bool isTeacher = false;
@@ -64,10 +64,15 @@ class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
     setState(() {
       isLoading = true;
     });
-    await _consultationsViewmodel.fetchData(
-      widget.token,
-      int.parse(selectedRoom),
-    );
+    if (selectedRoom != null) {
+      await _consultationsViewmodel.fetchData(
+        widget.token,
+        int.parse(selectedRoom!),
+      );
+    } else {
+      await _consultationsViewmodel.fetchData(widget.token, 1);
+    }
+
     setState(() {
       slotsInBlocks = _consultationsViewmodel.slotsInBlocks;
       rooms = _consultationsViewmodel.rooms;
@@ -84,11 +89,7 @@ class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBarMenu(),
-      drawer: SliderMenu(
-        token: widget.token,
-        email: widget.email,
-        isTeacher: isTeacher,
-      ),
+      drawer: SliderMenu(),
       backgroundColor: _constants.bgLight,
       body: SafeArea(
         child: isLoading
@@ -233,7 +234,10 @@ class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
                                                                 _slotViewmodel,
                                                             token: widget.token,
                                                             roomId:
-                                                                selectedRoom,
+                                                                selectedRoom ==
+                                                                    null
+                                                                ? "1"
+                                                                : selectedRoom!,
                                                             context: context,
                                                             loadData: () =>
                                                                 loadData(),
