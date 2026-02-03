@@ -1,6 +1,7 @@
 import 'package:consultation_app/routes/appRouter.dart';
 import 'package:consultation_app/services/userPreferences.dart';
 import 'package:consultation_app/utils/constants.dart';
+import 'package:consultation_app/utils/helperFunctions.dart';
 import 'package:consultation_app/utils/notifyUserUtils.dart';
 import 'package:consultation_app/utils/validator.dart';
 import 'package:consultation_app/viewmodels/emailInput_viewmodel.dart';
@@ -18,6 +19,7 @@ class EmailInputPage extends StatefulWidget {
 
 class _LoginPageState extends State<EmailInputPage> {
   final TextEditingController emailController = TextEditingController();
+  final HelperFunctions _helperFunctions = HelperFunctions();
   EmailInputViewmodel _lvm = EmailInputViewmodel();
   Constants _constants = Constants();
   NotifyUserUtils dialogs = NotifyUserUtils();
@@ -122,7 +124,9 @@ class _LoginPageState extends State<EmailInputPage> {
                       )) {
                         await _lvm.continueToVerify(
                           context,
-                          emailController.text.trim(),
+                          _helperFunctions.trimText(
+                            emailController.text.trim(),
+                          ),
                           isChecked,
                         );
                       }

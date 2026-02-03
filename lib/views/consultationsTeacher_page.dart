@@ -1,5 +1,6 @@
 import 'package:consultation_app/models/room_model.dart';
 import 'package:consultation_app/models/slot_model.dart';
+import 'package:consultation_app/routes/appRouter.dart';
 import 'package:consultation_app/utils/constants.dart';
 import 'package:consultation_app/utils/helperFunctions.dart';
 import 'package:consultation_app/viewmodels/consultations_viewmodel.dart';
@@ -42,6 +43,7 @@ class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
   List<RoomModel>? rooms = [];
   bool isLoading = false;
   bool isTeacher = false;
+  String roomId = "";
   @override
   void initState() {
     super.initState();
@@ -78,12 +80,22 @@ class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
       slotsInBlocks = _consultationsViewmodel.slotsInBlocks;
       rooms = _consultationsViewmodel.rooms;
       if (rooms != null) {
-        firstRoom = rooms![0].id.toString();
-        if (rooms!.isEmpty) {
-          isLoading = false;
+        if (rooms!.isNotEmpty) {
+          firstRoom = rooms![0].id.toString();
+          if (roomId == "") {
+            if (firstRoom != null) {
+              roomId = firstRoom!;
+            }
+            if (selectedRoom != null) {
+              roomId = selectedRoom!;
+            }
+          }
+          if (rooms!.isEmpty) {
+            isLoading = false;
+          }
         }
+        isLoading = false;
       }
-      isLoading = false;
     });
   }
 
@@ -108,9 +120,22 @@ class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
                   child: Column(
                     children: [
                       SizedBox(height: 80),
-                      Text(
-                        "No rooms found.",
-                        style: TextStyle(fontSize: _constants.fontSizeBig),
+                      GestureDetector(
+                        child: Text(
+                          "Try joining room to get started.",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: _constants.fontSizeBig,
+                            color: _constants.primaryColor,
+                          ),
+                        ),
+                        onTap: () => {
+                          Navigator.pushNamed(
+                            context,
+                            AppRouter.joinRoom,
+                            arguments: {'token': widget.token},
+                          ),
+                        },
                       ),
                       SizedBox(height: 20),
                       SizedBox(
@@ -139,6 +164,8 @@ class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
                   ),
                 ),
               )
+            : roomId == ""
+            ? Text("")
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -172,9 +199,7 @@ class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
                                           iconEnabledColor:
                                               _constants.defaultDarkGrey,
                                           hint: Text("Select a Room"),
-                                          value: (rooms != null)
-                                              ? selectedRoom
-                                              : null,
+                                          value: selectedRoom,
                                           items: (rooms == null)
                                               ? []
                                               : rooms!.map((RoomModel value) {
@@ -205,7 +230,10 @@ class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
                                                 }).toList(),
                                           onChanged: (String? newValue) {
                                             setState(() {
-                                              selectedRoom = newValue!;
+                                              if (newValue != null) {
+                                                selectedRoom = newValue;
+                                                roomId = newValue;
+                                              }
                                             });
                                             loadData();
                                           },
@@ -230,6 +258,7 @@ class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
                                 return sortedEntries.map((block) {
                                   return Column(
                                     children: [
+                                      SizedBox(height: 10),
                                       Text(
                                         _consultationsViewmodel.getDateOfBlock(
                                           block.key,
@@ -273,11 +302,7 @@ class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
                                                                   _slotViewmodel,
                                                               token:
                                                                   widget.token,
-                                                              roomId:
-                                                                  selectedRoom ==
-                                                                      null
-                                                                  ? firstRoom!
-                                                                  : selectedRoom!,
+                                                              roomId: roomId,
                                                               context: context,
                                                               loadData: () =>
                                                                   loadData(),

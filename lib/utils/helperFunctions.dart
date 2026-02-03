@@ -32,6 +32,20 @@ class HelperFunctions {
     return "$weekday $dayMonth";
   }
 
+  String trimText(String text) {
+    return text.trim();
+  }
+
+  String cropText(String text) {
+    String trimmed = text.trim();
+    int maxTextLength = 12;
+    if (trimmed.length > maxTextLength) {
+      return '${trimmed.substring(0, maxTextLength)}...';
+    }
+
+    return trimmed;
+  }
+
   bool isNumeric(String s) {
     if (s == null) {
       return false;

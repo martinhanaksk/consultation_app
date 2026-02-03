@@ -56,6 +56,7 @@ class ConsultationsViewmodel {
     if (users != null) {
       for (var tmpUser in users!) {
         if (tmpUser.email == emailToFind) {
+          print(tmpUser.name);
           return tmpUser;
         } else {}
       }

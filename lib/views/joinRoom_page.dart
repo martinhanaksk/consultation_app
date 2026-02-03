@@ -25,6 +25,7 @@ class _JoinRoomState extends State<JoinRoom> {
   List<RoomModel>? allRooms = [];
   int? selectedId;
   final TextEditingController idController = TextEditingController();
+
   final ConsultationsViewmodel _consultationsViewmodel =
       ConsultationsViewmodel();
   @override
@@ -54,27 +55,79 @@ class _JoinRoomState extends State<JoinRoom> {
             child: Column(
               children: [
                 SizedBox(height: 50),
-                Text("Join Room"),
-                SizedBox(height: 20),
-                DropdownButton<String>(
-                  hint: Text("Select a Room"),
-                  value: selectedRoomId,
-                  items: (allRooms == null)
-                      ? []
-                      : allRooms!.map((RoomModel value) {
-                          return DropdownMenuItem<String>(
-                            value: value.id.toString(),
-                            child: Text(value.title),
-                          );
-                        }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedRoomId = newValue;
-                      selectedId = int.tryParse(newValue!) ?? -1;
-                    });
-                    loadData();
-                  },
+                Text(
+                  "Join Room",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 50),
                 ),
+                SizedBox(height: 20),
+
+                Autocomplete<RoomModel>(
+                  displayStringForOption: (RoomModel option) => option.title,
+                  optionsBuilder: (TextEditingValue textEditingValue) {
+                    if (textEditingValue.text.isEmpty) {
+                      return allRooms ?? [];
+                    }
+                    return (allRooms ?? []).where((RoomModel room) {
+                      return room.title.toLowerCase().contains(
+                        textEditingValue.text.toLowerCase(),
+                      );
+                    });
+                  },
+                  onSelected: (RoomModel selection) {
+                    setState(() {
+                      selectedRoomId = selection.id.toString();
+                      selectedId = selection.id;
+                    });
+                  },
+                  fieldViewBuilder:
+                      (
+                        BuildContext context,
+                        TextEditingController roomController,
+                        FocusNode focusNode,
+                        VoidCallback onFieldSubmitted,
+                      ) {
+                        return TextField(
+                          controller: roomController,
+                          focusNode: focusNode,
+                          decoration: const InputDecoration(
+                            hintText: 'Room name',
+                            border: OutlineInputBorder(),
+                          ),
+                        );
+                      },
+                  optionsViewBuilder:
+                      (
+                        BuildContext context,
+                        AutocompleteOnSelected<RoomModel> onSelected,
+                        Iterable<RoomModel> options,
+                      ) {
+                        return Align(
+                          alignment: Alignment.topLeft,
+                          child: Material(
+                            elevation: 4.0,
+                            child: Container(
+                              constraints: BoxConstraints(maxHeight: 300),
+                              child: ListView.builder(
+                                padding: EdgeInsets.all(8.0),
+                                itemCount: options.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  final RoomModel option = options.elementAt(
+                                    index,
+                                  );
+                                  return GestureDetector(
+                                    onTap: () {
+                                      onSelected(option);
+                                    },
+                                    child: ListTile(title: Text(option.title)),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                ),
+
                 SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,

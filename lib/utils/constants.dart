@@ -22,7 +22,7 @@ class Constants {
       url = "https://consultations-backend.onrender.com";
     } else {
       testing = false;
-      url = "http://office-hours.fit.vutbr.cz:8000";
+      url = "https://office-hours.fit.vutbr.cz/dev/";
     }
   }
   //school server:

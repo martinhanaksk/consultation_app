@@ -109,6 +109,7 @@ class EmailInputViewmodel {
       redirectToRegister(context, email);
     } else {
       dialogs.showToast('Failed to send OTP. Try again.');
+      //here not found
     }
   }
 

@@ -1,5 +1,6 @@
 import 'package:consultation_app/models/user_model.dart';
 import 'package:consultation_app/utils/constants.dart';
+import 'package:consultation_app/utils/helperFunctions.dart';
 import 'package:consultation_app/utils/notifyUserUtils.dart';
 import 'package:consultation_app/utils/validator.dart';
 import 'package:consultation_app/viewmodels/register_viewmodel.dart';
@@ -16,6 +17,7 @@ class RegistrationPage extends StatefulWidget {
 }
 
 class _RegistrationPageState extends State<RegistrationPage> {
+  final HelperFunctions _helperFunctions = HelperFunctions();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController surnameController = TextEditingController();
   final TextEditingController visitReasonController = TextEditingController();
@@ -143,11 +145,19 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
                             try {
                               UserModel um = UserModel(
-                                email: emailController.text.trim(),
-                                name: nameController.text.trim(),
-                                surname: surnameController.text.trim(),
+                                email: _helperFunctions.trimText(
+                                  emailController.text.trim(),
+                                ),
+                                name: _helperFunctions.trimText(
+                                  nameController.text.trim(),
+                                ),
+                                surname: _helperFunctions.trimText(
+                                  surnameController.text.trim(),
+                                ),
                                 role: '',
-                                visitReason: visitReasonController.text.trim(),
+                                visitReason: _helperFunctions.trimText(
+                                  visitReasonController.text.trim(),
+                                ),
                                 visible: 0,
                               );
                               await _rvm.registerUser(context, um);

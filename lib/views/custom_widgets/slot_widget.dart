@@ -36,6 +36,8 @@ class SlotWidget extends StatefulWidget {
   State<SlotWidget> createState() => _SlotWidgetState();
 }
 
+final HelperFunctions _helperFunctions = HelperFunctions();
+
 class _SlotWidgetState extends State<SlotWidget> {
   @override
   Widget build(BuildContext context) {
@@ -104,7 +106,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                             widget.slot.startTime.split(":")[0] +
                                 ":" +
                                 widget.slot.startTime.split(":")[1] +
-                                " ${widget.consultationsViewmodel.getUserByEmail(widget.slot.takenBy!)!.name} ${widget.consultationsViewmodel.getUserByEmail(widget.slot.takenBy!)!.surname}",
+                                " ${_helperFunctions.cropText(widget.slot.takenByName!)}",
                             style: TextStyle(
                               color: widget.constants.defaultDarkGrey,
                               fontSize: widget.constants.fontSizeSmall,
@@ -154,7 +156,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                             widget.slot.startTime.split(":")[0] +
                                 ":" +
                                 widget.slot.startTime.split(":")[1] +
-                                " ${widget.consultationsViewmodel.getUserByEmail(widget.slot.takenBy!)!.name} ${widget.consultationsViewmodel.getUserByEmail(widget.slot.takenBy!)!.surname}",
+                                " ${_helperFunctions.cropText(widget.slot.takenByName!)}",
                             style: TextStyle(
                               color: widget.constants.defaultDarkGrey,
                               fontSize: widget.constants.fontSizeSmall,

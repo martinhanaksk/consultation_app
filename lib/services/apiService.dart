@@ -228,7 +228,11 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      return data['role'].toString();
+      if (data['role'] != null) {
+        return data['role'].toString();
+      } else {
+        return 'student';
+      }
     } else {
       throw Exception('Failed to fetch role: ${response.statusCode}');
     }
