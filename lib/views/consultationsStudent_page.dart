@@ -119,9 +119,10 @@ class _ConsultationsUserPageState extends State<ConsultationsStudentPage> {
                       SizedBox(height: 80),
                       GestureDetector(
                         child: Text(
-                          "Try joining room to get started.",textAlign: TextAlign.center,
+                          "Try joining room to get started.",
+                          textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: _constants.fontSizeBig,
+                            fontSize: _constants.fontSizeMedium,
                             color: _constants.primaryColor,
                           ),
                         ),
