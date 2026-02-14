@@ -1,4 +1,4 @@
-import 'package:consultation_app/routes/appRouter.dart';
+import 'package:consultation_app/routes/app_router.dart';
 import 'package:consultation_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 

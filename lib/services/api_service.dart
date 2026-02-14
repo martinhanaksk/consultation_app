@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:consultation_app/services/userPreferences.dart';
+import 'package:consultation_app/services/user_preferences.dart';
 import 'package:consultation_app/utils/constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:consultation_app/models/user_model.dart';
@@ -228,9 +228,13 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      if (data['role'] != null) {
-        return data['role'].toString();
-      } else {
+      if (data != null) {
+        if (data['role'] != null) {
+          return data['role'].toString();
+        } else {
+          return 'student';
+        }
+      }else {
         return 'student';
       }
     } else {

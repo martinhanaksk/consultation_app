@@ -1,5 +1,5 @@
 import 'package:consultation_app/utils/constants.dart';
-import 'package:consultation_app/viewmodels/verifyOtp_viewmodel.dart';
+import 'package:consultation_app/viewmodels/verify_otp_viewmodel.dart';
 import 'package:flutter/material.dart';
 
 class VerifyOtpPageArgs {

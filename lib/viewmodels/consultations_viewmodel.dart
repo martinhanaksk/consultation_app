@@ -2,9 +2,9 @@ import 'package:consultation_app/models/block_model.dart';
 import 'package:consultation_app/models/room_model.dart';
 import 'package:consultation_app/models/slot_model.dart';
 import 'package:consultation_app/models/user_model.dart';
-import 'package:consultation_app/services/apiService.dart';
-import 'package:consultation_app/utils/notifyUserUtils.dart';
-import 'package:consultation_app/utils/helperFunctions.dart';
+import 'package:consultation_app/services/api_service.dart';
+import 'package:consultation_app/utils/notify_user_utils.dart';
+import 'package:consultation_app/utils/helper_functions.dart';
 
 class ConsultationsViewmodel {
   NotifyUserUtils dialogs = NotifyUserUtils();
@@ -16,36 +16,53 @@ class ConsultationsViewmodel {
   Map<int, List<SlotModel>?> slotsInBlocks = {};
   List<BlockModel> blocks = [];
   Future<void> fetchData(String token, int roomId) async {
-    users = [];
-    rooms = [];
-    blocks = [];
-    slotsInBlocks = {};
-    users = await _apiService.getUsers(token);
-    rooms = await _apiService.getMyRooms(token);
+    bool connected = await _helperFunctions.handleIsInternetConnection();
+    if (!connected) {
+      dialogs.showToast('Please connect to internet.');
+    } else {
+      users = [];
+      rooms = [];
+      blocks = [];
+      slotsInBlocks = {};
+      users = await _apiService.getUsers(token);
+      rooms = await _apiService.getMyRooms(token);
 
-    if (rooms != null) {
-      if (rooms!.isEmpty) {
-        return;
-      }
-    }
-    blocks = await _apiService.getBlocks(token, roomId);
-    //to get slots parallel
-    List<Future<void>> futures = [];
-    for (var block in blocks) {
-      futures.add(() async {
-        final slots = await _apiService.getSlotsForBlock(block.id, token);
-        if (slots != null) {
-          slots.sort((a, b) {
-            return _helperFunctions.compareTimeStringsDesc(
-              a.startTime,
-              b.startTime,
-            );
-          });
+      if (rooms != null) {
+        if (rooms!.isEmpty) {
+          return;
         }
-        slotsInBlocks[block.id] = slots;
-      }());
+      }
+      blocks = await _apiService.getBlocks(token, roomId);
+      blocks.sort((a, b) {
+        return a.date.compareTo(b.date);
+      });
+      DateTime now = DateTime.now();
+      bool removedItem = true;
+      while (removedItem) {
+        removedItem = false;
+        for (int i = 0; i < blocks.length; i++) {
+          if (!blocks[i].date.isAfter(now)) {
+            removedItem = true;
+            blocks.remove(blocks[i]);
+          }
+        }
+      }
+
+      //to get slots parallel
+      List<Future<void>> futures = [];
+      for (var block in blocks) {
+        futures.add(() async {
+          final slots = await _apiService.getSlotsForBlock(block.id, token);
+          if (slots != null) {
+            slots.sort((a, b) {
+              return a.startTime.compareTo(b.startTime);
+            });
+          }
+          slotsInBlocks[block.id] = slots;
+        }());
+      }
+      await Future.wait(futures);
     }
-    await Future.wait(futures);
   }
 
   Future<void> fetchAllRooms(String token) async {
@@ -56,7 +73,6 @@ class ConsultationsViewmodel {
     if (users != null) {
       for (var tmpUser in users!) {
         if (tmpUser.email == emailToFind) {
-          print(tmpUser.name);
           return tmpUser;
         } else {}
       }

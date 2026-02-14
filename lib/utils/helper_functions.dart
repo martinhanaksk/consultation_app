@@ -1,6 +1,18 @@
 import 'package:intl/intl.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 class HelperFunctions {
+  Future<bool> handleIsInternetConnection() async {
+    final List<ConnectivityResult> connectivityResult = await Connectivity()
+        .checkConnectivity();
+
+    if (connectivityResult.contains(ConnectivityResult.none)) {
+      return false;
+    }
+
+    return true;
+  }
+
   String dateTimeToString(DateTime dateTime) {
     return dateTime.toIso8601String().split('.').first;
   }
@@ -17,9 +29,10 @@ class HelperFunctions {
 
     final d1 = toDuration(t1);
     final d2 = toDuration(t2);
-
-    // descending: return positive if d2 > d1
-    return d1.compareTo(d2);
+    //is t1>t2?
+    print("AA");
+    print(d2.compareTo(d1));
+    return d2.compareTo(d1);
   }
 
   String getTimeOnlySimple(DateTime dateTime) {

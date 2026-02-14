@@ -1,7 +1,7 @@
 import 'package:consultation_app/models/user_model.dart';
 import 'package:consultation_app/utils/constants.dart';
-import 'package:consultation_app/utils/helperFunctions.dart';
-import 'package:consultation_app/utils/notifyUserUtils.dart';
+import 'package:consultation_app/utils/helper_functions.dart';
+import 'package:consultation_app/utils/notify_user_utils.dart';
 import 'package:consultation_app/utils/validator.dart';
 import 'package:consultation_app/viewmodels/register_viewmodel.dart';
 import 'package:flutter/material.dart';

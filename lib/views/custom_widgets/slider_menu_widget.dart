@@ -1,8 +1,10 @@
-import 'package:consultation_app/routes/appRouter.dart';
-import 'package:consultation_app/services/userPreferences.dart';
+import 'package:consultation_app/routes/app_router.dart';
+import 'package:consultation_app/services/user_preferences.dart';
 import 'package:consultation_app/utils/constants.dart';
-import 'package:consultation_app/views/consultationsStudent_page.dart';
-import 'package:consultation_app/views/consultationsTeacher_page.dart';
+import 'package:consultation_app/utils/helper_functions.dart';
+import 'package:consultation_app/utils/notify_user_utils.dart';
+import 'package:consultation_app/views/consultations_student_page.dart';
+import 'package:consultation_app/views/consultations_teacher_page.dart';
 import 'package:flutter/material.dart';
 
 class SliderMenu extends StatefulWidget {
@@ -15,6 +17,8 @@ class SliderMenu extends StatefulWidget {
 class _SliderMenuState extends State<SliderMenu> {
   bool isOpen = false;
   UserPreferences _userPreferences = UserPreferences();
+  NotifyUserUtils dialogs = NotifyUserUtils();
+  HelperFunctions helperFunctions = HelperFunctions();
   String? token = "";
   String? email = "";
   bool? isTeacher;
@@ -36,11 +40,15 @@ class _SliderMenuState extends State<SliderMenu> {
   void checkIfInSharedPreferences() async {
     token = await _userPreferences.getItem('token');
     email = await _userPreferences.getItem('email');
-    bool isTeacherTemp = await getIsTeacher();
-    if (mounted) {
-      setState(() {
-        isTeacher = isTeacherTemp;
-      });
+    if (!await helperFunctions.handleIsInternetConnection()) {
+      dialogs.showToast('Please connect to internet.');
+    } else {
+      bool isTeacherTemp = await getIsTeacher();
+      if (mounted) {
+        setState(() {
+          isTeacher = isTeacherTemp;
+        });
+      }
     }
   }
 

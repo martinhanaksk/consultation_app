@@ -1,7 +1,7 @@
-import 'package:consultation_app/services/userPreferences.dart';
+import 'package:consultation_app/services/user_preferences.dart';
 import 'package:consultation_app/utils/constants.dart';
-import 'package:consultation_app/views/custom_widgets/appBarMenu_widget.dart';
-import 'package:consultation_app/views/custom_widgets/sliderMenu_widget.dart';
+import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
+import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
 import 'package:flutter/material.dart';
 
 class CreateRoom extends StatefulWidget {

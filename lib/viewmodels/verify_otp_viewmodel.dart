@@ -1,12 +1,12 @@
-import 'package:consultation_app/services/apiService.dart';
-import 'package:consultation_app/services/userPreferences.dart';
-import 'package:consultation_app/utils/notifyUserUtils.dart';
-import 'package:consultation_app/views/consultationsStudent_page.dart';
-import 'package:consultation_app/views/consultationsTeacher_page.dart';
+import 'package:consultation_app/services/api_service.dart';
+import 'package:consultation_app/services/user_preferences.dart';
+import 'package:consultation_app/utils/notify_user_utils.dart';
+import 'package:consultation_app/views/consultations_student_page.dart';
+import 'package:consultation_app/views/consultations_teacher_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:consultation_app/routes/appRouter.dart';
+import 'package:consultation_app/routes/app_router.dart';
 
 class VerifyOtpViewmodel {
   Future<void> connect(BuildContext context, String email, String otp,bool rememberMe) async {

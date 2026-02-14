@@ -1,4 +1,4 @@
-import 'package:consultation_app/utils/notifyUserUtils.dart';
+import 'package:consultation_app/utils/notify_user_utils.dart';
 import 'package:flutter/material.dart';
 
 class Validator {

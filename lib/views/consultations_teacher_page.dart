@@ -1,12 +1,14 @@
 import 'package:consultation_app/models/room_model.dart';
 import 'package:consultation_app/models/slot_model.dart';
-import 'package:consultation_app/routes/appRouter.dart';
+import 'package:consultation_app/routes/app_router.dart';
+import 'package:consultation_app/services/user_preferences.dart';
 import 'package:consultation_app/utils/constants.dart';
-import 'package:consultation_app/utils/helperFunctions.dart';
+import 'package:consultation_app/utils/helper_functions.dart';
+import 'package:consultation_app/utils/notify_user_utils.dart';
 import 'package:consultation_app/viewmodels/consultations_viewmodel.dart';
 import 'package:consultation_app/viewmodels/slot_viewmodel.dart';
-import 'package:consultation_app/views/custom_widgets/sliderMenu_widget.dart';
-import 'package:consultation_app/views/custom_widgets/appBarMenu_widget.dart';
+import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
+import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slot_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -33,9 +35,11 @@ class ConsultationsTeacherPage extends StatefulWidget {
 class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
   final TextEditingController emailController = TextEditingController();
   final Constants _constants = Constants();
+  NotifyUserUtils dialogs = NotifyUserUtils();
   HelperFunctions helperFunctions = HelperFunctions();
   final ConsultationsViewmodel _consultationsViewmodel =
       ConsultationsViewmodel();
+  UserPreferences _userPreferences = UserPreferences();
   final SlotViewmodel _slotViewmodel = SlotViewmodel();
   Map<int, List<SlotModel?>?> slotsInBlocks = {};
   String? selectedRoom;
@@ -49,17 +53,33 @@ class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
     super.initState();
     _checkRole();
     loadData();
+    checkIfValidToken();
+  }
+
+  void checkIfValidToken() async {
+    if (widget.token == "") {
+      await _userPreferences.removeItem('token');
+      await _userPreferences.removeItem('email');
+      await _userPreferences.removeItem('role');
+      dialogs.showToast('Session expired.');
+      // Navigate to login and clear all previous routes
+      Navigator.pushNamed(context, AppRouter.login);
+    }
   }
 
   void _checkRole() async {
-    bool result = await _consultationsViewmodel.isTeacher(
-      widget.token,
-      widget.email,
-    );
-    if (mounted) {
-      setState(() {
-        isTeacher = result;
-      });
+    if (!await helperFunctions.handleIsInternetConnection()) {
+      dialogs.showToast('Please connect to internet.');
+    } else {
+      bool result = await _consultationsViewmodel.isTeacher(
+        widget.token,
+        widget.email,
+      );
+      if (mounted) {
+        setState(() {
+          isTeacher = result;
+        });
+      }
     }
   }
 
@@ -67,12 +87,12 @@ class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
     setState(() {
       isLoading = true;
     });
-    if (selectedRoom != null) {
+    if (selectedRoom != null) { checkIfValidToken();
       await _consultationsViewmodel.fetchData(
         widget.token,
         int.parse(selectedRoom!),
       );
-    } else {
+    } else { checkIfValidToken();
       await _consultationsViewmodel.fetchData(widget.token, 1);
     }
 
@@ -278,7 +298,7 @@ class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
                                               decoration: BoxDecoration(
                                                 color: Colors.white,
                                                 borderRadius: BorderRadius.all(
-                                                  Radius.circular(10),
+                                                  Radius.circular(20),
                                                 ),
                                               ),
                                               child: Column(

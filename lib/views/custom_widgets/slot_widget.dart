@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:consultation_app/models/slot_model.dart';
 import 'package:consultation_app/utils/constants.dart';
-import 'package:consultation_app/utils/helperFunctions.dart';
+import 'package:consultation_app/utils/helper_functions.dart';
 import 'package:consultation_app/viewmodels/consultations_viewmodel.dart';
 import 'package:consultation_app/viewmodels/slot_viewmodel.dart';
 

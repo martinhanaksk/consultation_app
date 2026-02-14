@@ -1,12 +1,12 @@
-import 'package:consultation_app/views/consultationsStudent_page.dart';
-import 'package:consultation_app/views/consultationsTeacher_page.dart';
-import 'package:consultation_app/views/createRoom_widget.dart';
-import 'package:consultation_app/views/emailInput_page.dart';
-import 'package:consultation_app/views/provideFeedback_page.dart';
-import 'package:consultation_app/views/joinRoom_page.dart';
-import 'package:consultation_app/views/changeSettings_page.dart';
+import 'package:consultation_app/views/consultations_student_page.dart';
+import 'package:consultation_app/views/consultations_teacher_page.dart';
+import 'package:consultation_app/views/create_room_widget.dart';
+import 'package:consultation_app/views/email_input_page.dart';
+import 'package:consultation_app/views/provide_feedback_page.dart';
+import 'package:consultation_app/views/join_room_page.dart';
+import 'package:consultation_app/views/change_settings_page.dart';
 import 'package:consultation_app/views/support_page.dart';
-import 'package:consultation_app/views/verifyOtp_page.dart';
+import 'package:consultation_app/views/verify_otp_page.dart';
 import 'package:consultation_app/views/registration_page.dart';
 import 'package:flutter/material.dart';
 
@@ -22,6 +22,7 @@ class AppRouter {
   static const String changeSettings = '/changeSettings';
   static const String consultationsStudentPage = '/consultationsUserPage';
   static const String consultationsTeacherPage = '/consultationsTeacherPage';
+
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case register:
@@ -58,8 +59,6 @@ class AppRouter {
         final token = args['token'] as String;
         return MaterialPageRoute(builder: (_) => JoinRoom(token: token));
       case createRoom:
-        final args = settings.arguments as Map<String, dynamic>;
-        final token = args['token'] as String;
         return MaterialPageRoute(builder: (_) => CreateRoom());
       case support:
         return MaterialPageRoute(builder: (_) => Support());

@@ -1,21 +1,32 @@
+import 'package:consultation_app/services/user_preferences.dart';
 import 'package:consultation_app/utils/constants.dart';
-import 'package:consultation_app/utils/notifyUserUtils.dart';
-import 'package:consultation_app/views/verifyOtp_page.dart';
+import 'package:consultation_app/utils/notify_user_utils.dart';
+import 'package:consultation_app/views/consultations_student_page.dart';
+import 'package:consultation_app/views/consultations_teacher_page.dart';
+import 'package:consultation_app/views/verify_otp_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:consultation_app/routes/appRouter.dart';
+import 'package:consultation_app/routes/app_router.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
-class EmailInputViewmodel {
-  NotifyUserUtils dialogs = NotifyUserUtils();
+class EmailInputViewModel extends ChangeNotifier {
+  NotifyUserUtils _dialogs = NotifyUserUtils();
   Constants _constants = Constants();
+  UserPreferences _userPreferences = UserPreferences();
+  bool isLoading = false;
+  bool isChecked = false;
+  String? errorMessage;
+  String email = '';
 
   Future<void> continueToVerify(
     BuildContext context,
     String email,
     bool rememberMe,
   ) async {
-    dialogs.showToast("Checking email...");
+    isLoading = true;
+    notifyListeners();
+    _dialogs.showToast("Checking email...");
     try {
       final response = await http.post(
         Uri.parse('${_constants.url}/auth/request-login-otp'),
@@ -28,7 +39,44 @@ class EmailInputViewmodel {
         handleServer(response, context, email, rememberMe);
       }
     } catch (e) {
-      dialogs.showToast("Please, check your internet connection.");
+      _dialogs.showToast("Please, check your internet connection.");
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  void checkIfInSharedPreferences(BuildContext context) async {
+    String? token = await _userPreferences.getItem('token');
+    String? email = await _userPreferences.getItem('email');
+    String? role = await _userPreferences.getItem('role');
+    if (token != null &&
+        email != null &&
+        role != null &&
+        role.isNotEmpty &&
+        token.isNotEmpty &&
+        email.isNotEmpty) {
+      bool isExpired = JwtDecoder.isExpired(token);
+
+      if (!isExpired) {
+        if (role == 'teacher') {
+          Navigator.pushNamed(
+            context,
+            AppRouter.consultationsTeacherPage,
+            arguments: ConsultationsTeacherPageArgs(token: token, email: email),
+          );
+        } else if (role == 'student') {
+          Navigator.pushNamed(
+            context,
+            AppRouter.consultationsStudentPage,
+            arguments: ConsultationsStudentPageArgs(token: token, email: email),
+          );
+        }
+      } else {
+        await _userPreferences.removeItem('token');
+        await _userPreferences.removeItem('email');
+        await _userPreferences.removeItem('role');
+      }
     }
   }
 
@@ -60,7 +108,6 @@ class EmailInputViewmodel {
     bool rememberMe,
   ) async {
     if (response.statusCode == 200) {
-      //Navigator.pop(context);
       Navigator.pushNamed(
         context,
         AppRouter.verifyOtp,
@@ -96,21 +143,29 @@ class EmailInputViewmodel {
             ),
           );
         } else {
-          dialogs.showToast(
+          _dialogs.showToast(
             'Failed to send OTP. Server error: ${redirectResponse.statusCode}',
           );
         }
       } else {
-        dialogs.showToast(
+        _dialogs.showToast(
           'Server configuration issue. Please try again later.',
         );
       }
     } else if (response.statusCode == 400) {
       redirectToRegister(context, email);
     } else {
-      dialogs.showToast('Failed to send OTP. Try again.');
-      //here not found
+      _dialogs.showToast('Failed to send OTP. Try again.');
     }
+  }
+
+  void updateEmail(String value) {
+    email = value;
+  }
+
+  void toggleRememberMe(bool? value) {
+    isChecked = value ?? false;
+    notifyListeners();
   }
 
   void redirectToRegister(BuildContext context, String email) {
