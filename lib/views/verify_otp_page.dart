@@ -1,14 +1,15 @@
+import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/utils/constants.dart';
 import 'package:consultation_app/viewmodels/verify_otp_viewmodel.dart';
 import 'package:flutter/material.dart';
 
 class VerifyOtpPageArgs {
   final String email;
-  final String testingToken;
+  final String token;
   final bool rememberMe;
   VerifyOtpPageArgs({
     required this.email,
-    required this.testingToken,
+    required this.token,
     required this.rememberMe,
   });
 }
@@ -31,7 +32,6 @@ class VerifyOtpPage extends StatefulWidget {
 class _VerifyOtpPageState extends State<VerifyOtpPage> {
   final TextEditingController otpcontroller = TextEditingController();
   final VerifyOtpViewmodel _vovm = VerifyOtpViewmodel();
-  final Constants _constants = Constants();
   @override
   void initState() {
     super.initState();
@@ -45,7 +45,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _constants.bgLight,
+      backgroundColor: constants.bgLight,
       body: SafeArea(
         child: Padding(
         padding: EdgeInsets.all(24.0),
@@ -92,7 +92,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                 },
                 style: ButtonStyle(
                   backgroundColor: WidgetStateProperty.all(
-                    _constants.primaryColor,
+                    constants.primaryColor,
                   ),
                 ),
                 child: Text(

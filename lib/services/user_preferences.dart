@@ -6,9 +6,12 @@ class UserPreferences {
     await prefs.setString(key, value);
   }
 
-  Future<String?> getItem(String key) async {
+  Future<String> getItem(String key) async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(key);
+    if (prefs.getString(key) == null) {
+      return "";
+    }
+    return prefs.getString(key)!;
   }
 
   Future<String?> removeItem(String key) async {

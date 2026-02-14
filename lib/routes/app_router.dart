@@ -34,25 +34,27 @@ class AppRouter {
       case login:
         return MaterialPageRoute(builder: (_) => const EmailInputPage());
       case consultationsStudentPage:
-        final args = settings.arguments as ConsultationsStudentPageArgs;
+        final args = settings.arguments as Map<String, dynamic>;
+        final token = args['token'] as String;
+        final email = args['email'] as String;
         return MaterialPageRoute(
-          builder: (_) =>
-              ConsultationsStudentPage(token: args.token, email: args.email),
+          builder: (_) => ConsultationsStudentPage(token: token, email: email),
         );
       case consultationsTeacherPage:
-        final args = settings.arguments as ConsultationsTeacherPageArgs;
+        final args = settings.arguments as Map<String, dynamic>;
+        final token = args['token'] as String;
+        final email = args['email'] as String;
         return MaterialPageRoute(
-          builder: (_) =>
-              ConsultationsTeacherPage(token: args.token, email: args.email),
+          builder: (_) => ConsultationsTeacherPage(token: token, email: email),
         );
       case verifyOtp:
-        final args = settings.arguments as VerifyOtpPageArgs;
+        final args = settings.arguments as Map<String, dynamic>;
+        final email = args['email'] as String;
+        final token = args['token'] as String;
+        final rememberMe = args['rememberMe'] as bool;
         return MaterialPageRoute(
-          builder: (_) => VerifyOtpPage(
-            email: args.email,
-            token: args.testingToken,
-            rememberMe: args.rememberMe,
-          ),
+          builder: (_) =>
+              VerifyOtpPage(email: email, token: token, rememberMe: rememberMe),
         );
       case joinRoom:
         final args = settings.arguments as Map<String, dynamic>;

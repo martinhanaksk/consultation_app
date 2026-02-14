@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:consultation_app/models/slot_model.dart';
-import 'package:consultation_app/utils/constants.dart';
-import 'package:consultation_app/utils/helper_functions.dart';
 import 'package:consultation_app/viewmodels/consultations_viewmodel.dart';
 import 'package:consultation_app/viewmodels/slot_viewmodel.dart';
-
+import 'package:consultation_app/setup.dart';
 class SlotWidget extends StatefulWidget {
   final String userEmail;
   final SlotModel slot;
-  final Constants constants;
-  final HelperFunctions helperFunctions;
   final ConsultationsViewmodel consultationsViewmodel;
   final SlotViewmodel slotViewmodel;
   final String token;
@@ -22,8 +18,6 @@ class SlotWidget extends StatefulWidget {
     super.key,
     required this.userEmail,
     required this.slot,
-    required this.constants,
-    required this.helperFunctions,
     required this.consultationsViewmodel,
     required this.slotViewmodel,
     required this.token,
@@ -36,8 +30,6 @@ class SlotWidget extends StatefulWidget {
   State<SlotWidget> createState() => _SlotWidgetState();
 }
 
-final HelperFunctions _helperFunctions = HelperFunctions();
-
 class _SlotWidgetState extends State<SlotWidget> {
   @override
   Widget build(BuildContext context) {
@@ -47,7 +39,7 @@ class _SlotWidgetState extends State<SlotWidget> {
           Container(
             padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
             width: 350,
-            decoration: BoxDecoration(color: widget.constants.defaultLightGrey),
+            decoration: BoxDecoration(color: constants.defaultLightGrey),
             child: Column(
               children: [
                 Row(
@@ -59,8 +51,8 @@ class _SlotWidgetState extends State<SlotWidget> {
                           widget.slot.startTime.split(":")[1],
 
                       style: TextStyle(
-                        color: widget.constants.defaultDarkGrey,
-                        fontSize: widget.constants.fontSizeSmall,
+                        color: constants.defaultDarkGrey,
+                        fontSize: constants.fontSizeSmall,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
@@ -95,7 +87,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                   padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
                   width: 350,
                   decoration: BoxDecoration(
-                    color: widget.constants.defaultWhite,
+                    color: constants.defaultWhite,
                   ),
                   child: Column(
                     children: [
@@ -106,10 +98,10 @@ class _SlotWidgetState extends State<SlotWidget> {
                             widget.slot.startTime.split(":")[0] +
                                 ":" +
                                 widget.slot.startTime.split(":")[1] +
-                                " ${_helperFunctions.cropText(widget.slot.takenByName!)}",
+                                " ${helpers.cropText(widget.slot.takenByName!)}",
                             style: TextStyle(
-                              color: widget.constants.defaultDarkGrey,
-                              fontSize: widget.constants.fontSizeSmall,
+                              color: constants.defaultDarkGrey,
+                              fontSize: constants.fontSizeSmall,
                               fontWeight: FontWeight.w400,
                             ),
                           ),
@@ -118,8 +110,8 @@ class _SlotWidgetState extends State<SlotWidget> {
                               Text(
                                 widget.slot.note ?? '',
                                 style: TextStyle(
-                                  color: widget.constants.defaultDarkGrey,
-                                  fontSize: widget.constants.fontSizeSmall,
+                                  color: constants.defaultDarkGrey,
+                                  fontSize: constants.fontSizeSmall,
                                   fontWeight: FontWeight.w400,
                                 ),
                               ),
@@ -145,7 +137,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                   padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
                   width: 350,
                   decoration: BoxDecoration(
-                    color: widget.constants.defaultWhite,
+                    color: constants.defaultWhite,
                   ),
                   child: Column(
                     children: [
@@ -156,10 +148,10 @@ class _SlotWidgetState extends State<SlotWidget> {
                             widget.slot.startTime.split(":")[0] +
                                 ":" +
                                 widget.slot.startTime.split(":")[1] +
-                                " ${_helperFunctions.cropText(widget.slot.takenByName!)}",
+                                " ${helpers.cropText(widget.slot.takenByName!)}",
                             style: TextStyle(
-                              color: widget.constants.defaultDarkGrey,
-                              fontSize: widget.constants.fontSizeSmall,
+                              color: constants.defaultDarkGrey,
+                              fontSize: constants.fontSizeSmall,
                               fontWeight: FontWeight.w400,
                             ),
                           ),
@@ -168,8 +160,8 @@ class _SlotWidgetState extends State<SlotWidget> {
                               Text(
                                 widget.slot.note ?? '',
                                 style: TextStyle(
-                                  color: widget.constants.defaultDarkGrey,
-                                  fontSize: widget.constants.fontSizeSmall,
+                                  color: constants.defaultDarkGrey,
+                                  fontSize: constants.fontSizeSmall,
                                   fontWeight: FontWeight.w400,
                                 ),
                               ),

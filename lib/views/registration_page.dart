@@ -1,8 +1,5 @@
 import 'package:consultation_app/models/user_model.dart';
-import 'package:consultation_app/utils/constants.dart';
-import 'package:consultation_app/utils/helper_functions.dart';
-import 'package:consultation_app/utils/notify_user_utils.dart';
-import 'package:consultation_app/utils/validator.dart';
+import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/register_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -17,28 +14,24 @@ class RegistrationPage extends StatefulWidget {
 }
 
 class _RegistrationPageState extends State<RegistrationPage> {
-  final HelperFunctions _helperFunctions = HelperFunctions();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController surnameController = TextEditingController();
   final TextEditingController visitReasonController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final RegisterViewmodel _rvm = RegisterViewmodel();
-  final Constants _constants = Constants();
-  final Validator _validator = Validator();
-  final NotifyUserUtils dialogs = NotifyUserUtils();
   bool _isLoading = false;
 
   Future<void> registerUser(String email) async {
     final email = emailController.text.trim();
     final response = await http.post(
-      Uri.parse('${_constants.url}/users/register'),
+      Uri.parse('${constants.url}/users/register'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'email': email}),
     );
     if (response.statusCode == 200) {
       //todo
     } else {
-      dialogs.showToast('Failed to send OTP. Try again.');
+      notify.showToast('Failed to send OTP. Try again.');
     }
   }
 
@@ -51,7 +44,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _constants.bgLight,
+      backgroundColor: constants.bgLight,
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: SingleChildScrollView(
@@ -115,27 +108,27 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   onPressed: _isLoading
                       ? null
                       : () async {
-                          if (_validator.validateNotEmpty(
+                          if (validator.validateNotEmpty(
                                 emailController.text.trim(),
                                 'E-mail',
                                 context,
                               ) &&
-                              _validator.validateNotEmpty(
+                              validator.validateNotEmpty(
                                 nameController.text.trim(),
                                 'Name',
                                 context,
                               ) &&
-                              _validator.validateNotEmpty(
+                              validator.validateNotEmpty(
                                 surnameController.text.trim(),
                                 'Surname',
                                 context,
                               ) &&
-                              _validator.validateNotEmpty(
+                              validator.validateNotEmpty(
                                 visitReasonController.text.trim(),
                                 'Visit reason',
                                 context,
                               ) &&
-                              _validator.validateEmail(
+                              validator.validateEmail(
                                 emailController.text.trim(),
                                 context,
                               )) {
@@ -145,17 +138,17 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
                             try {
                               UserModel um = UserModel(
-                                email: _helperFunctions.trimText(
+                                email: helpers.trimText(
                                   emailController.text.trim(),
                                 ),
-                                name: _helperFunctions.trimText(
+                                name: helpers.trimText(
                                   nameController.text.trim(),
                                 ),
-                                surname: _helperFunctions.trimText(
+                                surname: helpers.trimText(
                                   surnameController.text.trim(),
                                 ),
                                 role: '',
-                                visitReason: _helperFunctions.trimText(
+                                visitReason: helpers.trimText(
                                   visitReasonController.text.trim(),
                                 ),
                                 visible: 0,

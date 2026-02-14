@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-
+import 'package:consultation_app/setup.dart';
 class HelperFunctions {
   Future<bool> handleIsInternetConnection() async {
     final List<ConnectivityResult> connectivityResult = await Connectivity()
@@ -12,7 +12,16 @@ class HelperFunctions {
 
     return true;
   }
-
+Future<void> checkIfValidToken(String token) async {
+    if (token == "") {
+      await prefs.removeItem('token');
+      await prefs.removeItem('email');
+      await prefs.removeItem('role');
+      notify.showToast('Session expired.');
+      // Navigate to login and clear all previous routes
+      nav.toLogin();
+    }
+  }
   String dateTimeToString(DateTime dateTime) {
     return dateTime.toIso8601String().split('.').first;
   }
@@ -60,9 +69,7 @@ class HelperFunctions {
   }
 
   bool isNumeric(String s) {
-    if (s == null) {
-      return false;
-    }
+   
     return int.tryParse(s) != null;
   }
 }

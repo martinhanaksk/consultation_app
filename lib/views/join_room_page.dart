@@ -1,7 +1,5 @@
 import 'package:consultation_app/models/room_model.dart';
-import 'package:consultation_app/utils/constants.dart';
-import 'package:consultation_app/utils/helper_functions.dart';
-import 'package:consultation_app/utils/notify_user_utils.dart';
+import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/consultations_viewmodel.dart';
 import 'package:consultation_app/viewmodels/join_room_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
@@ -17,9 +15,6 @@ class JoinRoom extends StatefulWidget {
 }
 
 class _JoinRoomState extends State<JoinRoom> {
-  final Constants _constants = Constants();
-  HelperFunctions helperFunctions = HelperFunctions();
-  NotifyUserUtils dialogs = NotifyUserUtils();
   JoinRoomViewmodel _jrvm = JoinRoomViewmodel();
   String? selectedRoomId;
   List<RoomModel>? allRooms = [];
@@ -47,7 +42,7 @@ class _JoinRoomState extends State<JoinRoom> {
     return Scaffold(
       appBar: AppBarMenu(),
       drawer: SliderMenu(),
-      backgroundColor: _constants.bgLight,
+      backgroundColor: constants.bgLight,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -141,12 +136,12 @@ class _JoinRoomState extends State<JoinRoom> {
                           selectedId!,
                         );
                       } else {
-                        dialogs.showToast('Select room to join');
+                        notify.showToast('Select room to join');
                       }
                     },
                     style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(
-                        _constants.primaryColor,
+                        constants.primaryColor,
                       ),
                     ),
                     child: const Text(

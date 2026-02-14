@@ -1,11 +1,6 @@
-import 'package:consultation_app/models/user_model.dart';
 import 'package:consultation_app/services/api_service.dart';
 import 'package:consultation_app/utils/notify_user_utils.dart';
-import 'package:consultation_app/views/consultations_student_page.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:consultation_app/routes/app_router.dart';
 
 class JoinRoomViewmodel {
   NotifyUserUtils dialogs = NotifyUserUtils();

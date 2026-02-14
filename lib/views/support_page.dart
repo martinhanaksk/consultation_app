@@ -1,4 +1,5 @@
 import 'package:consultation_app/services/user_preferences.dart';
+import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/utils/constants.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
@@ -12,11 +13,9 @@ class Support extends StatefulWidget {
 }
 
 class _SupportState extends State<Support> {
-  final Constants _constants = Constants();
   String? token = "";
   String? email = "";
   bool? isTeacher;
-  UserPreferences _userPreferences = UserPreferences();
   @override
   void initState() {
     super.initState();
@@ -24,9 +23,9 @@ class _SupportState extends State<Support> {
   }
 
   void checkIfInSharedPreferences() async {
-    token = await _userPreferences.getItem('token');
-    email = await _userPreferences.getItem('email');
-    String? role = await _userPreferences.getItem('role');
+    token = await prefs.getItem('token');
+    email = await prefs.getItem('email');
+    String? role = await prefs.getItem('role');
     if (role == 'teacher') {
       isTeacher = true;
     } else {
@@ -41,7 +40,7 @@ class _SupportState extends State<Support> {
       drawer: SliderMenu(
        
       ),
-      backgroundColor: _constants.bgLight,
+      backgroundColor: constants.bgLight,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),

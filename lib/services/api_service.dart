@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:consultation_app/services/user_preferences.dart';
+import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/utils/constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:consultation_app/models/user_model.dart';
@@ -8,8 +9,6 @@ import 'package:consultation_app/models/block_model.dart';
 import 'package:consultation_app/models/slot_model.dart';
 
 class ApiService {
-  Constants _constants = Constants();
-  UserPreferences _userPreferences = UserPreferences();
   //verify
   Future<bool> connect(String email, String otp, bool rememberMe) async {
     final Uri url = getVerifyLoginOtpUrl(rememberMe);
@@ -22,9 +21,9 @@ class ApiService {
 
     final data = jsonDecode(response.body);
     if (response.statusCode == 200) {
-      await _userPreferences.saveItem('email', email);
-      await _userPreferences.saveItem('token', data['token']);
-      await _userPreferences.saveItem('role', data['role']);
+      await prefs.saveItem('email', email);
+      await prefs.saveItem('token', data['token']);
+      await prefs.saveItem('role', data['role']);
       return true;
     } else {
       return false;
@@ -33,14 +32,14 @@ class ApiService {
 
   Uri getVerifyLoginOtpUrl(bool rememberMe) {
     if (rememberMe) {
-      return Uri.parse('${_constants.url}/auth/verify-login-otp-long');
+      return Uri.parse('${constants.url}/auth/verify-login-otp-long');
     }
-    return Uri.parse('${_constants.url}/auth/verify-login-otp');
+    return Uri.parse('${constants.url}/auth/verify-login-otp');
   }
 
   //register
   Future<String> registerUser(UserModel um) async {
-    final Uri url = Uri.parse('${_constants.url}/users/register');
+    final Uri url = Uri.parse('${constants.url}/users/register');
 
     final response = await http.post(
       url,
@@ -55,9 +54,9 @@ class ApiService {
 
     final data = jsonDecode(response.body);
     if (response.statusCode == 200) {
-      await _userPreferences.saveItem('email', um.email);
-      await _userPreferences.saveItem('token', data['token']);
-      await _userPreferences.saveItem('role', data['role']);
+      await prefs.saveItem('email', um.email);
+      await prefs.saveItem('token', data['token']);
+      await prefs.saveItem('role', data['role']);
       return data['token'];
     } else {
       return '';
@@ -66,7 +65,7 @@ class ApiService {
 
   Future<void> joinRoomById(String token, int id) async {
     if (id != null) {
-      final Uri url = Uri.parse('${_constants.url}/room/join?room_id=$id');
+      final Uri url = Uri.parse('${constants.url}/room/join?room_id=$id');
       final response = await http.post(
         url,
         headers: {
@@ -82,7 +81,7 @@ class ApiService {
 
   //consultations
   Future<List<UserModel>> getUsers(String token) async {
-    final Uri url = Uri.parse('${_constants.url}/users');
+    final Uri url = Uri.parse('${constants.url}/users');
 
     final response = await http.get(
       url,
@@ -101,7 +100,7 @@ class ApiService {
   }
 
   Future<List<RoomModel>> getAllRooms(String token) async {
-    final Uri url = Uri.parse('${_constants.url}/room/get');
+    final Uri url = Uri.parse('${constants.url}/room/get');
     final response = await http.get(
       url,
       headers: {
@@ -119,7 +118,7 @@ class ApiService {
   }
 
   Future<List<RoomModel>> getMyRooms(String token) async {
-    final Uri urlToGetRooms = Uri.parse('${_constants.url}/users/my-rooms');
+    final Uri urlToGetRooms = Uri.parse('${constants.url}/users/my-rooms');
     final responseToGetRooms = await http.get(
       urlToGetRooms,
       headers: {
@@ -142,7 +141,7 @@ class ApiService {
   }
 
   Future<List<BlockModel>> getBlocks(String token, int roomId) async {
-    final Uri url = Uri.parse('${_constants.url}/block/get?room_id=$roomId');
+    final Uri url = Uri.parse('${constants.url}/block/get?room_id=$roomId');
 
     final response = await http.get(
       url,
@@ -163,7 +162,7 @@ class ApiService {
 
   //TODO http://office-hours.fit.vutbr.cz:8000/slot/get?id=1&option=True optional
   Future<List<SlotModel>?> getSlotsForBlock(int blockId, String token) async {
-    final Uri url = Uri.parse('${_constants.url}/slot/get?id=$blockId');
+    final Uri url = Uri.parse('${constants.url}/slot/get?id=$blockId');
 
     final response = await http.get(
       url,
@@ -185,7 +184,7 @@ class ApiService {
   //slot
   Future<void> takeSlot(String token, int id, String note) async {
     final Uri url = Uri.parse(
-      '${_constants.url}/slot/take?slot_id=$id&note=$note',
+      '${constants.url}/slot/take?slot_id=$id&note=$note',
     );
 
     final response = await http.post(
@@ -201,7 +200,7 @@ class ApiService {
   }
 
   Future<void> releaseSlot(String token, int id) async {
-    final Uri url = Uri.parse('${_constants.url}/slot/release?slot_id=$id');
+    final Uri url = Uri.parse('${constants.url}/slot/release?slot_id=$id');
 
     final response = await http.post(
       url,
@@ -216,7 +215,7 @@ class ApiService {
   }
 
   Future<String> getRole(String token, String email) async {
-    final Uri url = Uri.parse('${_constants.url}/users?email=$email');
+    final Uri url = Uri.parse('${constants.url}/users?email=$email');
 
     final response = await http.get(
       url,

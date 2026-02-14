@@ -1,11 +1,5 @@
-import 'package:consultation_app/routes/app_router.dart';
-import 'package:consultation_app/services/user_preferences.dart';
-import 'package:consultation_app/utils/constants.dart';
-import 'package:consultation_app/utils/helper_functions.dart';
-import 'package:consultation_app/utils/notify_user_utils.dart';
-import 'package:consultation_app/views/consultations_student_page.dart';
-import 'package:consultation_app/views/consultations_teacher_page.dart';
 import 'package:flutter/material.dart';
+import 'package:consultation_app/setup.dart';
 
 class SliderMenu extends StatefulWidget {
   const SliderMenu({super.key});
@@ -16,13 +10,9 @@ class SliderMenu extends StatefulWidget {
 
 class _SliderMenuState extends State<SliderMenu> {
   bool isOpen = false;
-  UserPreferences _userPreferences = UserPreferences();
-  NotifyUserUtils dialogs = NotifyUserUtils();
-  HelperFunctions helperFunctions = HelperFunctions();
-  String? token = "";
+  String token = "";
   String? email = "";
   bool? isTeacher;
-  Constants _constants = Constants();
   @override
   void initState() {
     super.initState();
@@ -30,7 +20,7 @@ class _SliderMenuState extends State<SliderMenu> {
   }
 
   Future<bool> getIsTeacher() async {
-    String? role = await _userPreferences.getItem('role');
+    String? role = await prefs.getItem('role');
     if (role == 'teacher') {
       return true;
     }
@@ -38,10 +28,11 @@ class _SliderMenuState extends State<SliderMenu> {
   }
 
   void checkIfInSharedPreferences() async {
-    token = await _userPreferences.getItem('token');
-    email = await _userPreferences.getItem('email');
-    if (!await helperFunctions.handleIsInternetConnection()) {
-      dialogs.showToast('Please connect to internet.');
+    token = await prefs.getItem('token');
+    helpers.checkIfValidToken(token);
+    email = await prefs.getItem('email');
+    if (!await helpers.handleIsInternetConnection()) {
+      notify.showToast('Please connect to internet.');
     } else {
       bool isTeacherTemp = await getIsTeacher();
       if (mounted) {
@@ -75,22 +66,15 @@ class _SliderMenuState extends State<SliderMenu> {
                       fit: BoxFit.cover,
                     ),
                     onTap: () {
+    helpers.checkIfValidToken(token);
                       isTeacher!
-                          ? Navigator.pushNamed(
-                              context,
-                              AppRouter.consultationsTeacherPage,
-                              arguments: ConsultationsTeacherPageArgs(
-                                token: token!,
-                                email: email!,
-                              ),
+                          ? nav.toTeacherConsultations(
+                              token: token,
+                              email: email!,
                             )
-                          : Navigator.pushNamed(
-                              context,
-                              AppRouter.consultationsStudentPage,
-                              arguments: ConsultationsStudentPageArgs(
-                                token: token!,
-                                email: email!,
-                              ),
+                          : nav.toStudentConsultations(
+                              token: token,
+                              email: email!,
                             );
                     },
                   ),
@@ -101,11 +85,8 @@ class _SliderMenuState extends State<SliderMenu> {
                       child: Text("Join Room", style: TextStyle(fontSize: 20)),
                     ),
                     onTap: () {
-                      Navigator.pushNamed(
-                        context,
-                        AppRouter.joinRoom,
-                        arguments: {'token': token},
-                      );
+    helpers.checkIfValidToken(token);
+                      nav.toJoinRoom(token: token);
                     },
                   ),
                   SizedBox(height: 20),
@@ -120,11 +101,7 @@ class _SliderMenuState extends State<SliderMenu> {
                                 ),
                               ),
                               onTap: () {
-                                Navigator.pushNamed(
-                                  context,
-                                  AppRouter.createRoom,
-                                  arguments: {'token': token, 'email': email},
-                                );
+                                nav.toCreateRoom();
                               },
                             ),
                             SizedBox(height: 20),
@@ -136,7 +113,7 @@ class _SliderMenuState extends State<SliderMenu> {
                       child: Text("Support", style: TextStyle(fontSize: 20)),
                     ),
                     onTap: () {
-                      Navigator.pushNamed(context, AppRouter.support);
+                      nav.toSupport();
                     },
                   ),
                   SizedBox(height: 20),
@@ -145,7 +122,7 @@ class _SliderMenuState extends State<SliderMenu> {
                       child: Text("Feedback", style: TextStyle(fontSize: 20)),
                     ),
                     onTap: () {
-                      Navigator.pushNamed(context, AppRouter.provideFeedback);
+                      nav.toProvideFeedback();
                     },
                   ),
                 ],
@@ -156,7 +133,7 @@ class _SliderMenuState extends State<SliderMenu> {
                     child: Text("Settings", style: TextStyle(fontSize: 20)),
 
                     onTap: () {
-                      Navigator.pushNamed(context, AppRouter.changeSettings);
+                      nav.toChangeSettings();
                     },
                   ),
                   SizedBox(height: 20),
@@ -171,11 +148,11 @@ class _SliderMenuState extends State<SliderMenu> {
                     ),
 
                     onTap: () async {
-                      await _userPreferences.removeItem('token');
-                      await _userPreferences.removeItem('email');
-                      await _userPreferences.removeItem('role');
+                      await prefs.removeItem('token');
+                      await prefs.removeItem('email');
+                      await prefs.removeItem('role');
                       // Navigate to login and clear all previous routes
-                      Navigator.pushNamed(context, AppRouter.login);
+                      nav.toLogin();
                     },
                   ),
                 ],

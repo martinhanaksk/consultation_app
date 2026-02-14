@@ -1,19 +1,14 @@
-import 'package:consultation_app/models/slot_model.dart';
 import 'package:consultation_app/services/api_service.dart';
+import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/utils/notify_user_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:consultation_app/routes/app_router.dart';
 
 class SlotViewmodel extends ChangeNotifier {
-  NotifyUserUtils dialogs = NotifyUserUtils();
   bool isLoading = false;
-  final ApiService _apiService = ApiService();
   Future<void> takeSlot(String token, int id, String note) async {
     isLoading = true;
     try {
-      await _apiService.takeSlot(token, id, note);
+      await api.takeSlot(token, id, note);
       isLoading = false;
     } catch (e) {
       isLoading = false;
@@ -24,7 +19,7 @@ class SlotViewmodel extends ChangeNotifier {
   Future<void> releaseSlot(String token, int id) async {
     isLoading = true;
     try {
-      await _apiService.releaseSlot(token, id);
+      await api.releaseSlot(token, id);
       isLoading = false;
     } catch (e) {
       isLoading = false;

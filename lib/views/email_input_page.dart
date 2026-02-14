@@ -1,11 +1,7 @@
-import 'package:consultation_app/utils/constants.dart';
-import 'package:consultation_app/utils/helper_functions.dart';
-import 'package:consultation_app/utils/notify_user_utils.dart';
-import 'package:consultation_app/utils/validator.dart';
 import 'package:consultation_app/viewmodels/email_input_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:consultation_app/setup.dart'; 
+import 'package:consultation_app/setup.dart';
 
 class EmailInputPage extends StatefulWidget {
   const EmailInputPage({super.key});
@@ -15,11 +11,6 @@ class EmailInputPage extends StatefulWidget {
 }
 
 class _EmailInputPageState extends State<EmailInputPage> {
-  final _constants = getIt<Constants>();
-  final _helperFunctions = getIt<HelperFunctions>();
-  final _validator = getIt<Validator>();
-  final _notifyUserUtils = getIt<NotifyUserUtils>();
-
   @override
   void initState() {
     super.initState();
@@ -31,11 +22,12 @@ class _EmailInputPageState extends State<EmailInputPage> {
       create: (_) => EmailInputViewModel(),
       child: Consumer<EmailInputViewModel>(
         builder: (context, viewModel, child) {
+          final viewModel = EmailInputViewModel();
           WidgetsBinding.instance.addPostFrameCallback((_) {
             viewModel.checkIfInSharedPreferences(context);
           });
           return Scaffold(
-            backgroundColor: _constants.bgLight,
+            backgroundColor: constants.bgLight,
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
@@ -65,8 +57,7 @@ class _EmailInputPageState extends State<EmailInputPage> {
                           value: viewModel.isChecked,
                           onChanged: viewModel.toggleRememberMe,
                         ),
-
-                        Text('Remember me'),
+                        const Text('Remember me'),
                       ],
                     ),
                     const SizedBox(height: 15),
@@ -75,29 +66,21 @@ class _EmailInputPageState extends State<EmailInputPage> {
                       height: 50,
                       child: ElevatedButton(
                         onPressed: () async {
-                          if (viewModel.email.isEmpty) {
-                            _notifyUserUtils.showToast(
-                              'Please type in your email.',
-                            );
-                          } else {
-                            if (!viewModel.isLoading &&
-                                _validator.validateEmail(
-                                  viewModel.email.trim(),
-                                  context,
-                                )) {
-                              await viewModel.continueToVerify(
+                          if (!viewModel.isLoading &&
+                              validator.validateEmail(
+                                viewModel.email.trim(),
                                 context,
-                                _helperFunctions.trimText(
-                                  viewModel.email.trim(),
-                                ),
-                                viewModel.isChecked,
-                              );
-                            }
+                              )) {
+                            await viewModel.continueToVerify(
+                              context,
+                              helpers.trimText(viewModel.email.trim()),
+                              viewModel.isChecked,
+                            );
                           }
                         },
                         style: ButtonStyle(
                           backgroundColor: WidgetStateProperty.all(
-                            _constants.primaryColor,
+                            constants.primaryColor,
                           ),
                         ),
                         child: viewModel.isLoading

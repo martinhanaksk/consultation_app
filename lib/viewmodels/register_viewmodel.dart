@@ -1,11 +1,8 @@
 import 'package:consultation_app/models/user_model.dart';
 import 'package:consultation_app/services/api_service.dart';
 import 'package:consultation_app/utils/notify_user_utils.dart';
-import 'package:consultation_app/views/consultations_student_page.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:consultation_app/routes/app_router.dart';
+import 'package:consultation_app/setup.dart';
 
 class RegisterViewmodel {
   NotifyUserUtils dialogs = NotifyUserUtils();
@@ -14,14 +11,8 @@ class RegisterViewmodel {
     final token = await _apiService.registerUser(um);
 
     if (token != '') {
-      Navigator.pushNamed(
-        context,
-        AppRouter.consultationsStudentPage,
-        arguments: ConsultationsStudentPageArgs(
-          token: token,
-          email: um.email
-        ),
-      );
+       nav.toStudentConsultations(token: token, email: um.email);
+      
     } else {
       dialogs.showToast('Failed to register user. Try again.');
     }

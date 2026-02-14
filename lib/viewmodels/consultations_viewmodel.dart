@@ -3,36 +3,34 @@ import 'package:consultation_app/models/room_model.dart';
 import 'package:consultation_app/models/slot_model.dart';
 import 'package:consultation_app/models/user_model.dart';
 import 'package:consultation_app/services/api_service.dart';
+import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/utils/notify_user_utils.dart';
 import 'package:consultation_app/utils/helper_functions.dart';
 
 class ConsultationsViewmodel {
-  NotifyUserUtils dialogs = NotifyUserUtils();
-  HelperFunctions _helperFunctions = HelperFunctions();
-  final ApiService _apiService = ApiService();
   List<UserModel>? users = [];
   List<RoomModel>? rooms = [];
   List<RoomModel>? allRooms = [];
   Map<int, List<SlotModel>?> slotsInBlocks = {};
   List<BlockModel> blocks = [];
   Future<void> fetchData(String token, int roomId) async {
-    bool connected = await _helperFunctions.handleIsInternetConnection();
+    bool connected = await helpers.handleIsInternetConnection();
     if (!connected) {
-      dialogs.showToast('Please connect to internet.');
+      notify.showToast('Please connect to internet.');
     } else {
       users = [];
       rooms = [];
       blocks = [];
       slotsInBlocks = {};
-      users = await _apiService.getUsers(token);
-      rooms = await _apiService.getMyRooms(token);
+      users = await api.getUsers(token);
+      rooms = await api.getMyRooms(token);
 
       if (rooms != null) {
         if (rooms!.isEmpty) {
           return;
         }
       }
-      blocks = await _apiService.getBlocks(token, roomId);
+      blocks = await api.getBlocks(token, roomId);
       blocks.sort((a, b) {
         return a.date.compareTo(b.date);
       });
@@ -52,7 +50,7 @@ class ConsultationsViewmodel {
       List<Future<void>> futures = [];
       for (var block in blocks) {
         futures.add(() async {
-          final slots = await _apiService.getSlotsForBlock(block.id, token);
+          final slots = await api.getSlotsForBlock(block.id, token);
           if (slots != null) {
             slots.sort((a, b) {
               return a.startTime.compareTo(b.startTime);
@@ -66,7 +64,7 @@ class ConsultationsViewmodel {
   }
 
   Future<void> fetchAllRooms(String token) async {
-    allRooms = await _apiService.getAllRooms(token);
+    allRooms = await api.getAllRooms(token);
   }
 
   UserModel? getUserByEmail(String emailToFind) {
@@ -84,7 +82,7 @@ class ConsultationsViewmodel {
     if (blocks != null) {
       for (var tmpBlock in blocks!) {
         if (tmpBlock.id == blockid) {
-          return _helperFunctions.getTDateOnlySimple(
+          return helpers.getTDateOnlySimple(
             DateTime.parse(tmpBlock.date.toString()),
           );
         }
@@ -95,10 +93,10 @@ class ConsultationsViewmodel {
 
   Future<bool> isTeacher(String token, String email) async {
     try {
-      String result = await _apiService.getRole(token, email);
+      String result = await api.getRole(token, email);
       return result == "teacher" ? true : false;
     } catch (e) {
-      dialogs.showToast('Error while acquiring role.');
+      notify.showToast('Error while acquiring role.');
       return false;
     }
   }

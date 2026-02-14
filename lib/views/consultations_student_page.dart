@@ -1,18 +1,12 @@
-import 'dart:io';
-
 import 'package:consultation_app/models/room_model.dart';
 import 'package:consultation_app/models/slot_model.dart';
-import 'package:consultation_app/routes/app_router.dart';
-import 'package:consultation_app/services/user_preferences.dart';
-import 'package:consultation_app/utils/constants.dart';
-import 'package:consultation_app/utils/helper_functions.dart';
-import 'package:consultation_app/utils/notify_user_utils.dart';
 import 'package:consultation_app/viewmodels/consultations_viewmodel.dart';
 import 'package:consultation_app/viewmodels/slot_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slot_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:consultation_app/setup.dart';
 
 class ConsultationsStudentPageArgs {
   final String token;
@@ -37,11 +31,7 @@ class ConsultationsStudentPage extends StatefulWidget {
 
 class _ConsultationsUserPageState extends State<ConsultationsStudentPage> {
   final TextEditingController emailController = TextEditingController();
-  final Constants _constants = Constants();
-  UserPreferences _userPreferences = UserPreferences();
 
-  NotifyUserUtils dialogs = NotifyUserUtils();
-  HelperFunctions helperFunctions = HelperFunctions();
   final ConsultationsViewmodel _consultationsViewmodel =
       ConsultationsViewmodel();
   final SlotViewmodel _slotViewmodel = SlotViewmodel();
@@ -57,25 +47,15 @@ class _ConsultationsUserPageState extends State<ConsultationsStudentPage> {
     super.initState();
     _checkRole();
     loadData();
-    checkIfValidToken();
+    helpers.checkIfValidToken(widget.token);
   }
 
-  void checkIfValidToken() async {
-    if (widget.token == "") {
-      await _userPreferences.removeItem('token');
-      await _userPreferences.removeItem('email');
-      await _userPreferences.removeItem('role');
-      dialogs.showToast('Session expired.');
-      // Navigate to login and clear all previous routes
-      Navigator.pushNamed(context, AppRouter.login);
-    }
-  }
+  
 
   void _checkRole() async {
-    if (!await helperFunctions.handleIsInternetConnection()) {
-      dialogs.showToast('Please connect to internet.');
+    if (!await helpers.handleIsInternetConnection()) {
+      notify.showToast('Please connect to internet.');
     } else {
-      print("TOKEN: " + widget.token);
       bool result = await _consultationsViewmodel.isTeacher(
         widget.token,
         widget.email,
@@ -93,7 +73,7 @@ class _ConsultationsUserPageState extends State<ConsultationsStudentPage> {
       isLoading = true;
     });
     if (selectedRoom != null) {
-      checkIfValidToken();
+      helpers.checkIfValidToken(widget.token);
       await _consultationsViewmodel.fetchData(
         widget.token,
         int.parse(selectedRoom!),
@@ -126,7 +106,7 @@ class _ConsultationsUserPageState extends State<ConsultationsStudentPage> {
     return Scaffold(
       appBar: AppBarMenu(),
       drawer: SliderMenu(),
-      backgroundColor: _constants.bgLight,
+      backgroundColor: constants.bgLight,
       body: SafeArea(
         child: isLoading
             ? Center(
@@ -147,16 +127,12 @@ class _ConsultationsUserPageState extends State<ConsultationsStudentPage> {
                           "Try joining room to get started.",
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: _constants.fontSizeMedium,
-                            color: _constants.primaryColor,
+                            fontSize: constants.fontSizeMedium,
+                            color: constants.primaryColor,
                           ),
                         ),
                         onTap: () => {
-                          Navigator.pushNamed(
-                            context,
-                            AppRouter.joinRoom,
-                            arguments: {'token': widget.token},
-                          ),
+                          nav.toJoinRoom(token: widget.token),
                         },
                       ),
                       SizedBox(height: 20),
@@ -169,7 +145,7 @@ class _ConsultationsUserPageState extends State<ConsultationsStudentPage> {
                           },
                           style: ButtonStyle(
                             backgroundColor: WidgetStateProperty.all(
-                              _constants.primaryColor,
+                              constants.primaryColor,
                             ),
                           ),
                           child: const Text(
@@ -221,8 +197,8 @@ class _ConsultationsUserPageState extends State<ConsultationsStudentPage> {
                     child: Text(
                       "Write your self here",
                       style: TextStyle(
-                        color: _constants.defaultDarkGrey,
-                        fontSize: _constants.fontSizeBig,
+                        color: constants.defaultDarkGrey,
+                        fontSize: constants.fontSizeBig,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -250,8 +226,8 @@ class _ConsultationsUserPageState extends State<ConsultationsStudentPage> {
                                         block.key,
                                       ),
                                       style: TextStyle(
-                                        color: _constants.defaultDarkGrey,
-                                        fontSize: _constants.fontSizeSmall,
+                                        color: constants.defaultDarkGrey,
+                                        fontSize: constants.fontSizeSmall,
                                         fontWeight: FontWeight.w400,
                                       ),
                                     ),
@@ -278,10 +254,6 @@ class _ConsultationsUserPageState extends State<ConsultationsStudentPage> {
                                                             userEmail:
                                                                 widget.email,
                                                             slot: slot,
-                                                            constants:
-                                                                _constants,
-                                                            helperFunctions:
-                                                                helperFunctions,
                                                             consultationsViewmodel:
                                                                 _consultationsViewmodel,
                                                             slotViewmodel:

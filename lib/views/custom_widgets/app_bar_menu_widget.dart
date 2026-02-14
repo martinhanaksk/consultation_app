@@ -1,15 +1,13 @@
-import 'package:consultation_app/routes/app_router.dart';
-import 'package:consultation_app/utils/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:consultation_app/setup.dart';
 
 class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
   AppBarMenu({super.key});
-  final Constants _constants = Constants();
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: _constants.defaultWhite,
-      surfaceTintColor: _constants.defaultWhite,
+      backgroundColor: constants.defaultWhite,
+      surfaceTintColor: constants.defaultWhite,
       actionsPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
       leading: IconButton(
         icon: Icon(Icons.menu_rounded),
@@ -22,7 +20,7 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
           child: IconButton(
             icon: Icon(Icons.person),
             onPressed: () {
-              Navigator.pushNamed(context, AppRouter.changeSettings);
+              nav.toChangeSettings();
             },
           ),
         ),
