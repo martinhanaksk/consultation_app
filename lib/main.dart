@@ -4,7 +4,7 @@ import 'package:overlay_kit/overlay_kit.dart';
 import 'package:consultation_app/setup.dart';
   
 // Author: Martin Hanak
-// email:  xhanakm00@stud.fit.vut.cz
+// email: xhanakm00@stud.fit.vut.cz
 void main() {
   setupDependencies();
   runApp(const MyApp());
