@@ -69,15 +69,15 @@ class NavigationService {
     _navigator()?.pushNamed(AppRouter.changeSettings);
   }
 
-  void toSupport() {
-    _navigator()?.pushNamed(AppRouter.support);
-  }
-
   void toProvideFeedback() {
     _navigator()?.pushNamed(AppRouter.provideFeedback);
   }
 
   void toCreateRoom() {
     _navigator()?.pushNamed(AppRouter.createRoom);
+  }
+
+  void pop() {
+    _navigator()?.pop();
   }
 }

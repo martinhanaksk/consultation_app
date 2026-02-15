@@ -1,9 +1,5 @@
 import 'package:consultation_app/models/room_model.dart';
 import 'package:consultation_app/models/slot_model.dart';
-import 'package:consultation_app/services/user_preferences.dart';
-import 'package:consultation_app/utils/constants.dart';
-import 'package:consultation_app/utils/helper_functions.dart';
-import 'package:consultation_app/utils/notify_user_utils.dart';
 import 'package:consultation_app/viewmodels/consultations_viewmodel.dart';
 import 'package:consultation_app/viewmodels/slot_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
@@ -249,67 +245,71 @@ class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
                               ...() {
                                 final sortedEntries = slotsInBlocks.entries
                                     .toList();
-                                sortedEntries.sort((a, b) {
-                                  final blockA = _consultationsViewmodel.blocks
-                                      .firstWhere((block) => block.id == a.key);
-                                  final blockB = _consultationsViewmodel.blocks
-                                      .firstWhere((block) => block.id == b.key);
-                                  return blockA.date.compareTo(blockB.date);
-                                });
+                              
                                 return sortedEntries.map((block) {
-                                  return Column(
-                                    children: [
-                                      SizedBox(height: 10),
-                                      Text(
-                                        _consultationsViewmodel.getDateOfBlock(
-                                          block.key,
-                                        ),
-                                        style: TextStyle(
-                                          color: constants.defaultDarkGrey,
-                                          fontSize: constants.fontSizeSmall,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                      SizedBox(height: 10),
-                                      (block.value == null ||
-                                              block.value!.isEmpty)
-                                          ? Text("No slots found")
-                                          : Container(
-                                              clipBehavior: Clip.hardEdge,
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius: BorderRadius.all(
-                                                  Radius.circular(20),
-                                                ),
-                                              ),
-                                              child: Column(
-                                                children: block.value!
-                                                    .map(
-                                                      (slot) => slot == null
-                                                          ? Text(
-                                                              "No slots for the block found.",
-                                                            )
-                                                          : SlotWidget(
-                                                              userEmail:
-                                                                  widget.email,
-                                                              slot: slot,
-                                                              consultationsViewmodel:
-                                                                  _consultationsViewmodel,
-                                                              slotViewmodel:
-                                                                  _slotViewmodel,
-                                                              token:
-                                                                  widget.token,
-                                                              roomId: roomId,
-                                                              context: context,
-                                                              loadData: () =>
-                                                                  loadData(),
-                                                            ),
-                                                    )
-                                                    .toList(),
+                                  return _consultationsViewmodel
+                                              .foundBlocksLength() ==
+                                          0
+                                      ? Text("No upcoming consultations found.")
+                                      : Column(
+                                          children: [
+                                            SizedBox(height: 10),
+                                            Text(
+                                              _consultationsViewmodel
+                                                  .getDateOfBlock(block.key),
+                                              style: TextStyle(
+                                                color:
+                                                    constants.defaultDarkGrey,
+                                                fontSize:
+                                                    constants.fontSizeSmall,
+                                                fontWeight: FontWeight.w400,
                                               ),
                                             ),
-                                    ],
-                                  );
+                                            SizedBox(height: 10),
+                                            (block.value == null ||
+                                                    block.value!.isEmpty)
+                                                ? Text("No slots found")
+                                                : Container(
+                                                    clipBehavior: Clip.hardEdge,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white,
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                            Radius.circular(20),
+                                                          ),
+                                                    ),
+                                                    child: Column(
+                                                      children: block.value!
+                                                          .map(
+                                                            (slot) =>
+                                                                slot == null
+                                                                ? Text(
+                                                                    "No slots for the block found.",
+                                                                  )
+                                                                : SlotWidget(
+                                                                    userEmail:
+                                                                        widget
+                                                                            .email,
+                                                                    slot: slot,
+                                                                    consultationsViewmodel:
+                                                                        _consultationsViewmodel,
+                                                                    slotViewmodel:
+                                                                        _slotViewmodel,
+                                                                    token: widget
+                                                                        .token,
+                                                                    roomId:
+                                                                        roomId,
+                                                                    context:
+                                                                        context,
+                                                                    loadData: () =>
+                                                                        loadData(),
+                                                                  ),
+                                                          )
+                                                          .toList(),
+                                                    ),
+                                                  ),
+                                          ],
+                                        );
                                 });
                               }(),
                             ],

@@ -1,6 +1,4 @@
-import 'package:consultation_app/services/api_service.dart';
 import 'package:consultation_app/setup.dart';
-import 'package:consultation_app/utils/notify_user_utils.dart';
 import 'package:flutter/material.dart';
 
 class SlotViewmodel extends ChangeNotifier {

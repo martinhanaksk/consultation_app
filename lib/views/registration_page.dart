@@ -4,6 +4,7 @@ import 'package:consultation_app/viewmodels/register_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:provider/provider.dart';
 
 class RegistrationPage extends StatefulWidget {
   final String email;
@@ -18,22 +19,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final TextEditingController surnameController = TextEditingController();
   final TextEditingController visitReasonController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
-  final RegisterViewmodel _rvm = RegisterViewmodel();
-  bool _isLoading = false;
-
-  Future<void> registerUser(String email) async {
-    final email = emailController.text.trim();
-    final response = await http.post(
-      Uri.parse('${constants.url}/users/register'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'email': email}),
-    );
-    if (response.statusCode == 200) {
-      //todo
-    } else {
-      notify.showToast('Failed to send OTP. Try again.');
-    }
-  }
 
   @override
   void initState() {
@@ -42,72 +27,79 @@ class _RegistrationPageState extends State<RegistrationPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: constants.bgLight,
-      resizeToAvoidBottomInset: true,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 70),
-              Center(
-                child: Text(
-                  'Register',
-                  style: const TextStyle(
-                    fontSize: 42,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF3D3D3D),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: emailController,
-                enabled: !_isLoading,
-                decoration: const InputDecoration(
-                  hintText: 'Email',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: nameController,
-                enabled: !_isLoading,
-                decoration: const InputDecoration(
-                  hintText: 'Name',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: surnameController,
-                enabled: !_isLoading,
-                decoration: const InputDecoration(
-                  hintText: 'Surname',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: visitReasonController,
-                enabled: !_isLoading,
-                decoration: const InputDecoration(
-                  hintText: 'Visit reason',
-                  border: OutlineInputBorder(),
-                ),
-              ),
+  void dispose() {
+    nameController.dispose();
+    surnameController.dispose();
+    visitReasonController.dispose();
+    emailController.dispose();
+    super.dispose();
+  }
 
-              const SizedBox(height: 32),
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: _isLoading
-                      ? null
-                      : () async {
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => RegisterViewmodel(),
+      child: Consumer<RegisterViewmodel>(
+        builder: (context, viewModel, child) {
+          return Scaffold(
+            backgroundColor: constants.bgLight,
+            resizeToAvoidBottomInset: true,
+            body: SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 70),
+                    Center(
+                      child: Text(
+                        'Register',
+                        style: TextStyle(
+                          fontSize: 42,
+                          fontWeight: FontWeight.bold,
+                          color: constants.defaultDarkGrey,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: emailController,
+                      decoration: const InputDecoration(
+                        hintText: 'Email',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: nameController,
+                      decoration: const InputDecoration(
+                        hintText: 'Name',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: surnameController,
+                      decoration: const InputDecoration(
+                        hintText: 'Surname',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: visitReasonController,
+                      decoration: const InputDecoration(
+                        hintText: 'Visit reason',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+
+                    const SizedBox(height: 32),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () async {
                           if (validator.validateNotEmpty(
                                 emailController.text.trim(),
                                 'E-mail',
@@ -132,10 +124,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 emailController.text.trim(),
                                 context,
                               )) {
-                            setState(() {
-                              _isLoading = true;
-                            });
-
                             try {
                               UserModel um = UserModel(
                                 email: helpers.trimText(
@@ -153,33 +141,16 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 ),
                                 visible: 0,
                               );
-                              await _rvm.registerUser(context, um);
-                            } finally {
-                              if (mounted) {
-                                setState(() {
-                                  _isLoading = false;
-                                });
-                              }
-                            }
+                              await viewModel.registerUser(context, um);
+                            } catch (e) {}
                           }
                         },
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all(
-                      const Color(0xFF10A64A),
-                    ),
-                  ),
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 24,
-                          width: 24,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white,
-                            ),
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStateProperty.all(
+                            constants.defaultGreen,
                           ),
-                        )
-                      : const Text(
+                        ),
+                        child: const Text(
                           'Register',
                           style: TextStyle(
                             fontSize: 22,
@@ -187,11 +158,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             color: Colors.white,
                           ),
                         ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }

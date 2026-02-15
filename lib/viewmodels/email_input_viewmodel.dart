@@ -5,17 +5,33 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:consultation_app/setup.dart';
 
 class EmailInputViewModel extends ChangeNotifier {
-  bool isLoading = false;
-  bool isChecked = false;
-  String? errorMessage;
-  String email = '';
+  bool _isLoading = false;
+  bool _isChecked = false;
+  String? _errorMessage;
+  String _email = '';
+  bool isLoading() {
+    return _isLoading;
+  }
+
+  bool isChecked() {
+    return _isChecked;
+  }
+
+  String? errorMessage() {
+    return _errorMessage;
+  } String email() {
+    return _email;
+  }
 
   Future<void> continueToVerify(
     BuildContext context,
     String email,
     bool rememberMe,
   ) async {
-    isLoading = true;
+    if (_isLoading) {
+      return;
+    }
+    _isLoading = true;
     notifyListeners();
     notify.showToast("Checking email...");
     try {
@@ -32,7 +48,7 @@ class EmailInputViewModel extends ChangeNotifier {
     } catch (e) {
       notify.showToast("Please, check your internet connection.");
     } finally {
-      isLoading = false;
+      _isLoading = false;
       notifyListeners();
     }
   }
@@ -120,11 +136,11 @@ class EmailInputViewModel extends ChangeNotifier {
   }
 
   void updateEmail(String value) {
-    email = value;
+    _email = value;
   }
 
   void toggleRememberMe(bool? value) {
-    isChecked = value ?? false;
+    _isChecked = value ?? false;
     notifyListeners();
   }
 

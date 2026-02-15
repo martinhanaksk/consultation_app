@@ -2,17 +2,22 @@ import 'package:consultation_app/models/block_model.dart';
 import 'package:consultation_app/models/room_model.dart';
 import 'package:consultation_app/models/slot_model.dart';
 import 'package:consultation_app/models/user_model.dart';
-import 'package:consultation_app/services/api_service.dart';
 import 'package:consultation_app/setup.dart';
-import 'package:consultation_app/utils/notify_user_utils.dart';
-import 'package:consultation_app/utils/helper_functions.dart';
+import 'package:flutter/foundation.dart';
 
-class ConsultationsViewmodel {
+class ConsultationsViewmodel  extends ChangeNotifier {
   List<UserModel>? users = [];
   List<RoomModel>? rooms = [];
-  List<RoomModel>? allRooms = [];
   Map<int, List<SlotModel>?> slotsInBlocks = {};
   List<BlockModel> blocks = [];
+  bool blocksFiltered = false;
+  int foundBlocksLength() {
+    if (blocksFiltered && blocks.isNotEmpty) {
+      return blocks.length;
+    }
+    return 0;
+  }
+
   Future<void> fetchData(String token, int roomId) async {
     bool connected = await helpers.handleIsInternetConnection();
     if (!connected) {
@@ -31,9 +36,7 @@ class ConsultationsViewmodel {
         }
       }
       blocks = await api.getBlocks(token, roomId);
-      blocks.sort((a, b) {
-        return a.date.compareTo(b.date);
-      });
+
       DateTime now = DateTime.now();
       bool removedItem = true;
       while (removedItem) {
@@ -45,6 +48,8 @@ class ConsultationsViewmodel {
           }
         }
       }
+      blocks.sort((a, b) => a.date.compareTo(b.date));
+      blocksFiltered = true;
 
       //to get slots parallel
       List<Future<void>> futures = [];
@@ -63,9 +68,7 @@ class ConsultationsViewmodel {
     }
   }
 
-  Future<void> fetchAllRooms(String token) async {
-    allRooms = await api.getAllRooms(token);
-  }
+ 
 
   UserModel? getUserByEmail(String emailToFind) {
     if (users != null) {

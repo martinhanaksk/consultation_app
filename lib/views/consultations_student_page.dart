@@ -219,7 +219,7 @@ class _ConsultationsUserPageState extends State<ConsultationsStudentPage> {
                                 return blockA.date.compareTo(blockB.date);
                               });
                               return sortedEntries.map((block) {
-                                return Column(
+                                return _consultationsViewmodel.foundBlocksLength()==0?Text("No upcoming consultations found."):Column(
                                   children: [
                                     Text(
                                       _consultationsViewmodel.getDateOfBlock(

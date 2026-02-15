@@ -5,7 +5,6 @@ import 'package:consultation_app/views/email_input_page.dart';
 import 'package:consultation_app/views/provide_feedback_page.dart';
 import 'package:consultation_app/views/join_room_page.dart';
 import 'package:consultation_app/views/change_settings_page.dart';
-import 'package:consultation_app/views/support_page.dart';
 import 'package:consultation_app/views/verify_otp_page.dart';
 import 'package:consultation_app/views/registration_page.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +16,6 @@ class AppRouter {
   static const String detail = '/detail';
   static const String joinRoom = '/joinroom';
   static const String createRoom = '/createRoom';
-  static const String support = '/support';
   static const String provideFeedback = '/provideFeedback';
   static const String changeSettings = '/changeSettings';
   static const String consultationsStudentPage = '/consultationsUserPage';
@@ -62,8 +60,6 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => JoinRoom(token: token));
       case createRoom:
         return MaterialPageRoute(builder: (_) => CreateRoom());
-      case support:
-        return MaterialPageRoute(builder: (_) => Support());
       case provideFeedback:
         return MaterialPageRoute(builder: (_) => ProvideFeedback());
       case changeSettings:

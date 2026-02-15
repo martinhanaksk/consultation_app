@@ -1,17 +1,35 @@
-import 'package:consultation_app/services/api_service.dart';
-import 'package:consultation_app/utils/notify_user_utils.dart';
+import 'package:consultation_app/models/room_model.dart';
+import 'package:consultation_app/setup.dart';
 import 'package:flutter/material.dart';
 
-class JoinRoomViewmodel {
-  NotifyUserUtils dialogs = NotifyUserUtils();
-  final ApiService _apiService = ApiService();
+class JoinRoomViewmodel extends ChangeNotifier {
+  List<RoomModel>? _allRooms = [];
+  bool _isLoading = false;
+  bool isLoading() {
+    return _isLoading;
+  }
+
+  List<RoomModel>? allRooms() {
+    return _allRooms;
+  }
+
   Future<void> joinRoom(BuildContext context, String token, int id) async {
     try {
-      await _apiService.joinRoomById(token, id);
-      dialogs.showToast('Room joined.');
-      Navigator.pop(context);
+      if (_isLoading) return;
+      _isLoading = true;
+      notifyListeners();
+      await api.joinRoomById(token, id);
+      _isLoading = false;
+      notifyListeners();
+      notify.showToast('Room joined.');
+      nav.pop();
     } catch (e) {
-      dialogs.showToast('Unable to join the room.');
+      notify.showToast('Unable to join the room.');
     }
+  }
+
+  Future<void> fetchAllRooms(String token) async {
+    _allRooms = await api.getAllRooms(token);
+    notifyListeners();
   }
 }

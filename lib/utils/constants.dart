@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class Constants {
   Color bgLight = Color(0xFFF2F3F8);
-  Color defaultDarkGrey = Color.fromARGB(255, 61, 61, 61);
+  Color defaultDarkGrey = Color(0xFF3D3D3D);
   Color defaultGreen = Color.fromARGB(255, 16, 166, 74);
   Color defaultRed = Color.fromARGB(255, 255, 0, 0);
   Color primaryColor = Color.fromARGB(255, 0, 113, 226);

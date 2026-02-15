@@ -22,7 +22,6 @@ class _EmailInputPageState extends State<EmailInputPage> {
       create: (_) => EmailInputViewModel(),
       child: Consumer<EmailInputViewModel>(
         builder: (context, viewModel, child) {
-          final viewModel = EmailInputViewModel();
           WidgetsBinding.instance.addPostFrameCallback((_) {
             viewModel.checkIfInSharedPreferences(context);
           });
@@ -54,7 +53,7 @@ class _EmailInputPageState extends State<EmailInputPage> {
                     Row(
                       children: [
                         Checkbox(
-                          value: viewModel.isChecked,
+                          value: viewModel.isChecked(),
                           onChanged: viewModel.toggleRememberMe,
                         ),
                         const Text('Remember me'),
@@ -66,15 +65,15 @@ class _EmailInputPageState extends State<EmailInputPage> {
                       height: 50,
                       child: ElevatedButton(
                         onPressed: () async {
-                          if (!viewModel.isLoading &&
+                          if (!viewModel.isLoading() &&
                               validator.validateEmail(
-                                viewModel.email.trim(),
+                                viewModel.email(),
                                 context,
                               )) {
                             await viewModel.continueToVerify(
                               context,
-                              helpers.trimText(viewModel.email.trim()),
-                              viewModel.isChecked,
+                              helpers.trimText(viewModel.email()),
+                              viewModel.isChecked(),
                             );
                           }
                         },
@@ -83,7 +82,7 @@ class _EmailInputPageState extends State<EmailInputPage> {
                             constants.primaryColor,
                           ),
                         ),
-                        child: viewModel.isLoading
+                        child: viewModel.isLoading()
                             ? CircularProgressIndicator(color: Colors.white)
                             : const Text(
                                 'Next',
