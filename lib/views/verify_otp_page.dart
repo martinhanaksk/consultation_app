@@ -38,7 +38,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
       //testing otp
       otpcontroller.text = widget.token.substring(1, widget.token.length - 1);
       WidgetsBinding.instance.addPostFrameCallback((_) {
-            Provider.of<VerifyOtpViewmodel>(context, listen: false).connect(
+        Provider.of<VerifyOtpViewmodel>(context, listen: false).connect(
           context,
           widget.email,
           otpcontroller.text.trim(),
@@ -47,11 +47,13 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
       });
     }
   }
-@override
+
+  @override
   void dispose() {
     otpcontroller.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(

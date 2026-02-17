@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SliderMenuViewmodel extends ChangeNotifier {
-  bool _isOpen = false;
   String _token = "";
   String? _email = "";
   bool? _isTeacher;
   bool _isLoading = false;
-
+  final Uri _url = Uri.parse(
+    'https://docs.google.com/forms/d/e/1FAIpQLScm7rfzCowdWgC_8-yCJURY5DqBcwrsp9zDaRoVqFF2O3Bc2Q/viewform?usp=publish-editor',
+  );
+  Future<void> launchFeedbackWebsite() async {
+    if (!await launchUrl(_url)) {
+      throw Exception('Could not launch $_url');
+    }
+  }
   bool get isLoading => _isLoading;
   String get token => _token;
   bool? get isTeacher => _isTeacher;
-  bool? get isOpen => _isOpen;
   String? get email => _email;
 
   void checkIfInSharedPreferences() async {

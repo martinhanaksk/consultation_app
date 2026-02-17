@@ -11,6 +11,7 @@ class Constants {
   double fontSizeBig = 40;
   double fontSizeMedium = 30;
   double fontSizeSmall = 20;
+  double oneItemHeight = 80;
   bool testing = false;
   String url = '';
   static final Constants _instance = Constants._internal();
@@ -22,7 +23,7 @@ class Constants {
       url = "https://consultations-backend.onrender.com";
     } else {
       testing = false;
-      url = "https://office-hours.fit.vutbr.cz/dev";
+      url = "https://office-hours.fit.vutbr.cz";
     }
   }
   //school server:

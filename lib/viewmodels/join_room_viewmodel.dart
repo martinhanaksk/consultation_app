@@ -5,9 +5,6 @@ import 'package:flutter/material.dart';
 class JoinRoomViewmodel extends ChangeNotifier {
   List<RoomModel>? _allRooms = [];
   bool _isLoading = false;
-  bool isLoading() {
-    return _isLoading;
-  }
 
   List<RoomModel>? allRooms() {
     return _allRooms;
@@ -24,6 +21,7 @@ class JoinRoomViewmodel extends ChangeNotifier {
       notify.showToast('Room joined.');
       nav.pop();
     } catch (e) {
+      print(id);
       notify.showToast('Unable to join the room.');
     }
   }

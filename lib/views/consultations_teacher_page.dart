@@ -134,30 +134,7 @@ class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
                         ),
                         onTap: () => {nav.toJoinRoom(token: widget.token)},
                       ),
-                      SizedBox(height: 20),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            loadData();
-                          },
-                          style: ButtonStyle(
-                            backgroundColor: WidgetStateProperty.all(
-                              constants.primaryColor,
-                            ),
-                          ),
-                          child: const Text(
-                            'Refresh',
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xffffffff),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                     ],
                   ),
                 ),
               )
@@ -245,7 +222,7 @@ class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
                               ...() {
                                 final sortedEntries = slotsInBlocks.entries
                                     .toList();
-                              
+
                                 return sortedEntries.map((block) {
                                   return _consultationsViewmodel
                                               .foundBlocksLength() ==
@@ -291,10 +268,6 @@ class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
                                                                         widget
                                                                             .email,
                                                                     slot: slot,
-                                                                    consultationsViewmodel:
-                                                                        _consultationsViewmodel,
-                                                                    slotViewmodel:
-                                                                        _slotViewmodel,
                                                                     token: widget
                                                                         .token,
                                                                     roomId:

@@ -2,25 +2,31 @@ import 'package:consultation_app/setup.dart';
 import 'package:flutter/material.dart';
 
 class SlotViewmodel extends ChangeNotifier {
-  bool isLoading = false;
+  bool _isLoading = false;
   Future<void> takeSlot(String token, int id, String note) async {
-    isLoading = true;
+    if (_isLoading) {
+      return;
+    }
+    _isLoading = true;
     try {
       await api.takeSlot(token, id, note);
-      isLoading = false;
+      _isLoading = false;
     } catch (e) {
-      isLoading = false;
+      _isLoading = false;
       rethrow;
     }
   }
 
   Future<void> releaseSlot(String token, int id) async {
-    isLoading = true;
+    if (_isLoading) {
+      return;
+    }
+    _isLoading = true;
     try {
       await api.releaseSlot(token, id);
-      isLoading = false;
+      _isLoading = false;
     } catch (e) {
-      isLoading = false;
+      _isLoading = false;
       rethrow;
     }
   }
@@ -47,14 +53,20 @@ class SlotViewmodel extends ChangeNotifier {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text("Cancel"),
+              child: Text(
+                "Cancel",
+                style: TextStyle(color: constants.primaryColor),
+              ),
             ),
             ElevatedButton(
               onPressed: () async {
                 await takeSlot(token, id, _controller.text.trim());
-                Navigator.pop(context);
+                nav.pop();
               },
-              child: const Text("Submit"),
+              child: Text(
+                "Submit",
+                style: TextStyle(color: constants.primaryColor),
+              ),
             ),
           ],
         );

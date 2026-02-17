@@ -2,7 +2,6 @@ import 'package:consultation_app/views/consultations_student_page.dart';
 import 'package:consultation_app/views/consultations_teacher_page.dart';
 import 'package:consultation_app/views/create_room_widget.dart';
 import 'package:consultation_app/views/email_input_page.dart';
-import 'package:consultation_app/views/provide_feedback_page.dart';
 import 'package:consultation_app/views/join_room_page.dart';
 import 'package:consultation_app/views/change_settings_page.dart';
 import 'package:consultation_app/views/verify_otp_page.dart';
@@ -60,8 +59,6 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => JoinRoom(token: token));
       case createRoom:
         return MaterialPageRoute(builder: (_) => CreateRoom());
-      case provideFeedback:
-        return MaterialPageRoute(builder: (_) => ProvideFeedback());
       case changeSettings:
         return MaterialPageRoute(builder: (_) => ChangeSettings());
       default:

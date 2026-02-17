@@ -1,7 +1,12 @@
 import 'package:intl/intl.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:consultation_app/setup.dart';
+
 class HelperFunctions {
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+  bool _hasLoggedOut = false;
+  bool _isLoggingOut = false;
   Future<bool> handleIsInternetConnection() async {
     final List<ConnectivityResult> connectivityResult = await Connectivity()
         .checkConnectivity();
@@ -12,16 +17,31 @@ class HelperFunctions {
 
     return true;
   }
-Future<void> checkIfValidToken(String token) async {
+
+  Future<void> checkIfValidToken(String token) async {
+    if (_isLoggingOut || token.isNotEmpty) {
+      return;
+    }
+
+    _isLoggingOut = true;
     if (token == "") {
+      _hasLoggedOut = true;
       await prefs.removeItem('token');
       await prefs.removeItem('email');
       await prefs.removeItem('role');
-      notify.showToast('Session expired.');
+      notify.showToast('You were logged out.');
       // Navigate to login and clear all previous routes
       nav.toLogin();
     }
+    Future.delayed(Duration(seconds: 2), () {
+      _isLoggingOut = false;
+    });
   }
+
+  void resetLogoutFlag() {
+    _hasLoggedOut = false;
+  }
+
   String dateTimeToString(DateTime dateTime) {
     return dateTime.toIso8601String().split('.').first;
   }
@@ -69,7 +89,6 @@ Future<void> checkIfValidToken(String token) async {
   }
 
   bool isNumeric(String s) {
-   
     return int.tryParse(s) != null;
   }
 }

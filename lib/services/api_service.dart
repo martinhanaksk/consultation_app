@@ -95,6 +95,29 @@ class ApiService {
       final List<dynamic> decoded = jsonDecode(response.body);
       return decoded.map((json) => UserModel.fromJson(json)).toList();
     } else {
+      nav.toLogin();
+      throw Exception('Failed to fetch users: ${response.statusCode}');
+    }
+  }
+
+  //consultations
+  Future<UserModel> getUserByEmail(String token, String email) async {
+    final Uri url = Uri.parse('${constants.url}/users?email=$email');
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> decoded = jsonDecode(response.body);
+      print(decoded.toString());
+      return UserModel.fromJson(decoded);
+    } else {
+      nav.toLogin();
       throw Exception('Failed to fetch users: ${response.statusCode}');
     }
   }
@@ -113,7 +136,7 @@ class ApiService {
       final List<dynamic> decoded = jsonDecode(response.body);
       return decoded.map((json) => RoomModel.fromJson(json)).toList();
     } else {
-      throw Exception('Failed to fetch rooms: ${response.statusCode}');
+      throw Exception('Failed to fetch rooms: ${response.body}');
     }
   }
 
@@ -129,9 +152,11 @@ class ApiService {
 
     List<int> roomIds = [];
     if (responseToGetRooms.statusCode == 200) {
+      print("ok");
       final List<dynamic> jsonList = jsonDecode(responseToGetRooms.body);
       roomIds = jsonList.map((json) => json['room_id'] as int).toList();
     } else {
+      print("okd");
       return [];
     }
 
@@ -233,7 +258,7 @@ class ApiService {
         } else {
           return 'student';
         }
-      }else {
+      } else {
         return 'student';
       }
     } else {

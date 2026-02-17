@@ -9,19 +9,10 @@ class EmailInputViewModel extends ChangeNotifier {
   bool _isChecked = false;
   String? _errorMessage;
   String _email = '';
-  bool isLoading() {
-    return _isLoading;
-  }
-
-  bool isChecked() {
-    return _isChecked;
-  }
-
-  String? errorMessage() {
-    return _errorMessage;
-  } String email() {
-    return _email;
-  }
+  bool get isLoading => _isLoading;
+  bool get isChecked => _isChecked;
+  String? get errorMessage => _errorMessage;
+  String get email => _email;
 
   Future<void> continueToVerify(
     BuildContext context,

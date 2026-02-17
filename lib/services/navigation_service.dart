@@ -1,5 +1,6 @@
 import 'package:consultation_app/routes/app_router.dart';
 import 'package:flutter/material.dart';
+import 'package:consultation_app/setup.dart';
 
 class NavigationService {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -12,8 +13,9 @@ class NavigationService {
   }
 
   //Auth
-  void toLogin() {
-    _navigator()?.pushNamedAndRemoveUntil(AppRouter.login, (route) => false);
+  void toLogin() async {
+    _navigator()?.popUntil((route) => route.isFirst);
+    _navigator()?.pushReplacementNamed(AppRouter.login);
   }
 
   void toVerifyOtp({

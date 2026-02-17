@@ -22,6 +22,7 @@ class VerifyOtpViewmodel extends ChangeNotifier {
     _isLoading = false;
     notifyListeners();
     if (success) {
+      helpers.resetLogoutFlag;
       if (role == 'teacher') {
         nav.toTeacherConsultations(token: token, email: email);
       } else if (role == 'student') {

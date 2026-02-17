@@ -2,6 +2,7 @@ import 'package:consultation_app/viewmodels/slider_menu_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SliderMenu extends StatefulWidget {
   const SliderMenu({super.key});
@@ -97,16 +98,35 @@ class _SliderMenuState extends State<SliderMenu> {
                             : SizedBox(height: 0),
 
                         GestureDetector(
-                          child: Container(
-                            child: Text(
-                              "Feedback",
-                              style: TextStyle(
-                                fontSize: constants.fontSizeSmall,
-                              ),
-                            ),
+                          child: Text(
+                            "Provide Feedback",
+                            style: TextStyle(fontSize: constants.fontSizeSmall),
                           ),
                           onTap: () {
-                            nav.toProvideFeedback();
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text(
+                                    "Continue to provide feedback?",
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        nav.pop();
+                                      },
+                                      child:  Text("Cancel",style:TextStyle(color: constants.primaryColor)),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        viewModel.launchFeedbackWebsite();
+                                      },
+                                      child:  Text("Yes",style:TextStyle(color: constants.primaryColor)),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
                           },
                         ),
                       ],

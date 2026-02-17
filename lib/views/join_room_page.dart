@@ -5,6 +5,7 @@ import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 
 class JoinRoom extends StatefulWidget {
   final String token;
@@ -30,6 +31,7 @@ class _JoinRoomState extends State<JoinRoom> {
     super.dispose();
   }
 
+  final dropDownKey = GlobalKey<DropdownSearchState>();
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -107,7 +109,7 @@ class _JoinRoomState extends State<JoinRoom> {
                                 child: Material(
                                   elevation: 4.0,
                                   child: Container(
-                                    constraints: BoxConstraints(maxHeight: 300),
+                                    constraints: BoxConstraints(maxHeight: 200),
                                     child: ListView.builder(
                                       padding: EdgeInsets.all(8.0),
                                       itemCount: options.length,

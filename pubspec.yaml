@@ -48,6 +48,8 @@ dependencies:
   flutter_launcher_icons: ^0.14.4
   fluttertoast: ^8.0.9
   flutter_sticky_header: ^0.8.0
+  dropdown_search: ^6.0.2
+  url_launcher: ^6.3.2
 dev_dependencies:
   flutter_test:
     sdk: flutter
