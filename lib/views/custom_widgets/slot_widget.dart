@@ -34,40 +34,120 @@ class _SlotWidgetState extends State<SlotWidget> {
   ) async {
     final TextEditingController controller = TextEditingController();
 
-    await showDialog(
+    await showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Add a visit purpose"),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(hintText: "Write something..."),
-          maxLines: 1,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              "Cancel",
-              style: TextStyle(color: constants.primaryColor),
+      isScrollControlled: true, // allows the sheet to resize with keyboard
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(
+              context,
+            ).viewInsets.bottom, // shifts up with keyboard
+          ),
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Drag handle
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 20),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+
+                // Title
+                const Text(
+                  "Add a visit purpose",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 16),
+
+                // Input field
+                TextField(
+                  controller: controller,
+                  autofocus: true,
+                  maxLines: 1,
+                  decoration: InputDecoration(
+                    hintText: "Write something...",
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Action buttons
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            side: BorderSide(color: Colors.grey[300]!),
+                          ),
+                        ),
+                        child: Text(
+                          "Cancel",
+                          style: TextStyle(color: constants.primaryColor),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          Navigator.pop(context);
+                          await viewModel.takeSlot(
+                            widget.token,
+                            widget.slot.id,
+                            controller.text.trim(),
+                          );
+                          widget.loadData();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: constants.primaryColor,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: const Text(
+                          "Submit",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-          ElevatedButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              await viewModel.takeSlot(
-                widget.token,
-                widget.slot.id,
-                controller.text.trim(),
-              );
-              widget.loadData();
-            },
-            child: Text(
-              "Submit",
-              style: TextStyle(color: constants.primaryColor),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -102,14 +182,13 @@ class _SlotWidgetState extends State<SlotWidget> {
                           GestureDetector(
                             child: Container(
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: constants.bgLight,
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(6),
                                 ),
                               ),
 
-                              padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
-                              child: Text("Take"),
+                              padding: EdgeInsets.fromLTRB(8, 5, 8, 5),
                             ),
                             onTap: () => _showNoteDialog(context, viewModel),
                           ),

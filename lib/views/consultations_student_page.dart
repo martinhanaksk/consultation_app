@@ -100,31 +100,38 @@ class _ConsultationsUserPageState
                 children: [
                   SizedBox(height: 80),
                   Center(
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20.0),
-                        dropdownColor: constants.defaultLightGrey,
-                        iconEnabledColor: constants.defaultDarkGrey,
-                        hint: Text("Select a Room"),
-                        value: _viewModel.safeSelectedRoomId,
-                        items: _viewModel.rooms == null
-                            ? []
-                            : _viewModel.rooms!.map((RoomModel value) {
-                                return DropdownMenuItem<String>(
-                                  value: value.id.toString(),
-                                  child: Text(value.title),
-                                );
-                              }).toList(),
-                        onChanged: (String? newValue) async {
-                          if (newValue != null) {
-                            final success = await _viewModel.setSelectedId(
-                              newValue,
-                            );
-                            if (success) {
-                              await _viewModel.onRoomChanged(newValue);
+                        color: constants.defaultLightGrey,
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          borderRadius: BorderRadius.circular(20.0),
+                          dropdownColor: constants.defaultLightGrey,
+                          iconEnabledColor: constants.defaultDarkGrey,
+                          hint: Text("Select a Room"),
+                          value: _viewModel.safeSelectedRoomId,
+                          items: _viewModel.rooms == null
+                              ? []
+                              : _viewModel.rooms!.map((RoomModel value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value.id.toString(),
+                                    child: Text(value.title),
+                                  );
+                                }).toList(),
+                          onChanged: (String? newValue) async {
+                            if (newValue != null) {
+                              final success = await _viewModel.setSelectedId(
+                                newValue,
+                              );
+                              if (success) {
+                                await _viewModel.onRoomChanged(newValue);
+                              }
                             }
-                          }
-                        },
+                          },
+                        ),
                       ),
                     ),
                   ),

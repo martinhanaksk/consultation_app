@@ -28,6 +28,14 @@ class ApiService {
     }
   }
 
+  Future<http.Response> requestLoginOtp(String email) async {
+    return await http.post(
+      Uri.parse('${constants.url}/auth/request-login-otp'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email}),
+    );
+  }
+
   Uri getVerifyLoginOtpUrl(bool rememberMe) {
     if (rememberMe) {
       return Uri.parse('${constants.url}/auth/verify-login-otp-long');

@@ -13,20 +13,20 @@ abstract class BaseConsultationsViewmodel extends ChangeNotifier {
   bool blocksFiltered = false;
   String? selectedRoomId;
   bool hasNoRooms = false;
-  
-   int foundBlocksLength() {
+
+  int foundBlocksLength() {
     if (blocksFiltered && blocks.isNotEmpty) {
       return blocks.length;
     }
     return 0;
   }
+
   Future<void> loadRoom(String token, int roomId) async {
-    
     if (!await helpers.handleIsInternetConnection()) {
       notify.showToast('Please connect to internet.');
       return;
     }
-    
+
     helpers.checkIfValidToken(token);
     selectedRoomId = roomId.toString();
     await fetchData(token, roomId);
@@ -98,10 +98,26 @@ abstract class BaseConsultationsViewmodel extends ChangeNotifier {
     for (var tmpBlock in blocks) {
       if (tmpBlock.id == blockId) {
         return helpers.getTDateOnlySimple(
-          DateTime.parse(tmpBlock.date.toString()),
-        );
+              DateTime.parse(tmpBlock.date.toString()),
+            ) +
+            " " +
+            getDaysRemainingTillDate(tmpBlock.date);
       }
     }
     return "";
+  }
+
+  String getDaysRemainingTillDate(DateTime date) {
+    final now = DateTime.now();
+
+    final today = DateTime(now.year, now.month, now.day);
+    final target = DateTime(date.year, date.month, date.day);
+
+    final diff = target.difference(today).inDays;
+    if (diff < 0) return "";
+    if (diff == 0) return "(today)";
+    if (diff == 1) return "(tomorrow)";
+
+    return "($diff d.)";
   }
 }

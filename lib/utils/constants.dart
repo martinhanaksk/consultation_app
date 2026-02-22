@@ -4,8 +4,8 @@ class Constants {
   Color bgLight = Color(0xFFF2F3F8);
   Color defaultDarkGrey = Color(0xFF3D3D3D);
   Color defaultGreen = Color.fromARGB(255, 16, 166, 74);
-  Color defaultRed = Color.fromARGB(255, 255, 0, 0);
-  Color primaryColor = Color.fromARGB(255, 0, 113, 226);
+  Color defaultRed = Color(0xFFFF0000);
+  Color primaryColor = Color(0xFF0071E2);
   Color defaultLightGrey = Color.fromARGB(255, 217, 217, 217);
   Color defaultWhite = Color.fromARGB(255, 255, 255, 255);
   double fontSizeBig = 40;

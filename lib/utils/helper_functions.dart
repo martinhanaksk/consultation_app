@@ -20,7 +20,7 @@ class HelperFunctions {
   }
 
   Future<void> checkIfValidToken(String token) async {
-    if (_isLoggingOut) return; 
+    if (_isLoggingOut) return;
 
     _isLoggingOut = true;
     if (token == "") {
@@ -46,27 +46,27 @@ class HelperFunctions {
   }
 
   int compareTimeStringsDesc(String t1, String t2) {
-  Duration toDuration(String t) {
-    final parts = t.split(':');
-    return Duration(
-      hours: parts.isNotEmpty ? (int.tryParse(parts[0]) ?? 0) : 0,
-      minutes: parts.length > 1 ? (int.tryParse(parts[1]) ?? 0) : 0,
-      seconds: parts.length > 2 ? (int.tryParse(parts[2]) ?? 0) : 0,
-    );
-  }
+    Duration toDuration(String t) {
+      final parts = t.split(':');
+      return Duration(
+        hours: parts.isNotEmpty ? (int.tryParse(parts[0]) ?? 0) : 0,
+        minutes: parts.length > 1 ? (int.tryParse(parts[1]) ?? 0) : 0,
+        seconds: parts.length > 2 ? (int.tryParse(parts[2]) ?? 0) : 0,
+      );
+    }
 
-  final d1 = toDuration(t1);
-  final d2 = toDuration(t2);
-  return d2.compareTo(d1);
-}
+    final d1 = toDuration(t1);
+    final d2 = toDuration(t2);
+    return d2.compareTo(d1);
+  }
 
   String getTimeOnlySimple(DateTime dateTime) {
     return "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}";
   }
 
   String getTDateOnlySimple(DateTime dateTime) {
-    String weekday = DateFormat('EEEE').format(dateTime); // Thursday
-    String dayMonth = DateFormat('d.M').format(dateTime); // 4.1
+    String weekday = DateFormat('EE').format(dateTime); // Thu
+    String dayMonth = DateFormat('d.M').format(dateTime); // 4.10
     return "$weekday $dayMonth";
   }
 
@@ -87,7 +87,6 @@ class HelperFunctions {
   bool isNumeric(String s) {
     return int.tryParse(s) != null;
   }
-
 
   void checkIfInSharedPreferences() async {
     String? token = await prefs.getItem('token');
