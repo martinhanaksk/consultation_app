@@ -8,7 +8,6 @@ class VerifyOtpViewmodel extends ChangeNotifier {
   }
 
   Future<void> connect(
-    BuildContext context,
     String email,
     String otp,
     bool rememberMe,
@@ -22,7 +21,7 @@ class VerifyOtpViewmodel extends ChangeNotifier {
     _isLoading = false;
     notifyListeners();
     if (success) {
-      helpers.resetLogoutFlag;
+      helpers.resetLogoutFlag();
       if (role == 'teacher') {
         nav.toTeacherConsultations(token: token, email: email);
       } else if (role == 'student') {

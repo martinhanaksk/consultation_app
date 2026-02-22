@@ -5,7 +5,7 @@ import 'package:consultation_app/setup.dart';
 class RegisterViewmodel extends ChangeNotifier {
   bool _isLoading = false;
 
-  Future<void> registerUser(BuildContext context, UserModel um) async {
+  Future<void> registerUser(UserModel um) async {
     if (_isLoading) return;
     _isLoading = true;
     notifyListeners();

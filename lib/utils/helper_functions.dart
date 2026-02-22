@@ -1,6 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:consultation_app/setup.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 class HelperFunctions {
   bool _isLoading = false;
@@ -19,9 +20,7 @@ class HelperFunctions {
   }
 
   Future<void> checkIfValidToken(String token) async {
-    if (_isLoggingOut || token.isNotEmpty) {
-      return;
-    }
+    if (_isLoggingOut) return; 
 
     _isLoggingOut = true;
     if (token == "") {
@@ -47,22 +46,19 @@ class HelperFunctions {
   }
 
   int compareTimeStringsDesc(String t1, String t2) {
-    Duration toDuration(String t) {
-      final parts = t.split(':');
-      return Duration(
-        hours: int.parse(parts[0]),
-        minutes: int.parse(parts[1]),
-        seconds: int.parse(parts[2]),
-      );
-    }
-
-    final d1 = toDuration(t1);
-    final d2 = toDuration(t2);
-    //is t1>t2?
-    print("AA");
-    print(d2.compareTo(d1));
-    return d2.compareTo(d1);
+  Duration toDuration(String t) {
+    final parts = t.split(':');
+    return Duration(
+      hours: parts.isNotEmpty ? (int.tryParse(parts[0]) ?? 0) : 0,
+      minutes: parts.length > 1 ? (int.tryParse(parts[1]) ?? 0) : 0,
+      seconds: parts.length > 2 ? (int.tryParse(parts[2]) ?? 0) : 0,
+    );
   }
+
+  final d1 = toDuration(t1);
+  final d2 = toDuration(t2);
+  return d2.compareTo(d1);
+}
 
   String getTimeOnlySimple(DateTime dateTime) {
     return "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}";
@@ -90,5 +86,27 @@ class HelperFunctions {
 
   bool isNumeric(String s) {
     return int.tryParse(s) != null;
+  }
+
+
+  void checkIfInSharedPreferences() async {
+    String? token = await prefs.getItem('token');
+    String? email = await prefs.getItem('email');
+    String? role = await prefs.getItem('role');
+    if (role.isNotEmpty && token.isNotEmpty && email.isNotEmpty) {
+      bool isExpired = JwtDecoder.isExpired(token);
+
+      if (!isExpired) {
+        if (role == 'teacher') {
+          nav.toTeacherConsultations(token: token, email: email);
+        } else if (role == 'student') {
+          nav.toStudentConsultations(token: token, email: email);
+        }
+      } else {
+        await prefs.removeItem('token');
+        await prefs.removeItem('email');
+        await prefs.removeItem('role');
+      }
+    }
   }
 }

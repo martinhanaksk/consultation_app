@@ -30,16 +30,17 @@ class VerifyOtpPage extends StatefulWidget {
 }
 
 class _VerifyOtpPageState extends State<VerifyOtpPage> {
+   late final VerifyOtpViewmodel _viewModel;
   final TextEditingController otpcontroller = TextEditingController();
   @override
   void initState() {
     super.initState();
+     _viewModel = VerifyOtpViewmodel();
+
     if (widget.token.isNotEmpty) {
-      //testing otp
       otpcontroller.text = widget.token.substring(1, widget.token.length - 1);
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        Provider.of<VerifyOtpViewmodel>(context, listen: false).connect(
-          context,
+        _viewModel.connect(
           widget.email,
           otpcontroller.text.trim(),
           widget.rememberMe,
@@ -48,16 +49,17 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
     }
   }
 
-  @override
+ @override
   void dispose() {
     otpcontroller.dispose();
+    _viewModel.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => VerifyOtpViewmodel(),
+    return ChangeNotifierProvider.value(
+      value: _viewModel,
       child: Consumer<VerifyOtpViewmodel>(
         builder: (context, viewModel, child) {
           return Scaffold(
@@ -90,7 +92,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                       controller: otpcontroller,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        hintText: 'eg. 1234',
+                        hintText: 'Enter code',
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -103,7 +105,6 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                             ? null
                             : () {
                                 viewModel.connect(
-                                  context,
                                   widget.email,
                                   otpcontroller.text.trim(),
                                   widget.rememberMe,

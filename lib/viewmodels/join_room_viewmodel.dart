@@ -10,7 +10,7 @@ class JoinRoomViewmodel extends ChangeNotifier {
     return _allRooms;
   }
 
-  Future<void> joinRoom(BuildContext context, String token, int id) async {
+  Future<void> joinRoom(String token, int id) async {
     try {
       if (_isLoading) return;
       _isLoading = true;
@@ -21,7 +21,6 @@ class JoinRoomViewmodel extends ChangeNotifier {
       notify.showToast('Room joined.');
       nav.pop();
     } catch (e) {
-      print(id);
       notify.showToast('Unable to join the room.');
     }
   }

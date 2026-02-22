@@ -12,20 +12,22 @@ class SliderMenu extends StatefulWidget {
 }
 
 class _SliderMenuState extends State<SliderMenu> {
+   late final SliderMenuViewmodel _viewModel; 
+  
   @override
   void initState() {
     super.initState();
+    _viewModel = SliderMenuViewmodel();
+    _viewModel.checkSliderMenuFundamentals();
+  
   }
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => SliderMenuViewmodel(),
+    return ChangeNotifierProvider.value(
+      value: _viewModel,
       child: Consumer<SliderMenuViewmodel>(
         builder: (context, viewModel, child) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            viewModel.checkIfInSharedPreferences();
-          });
           return SafeArea(
             child: Drawer(
               width: 220,
@@ -115,13 +117,23 @@ class _SliderMenuState extends State<SliderMenu> {
                                       onPressed: () {
                                         nav.pop();
                                       },
-                                      child:  Text("Cancel",style:TextStyle(color: constants.primaryColor)),
+                                      child: Text(
+                                        "Cancel",
+                                        style: TextStyle(
+                                          color: constants.primaryColor,
+                                        ),
+                                      ),
                                     ),
                                     ElevatedButton(
                                       onPressed: () async {
                                         viewModel.launchFeedbackWebsite();
                                       },
-                                      child:  Text("Yes",style:TextStyle(color: constants.primaryColor)),
+                                      child: Text(
+                                        "Yes",
+                                        style: TextStyle(
+                                          color: constants.primaryColor,
+                                        ),
+                                      ),
                                     ),
                                   ],
                                 );

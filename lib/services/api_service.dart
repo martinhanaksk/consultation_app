@@ -1,7 +1,5 @@
 import 'dart:convert';
-import 'package:consultation_app/services/user_preferences.dart';
 import 'package:consultation_app/setup.dart';
-import 'package:consultation_app/utils/constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:consultation_app/models/user_model.dart';
 import 'package:consultation_app/models/room_model.dart';
@@ -114,7 +112,6 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> decoded = jsonDecode(response.body);
-      print(decoded.toString());
       return UserModel.fromJson(decoded);
     } else {
       nav.toLogin();
@@ -152,11 +149,9 @@ class ApiService {
 
     List<int> roomIds = [];
     if (responseToGetRooms.statusCode == 200) {
-      print("ok");
       final List<dynamic> jsonList = jsonDecode(responseToGetRooms.body);
       roomIds = jsonList.map((json) => json['room_id'] as int).toList();
     } else {
-      print("okd");
       return [];
     }
 

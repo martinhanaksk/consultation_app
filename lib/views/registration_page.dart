@@ -141,7 +141,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 ),
                                 visible: 0,
                               );
-                              await viewModel.registerUser(context, um);
+                              await viewModel.registerUser(um);
                             } catch (e) {}
                           }
                         },

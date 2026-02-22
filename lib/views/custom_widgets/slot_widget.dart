@@ -28,6 +28,49 @@ class SlotWidget extends StatefulWidget {
 }
 
 class _SlotWidgetState extends State<SlotWidget> {
+  Future<void> _showNoteDialog(
+    BuildContext context,
+    SlotViewmodel viewModel,
+  ) async {
+    final TextEditingController controller = TextEditingController();
+
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Add a visit purpose"),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(hintText: "Write something..."),
+          maxLines: 1,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              "Cancel",
+              style: TextStyle(color: constants.primaryColor),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await viewModel.takeSlot(
+                widget.token,
+                widget.slot.id,
+                controller.text.trim(),
+              );
+              widget.loadData();
+            },
+            child: Text(
+              "Submit",
+              style: TextStyle(color: constants.primaryColor),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -47,9 +90,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            widget.slot.startTime.split(":")[0] +
-                                ":" +
-                                widget.slot.startTime.split(":")[1],
+                            '${widget.slot.startTime.split(":")[0]}${":"}${widget.slot.startTime.split(":")[1]}',
 
                             style: TextStyle(
                               color: constants.defaultDarkGrey,
@@ -70,14 +111,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                               padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
                               child: Text("Take"),
                             ),
-                            onTap: () async {
-                              await viewModel.showNoteDialog(
-                                context,
-                                widget.token,
-                                widget.slot.id,
-                              );
-                              widget.loadData();
-                            },
+                            onTap: () => _showNoteDialog(context, viewModel),
                           ),
                         ],
                       ),
@@ -98,10 +132,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  widget.slot.startTime.split(":")[0] +
-                                      ":" +
-                                      widget.slot.startTime.split(":")[1] +
-                                      " ${helpers.cropText(widget.slot.takenByName!)}",
+                                  '${widget.slot.startTime.split(":")[0]}${":"}${widget.slot.startTime.split(":")[1]} ${helpers.cropText(widget.slot.takenByName ?? '')}',
                                   style: TextStyle(
                                     color: constants.defaultDarkGrey,
                                     fontSize: constants.fontSizeSmall,
@@ -150,10 +181,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  widget.slot.startTime.split(":")[0] +
-                                      ":" +
-                                      widget.slot.startTime.split(":")[1] +
-                                      " ${helpers.cropText(widget.slot.takenByName!)}",
+                                  '${widget.slot.startTime.split(":")[0]}${":"}${widget.slot.startTime.split(":")[1]} ${{helpers.cropText(widget.slot.takenByName!)}}',
                                   style: TextStyle(
                                     color: constants.defaultDarkGrey,
                                     fontSize: constants.fontSizeSmall,

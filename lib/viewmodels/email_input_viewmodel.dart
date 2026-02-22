@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:consultation_app/setup.dart';
 
 class EmailInputViewModel extends ChangeNotifier {
@@ -15,7 +14,7 @@ class EmailInputViewModel extends ChangeNotifier {
   String get email => _email;
 
   Future<void> continueToVerify(
-    BuildContext context,
+    
     String email,
     bool rememberMe,
   ) async {
@@ -24,7 +23,6 @@ class EmailInputViewModel extends ChangeNotifier {
     }
     _isLoading = true;
     notifyListeners();
-    notify.showToast("Checking email...");
     try {
       final response = await http.post(
         Uri.parse('${constants.url}/auth/request-login-otp'),
@@ -32,9 +30,9 @@ class EmailInputViewModel extends ChangeNotifier {
         body: jsonEncode({'email': email}),
       );
       if (constants.testing) {
-        handleTestingServer(response, context, email, rememberMe);
+        handleTestingServer(response, email, rememberMe);
       } else {
-        handleServer(response, context, email, rememberMe);
+        handleServer(response, email, rememberMe);
       }
     } catch (e) {
       notify.showToast("Please, check your internet connection.");
@@ -44,30 +42,9 @@ class EmailInputViewModel extends ChangeNotifier {
     }
   }
 
-  void checkIfInSharedPreferences(BuildContext context) async {
-    String? token = await prefs.getItem('token');
-    String? email = await prefs.getItem('email');
-    String? role = await prefs.getItem('role');
-    if (role.isNotEmpty && token.isNotEmpty && email.isNotEmpty) {
-      bool isExpired = JwtDecoder.isExpired(token);
-
-      if (!isExpired) {
-        if (role == 'teacher') {
-          nav.toTeacherConsultations(token: token, email: email);
-        } else if (role == 'student') {
-          nav.toStudentConsultations(token: token, email: email);
-        }
-      } else {
-        await prefs.removeItem('token');
-        await prefs.removeItem('email');
-        await prefs.removeItem('role');
-      }
-    }
-  }
 
   void handleTestingServer(
     http.Response response,
-    BuildContext context,
     String email,
     bool rememberMe,
   ) {
@@ -78,13 +55,12 @@ class EmailInputViewModel extends ChangeNotifier {
         rememberMe: rememberMe,
       );
     } else if (response.statusCode == 400) {
-      redirectToRegister(context, email);
+      redirectToRegister(email);
     }
   }
 
   void handleServer(
     http.Response response,
-    BuildContext context,
     String email,
     bool rememberMe,
   ) async {
@@ -120,7 +96,7 @@ class EmailInputViewModel extends ChangeNotifier {
         notify.showToast('Server configuration issue. Please try again later.');
       }
     } else if (response.statusCode == 400) {
-      redirectToRegister(context, email);
+      redirectToRegister(email);
     } else {
       notify.showToast('Failed to send OTP. Try again.');
     }
@@ -135,7 +111,7 @@ class EmailInputViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void redirectToRegister(BuildContext context, String email) {
+  void redirectToRegister( String email) {
     nav.toRegister(email: email);
   }
 }

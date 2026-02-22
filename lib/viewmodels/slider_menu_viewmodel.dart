@@ -20,7 +20,7 @@ class SliderMenuViewmodel extends ChangeNotifier {
   bool? get isTeacher => _isTeacher;
   String? get email => _email;
 
-  void checkIfInSharedPreferences() async {
+  void checkSliderMenuFundamentals() async {
     if (_isLoading) {
       return;
     }

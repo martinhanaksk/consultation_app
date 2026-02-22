@@ -1,6 +1,7 @@
 import 'package:consultation_app/models/room_model.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/join_room_viewmodel.dart';
+import 'package:consultation_app/viewmodels/verify_otp_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
 import 'package:flutter/material.dart';
@@ -19,28 +20,30 @@ class _JoinRoomState extends State<JoinRoom> {
   String? selectedRoomId;
   int? selectedId;
   final TextEditingController idController = TextEditingController();
-
+  
+   late final JoinRoomViewmodel _viewModel; 
   @override
   void initState() {
     super.initState();
+      _viewModel = JoinRoomViewmodel();       
+    _viewModel.fetchAllRooms(widget.token);
+    
   }
 
-  @override
+@override
   void dispose() {
     idController.dispose();
+    _viewModel.dispose();
     super.dispose();
   }
 
   final dropDownKey = GlobalKey<DropdownSearchState>();
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => JoinRoomViewmodel(),
+    return ChangeNotifierProvider.value(
+      value: _viewModel,
       child: Consumer<JoinRoomViewmodel>(
         builder: (context, viewModel, child) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            context.read<JoinRoomViewmodel>().fetchAllRooms(widget.token);
-          });
           return Scaffold(
             appBar: AppBarMenu(),
             drawer: SliderMenu(),
@@ -141,7 +144,6 @@ class _JoinRoomState extends State<JoinRoom> {
                           onPressed: () async {
                             if (selectedId != null) {
                               await viewModel.joinRoom(
-                                context,
                                 widget.token,
                                 selectedId!,
                               );

@@ -1,12 +1,11 @@
 import 'package:consultation_app/models/room_model.dart';
-import 'package:consultation_app/models/slot_model.dart';
-import 'package:consultation_app/viewmodels/consultations_viewmodel.dart';
-import 'package:consultation_app/viewmodels/slot_viewmodel.dart';
+import 'package:consultation_app/viewmodels/teacher_consultations_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slot_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
+import 'package:provider/provider.dart';
 
 class ConsultationsTeacherPageArgs {
   final String token;
@@ -14,7 +13,7 @@ class ConsultationsTeacherPageArgs {
   ConsultationsTeacherPageArgs({required this.token, required this.email});
 }
 
-class ConsultationsTeacherPage extends StatefulWidget {
+class ConsultationsTeacherPage extends StatelessWidget {
   final String token;
   final String email;
   const ConsultationsTeacherPage({
@@ -24,86 +23,55 @@ class ConsultationsTeacherPage extends StatefulWidget {
   });
 
   @override
-  State<ConsultationsTeacherPage> createState() =>
-      _ConsultationsUserPageState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => TeacherConsultationsViewmodel(),
+      child: _ConsultationsTeacherPageInner(token: token, email: email),
+    );
+  }
 }
 
-class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
-  final TextEditingController emailController = TextEditingController();
-  final ConsultationsViewmodel _consultationsViewmodel =
-      ConsultationsViewmodel();
-  final SlotViewmodel _slotViewmodel = SlotViewmodel();
-  Map<int, List<SlotModel?>?> slotsInBlocks = {};
-  String? selectedRoom;
-  String? firstRoom;
-  List<RoomModel>? rooms = [];
+class _ConsultationsTeacherPageInner extends StatefulWidget {
+  final String token;
+  final String email;
+  const _ConsultationsTeacherPageInner({
+    required this.token,
+    required this.email,
+  });
+
+  @override
+  State<_ConsultationsTeacherPageInner> createState() =>
+      _ConsultationsTeacherPageState();
+}
+
+class _ConsultationsTeacherPageState
+    extends State<_ConsultationsTeacherPageInner> {
   bool isLoading = false;
-  bool isTeacher = false;
-  String roomId = "";
+
   @override
   void initState() {
     super.initState();
-    _checkRole();
-    loadData();
-    helpers.checkIfValidToken(widget.token);
+    WidgetsBinding.instance.addPostFrameCallback((_) => loadData());
   }
 
-  void _checkRole() async {
-    if (!await helpers.handleIsInternetConnection()) {
-      notify.showToast('Please connect to internet.');
-    } else {
-      bool result = await _consultationsViewmodel.isTeacher(
-        widget.token,
-        widget.email,
-      );
-      if (mounted) {
-        setState(() {
-          isTeacher = result;
-        });
-      }
-    }
+  Future<void> loadData() async {
+    setState(() => isLoading = true);
+    await context.read<TeacherConsultationsViewmodel>().init(widget.token);
+    if (mounted) setState(() => isLoading = false);
   }
 
-  void loadData() async {
-    setState(() {
-      isLoading = true;
-    });
-    if (selectedRoom != null) {
-      helpers.checkIfValidToken(widget.token);
-      await _consultationsViewmodel.fetchData(
-        widget.token,
-        int.parse(selectedRoom!),
-      );
-    } else {
-      helpers.checkIfValidToken(widget.token);
-      await _consultationsViewmodel.fetchData(widget.token, 1);
-    }
-
-    setState(() {
-      slotsInBlocks = _consultationsViewmodel.slotsInBlocks;
-      rooms = _consultationsViewmodel.rooms;
-      if (rooms != null) {
-        if (rooms!.isNotEmpty) {
-          firstRoom = rooms![0].id.toString();
-          if (roomId == "") {
-            if (firstRoom != null) {
-              roomId = firstRoom!;
-            }
-            if (selectedRoom != null) {
-              roomId = selectedRoom!;
-            }
-          }
-          if (rooms!.isEmpty) {
-            isLoading = false;
-          }
-        }
-        isLoading = false;
-      }
-    });
+  Future<void> onRoomChanged(String newRoomId) async {
+    setState(() => isLoading = true);
+    await context.read<TeacherConsultationsViewmodel>().loadRoom(
+      widget.token,
+      int.parse(newRoomId),
+    );
+    if (mounted) setState(() => isLoading = false);
   }
 
   @override
   Widget build(BuildContext context) {
+    final vm = context.watch<TeacherConsultationsViewmodel>();
     return Scaffold(
       appBar: AppBarMenu(),
       drawer: SliderMenu(),
@@ -116,7 +84,7 @@ class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
                   strokeWidth: 3,
                 ),
               )
-            : (rooms != null && rooms!.isEmpty)
+            : (vm.hasNoRooms || vm.selectedRoomId == null)
             ? Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Center(
@@ -132,161 +100,139 @@ class _ConsultationsUserPageState extends State<ConsultationsTeacherPage> {
                             color: constants.primaryColor,
                           ),
                         ),
-                        onTap: () => {nav.toJoinRoom(token: widget.token)},
+                        onTap: () => nav.toJoinRoom(token: widget.token),
                       ),
-                     ],
+                    ],
                   ),
                 ),
               )
-            : roomId == ""
-            ? Text("")
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: isLoading
-                        ? SizedBox.shrink()
-                        : ListView(
-                            children: [
-                              Column(
-                                children: [
-                                  SizedBox(height: 150),
-                                  Center(
-                                    child: Container(
-                                      padding: EdgeInsets.symmetric(
-                                        vertical: 5,
-                                        horizontal: 10,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(
-                                          20.0,
-                                        ),
-                                        color: constants.defaultLightGrey,
-                                      ),
-                                      child: DropdownButtonHideUnderline(
-                                        child: DropdownButton<String>(
-                                          borderRadius: BorderRadius.circular(
-                                            20.0,
-                                          ),
-                                          dropdownColor:
-                                              constants.defaultLightGrey,
-                                          iconEnabledColor:
-                                              constants.defaultDarkGrey,
-                                          hint: Text("Select a Room"),
-                                          value: selectedRoom,
-                                          items: (rooms == null)
-                                              ? []
-                                              : rooms!.map((RoomModel value) {
-                                                  return DropdownMenuItem<
-                                                    String
-                                                  >(
-                                                    value: value.id.toString(),
-                                                    child: Container(
-                                                      child: Text(
-                                                        value.title,
-                                                        style:
-                                                            selectedRoom ==
-                                                                value.id
-                                                                    .toString()
-                                                            ? TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w900,
-                                                              )
-                                                            : TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400,
-                                                              ),
+                    child: ListView(
+                      children: [
+                        Column(
+                          children: [
+                            SizedBox(height: 150),
+                            Center(
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 5,
+                                  horizontal: 10,
+                                ),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  color: constants.defaultLightGrey,
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton<String>(
+                                    borderRadius: BorderRadius.circular(20.0),
+                                    dropdownColor: constants.defaultLightGrey,
+                                    iconEnabledColor: constants.defaultDarkGrey,
+                                    hint: Text("Select a Room"),
+                                    value:
+                                         vm.safeSelectedRoomId,
+                                    items: vm.rooms == null
+                                        ? []
+                                        : vm.rooms!.map((RoomModel value) {
+                                            return DropdownMenuItem<String>(
+                                              value: value.id.toString(),
+                                              child: Text(
+                                                value.title,
+                                                style:
+                                                    vm.selectedRoomId ==
+                                                        value.id.toString()
+                                                    ? TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w900,
+                                                      )
+                                                    : TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w400,
                                                       ),
-                                                    ),
-                                                  );
-                                                }).toList(),
-                                          onChanged: (String? newValue) {
-                                            setState(() {
-                                              if (newValue != null) {
-                                                selectedRoom = newValue;
-                                                roomId = newValue;
-                                              }
-                                            });
-                                            loadData();
-                                          },
+                                              ),
+                                            );
+                                          }).toList(),
+                                    onChanged: (String? newValue) {
+                                      if (newValue != null) {
+                                        onRoomChanged(newValue);
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 20),
+                          ],
+                        ),
+                        ...() {
+                          final sortedEntries = vm.slotsInBlocks.entries
+                              .toList();
+                          sortedEntries.sort((a, b) {
+                            final blockA = vm.blocks.firstWhere(
+                              (block) => block.id == a.key,
+                            );
+                            final blockB = vm.blocks.firstWhere(
+                              (block) => block.id == b.key,
+                            );
+                            return blockA.date.compareTo(blockB.date);
+                          });
+                          return sortedEntries.map((block) {
+                            return vm.foundBlocksLength() == 0
+                                ? Text("No upcoming consultations found.")
+                                : Column(
+                                    children: [
+                                      SizedBox(height: 10),
+                                      Text(
+                                        vm.getDateOfBlock(block.key),
+                                        style: TextStyle(
+                                          color: constants.defaultDarkGrey,
+                                          fontSize: constants.fontSizeSmall,
+                                          fontWeight: FontWeight.w400,
                                         ),
                                       ),
-                                    ),
-                                  ),
-
-                                  SizedBox(height: 20),
-                                ],
-                              ),
-                              ...() {
-                                final sortedEntries = slotsInBlocks.entries
-                                    .toList();
-
-                                return sortedEntries.map((block) {
-                                  return _consultationsViewmodel
-                                              .foundBlocksLength() ==
-                                          0
-                                      ? Text("No upcoming consultations found.")
-                                      : Column(
-                                          children: [
-                                            SizedBox(height: 10),
-                                            Text(
-                                              _consultationsViewmodel
-                                                  .getDateOfBlock(block.key),
-                                              style: TextStyle(
-                                                color:
-                                                    constants.defaultDarkGrey,
-                                                fontSize:
-                                                    constants.fontSizeSmall,
-                                                fontWeight: FontWeight.w400,
+                                      SizedBox(height: 10),
+                                      (block.value == null ||
+                                              block.value!.isEmpty)
+                                          ? Text("No slots found")
+                                          : Container(
+                                              clipBehavior: Clip.hardEdge,
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius: BorderRadius.all(
+                                                  Radius.circular(20),
+                                                ),
+                                              ),
+                                              child: Column(
+                                                children: block.value!
+                                                    .map(
+                                                      (slot) => slot == null
+                                                          ? Text(
+                                                              "No slots for the block found.",
+                                                            )
+                                                          : SlotWidget(
+                                                              userEmail:
+                                                                  widget.email,
+                                                              slot: slot,
+                                                              token:
+                                                                  widget.token,
+                                                              roomId: vm
+                                                                  .selectedRoomId!,
+                                                              context: context,
+                                                              loadData:
+                                                                  loadData,
+                                                            ),
+                                                    )
+                                                    .toList(),
                                               ),
                                             ),
-                                            SizedBox(height: 10),
-                                            (block.value == null ||
-                                                    block.value!.isEmpty)
-                                                ? Text("No slots found")
-                                                : Container(
-                                                    clipBehavior: Clip.hardEdge,
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.white,
-                                                      borderRadius:
-                                                          BorderRadius.all(
-                                                            Radius.circular(20),
-                                                          ),
-                                                    ),
-                                                    child: Column(
-                                                      children: block.value!
-                                                          .map(
-                                                            (slot) =>
-                                                                slot == null
-                                                                ? Text(
-                                                                    "No slots for the block found.",
-                                                                  )
-                                                                : SlotWidget(
-                                                                    userEmail:
-                                                                        widget
-                                                                            .email,
-                                                                    slot: slot,
-                                                                    token: widget
-                                                                        .token,
-                                                                    roomId:
-                                                                        roomId,
-                                                                    context:
-                                                                        context,
-                                                                    loadData: () =>
-                                                                        loadData(),
-                                                                  ),
-                                                          )
-                                                          .toList(),
-                                                    ),
-                                                  ),
-                                          ],
-                                        );
-                                });
-                              }(),
-                            ],
-                          ),
+                                    ],
+                                  );
+                          }).toList();
+                        }(),
+                      ],
+                    ),
                   ),
                 ],
               ),
