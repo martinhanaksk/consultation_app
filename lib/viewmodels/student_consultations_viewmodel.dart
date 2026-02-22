@@ -5,19 +5,39 @@ import 'package:consultation_app/viewmodels/base_consultations_viewmodel.dart';
 class StudentConsultationsViewmodel extends BaseConsultationsViewmodel {
   bool isTeacherVal = false;
   bool isLoading = false;
+  Future<void> onRoomChanged(String newRoomId) async {
+    isLoading = true;
+    notifyListeners();
+    await loadRoom(await prefs.getItem("token"), int.parse(newRoomId));
+   
+    isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> loadData() async {
+    isLoading = true;
+    notifyListeners();
+    if (selectedRoomId == null) {
+      await init(await prefs.getItem("token"), await prefs.getItem("email"));isLoading = false;
+    notifyListeners();
+    return;
+    }
+
+    await loadRoom(await prefs.getItem("token"), int.parse(selectedRoomId!));
+    isLoading = false;
+    notifyListeners();
+  }
+
   Future<bool> setSelectedId(String? id) async {
     if (id == null) return false;
 
     final myRooms = await api.getMyRooms(
       await prefs.getItem('token'),
-    ); // Fetch current user's rooms
+    );
     final isValidRoom = myRooms.any(
       (room) => room.id.toString() == id,
-    ); // Check if room belongs to user
-    for (var room in myRooms) {
-      print("XD" + room.id.toString());
-    }
-    print("f" + id);
+    );
+    
     if (isValidRoom) {
       selectedRoomId = id;
       notifyListeners();

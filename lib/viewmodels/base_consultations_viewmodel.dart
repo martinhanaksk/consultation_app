@@ -1,4 +1,3 @@
-// base_consultations_viewmodel.dart
 import 'package:consultation_app/models/block_model.dart';
 import 'package:consultation_app/models/room_model.dart';
 import 'package:consultation_app/models/slot_model.dart';
@@ -14,19 +13,20 @@ abstract class BaseConsultationsViewmodel extends ChangeNotifier {
   bool blocksFiltered = false;
   String? selectedRoomId;
   bool hasNoRooms = false;
-  int foundBlocksLength() {
+  
+   int foundBlocksLength() {
     if (blocksFiltered && blocks.isNotEmpty) {
       return blocks.length;
     }
     return 0;
   }
-  
   Future<void> loadRoom(String token, int roomId) async {
     
     if (!await helpers.handleIsInternetConnection()) {
       notify.showToast('Please connect to internet.');
       return;
     }
+    
     helpers.checkIfValidToken(token);
     selectedRoomId = roomId.toString();
     await fetchData(token, roomId);

@@ -14,7 +14,6 @@ class ConsultationsStudentPageArgs {
   ConsultationsStudentPageArgs({required this.token, required this.email});
 }
 
-// Provider wrapper sits outside so the inner widget's context can access it
 class ConsultationsStudentPage extends StatelessWidget {
   final String token;
   final String email;
@@ -48,44 +47,25 @@ class _ConsultationsStudentPageInner extends StatefulWidget {
 
 class _ConsultationsUserPageState
     extends State<_ConsultationsStudentPageInner> {
-  bool isLoading = false;
-  late final StudentConsultationsViewmodel _viewModel;
   @override
   void initState() {
     super.initState();
-    _viewModel = StudentConsultationsViewmodel();
-    _viewModel.init(widget.token, widget.email);
-    print("inited");
-    loadData();
-  }
-
-  Future<void> loadData() async {
-    setState(() => isLoading = true);
-    if (_viewModel.selectedRoomId == null) {
-      await _viewModel.init(widget.token, widget.email);
-    }
-
-    await _viewModel.loadRoom(
-      widget.token,
-      int.parse(_viewModel.selectedRoomId!),
-    );
-    if (mounted) setState(() => isLoading = false);
-  }
-
-  Future<void> onRoomChanged(String newRoomId) async {
-    setState(() => isLoading = true);
-    await _viewModel.loadRoom(widget.token, int.parse(newRoomId));
-    if (mounted) setState(() => isLoading = false);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final _viewModel = context.read<StudentConsultationsViewmodel>();
+      _viewModel.init(widget.token, widget.email);
+      _viewModel.loadData();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final _viewModel = context.watch<StudentConsultationsViewmodel>();
     return Scaffold(
       appBar: AppBarMenu(),
       drawer: SliderMenu(),
       backgroundColor: constants.bgLight,
       body: SafeArea(
-        child: isLoading
+        child: _viewModel.isLoading
             ? Center(
                 child: CircularProgressIndicator(
                   color: Colors.blue,
@@ -135,10 +115,15 @@ class _ConsultationsUserPageState
                                   child: Text(value.title),
                                 );
                               }).toList(),
-                        onChanged: (String? newValue) {
+                        onChanged: (String? newValue) async {
                           if (newValue != null) {
-                            onRoomChanged(newValue);
-                          } else {}
+                            final success = await _viewModel.setSelectedId(
+                              newValue,
+                            );
+                            if (success) {
+                              await _viewModel.onRoomChanged(newValue);
+                            }
+                          }
                         },
                       ),
                     ),
@@ -209,7 +194,8 @@ class _ConsultationsUserPageState
                                                             roomId: _viewModel
                                                                 .selectedRoomId!,
                                                             context: context,
-                                                            loadData: loadData,
+                                                            loadData: _viewModel
+                                                                .loadData,
                                                           ),
                                                   )
                                                   .toList(),

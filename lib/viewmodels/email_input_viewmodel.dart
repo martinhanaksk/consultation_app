@@ -67,7 +67,6 @@ class EmailInputViewModel extends ChangeNotifier {
     if (response.statusCode == 200) {
       nav.toVerifyOtp(email: email, token: "", rememberMe: rememberMe);
     } else if (response.statusCode == 307) {
-      // Handle redirect manually
       String? location = response.headers['location'];
       if (location != null) {
         final redirectResponse = await http
