@@ -31,12 +31,12 @@ class _ChangeSettingsState extends State<ChangeSettings> {
           return Scaffold(
             appBar: AppBarMenu(),
             drawer: SliderMenu(),
-            backgroundColor: constants.bgLight,
+            backgroundColor: constants.darkWhite,
             body: SafeArea(
               child: viewModel.email == ""
                   ? Center(
                       child: CircularProgressIndicator(
-                        color: constants.primaryColor,
+                        color: constants.primary,
                       ),
                     )
                   : Padding(
@@ -50,7 +50,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                               style: TextStyle(
                                 fontSize: constants.fontSizeSmall,
                                 fontWeight: FontWeight.w500,
-                                color: constants.defaultDarkGrey,
+                                color: constants.darkGrey,
                               ),
                             ),
                             SizedBox(height: 12),
@@ -60,7 +60,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                               style: TextStyle(
                                 fontSize: constants.fontSizeSmall,
                                 fontWeight: FontWeight.w500,
-                                color: constants.defaultDarkGrey,
+                                color: constants.darkGrey,
                               ),
                             ),
                             SizedBox(height: 12),
@@ -70,7 +70,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                               style: TextStyle(
                                 fontSize: constants.fontSizeSmall,
                                 fontWeight: FontWeight.w500,
-                                color: constants.defaultDarkGrey,
+                                color: constants.darkGrey,
                               ),
                             ),
                           ],

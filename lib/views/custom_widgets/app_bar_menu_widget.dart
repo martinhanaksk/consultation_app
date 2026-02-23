@@ -6,8 +6,8 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: constants.defaultWhite,
-      surfaceTintColor: constants.defaultWhite,
+      backgroundColor: constants.white,
+      surfaceTintColor: constants.white,
       actionsPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
       leading: IconButton(
         icon: Icon(Icons.menu_rounded),

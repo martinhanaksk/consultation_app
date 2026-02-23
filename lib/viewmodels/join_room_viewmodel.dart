@@ -19,7 +19,17 @@ class JoinRoomViewmodel extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
       notify.showToast('Room joined.');
-      nav.pop();
+      if (await prefs.getItem("role") == "teacher") {
+        nav.toTeacherConsultations(
+          token: token,
+          email: await prefs.getItem("email"),
+        );
+      } else {
+        nav.toStudentConsultations(
+          token: token,
+          email: await prefs.getItem("email"),
+        );
+      }
     } catch (e) {
       notify.showToast('Unable to join the room.');
     }

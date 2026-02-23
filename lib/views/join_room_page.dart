@@ -47,7 +47,7 @@ class _JoinRoomState extends State<JoinRoom> {
           return Scaffold(
             appBar: AppBarMenu(),
             drawer: SliderMenu(),
-            backgroundColor: constants.bgLight,
+            backgroundColor: constants.darkWhite,
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
@@ -153,7 +153,7 @@ class _JoinRoomState extends State<JoinRoom> {
                           },
                           style: ButtonStyle(
                             backgroundColor: WidgetStateProperty.all(
-                              constants.primaryColor,
+                              constants.primary,
                             ),
                           ),
                           child: const Text(

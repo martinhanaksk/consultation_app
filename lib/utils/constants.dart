@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 
 class Constants {
-  Color bgLight = Color(0xFFF2F3F8);
-  Color defaultDarkGrey = Color(0xFF3D3D3D);
-  Color defaultGreen = Color.fromARGB(255, 16, 166, 74);
-  Color defaultRed = Color(0xFFFF0000);
-  Color primaryColor = Color(0xFF0071E2);
-  Color defaultLightGrey = Color.fromARGB(255, 217, 217, 217);
-  Color defaultWhite = Color.fromARGB(255, 255, 255, 255);
+  Color white = Color(0xFFFFFFFF);
+  Color darkWhite = Color(0xFFF2F3F8);
+  Color lightGrey = Color(0xFFD9D9D9);
+  Color grey = Color(0xFF787878);
+  Color darkGrey = Color(0xFF3D3D3D);
+  Color green = Color(0xFF10A64A);
+  Color red = Color(0xFFFF0000);
+  Color lightRed = Color(0xFFFF5D5D);
+  Color primary = Color(0xFF0071E2);
+  
   double fontSizeBig = 40;
   double fontSizeMedium = 30;
   double fontSizeSmall = 20;

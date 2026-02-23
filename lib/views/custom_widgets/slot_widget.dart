@@ -11,6 +11,8 @@ class SlotWidget extends StatefulWidget {
   final String token;
   final String roomId;
   final BuildContext context;
+  final bool isFirst;
+  final bool isLast;
   final VoidCallback loadData;
 
   const SlotWidget({
@@ -21,6 +23,8 @@ class SlotWidget extends StatefulWidget {
     required this.roomId,
     required this.context,
     required this.loadData,
+    required this.isFirst,
+    required this.isLast,
   });
 
   @override
@@ -28,6 +32,7 @@ class SlotWidget extends StatefulWidget {
 }
 
 class _SlotWidgetState extends State<SlotWidget> {
+  bool temporarybellboolean = false;
   Future<void> _showNoteDialog(
     BuildContext context,
     SlotViewmodel viewModel,
@@ -111,7 +116,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                         ),
                         child: Text(
                           "Cancel",
-                          style: TextStyle(color: constants.primaryColor),
+                          style: TextStyle(color: constants.primary),
                         ),
                       ),
                     ),
@@ -128,7 +133,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                           widget.loadData();
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: constants.primaryColor,
+                          backgroundColor: constants.primary,
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -159,51 +164,79 @@ class _SlotWidgetState extends State<SlotWidget> {
         builder: (context, viewModel, child) {
           return Column(
             children: [
+              //free slot
               if (widget.slot.takenBy == null)
-                Container(
-                  padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                  width: 350,
-                  decoration: BoxDecoration(color: constants.defaultLightGrey),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            '${widget.slot.startTime.split(":")[0]}${":"}${widget.slot.startTime.split(":")[1]}',
+                GestureDetector(
+                  child: Container(
+                    padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                    width: 350,
+                    decoration: BoxDecoration(
+                      borderRadius: widget.isFirst
+                          ? BorderRadius.only(
+                              topLeft: Radius.circular(20.0),
+                              topRight: Radius.circular(20.0),
+                              bottomLeft: Radius.circular(0.0),
+                              bottomRight: Radius.circular(0.0),
+                            )
+                          : widget.isLast
+                          ? BorderRadius.only(
+                              topLeft: Radius.circular(0.0),
+                              topRight: Radius.circular(0.0),
+                              bottomLeft: Radius.circular(20.0),
+                              bottomRight: Radius.circular(20.0),
+                            )
+                          : BorderRadius.circular(0),
+                      color: constants.white,
+                      border: Border.all(color: Color(0xFFCBCBCB), width: 1),
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '${widget.slot.startTime.split(":")[0]}${":"}${widget.slot.startTime.split(":")[1]}',
 
-                            style: TextStyle(
-                              color: constants.defaultDarkGrey,
-                              fontSize: constants.fontSizeSmall,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-
-                          GestureDetector(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: constants.bgLight,
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(6),
-                                ),
+                              style: TextStyle(
+                                color: constants.darkGrey,
+                                fontSize: constants.fontSizeSmall,
+                                fontWeight: FontWeight.w400,
                               ),
-
-                              padding: EdgeInsets.fromLTRB(8, 5, 8, 5),
                             ),
-                            onTap: () => _showNoteDialog(context, viewModel),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
+                  onTap: () => _showNoteDialog(context, viewModel),
                 ),
               if (widget.slot.takenBy != null)
+                //my slot
                 widget.slot.takenBy == widget.userEmail
                     ? Container(
                         padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
                         width: 350,
                         decoration: BoxDecoration(
-                          color: constants.defaultWhite,
+                          borderRadius: widget.isFirst
+                              ? BorderRadius.only(
+                                  topLeft: Radius.circular(20.0),
+                                  topRight: Radius.circular(20.0),
+                                  bottomLeft: Radius.circular(0.0),
+                                  bottomRight: Radius.circular(0.0),
+                                )
+                              : widget.isLast
+                              ? BorderRadius.only(
+                                  topLeft: Radius.circular(0.0),
+                                  topRight: Radius.circular(0.0),
+                                  bottomLeft: Radius.circular(20.0),
+                                  bottomRight: Radius.circular(20.0),
+                                )
+                              : BorderRadius.circular(0),
+                          color: constants.green,
+                          border: Border.all(
+                            color: Color(0xFFCBCBCB),
+                            width: 1,
+                          ),
                         ),
                         child: Column(
                           children: [
@@ -213,7 +246,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                                 Text(
                                   '${widget.slot.startTime.split(":")[0]}${":"}${widget.slot.startTime.split(":")[1]} ${helpers.cropText(widget.slot.takenByName ?? '')}',
                                   style: TextStyle(
-                                    color: constants.defaultDarkGrey,
+                                    color: constants.darkWhite,
                                     fontSize: constants.fontSizeSmall,
                                     fontWeight: FontWeight.w400,
                                   ),
@@ -223,7 +256,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                                     Text(
                                       widget.slot.note ?? '',
                                       style: TextStyle(
-                                        color: constants.defaultDarkGrey,
+                                        color: constants.darkWhite,
                                         fontSize: constants.fontSizeSmall,
                                         fontWeight: FontWeight.w400,
                                       ),
@@ -238,7 +271,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                                         widget.loadData();
                                       },
                                       child: SvgPicture.asset(
-                                        'assets/images/x.svg',
+                                        'assets/resources/x.svg',
                                       ),
                                     ),
                                   ],
@@ -248,11 +281,31 @@ class _SlotWidgetState extends State<SlotWidget> {
                           ],
                         ),
                       )
+                    //someone's slot
                     : Container(
                         padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
                         width: 350,
                         decoration: BoxDecoration(
-                          color: constants.defaultWhite,
+                          borderRadius: widget.isFirst
+                              ? BorderRadius.only(
+                                  topLeft: Radius.circular(20.0),
+                                  topRight: Radius.circular(20.0),
+                                  bottomLeft: Radius.circular(0.0),
+                                  bottomRight: Radius.circular(0.0),
+                                )
+                              : widget.isLast
+                              ? BorderRadius.only(
+                                  topLeft: Radius.circular(0.0),
+                                  topRight: Radius.circular(0.0),
+                                  bottomLeft: Radius.circular(20.0),
+                                  bottomRight: Radius.circular(20.0),
+                                )
+                              : BorderRadius.circular(0),
+                          color: constants.lightRed,
+                          border: Border.all(
+                            color: Color(0xFFCBCBCB),
+                            width: 1,
+                          ),
                         ),
                         child: Column(
                           children: [
@@ -260,9 +313,9 @@ class _SlotWidgetState extends State<SlotWidget> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  '${widget.slot.startTime.split(":")[0]}${":"}${widget.slot.startTime.split(":")[1]} ${{helpers.cropText(widget.slot.takenByName!)}}',
+                                  '${widget.slot.startTime.split(":")[0]}${":"}${widget.slot.startTime.split(":")[1]} ${helpers.cropText(widget.slot.takenByName!)}',
                                   style: TextStyle(
-                                    color: constants.defaultDarkGrey,
+                                    color: constants.grey,
                                     fontSize: constants.fontSizeSmall,
                                     fontWeight: FontWeight.w400,
                                   ),
@@ -272,17 +325,37 @@ class _SlotWidgetState extends State<SlotWidget> {
                                     Text(
                                       widget.slot.note ?? '',
                                       style: TextStyle(
-                                        color: constants.defaultDarkGrey,
+                                        color: constants.grey,
                                         fontSize: constants.fontSizeSmall,
                                         fontWeight: FontWeight.w400,
                                       ),
                                     ),
                                     SizedBox(width: 10),
                                     GestureDetector(
-                                      onTap: () {},
-                                      child: SvgPicture.asset(
-                                        'assets/images/watchdog-green.svg',
-                                      ),
+                                      onTap: () {
+                                        setState(() {
+                                          temporarybellboolean =
+                                              !temporarybellboolean;
+                                        });
+                                        if (temporarybellboolean) {
+                                          notify.showToast(
+                                            "Notifications enabled for selected slot",
+                                          );
+                                        } else {
+                                          notify.showToast(
+                                            "Notifications disabled for selected slot",
+                                          );
+                                        }
+                                      },
+                                      child: temporarybellboolean
+                                          ? Image.asset(
+                                              'assets/resources/bell-ringing.png',
+                                              width: 20,
+                                            )
+                                          : Image.asset(
+                                              'assets/resources/bell-empty.png',
+                                              width: 20,
+                                            ),
                                     ),
                                   ],
                                 ),

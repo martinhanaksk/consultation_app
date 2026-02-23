@@ -30,12 +30,12 @@ class VerifyOtpPage extends StatefulWidget {
 }
 
 class _VerifyOtpPageState extends State<VerifyOtpPage> {
-   late final VerifyOtpViewmodel _viewModel;
+  late final VerifyOtpViewmodel _viewModel;
   final TextEditingController otpcontroller = TextEditingController();
   @override
   void initState() {
     super.initState();
-     _viewModel = VerifyOtpViewmodel();
+    _viewModel = VerifyOtpViewmodel();
 
     if (widget.token.isNotEmpty) {
       otpcontroller.text = widget.token.substring(1, widget.token.length - 1);
@@ -49,7 +49,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
     }
   }
 
- @override
+  @override
   void dispose() {
     otpcontroller.dispose();
     _viewModel.dispose();
@@ -63,7 +63,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
       child: Consumer<VerifyOtpViewmodel>(
         builder: (context, viewModel, child) {
           return Scaffold(
-            backgroundColor: constants.bgLight,
+            backgroundColor: constants.darkWhite,
             body: SafeArea(
               child: Padding(
                 padding: EdgeInsets.all(24.0),
@@ -75,7 +75,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
-                        color: constants.defaultDarkGrey,
+                        color: constants.darkGrey,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -84,7 +84,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
-                        color: constants.defaultDarkGrey,
+                        color: constants.darkGrey,
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -112,7 +112,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                               },
                         style: ButtonStyle(
                           backgroundColor: WidgetStateProperty.all(
-                            constants.primaryColor,
+                            constants.primary,
                           ),
                         ),
                         child: Text(
@@ -120,7 +120,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.w500,
-                            color: constants.defaultWhite,
+                            color: constants.white,
                           ),
                         ),
                       ),

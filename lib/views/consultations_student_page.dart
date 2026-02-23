@@ -63,7 +63,7 @@ class _ConsultationsUserPageState
     return Scaffold(
       appBar: AppBarMenu(),
       drawer: SliderMenu(),
-      backgroundColor: constants.bgLight,
+      backgroundColor: constants.darkWhite,
       body: SafeArea(
         child: _viewModel.isLoading
             ? Center(
@@ -85,7 +85,7 @@ class _ConsultationsUserPageState
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: constants.fontSizeMedium,
-                            color: constants.primaryColor,
+                            color: constants.primary,
                           ),
                         ),
                         onTap: () => nav.toJoinRoom(token: widget.token),
@@ -104,13 +104,13 @@ class _ConsultationsUserPageState
                       padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20.0),
-                        color: constants.defaultLightGrey,
+                        color: constants.lightGrey,
                       ),
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
                           borderRadius: BorderRadius.circular(20.0),
-                          dropdownColor: constants.defaultLightGrey,
-                          iconEnabledColor: constants.defaultDarkGrey,
+                          dropdownColor: constants.lightGrey,
+                          iconEnabledColor: constants.darkGrey,
                           hint: Text("Select a Room"),
                           value: _viewModel.safeSelectedRoomId,
                           items: _viewModel.rooms == null
@@ -140,7 +140,7 @@ class _ConsultationsUserPageState
                     child: Text(
                       "Write your self here",
                       style: TextStyle(
-                        color: constants.defaultDarkGrey,
+                        color: constants.darkGrey,
                         fontSize: constants.fontSizeBig,
                         fontWeight: FontWeight.w500,
                       ),
@@ -166,21 +166,37 @@ class _ConsultationsUserPageState
                               ? Text("No upcoming consultations found.")
                               : Column(
                                   children: [
+                                    const SizedBox(height: 20),
                                     Text(
                                       _viewModel.getDateOfBlock(block.key),
                                       style: TextStyle(
-                                        color: constants.defaultDarkGrey,
+                                        color: constants.darkGrey,
                                         fontSize: constants.fontSizeSmall,
                                         fontWeight: FontWeight.w400,
                                       ),
                                     ),
-                                    SizedBox(height: 20),
+                                    const SizedBox(height: 20),
                                     (block.value == null ||
                                             block.value!.isEmpty)
                                         ? Text("No slots found")
                                         : Container(
                                             clipBehavior: Clip.hardEdge,
                                             decoration: BoxDecoration(
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.grey.shade600,
+                                                  spreadRadius: 1,
+                                                  blurRadius: 10,
+                                                  offset: const Offset(2, 2),
+                                                ),
+                                                const BoxShadow(
+                                                  color: Colors.white,
+                                                  offset: Offset(-5, -5),
+                                                  blurRadius: 15,
+                                                  spreadRadius: 1,
+                                                ),
+                                              ],
+
                                               color: Colors.white,
                                               borderRadius: BorderRadius.all(
                                                 Radius.circular(20),
@@ -188,23 +204,36 @@ class _ConsultationsUserPageState
                                             ),
                                             child: Column(
                                               children: block.value!
-                                                  .map(
-                                                    (slot) => slot == null
-                                                        ? Text(
-                                                            "No slots for the block found.",
-                                                          )
-                                                        : SlotWidget(
-                                                            userEmail:
-                                                                widget.email,
-                                                            slot: slot,
-                                                            token: widget.token,
-                                                            roomId: _viewModel
-                                                                .selectedRoomId!,
-                                                            context: context,
-                                                            loadData: _viewModel
-                                                                .loadData,
-                                                          ),
-                                                  )
+                                                  .asMap()
+                                                  .entries
+                                                  .map((entry) {
+                                                    final index = entry.key;
+                                                    final slot = entry.value;
+
+                                                    if (slot == null) {
+                                                      return Text(
+                                                        "No slots for the block found.",
+                                                      );
+                                                    }
+
+                                                    final isFirst = index == 0;
+                                                    final isLast =
+                                                        index ==
+                                                        block.value!.length - 1;
+
+                                                    return SlotWidget(
+                                                      userEmail: widget.email,
+                                                      slot: slot,
+                                                      token: widget.token,
+                                                      roomId: _viewModel
+                                                          .selectedRoomId!,
+                                                      context: context,
+                                                      loadData:
+                                                          _viewModel.loadData,
+                                                      isFirst: isFirst,
+                                                      isLast: isLast,
+                                                    );
+                                                  })
                                                   .toList(),
                                             ),
                                           ),

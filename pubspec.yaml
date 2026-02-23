@@ -64,7 +64,7 @@ dev_dependencies:
 flutter_launcher_icons:
   android: "launcher_icons"
   ios: false
-  image_path: "assets/images/icon_consultations.png"
+  image_path: "assets/resources/icon_consultations.png"
   adaptive_icon_foreground: "#ffffff"
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -72,7 +72,7 @@ flutter_launcher_icons:
 # The following section is specific to Flutter packages.
 flutter:
   assets:
-    - assets/images/
+    - assets/resources/
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

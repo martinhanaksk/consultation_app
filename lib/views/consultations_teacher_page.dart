@@ -75,7 +75,7 @@ class _ConsultationsTeacherPageState
     return Scaffold(
       appBar: AppBarMenu(),
       drawer: SliderMenu(),
-      backgroundColor: constants.bgLight,
+      backgroundColor: constants.darkWhite,
       body: SafeArea(
         child: isLoading
             ? Center(
@@ -97,7 +97,7 @@ class _ConsultationsTeacherPageState
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: constants.fontSizeBig,
-                            color: constants.primaryColor,
+                            color: constants.primary,
                           ),
                         ),
                         onTap: () => nav.toJoinRoom(token: widget.token),
@@ -123,13 +123,13 @@ class _ConsultationsTeacherPageState
                                 ),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(20.0),
-                                  color: constants.defaultLightGrey,
+                                  color: constants.lightGrey,
                                 ),
                                 child: DropdownButtonHideUnderline(
                                   child: DropdownButton<String>(
                                     borderRadius: BorderRadius.circular(20.0),
-                                    dropdownColor: constants.defaultLightGrey,
-                                    iconEnabledColor: constants.defaultDarkGrey,
+                                    dropdownColor: constants.lightGrey,
+                                    iconEnabledColor: constants.darkGrey,
                                     hint: Text("Select a Room"),
                                     value:
                                          vm.safeSelectedRoomId,
@@ -187,7 +187,7 @@ class _ConsultationsTeacherPageState
                                       Text(
                                         vm.getDateOfBlock(block.key),
                                         style: TextStyle(
-                                          color: constants.defaultDarkGrey,
+                                          color: constants.darkGrey,
                                           fontSize: constants.fontSizeSmall,
                                           fontWeight: FontWeight.w400,
                                         ),
@@ -206,25 +206,41 @@ class _ConsultationsTeacherPageState
                                               ),
                                               child: Column(
                                                 children: block.value!
-                                                    .map(
-                                                      (slot) => slot == null
-                                                          ? Text(
-                                                              "No slots for the block found.",
-                                                            )
-                                                          : SlotWidget(
-                                                              userEmail:
-                                                                  widget.email,
-                                                              slot: slot,
-                                                              token:
-                                                                  widget.token,
-                                                              roomId: vm
-                                                                  .selectedRoomId!,
-                                                              context: context,
-                                                              loadData:
-                                                                  loadData,
-                                                            ),
-                                                    )
-                                                    .toList(),
+                                                  .asMap()
+                                                  .entries
+                                                  .map((entry) {
+                                                    final index = entry.key;
+                                                    final slot = entry.value;
+
+                                                    if (slot == null) {
+                                                      return Text(
+                                                        "No slots for the block found.",
+                                                      );
+                                                    }
+
+                                                    final isFirst = index == 0;
+                                                    final isLast =
+                                                        index ==
+                                                        block.value!.length - 1;
+                                                    bool isFirstOrLast = false;
+                                                    if (isFirst || isLast)
+                                                      isFirstOrLast = true;
+                                                    return SlotWidget(
+                                                      userEmail: widget.email,
+                                                      slot: slot,
+                                                      token: widget.token,
+                                                      roomId: vm
+                                                          .selectedRoomId!,
+                                                      context: context,
+                                                      loadData:
+                                                          loadData,
+                                                      isFirst:
+                                                          isFirst,
+                                                          isLast:
+                                                          isLast,
+                                                    );
+                                                  })
+                                                  .toList(),
                                               ),
                                             ),
                                     ],

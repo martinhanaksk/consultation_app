@@ -27,7 +27,7 @@ class _CreateRoomState extends State<CreateRoom> {
           return Scaffold(
             appBar: AppBarMenu(),
             drawer: SliderMenu(),
-            backgroundColor: constants.bgLight,
+            backgroundColor: constants.darkWhite,
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(24.0),

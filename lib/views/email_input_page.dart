@@ -27,7 +27,7 @@ class _EmailInputPageState extends State<EmailInputPage> {
         builder: (context, viewModel, child) {
           
           return Scaffold(
-            backgroundColor: constants.bgLight,
+            backgroundColor: constants.darkWhite,
             body: SafeArea(
               child: SingleChildScrollView(
                 child: Padding(
@@ -38,7 +38,7 @@ class _EmailInputPageState extends State<EmailInputPage> {
                       const SizedBox(height: 80),
                       Center(
                         child: Image.asset(
-                          'assets/images/applogo.png',
+                          'assets/resources/applogo.png',
                           width: 230,
                           fit: BoxFit.cover,
                         ),
@@ -80,7 +80,7 @@ class _EmailInputPageState extends State<EmailInputPage> {
                           },
                           style: ButtonStyle(
                             backgroundColor: WidgetStateProperty.all(
-                              constants.primaryColor,
+                              constants.primary,
                             ),
                           ),
                           child: viewModel.isLoading

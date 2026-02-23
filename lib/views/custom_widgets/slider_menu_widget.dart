@@ -43,7 +43,7 @@ class _SliderMenuState extends State<SliderMenu> {
                         const SizedBox(height: 20),
                         GestureDetector(
                           child: Image.asset(
-                            'assets/images/applogo.png',
+                            'assets/resources/applogo.png',
 
                             width: 100,
                             fit: BoxFit.cover,
@@ -120,7 +120,7 @@ class _SliderMenuState extends State<SliderMenu> {
                                       child: Text(
                                         "Cancel",
                                         style: TextStyle(
-                                          color: constants.primaryColor,
+                                          color: constants.primary,
                                         ),
                                       ),
                                     ),
@@ -131,7 +131,7 @@ class _SliderMenuState extends State<SliderMenu> {
                                       child: Text(
                                         "Yes",
                                         style: TextStyle(
-                                          color: constants.primaryColor,
+                                          color: constants.primary,
                                         ),
                                       ),
                                     ),
