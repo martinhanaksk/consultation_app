@@ -169,7 +169,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                 GestureDetector(
                   child: Container(
                     padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                    width: 350,
+                    width: MediaQuery.of(context).size.width * 0.9,
                     decoration: BoxDecoration(
                       borderRadius: widget.isFirst
                           ? BorderRadius.only(
@@ -194,13 +194,17 @@ class _SlotWidgetState extends State<SlotWidget> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              '${widget.slot.startTime.split(":")[0]}${":"}${widget.slot.startTime.split(":")[1]}',
+                            SizedBox(
+                              width: 55,
+                              child: Text(
+                                '${widget.slot.startTime.split(":")[0]}${":"}${widget.slot.startTime.split(":")[1]}',
+                                textAlign: TextAlign.right,
 
-                              style: TextStyle(
-                                color: constants.darkGrey,
-                                fontSize: constants.fontSizeSmall,
-                                fontWeight: FontWeight.w400,
+                                style: TextStyle(
+                                  color: constants.darkGrey,
+                                  fontSize: constants.fontSizeSmall,
+                                  fontWeight: FontWeight.w400,
+                                ),
                               ),
                             ),
                           ],
@@ -215,7 +219,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                 widget.slot.takenBy == widget.userEmail
                     ? Container(
                         padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                        width: 350,
+                        width: MediaQuery.of(context).size.width * 0.9,
                         decoration: BoxDecoration(
                           borderRadius: widget.isFirst
                               ? BorderRadius.only(
@@ -245,15 +249,20 @@ class _SlotWidgetState extends State<SlotWidget> {
                               children: [
                                 Row(
                                   children: [
-                                    Text(
-                                      '${widget.slot.startTime.split(":")[0]}${":"}${widget.slot.startTime.split(":")[1]}',
-                                      textAlign: TextAlign.right,
-                                      style: TextStyle(
-                                        color: constants.darkWhite,
-                                        fontSize: constants.fontSizeSmall,
-                                        fontWeight: FontWeight.w400,
+                                    SizedBox(
+                                      width: 55,
+
+                                      child: Text(
+                                        '${widget.slot.startTime.split(":")[0]}${":"}${widget.slot.startTime.split(":")[1]}',
+                                        textAlign: TextAlign.right,
+                                        style: TextStyle(
+                                          color: constants.darkWhite,
+                                          fontSize: constants.fontSizeSmall,
+                                          fontWeight: FontWeight.w400,
+                                        ),
                                       ),
                                     ),
+
                                     const SizedBox(width: 10),
                                     Text(
                                       helpers.cropText(
@@ -302,7 +311,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                     //someone's slot
                     : Container(
                         padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                        width: 350,
+                        width: MediaQuery.of(context).size.width * 0.9,
                         decoration: BoxDecoration(
                           borderRadius: widget.isFirst
                               ? BorderRadius.only(
@@ -332,23 +341,31 @@ class _SlotWidgetState extends State<SlotWidget> {
                               children: [
                                 Row(
                                   children: [
-                                    Text(
-                                      '${widget.slot.startTime.split(":")[0]}${":"}${widget.slot.startTime.split(":")[1]}',
-                                      style: TextStyle(
-                                        color: constants.grey,
-                                        fontSize: constants.fontSizeSmall,
-                                        fontWeight: FontWeight.w400,
+                                    SizedBox(
+                                      width: 55,
+                                      child: Text(
+                                        '${widget.slot.startTime.split(":")[0]}${":"}${widget.slot.startTime.split(":")[1]}',
+                                        textAlign: TextAlign.right,
+                                        style: TextStyle(
+                                          color: constants.grey,
+                                          fontSize: constants.fontSizeSmall,
+                                          fontWeight: FontWeight.w400,
+                                        ),
                                       ),
                                     ),
                                     const SizedBox(width: 10),
-                                    Text(
-                                      helpers.cropText(
-                                        widget.slot.takenByName!,
-                                      ),
-                                      style: TextStyle(
-                                        color: constants.grey,
-                                        fontSize: constants.fontSizeSmall,
-                                        fontWeight: FontWeight.w400,
+                                    SizedBox(
+                                      width: 150,
+                                      child: Text(
+                                        helpers.cropText(
+                                          widget.slot.takenByName!,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          color: constants.grey,
+                                          fontSize: constants.fontSizeSmall,
+                                          fontWeight: FontWeight.w400,
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -356,40 +373,48 @@ class _SlotWidgetState extends State<SlotWidget> {
 
                                 Row(
                                   children: [
-                                    Text(
-                                      widget.slot.note ?? '',
-                                      style: TextStyle(
-                                        color: constants.grey,
-                                        fontSize: constants.fontSizeSmall,
-                                        fontWeight: FontWeight.w400,
+                                    SizedBox(
+                                      width: 40,
+                                      child: Text(
+                                        widget.slot.note ?? '',
+                                        style: TextStyle(
+                                          color: constants.grey,
+                                          fontSize: constants.fontSizeSmall,
+                                          fontWeight: FontWeight.w400,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
                                       ),
                                     ),
+
                                     SizedBox(width: 10),
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          temporarybellboolean =
-                                              !temporarybellboolean;
-                                        });
-                                        if (temporarybellboolean) {
-                                          notify.showToast(
-                                            "Notifications enabled for selected slot",
-                                          );
-                                        } else {
-                                          notify.showToast(
-                                            "Notifications disabled for selected slot",
-                                          );
-                                        }
-                                      },
-                                      child: temporarybellboolean
-                                          ? Image.asset(
-                                              'assets/resources/bell-ringing.png',
-                                              width: 20,
-                                            )
-                                          : Image.asset(
-                                              'assets/resources/bell-empty.png',
-                                              width: 20,
-                                            ),
+                                    SizedBox(
+                                      width: 20,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            temporarybellboolean =
+                                                !temporarybellboolean;
+                                          });
+                                          if (temporarybellboolean) {
+                                            notify.showToast(
+                                              "Notifications enabled for selected slot",
+                                            );
+                                          } else {
+                                            notify.showToast(
+                                              "Notifications disabled for selected slot",
+                                            );
+                                          }
+                                        },
+                                        child: temporarybellboolean
+                                            ? Image.asset(
+                                                'assets/resources/bell-ringing.png',
+                                                width: 20,
+                                              )
+                                            : Image.asset(
+                                                'assets/resources/bell-empty.png',
+                                                width: 20,
+                                              ),
+                                      ),
                                     ),
                                   ],
                                 ),

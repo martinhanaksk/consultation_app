@@ -59,202 +59,239 @@ class _ConsultationsUserPageState
 
   @override
   Widget build(BuildContext context) {
-    final _viewModel = context.watch<StudentConsultationsViewmodel>();
+    final viewModel = context.watch<StudentConsultationsViewmodel>();
     return Scaffold(
       appBar: AppBarMenu(),
       drawer: SliderMenu(),
       backgroundColor: constants.darkWhite,
       body: SafeArea(
-        child: _viewModel.isLoading
+        child: viewModel.isLoading
             ? Center(
                 child: CircularProgressIndicator(
                   color: Colors.blue,
                   strokeWidth: 3,
                 ),
               )
-            : (_viewModel.hasNoRooms || _viewModel.selectedRoomId == null)
-            ? Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Center(
-                  child: Column(
-                    children: [
-                      SizedBox(height: 80),
-                      GestureDetector(
-                        child: Text(
-                          "Try joining room to get started.",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: constants.fontSizeMedium,
-                            color: constants.primary,
+            : (viewModel.hasNoRooms || viewModel.selectedRoomId == null)
+            ? Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 600),
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Center(
+                      child: Column(
+                        children: [
+                          SizedBox(height: 80),
+                          GestureDetector(
+                            child: Text(
+                              "Try joining room to get started.",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: constants.fontSizeMedium,
+                                color: constants.primary,
+                              ),
+                            ),
+                            onTap: () => nav.toJoinRoom(token: widget.token),
                           ),
-                        ),
-                        onTap: () => nav.toJoinRoom(token: widget.token),
+                          SizedBox(height: 20),
+                        ],
                       ),
-                      SizedBox(height: 20),
-                    ],
+                    ),
                   ),
                 ),
               )
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 80),
-                  Center(
-                    child: Container(
-                      padding: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20.0),
-                        color: constants.lightGrey,
-                      ),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<String>(
-                          borderRadius: BorderRadius.circular(20.0),
-                          dropdownColor: constants.lightGrey,
-                          iconEnabledColor: constants.darkGrey,
-                          hint: Text("Select a Room"),
-                          value: _viewModel.safeSelectedRoomId,
-                          items: _viewModel.rooms == null
-                              ? []
-                              : _viewModel.rooms!.map((RoomModel value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value.id.toString(),
-                                    child: Text(value.title),
-                                  );
-                                }).toList(),
-                          onChanged: (String? newValue) async {
-                            if (newValue != null) {
-                              final success = await _viewModel.setSelectedId(
-                                newValue,
-                              );
-                              if (success) {
-                                await _viewModel.onRoomChanged(newValue);
-                              }
-                            }
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 80),
-                  Center(
-                    child: Text(
-                      "Write your self here",
-                      style: TextStyle(
-                        color: constants.darkGrey,
-                        fontSize: constants.fontSizeBig,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 40),
-                  _viewModel.foundBlocksLength() == 0
-                      ? Center(
-                          child: Text(
-                            "No upcoming consultations found.",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: constants.fontSizeSmall,
-                            ),
-                          ),
-                        )
-                      : Expanded(
-                          child: ListView(
-                            children: () {
-                              final sortedEntries = _viewModel
-                                  .slotsInBlocks
-                                  .entries
-                                  .toList();
-                              sortedEntries.sort((a, b) {
-                                final blockA = _viewModel.blocks.firstWhere(
-                                  (block) => block.id == a.key,
-                                );
-                                final blockB = _viewModel.blocks.firstWhere(
-                                  (block) => block.id == b.key,
-                                );
-
-                                return blockA.date.compareTo(blockB.date);
-                              });
-                              return sortedEntries.map((block) {
-                                return Column(
-                                  children: [
-                                    const SizedBox(height: 20),
-                                    Text(
-                                      _viewModel.getDateOfBlock(block.key),
-                                      style: TextStyle(
-                                        color: constants.darkGrey,
-                                        fontSize: constants.fontSizeSmall,
-                                        fontWeight: FontWeight.w400,
+            : Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 600),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      viewModel.foundBlocksLength() == 0
+                          ? Center(
+                              child: Text(
+                                "No upcoming consultations found.",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: constants.fontSizeSmall,
+                                ),
+                              ),
+                            )
+                          : Expanded(
+                              child: ListView(
+                                children: [
+                                  SizedBox(height: 150),
+                                  Center(
+                                    child: Container(
+                                      padding: EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(
+                                          20.0,
+                                        ),
+                                        color: constants.lightGrey,
+                                      ),
+                                      child: DropdownButtonHideUnderline(
+                                        child: DropdownButton<String>(
+                                          borderRadius: BorderRadius.circular(
+                                            20.0,
+                                          ),
+                                          dropdownColor: constants.lightGrey,
+                                          iconEnabledColor: constants.darkGrey,
+                                          hint: Text("Select a Room"),
+                                          value: viewModel.safeSelectedRoomId,
+                                          items: viewModel.rooms == null
+                                              ? []
+                                              : viewModel.rooms!.map((
+                                                  RoomModel value,
+                                                ) {
+                                                  return DropdownMenuItem<
+                                                    String
+                                                  >(
+                                                    value: value.id.toString(),
+                                                    child: Text(value.title),
+                                                  );
+                                                }).toList(),
+                                          onChanged: (String? newValue) async {
+                                            if (newValue != null) {
+                                              final success = await viewModel
+                                                  .setSelectedId(newValue);
+                                              if (success) {
+                                                await viewModel.onRoomChanged(
+                                                  newValue,
+                                                );
+                                              }
+                                            }
+                                          },
+                                        ),
                                       ),
                                     ),
-                                    const SizedBox(height: 20),
-                                    (block.value == null ||
-                                            block.value!.isEmpty)
-                                        ? Text("No slots found")
-                                        : Container(
-                                            clipBehavior: Clip.hardEdge,
-                                            decoration: BoxDecoration(
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.grey.shade600,
-                                                  spreadRadius: 1,
-                                                  blurRadius: 10,
-                                                  offset: const Offset(2, 2),
-                                                ),
-                                                const BoxShadow(
-                                                  color: Colors.white,
-                                                  offset: Offset(-5, -5),
-                                                  blurRadius: 15,
-                                                  spreadRadius: 1,
-                                                ),
-                                              ],
+                                  ),
+                                  SizedBox(height: 70),
+                                  Center(
+                                    child: Text(
+                                      "Sign up for a consultation",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: constants.darkGrey,
+                                        fontSize: constants.fontSizeMedium,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: 30),
+                                  ...() {
+                                    final sortedEntries = viewModel
+                                        .slotsInBlocks
+                                        .entries
+                                        .toList();
+                                    sortedEntries.sort((a, b) {
+                                      final blockA = viewModel.blocks
+                                          .firstWhere(
+                                            (block) => block.id == a.key,
+                                          );
+                                      final blockB = viewModel.blocks
+                                          .firstWhere(
+                                            (block) => block.id == b.key,
+                                          );
 
-                                              color: Colors.white,
-                                              borderRadius: BorderRadius.all(
-                                                Radius.circular(20),
-                                              ),
-                                            ),
-                                            child: Column(
-                                              children: block.value!
-                                                  .asMap()
-                                                  .entries
-                                                  .map((entry) {
-                                                    final index = entry.key;
-                                                    final slot = entry.value;
-
-                                                    if (slot == null) {
-                                                      return Text(
-                                                        "No slots for the block found.",
-                                                      );
-                                                    }
-
-                                                    final isFirst = index == 0;
-                                                    final isLast =
-                                                        index ==
-                                                        block.value!.length - 1;
-
-                                                    return SlotWidget(
-                                                      userEmail: widget.email,
-                                                      slot: slot,
-                                                      token: widget.token,
-                                                      roomId: _viewModel
-                                                          .selectedRoomId!,
-                                                      context: context,
-                                                      loadData:
-                                                          _viewModel.loadData,
-                                                      isFirst: isFirst,
-                                                      isLast: isLast,
-                                                    );
-                                                  })
-                                                  .toList(),
+                                      return blockA.date.compareTo(blockB.date);
+                                    });
+                                    return sortedEntries.map((block) {
+                                      return Column(
+                                        children: [
+                                          const SizedBox(height: 20),
+                                          Text(
+                                            viewModel.getDateOfBlock(block.key),
+                                            style: TextStyle(
+                                              color: constants.darkGrey,
+                                              fontSize: constants.fontSizeSmall,
+                                              fontWeight: FontWeight.w400,
                                             ),
                                           ),
-                                  ],
-                                );
-                              }).toList();
-                            }(),
-                          ),
-                        ),
-                ],
+                                          const SizedBox(height: 20),
+                                          (block.value == null ||
+                                                  block.value!.isEmpty)
+                                              ? Text("No slots found")
+                                              : Container(
+                                                  clipBehavior: Clip.hardEdge,
+                                                  decoration: BoxDecoration(
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        color: Colors
+                                                            .grey
+                                                            .shade600,
+                                                        spreadRadius: 1,
+                                                        blurRadius: 10,
+                                                        offset: const Offset(
+                                                          2,
+                                                          2,
+                                                        ),
+                                                      ),
+                                                      const BoxShadow(
+                                                        color: Colors.white,
+                                                        offset: Offset(-5, -5),
+                                                        blurRadius: 15,
+                                                        spreadRadius: 1,
+                                                      ),
+                                                    ],
+
+                                                    color: Colors.white,
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                          Radius.circular(20),
+                                                        ),
+                                                  ),
+                                                  child: Column(
+                                                    children: block.value!
+                                                        .asMap()
+                                                        .entries
+                                                        .map((entry) {
+                                                          final index =
+                                                              entry.key;
+                                                          final slot =
+                                                              entry.value;
+
+                                                          if (slot == null) {
+                                                            return Text(
+                                                              "No slots for the block found.",
+                                                            );
+                                                          }
+
+                                                          final isFirst =
+                                                              index == 0;
+                                                          final isLast =
+                                                              index ==
+                                                              block
+                                                                      .value!
+                                                                      .length -
+                                                                  1;
+
+                                                          return SlotWidget(
+                                                            userEmail:
+                                                                widget.email,
+                                                            slot: slot,
+                                                            token: widget.token,
+                                                            roomId: viewModel
+                                                                .selectedRoomId!,
+                                                            context: context,
+                                                            loadData: viewModel
+                                                                .loadData,
+                                                            isFirst: isFirst,
+                                                            isLast: isLast,
+                                                          );
+                                                        })
+                                                        .toList(),
+                                                  ),
+                                                ),
+                                        ],
+                                      );
+                                    }).toList();
+                                  }(),
+                                ],
+                              ),
+                            ),
+                    ],
+                  ),
+                ),
               ),
       ),
     );
