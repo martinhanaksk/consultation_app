@@ -243,14 +243,32 @@ class _SlotWidgetState extends State<SlotWidget> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  '${widget.slot.startTime.split(":")[0]}${":"}${widget.slot.startTime.split(":")[1]} ${helpers.cropText(widget.slot.takenByName ?? '')}',
-                                  style: TextStyle(
-                                    color: constants.darkWhite,
-                                    fontSize: constants.fontSizeSmall,
-                                    fontWeight: FontWeight.w400,
-                                  ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      '${widget.slot.startTime.split(":")[0]}${":"}${widget.slot.startTime.split(":")[1]}',
+                                      textAlign: TextAlign.right,
+                                      style: TextStyle(
+                                        color: constants.darkWhite,
+                                        fontSize: constants.fontSizeSmall,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Text(
+                                      helpers.cropText(
+                                        widget.slot.takenByName ?? '',
+                                      ),
+                                      textAlign: TextAlign.right,
+                                      style: TextStyle(
+                                        color: constants.darkWhite,
+                                        fontSize: constants.fontSizeSmall,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ],
                                 ),
+
                                 Row(
                                   children: [
                                     Text(
@@ -312,14 +330,30 @@ class _SlotWidgetState extends State<SlotWidget> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  '${widget.slot.startTime.split(":")[0]}${":"}${widget.slot.startTime.split(":")[1]} ${helpers.cropText(widget.slot.takenByName!)}',
-                                  style: TextStyle(
-                                    color: constants.grey,
-                                    fontSize: constants.fontSizeSmall,
-                                    fontWeight: FontWeight.w400,
-                                  ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      '${widget.slot.startTime.split(":")[0]}${":"}${widget.slot.startTime.split(":")[1]}',
+                                      style: TextStyle(
+                                        color: constants.grey,
+                                        fontSize: constants.fontSizeSmall,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Text(
+                                      helpers.cropText(
+                                        widget.slot.takenByName!,
+                                      ),
+                                      style: TextStyle(
+                                        color: constants.grey,
+                                        fontSize: constants.fontSizeSmall,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ],
                                 ),
+
                                 Row(
                                   children: [
                                     Text(

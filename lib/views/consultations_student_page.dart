@@ -147,24 +147,35 @@ class _ConsultationsUserPageState
                     ),
                   ),
                   SizedBox(height: 40),
-                  Expanded(
-                    child: ListView(
-                      children: () {
-                        final sortedEntries = _viewModel.slotsInBlocks.entries
-                            .toList();
-                        sortedEntries.sort((a, b) {
-                          final blockA = _viewModel.blocks.firstWhere(
-                            (block) => block.id == a.key,
-                          );
-                          final blockB = _viewModel.blocks.firstWhere(
-                            (block) => block.id == b.key,
-                          );
-                          return blockA.date.compareTo(blockB.date);
-                        });
-                        return sortedEntries.map((block) {
-                          return _viewModel.foundBlocksLength() == 0
-                              ? Text("No upcoming consultations found.")
-                              : Column(
+                  _viewModel.foundBlocksLength() == 0
+                      ? Center(
+                          child: Text(
+                            "No upcoming consultations found.",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: constants.fontSizeSmall,
+                            ),
+                          ),
+                        )
+                      : Expanded(
+                          child: ListView(
+                            children: () {
+                              final sortedEntries = _viewModel
+                                  .slotsInBlocks
+                                  .entries
+                                  .toList();
+                              sortedEntries.sort((a, b) {
+                                final blockA = _viewModel.blocks.firstWhere(
+                                  (block) => block.id == a.key,
+                                );
+                                final blockB = _viewModel.blocks.firstWhere(
+                                  (block) => block.id == b.key,
+                                );
+
+                                return blockA.date.compareTo(blockB.date);
+                              });
+                              return sortedEntries.map((block) {
+                                return Column(
                                   children: [
                                     const SizedBox(height: 20),
                                     Text(
@@ -239,10 +250,10 @@ class _ConsultationsUserPageState
                                           ),
                                   ],
                                 );
-                        }).toList();
-                      }(),
-                    ),
-                  ),
+                              }).toList();
+                            }(),
+                          ),
+                        ),
                 ],
               ),
       ),
