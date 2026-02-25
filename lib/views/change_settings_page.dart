@@ -14,11 +14,6 @@ class ChangeSettings extends StatefulWidget {
 
 class _ChangeSettingsState extends State<ChangeSettings> {
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) {
@@ -39,47 +34,250 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                         color: constants.primary,
                       ),
                     )
-                  : Padding(
+                  : SingleChildScrollView(
                       padding: const EdgeInsets.all(24.0),
-                      child: Align(
-                        child: Column(
-                          children: [
-                            Text(
-                              "Email: ${viewModel.email}",
-                              textAlign: TextAlign.start,
-                              style: TextStyle(
-                                fontSize: constants.fontSizeSmall,
-                                fontWeight: FontWeight.w500,
-                                color: constants.darkGrey,
-                              ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Header
+                          Text(
+                            "Account Settings",
+                            style: TextStyle(
+                              fontSize: constants.fontSizeMedium,
+                              fontWeight: FontWeight.bold,
+                              color: constants.darkGrey,
                             ),
-                            SizedBox(height: 12),
-                            Text(
-                              "Name: ${viewModel.name}",
-                              textAlign: TextAlign.start,
-                              style: TextStyle(
-                                fontSize: constants.fontSizeSmall,
-                                fontWeight: FontWeight.w500,
-                                color: constants.darkGrey,
-                              ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "Manage your profile and preferences",
+                            style: TextStyle(
+                              fontSize: constants.fontSizeSmall,
+                              color: constants.darkGrey.withValues(alpha: 0.6),
                             ),
-                            SizedBox(height: 12),
-                            Text(
-                              "Role: ${viewModel.role}",
-                              textAlign: TextAlign.start,
-                              style: TextStyle(
-                                fontSize: constants.fontSizeSmall,
-                                fontWeight: FontWeight.w500,
-                                color: constants.darkGrey,
-                              ),
+                          ),
+                          const SizedBox(height: 28),
+
+                          // Profile Card
+                          Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.06),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Divider(
+                                  color: constants.darkGrey.withValues(
+                                    alpha: 0.08,
+                                  ),
+                                  height: 1,
+                                ),
+
+                                // Info Rows
+                                _InfoTile(
+                                  icon: Icons.person,
+                                  label: "Email",
+                                  value: viewModel.email,
+                                ),
+                                Divider(
+                                  indent: 20,
+                                  endIndent: 20,
+                                  color: constants.darkGrey.withValues(
+                                    alpha: 0.08,
+                                  ),
+                                  height: 1,
+                                ),
+                                _InfoTile(
+                                  icon: Icons.badge_outlined,
+                                  label: "Name",
+                                  value:
+                                      '${viewModel.name} ${viewModel.surname}',
+                                ),
+                                Divider(
+                                  indent: 20,
+                                  endIndent: 20,
+                                  color: constants.darkGrey.withValues(
+                                    alpha: 0.08,
+                                  ),
+                                  height: 1,
+                                ),
+                                _InfoTile(
+                                  icon: Icons.work_outline_rounded,
+                                  label: "Role",
+                                  value: viewModel.role,
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          // Preferences Card
+                          Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.06),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    20,
+                                    16,
+                                    20,
+                                    8,
+                                  ),
+                                  child: Text(
+                                    "Preferences",
+                                    style: TextStyle(
+                                      fontSize: constants.fontSizeSmall,
+                                      fontWeight: FontWeight.bold,
+                                      color: constants.darkGrey,
+                                    ),
+                                  ),
+                                ),
+                                Divider(
+                                  color: constants.darkGrey.withValues(
+                                    alpha: 0.08,
+                                  ),
+                                  height: 1,
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    viewModel.setReceiveEmail(
+                                      !viewModel.receiveEmails,
+                                    );
+                                  },
+
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                      vertical: 14,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.email_outlined,
+                                          color: constants.primary,
+                                          size: constants.fontSizeMedium,
+                                        ),
+                                        const SizedBox(width: 14),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                "Receive Emails",
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      constants.fontSizeSmall,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: constants.darkGrey,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 2),
+                                              Text(
+                                                "Get emails about changes in selected consultation blocks",
+                                                style: TextStyle(
+                                                  fontSize: constants
+                                                      .fontSizeVerySmall,
+                                                  color: constants.darkGrey
+                                                      .withValues(alpha: 0.55),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Checkbox(
+                                          value: viewModel.receiveEmails,
+                                          activeColor: constants.primary,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              4,
+                                            ),
+                                          ),
+                                          onChanged: (val) {
+                                            viewModel.setReceiveEmail(val);
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _InfoTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+
+  const _InfoTile({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+      child: Row(
+        children: [
+          Icon(icon, color: constants.primary, size: constants.fontSizeSmall),
+          const SizedBox(width: 14),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: constants.fontSizeVerySmall,
+                  color: constants.darkGrey.withValues(alpha: 0.6),
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: constants.fontSizeVerySmall + 5,
+                  fontWeight: FontWeight.w500,
+                  color: constants.darkGrey,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

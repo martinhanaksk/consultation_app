@@ -22,6 +22,10 @@ class ApiService {
       await prefs.saveItem('email', email);
       await prefs.saveItem('token', data['token']);
       await prefs.saveItem('role', data['role']);
+      if ((await prefs.getItem('receiveEmails')=="" )) {
+        await prefs.saveItem('receiveEmails', false);
+      }
+
       return true;
     } else {
       return false;
@@ -239,6 +243,23 @@ class ApiService {
     );
     if (response.statusCode != 200) {
       throw Exception('Failed to release slot: ${response.statusCode}');
+    }
+  }
+
+  Future<void> subscribeToBlock(String token, int blockid) async {
+    final Uri url = Uri.parse(
+      '${constants.url}/block/subscribe?block_id=$blockid',
+    );
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to subscribe to block: ${response.statusCode}');
     }
   }
 

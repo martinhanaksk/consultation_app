@@ -64,33 +64,89 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     const SizedBox(height: 16),
                     TextField(
                       controller: emailController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: constants.grey),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: constants.grey),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: constants.primary,
+                            width: 1.5,
+                          ),
+                        ),
                         hintText: 'Email',
-                        border: OutlineInputBorder(),
                       ),
                     ),
                     const SizedBox(height: 16),
                     TextField(
                       controller: nameController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: constants.grey),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: constants.grey),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: constants.primary,
+                            width: 1.5,
+                          ),
+                        ),
                         hintText: 'Name',
-                        border: OutlineInputBorder(),
                       ),
                     ),
                     const SizedBox(height: 16),
                     TextField(
                       controller: surnameController,
-                      decoration: const InputDecoration(
+                     decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: constants.grey),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: constants.grey),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: constants.primary,
+                            width: 1.5,
+                          ),
+                        ),
                         hintText: 'Surname',
-                        border: OutlineInputBorder(),
                       ),
                     ),
                     const SizedBox(height: 16),
                     TextField(
                       controller: visitReasonController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: constants.grey),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: constants.grey),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: constants.primary,
+                            width: 1.5,
+                          ),
+                        ),
                         hintText: 'Visit reason',
-                        border: OutlineInputBorder(),
                       ),
                     ),
 
@@ -145,10 +201,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             } catch (e) {}
                           }
                         },
-                        style: ButtonStyle(
-                          backgroundColor: WidgetStateProperty.all(
-                            constants.green,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: constants.green,
+                          disabledBackgroundColor: constants.green,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
                           ),
+                          elevation: 2,
+                          shadowColor: constants.green.withValues(alpha: 0.4),
                         ),
                         child: const Text(
                           'Register',

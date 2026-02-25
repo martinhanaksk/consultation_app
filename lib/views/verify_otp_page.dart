@@ -92,8 +92,22 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                       controller: otpcontroller,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: constants.grey),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: constants.grey),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: constants.primary,
+                            width: 1.5,
+                          ),
+                        ),
                         hintText: 'Enter code',
-                        border: OutlineInputBorder(),
                       ),
                     ),
                     SizedBox(height: 32),
@@ -110,11 +124,17 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                                   widget.rememberMe,
                                 );
                               },
-                        style: ButtonStyle(
-                          backgroundColor: WidgetStateProperty.all(
-                            constants.primary,
-                          ),
-                        ),
+                        style: ElevatedButton.styleFrom(
+                                  backgroundColor: constants.primary,
+                                  disabledBackgroundColor: constants.primary,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                  elevation: 2,
+                                  shadowColor: constants.primary.withValues(alpha:
+                                    0.4,
+                                  ),
+                                ),
                         child: Text(
                           'Connect',
                           style: TextStyle(

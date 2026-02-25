@@ -32,7 +32,6 @@ class SlotWidget extends StatefulWidget {
 }
 
 class _SlotWidgetState extends State<SlotWidget> {
-  bool temporarybellboolean = false;
   Future<void> _showNoteDialog(
     BuildContext context,
     SlotViewmodel viewModel,
@@ -187,7 +186,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                             )
                           : BorderRadius.circular(0),
                       color: constants.white,
-                      border: Border.all(color: Color(0xFFCBCBCB), width: 1),
+                      border: Border.all(color: Color(0xFFCBCBCB), width: 0.2),
                     ),
                     child: Column(
                       children: [
@@ -239,7 +238,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                           color: constants.green,
                           border: Border.all(
                             color: Color(0xFFCBCBCB),
-                            width: 1,
+                            width: 0.2,
                           ),
                         ),
                         child: Column(
@@ -331,7 +330,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                           color: constants.lightRed,
                           border: Border.all(
                             color: Color(0xFFCBCBCB),
-                            width: 1,
+                            width: 0.2,
                           ),
                         ),
                         child: Column(
@@ -391,11 +390,11 @@ class _SlotWidgetState extends State<SlotWidget> {
                                       width: 20,
                                       child: GestureDetector(
                                         onTap: () {
-                                          setState(() {
-                                            temporarybellboolean =
-                                                !temporarybellboolean;
-                                          });
-                                          if (temporarybellboolean) {
+                                          viewModel.handleEmailSubscribe(
+                                            widget.token,
+                                            widget.slot.blockId,
+                                          );
+                                          if (viewModel.temporaryBellBoolean) {
                                             notify.showToast(
                                               "Notifications enabled for selected slot",
                                             );
@@ -405,7 +404,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                                             );
                                           }
                                         },
-                                        child: temporarybellboolean
+                                        child: viewModel.temporaryBellBoolean
                                             ? Image.asset(
                                                 'assets/resources/bell-ringing.png',
                                                 width: 20,

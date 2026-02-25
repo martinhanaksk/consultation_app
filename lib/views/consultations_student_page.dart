@@ -216,6 +216,11 @@ class _ConsultationsUserPageState
                                                 ? Text("No slots found")
                                                 : Container(
                                                     clipBehavior: Clip.hardEdge,
+                                                    width:
+                                                        MediaQuery.of(
+                                                          context,
+                                                        ).size.width *
+                                                        0.9,
                                                     decoration: BoxDecoration(
                                                       boxShadow: [
                                                         BoxShadow(
@@ -245,20 +250,17 @@ class _ConsultationsUserPageState
                                                             Radius.circular(20),
                                                           ),
                                                     ),
-                                                    child: Column(
-                                                      children: block.value!
-                                                          .asMap()
-                                                          .entries
-                                                          .map((entry) {
-                                                            final index =
-                                                                entry.key;
-                                                            final slot =
-                                                                entry.value;
-                                                            if (slot == null) {
-                                                              return Text(
-                                                                "No slots for the block found.",
-                                                              );
-                                                            }
+                                                    child: ListView.builder(
+                                                      physics:
+                                                          const NeverScrollableScrollPhysics(),
+                                                      shrinkWrap: true,
+                                                      padding: EdgeInsets.zero,
+                                                      itemCount:
+                                                          block.value!.length,
+                                                      itemBuilder:
+                                                          (context, index) {
+                                                            final slot = block
+                                                                .value![index];
                                                             final isFirst =
                                                                 index == 0;
                                                             final isLast =
@@ -282,8 +284,7 @@ class _ConsultationsUserPageState
                                                               isFirst: isFirst,
                                                               isLast: isLast,
                                                             );
-                                                          })
-                                                          .toList(),
+                                                          },
                                                     ),
                                                   ),
                                           ],

@@ -46,10 +46,24 @@ class _EmailInputPageState extends State<EmailInputPage> {
                       const SizedBox(height: 50),
                       TextField(
                         onChanged: viewModel.updateEmail,
-                        decoration: const InputDecoration(
-                          hintText: 'Email',
-                          border: OutlineInputBorder(),
+                       decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: constants.grey),
                         ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: constants.grey),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: constants.primary,
+                            width: 1.5,
+                          ),
+                        ),
+                        hintText: 'Email',
+                      ),
                       ),
                       const SizedBox(height: 15),
                       Row(
@@ -78,14 +92,20 @@ class _EmailInputPageState extends State<EmailInputPage> {
                               );
                             }
                           },
-                          style: ButtonStyle(
-                            backgroundColor: WidgetStateProperty.all(
-                              constants.primary,
-                            ),
-                          ),
+                          style: ElevatedButton.styleFrom(
+                                  backgroundColor: constants.primary,
+                                  disabledBackgroundColor: constants.primary,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                  elevation: 2,
+                                  shadowColor: constants.primary.withValues(alpha:
+                                    0.4,
+                                  ),
+                                ),
                           child: viewModel.isLoading
                               ? CircularProgressIndicator(color: Colors.white)
-                              : const Text(
+                              :  Text(
                                   'Next',
                                   style: TextStyle(
                                     fontSize: 22,

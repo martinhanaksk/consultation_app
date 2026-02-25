@@ -1,7 +1,6 @@
 import 'package:consultation_app/models/room_model.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/join_room_viewmodel.dart';
-import 'package:consultation_app/viewmodels/verify_otp_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
 import 'package:flutter/material.dart';
@@ -20,17 +19,16 @@ class _JoinRoomState extends State<JoinRoom> {
   String? selectedRoomId;
   int? selectedId;
   final TextEditingController idController = TextEditingController();
-  
-   late final JoinRoomViewmodel _viewModel; 
+
+  late final JoinRoomViewmodel _viewModel;
   @override
   void initState() {
     super.initState();
-      _viewModel = JoinRoomViewmodel();       
+    _viewModel = JoinRoomViewmodel();
     _viewModel.fetchAllRooms(widget.token);
-    
   }
 
-@override
+  @override
   void dispose() {
     idController.dispose();
     _viewModel.dispose();
@@ -49,121 +47,191 @@ class _JoinRoomState extends State<JoinRoom> {
             drawer: SliderMenu(),
             backgroundColor: constants.darkWhite,
             body: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Center(
+              child: Center(
+                child: Container(
+                  padding: EdgeInsets.all(10),
+                  width: MediaQuery.of(context).size.width * 0.9,
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 50),
                       Text(
-                        "Join Room",
+                        "Join a Room",
                         style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 50,
+                          fontWeight: FontWeight.w700,
+                          fontSize: constants.fontSizeMedium,
                         ),
                       ),
-                      SizedBox(height: 20),
+                      SizedBox(height: 5),
+                      Text(
+                        "Search rooms & join those you're authorized to",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: constants.fontSizeVerySmall + 3,
+                          color: constants.grey,
+                        ),
+                      ),
+                      SizedBox(height: 30),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.05),
+                              blurRadius: 20,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          children: [
+                            Autocomplete<RoomModel>(
+                              displayStringForOption: (RoomModel option) =>
+                                  option.title,
+                              optionsBuilder:
+                                  (TextEditingValue textEditingValue) {
+                                    if (textEditingValue.text.isEmpty) {
+                                      return viewModel.allRooms() ?? [];
+                                    }
+                                    return (viewModel.allRooms() ?? []).where((
+                                      RoomModel room,
+                                    ) {
+                                      return room.title.toLowerCase().contains(
+                                        textEditingValue.text.toLowerCase(),
+                                      );
+                                    });
+                                  },
+                              onSelected: (RoomModel selection) {
+                                setState(() {
+                                  selectedRoomId = selection.id.toString();
+                                  selectedId = selection.id;
+                                });
+                              },
+                              fieldViewBuilder:
+                                  (
+                                    BuildContext context,
+                                    TextEditingController roomController,
+                                    FocusNode focusNode,
+                                    VoidCallback onFieldSubmitted,
+                                  ) {
+                                    return TextField(
+                                      controller: roomController,
+                                      focusNode: focusNode,
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          borderSide: BorderSide(
+                                            color: constants.grey,
+                                          ),
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          borderSide: BorderSide(
+                                            color: constants.grey,
+                                          ),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          borderSide: BorderSide(
+                                            color: constants.primary,
+                                            width: 1.5,
+                                          ),
+                                        ),
+                                        hintText: 'Type to search rooms...',
+                                        prefixIcon: Icon(
+                                          Icons.search_rounded,
+                                          size: 20,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                              optionsViewBuilder:
+                                  (
+                                    BuildContext context,
+                                    AutocompleteOnSelected<RoomModel>
+                                    onSelected,
+                                    Iterable<RoomModel> options,
+                                  ) {
+                                    return Align(
+                                      alignment: Alignment.topLeft,
+                                      child: Material(
+                                        elevation: 4.0,
+                                        child: Container(
+                                          constraints: BoxConstraints(
+                                            maxHeight: 200,
+                                          ),
+                                          child: ListView.builder(
+                                            padding: EdgeInsets.all(8.0),
+                                            itemCount: options.length,
+                                            itemBuilder:
+                                                (
+                                                  BuildContext context,
+                                                  int index,
+                                                ) {
+                                                  final RoomModel option =
+                                                      options.elementAt(index);
+                                                  return GestureDetector(
+                                                    onTap: () {
+                                                      onSelected(option);
+                                                    },
+                                                    child: ListTile(
+                                                      title: Text(option.title),
+                                                    ),
+                                                  );
+                                                },
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                            ),
+                            const SizedBox(height: 20),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 50,
 
-                      Autocomplete<RoomModel>(
-                        displayStringForOption: (RoomModel option) =>
-                            option.title,
-                        optionsBuilder: (TextEditingValue textEditingValue) {
-                          if (textEditingValue.text.isEmpty) {
-                            return viewModel.allRooms() ?? [];
-                          }
-                          return (viewModel.allRooms() ?? []).where((
-                            RoomModel room,
-                          ) {
-                            return room.title.toLowerCase().contains(
-                              textEditingValue.text.toLowerCase(),
-                            );
-                          });
-                        },
-                        onSelected: (RoomModel selection) {
-                          setState(() {
-                            selectedRoomId = selection.id.toString();
-                            selectedId = selection.id;
-                          });
-                        },
-                        fieldViewBuilder:
-                            (
-                              BuildContext context,
-                              TextEditingController roomController,
-                              FocusNode focusNode,
-                              VoidCallback onFieldSubmitted,
-                            ) {
-                              return TextField(
-                                controller: roomController,
-                                focusNode: focusNode,
-                                decoration: const InputDecoration(
-                                  hintText: 'Room name',
-                                  border: OutlineInputBorder(),
-                                ),
-                              );
-                            },
-                        optionsViewBuilder:
-                            (
-                              BuildContext context,
-                              AutocompleteOnSelected<RoomModel> onSelected,
-                              Iterable<RoomModel> options,
-                            ) {
-                              return Align(
-                                alignment: Alignment.topLeft,
-                                child: Material(
-                                  elevation: 4.0,
-                                  child: Container(
-                                    constraints: BoxConstraints(maxHeight: 200),
-                                    child: ListView.builder(
-                                      padding: EdgeInsets.all(8.0),
-                                      itemCount: options.length,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                            final RoomModel option = options
-                                                .elementAt(index);
-                                            return GestureDetector(
-                                              onTap: () {
-                                                onSelected(option);
-                                              },
-                                              child: ListTile(
-                                                title: Text(option.title),
-                                              ),
-                                            );
-                                          },
-                                    ),
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  if (selectedId != null) {
+                                    await viewModel.joinRoom(
+                                      widget.token,
+                                      selectedId!,
+                                    );
+                                  } else {
+                                    notify.showToast('Select room to join');
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: constants.primary,
+                                  disabledBackgroundColor: constants.primary,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                  elevation: 2,
+                                  shadowColor: constants.primary.withValues(alpha:
+                                    0.4,
                                   ),
                                 ),
-                              );
-                            },
-                      ),
-
-                      const SizedBox(height: 20),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            if (selectedId != null) {
-                              await viewModel.joinRoom(
-                                widget.token,
-                                selectedId!,
-                              );
-                            } else {
-                              notify.showToast('Select room to join');
-                            }
-                          },
-                          style: ButtonStyle(
-                            backgroundColor: WidgetStateProperty.all(
-                              constants.primary,
+                                child: Text(
+                                  'Join room',
+                                  style: TextStyle(
+                                    fontSize: constants.fontSizeSmall,
+                                    fontWeight: FontWeight.w500,
+                                    color: constants.white,
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                          child: const Text(
-                            'Next',
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xffffffff),
-                            ),
-                          ),
+                          ],
                         ),
                       ),
                     ],

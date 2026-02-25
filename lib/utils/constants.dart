@@ -10,10 +10,11 @@ class Constants {
   Color red = Color(0xFFFF0000);
   Color lightRed = Color(0xFFFF5D5D);
   Color primary = Color(0xFF0071E2);
-  
+
   double fontSizeBig = 40;
   double fontSizeMedium = 30;
   double fontSizeSmall = 20;
+  double fontSizeVerySmall = 13;
   double oneItemHeight = 80;
   bool testing = false;
   String url = '';
@@ -26,7 +27,7 @@ class Constants {
       url = "https://consultations-backend.onrender.com";
     } else {
       testing = false;
-      url = "https://office-hours.fit.vutbr.cz";
+      url = "https://office-hours.fit.vutbr.cz/dev";
     }
   }
   //school server:

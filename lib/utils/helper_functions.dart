@@ -89,9 +89,9 @@ class HelperFunctions {
   }
 
   void checkIfInSharedPreferences() async {
-    String? token = await prefs.getItem('token');
-    String? email = await prefs.getItem('email');
-    String? role = await prefs.getItem('role');
+    String token = await prefs.getItem('token');
+    String email = await prefs.getItem('email');
+    String role = await prefs.getItem('role');
     if (role.isNotEmpty && token.isNotEmpty && email.isNotEmpty) {
       bool isExpired = JwtDecoder.isExpired(token);
 
