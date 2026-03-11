@@ -161,7 +161,7 @@ class _SliderMenuState extends State<SliderMenu> {
                             "Log out",
                             style: TextStyle(
                               fontSize: constants.fontSizeSmall,
-                              color: Colors.red,
+                              color: constants.strawberryRed,
                               fontWeight: FontWeight.w500,
                             ),
                           ),

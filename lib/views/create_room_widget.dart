@@ -27,11 +27,18 @@ class _CreateRoomState extends State<CreateRoom> {
           return Scaffold(
             appBar: AppBarMenu(),
             drawer: SliderMenu(),
-            backgroundColor: constants.darkWhite,
+            backgroundColor: constants.background,
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
-                child: Center(child: Text("Create Room")),
+                child: Center(
+                  child: GestureDetector(
+                    child: Text("Create Room"),
+                    onTap: () {
+                      viewModel.createRoom();
+                    },
+                  ),
+                ),
               ),
             ),
           );

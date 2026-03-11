@@ -8,22 +8,22 @@ class StudentConsultationsViewmodel extends BaseConsultationsViewmodel {
   Future<void> onRoomChanged(String newRoomId) async {
     isLoading = true;
     notifyListeners();
-    await loadRoom(await prefs.getItem("token"), int.parse(newRoomId));
-   
+    await loadRoom(await prefs.getItem("token"), int.parse(newRoomId),false);
+
     isLoading = false;
     notifyListeners();
   }
-
   Future<void> loadData() async {
     isLoading = true;
     notifyListeners();
     if (selectedRoomId == null) {
-      await init(await prefs.getItem("token"), await prefs.getItem("email"));isLoading = false;
-    notifyListeners();
-    return;
+      await init(await prefs.getItem("token"), await prefs.getItem("email"));
+      isLoading = false;
+      notifyListeners();
+      return;
     }
 
-    await loadRoom(await prefs.getItem("token"), int.parse(selectedRoomId!));
+    await loadRoom(await prefs.getItem("token"), int.parse(selectedRoomId!),false);
     isLoading = false;
     notifyListeners();
   }
@@ -31,13 +31,9 @@ class StudentConsultationsViewmodel extends BaseConsultationsViewmodel {
   Future<bool> setSelectedId(String? id) async {
     if (id == null) return false;
 
-    final myRooms = await api.getMyRooms(
-      await prefs.getItem('token'),
-    );
-    final isValidRoom = myRooms.any(
-      (room) => room.id.toString() == id,
-    );
-    
+    final myRooms = await api.getMyRooms(await prefs.getItem('token'));
+    final isValidRoom = myRooms.any((room) => room.id.toString() == id);
+
     if (isValidRoom) {
       selectedRoomId = id;
       notifyListeners();
@@ -65,7 +61,7 @@ class StudentConsultationsViewmodel extends BaseConsultationsViewmodel {
     }
 
     selectedRoomId = myRooms[0].id.toString();
-    await fetchData(token, myRooms[0].id);
+    await fetchData(token, myRooms[0].id,false);
   }
 
   Future<bool> isTeacher(String token, String email) async {

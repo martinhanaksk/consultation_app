@@ -21,7 +21,7 @@ abstract class BaseConsultationsViewmodel extends ChangeNotifier {
     return 0;
   }
 
-  Future<void> loadRoom(String token, int roomId) async {
+  Future<void> loadRoom(String token, int roomId,bool isTeacher) async {
     if (!await helpers.handleIsInternetConnection()) {
       notify.showToast('Please connect to internet.');
       return;
@@ -29,11 +29,11 @@ abstract class BaseConsultationsViewmodel extends ChangeNotifier {
 
     helpers.checkIfValidToken(token);
     selectedRoomId = roomId.toString();
-    await fetchData(token, roomId);
+    await fetchData(token, roomId,isTeacher);
     notifyListeners();
   }
 
-  Future<void> fetchData(String token, int roomId) async {
+  Future<void> fetchData(String token, int roomId, bool isTeacher) async {
     if (!await helpers.handleIsInternetConnection()) {
       notify.showToast('Please connect to internet.');
       return;
@@ -45,7 +45,11 @@ abstract class BaseConsultationsViewmodel extends ChangeNotifier {
     slotsInBlocks = {};
 
     users = await api.getUsers(token);
-    rooms = await api.getMyRooms(token);
+    if (isTeacher) {
+      rooms = await api.getMyRoomsTeacher(token);
+    } else {
+      rooms = await api.getMyRooms(token);
+    }
 
     if (rooms == null || rooms!.isEmpty) {
       hasNoRooms = true;

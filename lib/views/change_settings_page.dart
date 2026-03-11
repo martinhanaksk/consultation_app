@@ -4,7 +4,7 @@ import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'package:figma_squircle/figma_squircle.dart';
 class ChangeSettings extends StatefulWidget {
   const ChangeSettings({super.key});
 
@@ -26,7 +26,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
           return Scaffold(
             appBar: AppBarMenu(),
             drawer: SliderMenu(),
-            backgroundColor: constants.darkWhite,
+            backgroundColor: constants.background,
             body: SafeArea(
               child: viewModel.email == ""
                   ? Center(
@@ -61,27 +61,16 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                           // Profile Card
                           Container(
                             width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(20),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.06),
-                                  blurRadius: 12,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
+                            decoration: constants.figmaLightShadowWith(
+                              color: constants.ghostWhite,
+                              borderRadius: SmoothBorderRadius(
+    cornerRadius: 12,
+    cornerSmoothing: 0.6,
+  ),
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Divider(
-                                  color: constants.darkGrey.withValues(
-                                    alpha: 0.08,
-                                  ),
-                                  height: 1,
-                                ),
-
                                 // Info Rows
                                 _InfoTile(
                                   icon: Icons.person,
@@ -125,11 +114,13 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                           Container(
                             width: double.infinity,
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: constants.ghostWhite,
                               borderRadius: BorderRadius.circular(20),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.06),
+                                  color: constants.darkGrey.withValues(
+                                    alpha: 0.06,
+                                  ),
                                   blurRadius: 12,
                                   offset: const Offset(0, 4),
                                 ),

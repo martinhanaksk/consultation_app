@@ -51,6 +51,7 @@ dependencies:
   dropdown_search: ^6.0.2
   url_launcher: ^6.3.2
   sticky_headers: ^0.3.0+2
+  figma_squircle: ^0.6.3
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -65,7 +66,7 @@ dev_dependencies:
 flutter_launcher_icons:
   android: "launcher_icons"
   ios: false
-  image_path: "assets/resources/icon_consultations.png"
+  image_path: "assets/resources/applogo_white_bg.png"
   adaptive_icon_foreground: "#ffffff"
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

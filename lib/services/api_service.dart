@@ -22,7 +22,7 @@ class ApiService {
       await prefs.saveItem('email', email);
       await prefs.saveItem('token', data['token']);
       await prefs.saveItem('role', data['role']);
-      if ((await prefs.getItem('receiveEmails')=="" )) {
+      if ((await prefs.getItem('receiveEmails') == "")) {
         await prefs.saveItem('receiveEmails', false);
       }
 
@@ -172,6 +172,29 @@ class ApiService {
     return allRooms.where((room) => roomIds.contains(room.id)).toList();
   }
 
+  Future<List<RoomModel>> getMyRoomsTeacher(String token) async {
+    final Uri urlToGetRooms = Uri.parse('${constants.url}/room/get-my');
+    final responseToGetRooms = await http.get(
+      urlToGetRooms,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    List<int> roomIds = [];
+    if (responseToGetRooms.statusCode == 200) {
+      final List<dynamic> jsonList = jsonDecode(responseToGetRooms.body);
+      roomIds = jsonList.map((json) => json['id'] as int).toList();
+    } else {
+      return [];
+    }
+
+    final List<RoomModel> allRooms = await getAllRooms(token);
+
+    return allRooms.where((room) => roomIds.contains(room.id)).toList();
+  }
+
   Future<List<BlockModel>> getBlocks(String token, int roomId) async {
     final Uri url = Uri.parse('${constants.url}/block/get?room_id=$roomId');
 
@@ -287,6 +310,55 @@ class ApiService {
       }
     } else {
       throw Exception('Failed to fetch role: ${response.statusCode}');
+    }
+  }
+
+  //teacher methods
+  Future<bool> createRoom(
+    String token,
+    String roomName,
+    String title,
+    String description,
+    List<String> acceptedEmailsArray,
+  ) async {
+    String convertedAcceptedEmails = helpers.acceptedEmailsFormater(
+      acceptedEmailsArray,
+    );
+    final Uri url = Uri.parse('${constants.url}/room/create');
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        "shortname": roomName,
+        "name": title,
+        "surname": description,
+        "visit_reason": convertedAcceptedEmails,
+      }),
+    );
+    if (response.statusCode != 200) {
+     return false;
+    }else{
+      return true;
+    }
+  }
+
+  Future<bool> deleteRoom(String token, int roomid) async {
+    final Uri url = Uri.parse('${constants.url}/room/delete?room_id=$roomid');
+
+    final response = await http.delete(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode != 200) {return false;
+    } else {
+      return true;
     }
   }
 }

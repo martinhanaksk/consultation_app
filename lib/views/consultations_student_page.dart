@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:provider/provider.dart';
 import 'package:sticky_headers/sticky_headers.dart';
+import 'package:figma_squircle/figma_squircle.dart';
 
 class ConsultationsStudentPageArgs {
   final String token;
@@ -63,12 +64,12 @@ class _ConsultationsUserPageState
     return Scaffold(
       appBar: AppBarMenu(),
       drawer: SliderMenu(),
-      backgroundColor: constants.darkWhite,
+      backgroundColor: constants.background,
       body: SafeArea(
         child: viewModel.isLoading
             ? Center(
                 child: CircularProgressIndicator(
-                  color: Colors.blue,
+                  color: constants.primary,
                   strokeWidth: 3,
                 ),
               )
@@ -103,199 +104,206 @@ class _ConsultationsUserPageState
             : Center(
                 child: ConstrainedBox(
                   constraints: BoxConstraints(maxWidth: 600),
-                  child: ListView(
-                    children: [
-                      SizedBox(height: 200),
-                      StickyHeader(
-                        header: Container(
-                          color: constants.darkWhite,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 10,
-                          ),
-                          child: Center(
+                  child: ScrollConfiguration(
+                    behavior: ScrollConfiguration.of(context).copyWith(
+                      physics: const BouncingScrollPhysics(
+                        parent: AlwaysScrollableScrollPhysics(),
+                      ),
+                      overscroll: false, // removes the stretch glow
+                    ),
+                    child: ListView(
+                      children: [
+                        SizedBox(height: 100),
+                        StickyHeader(
+                          header: Transform.translate(
+                            offset: const Offset(0, -1),
                             child: Container(
-                              padding: EdgeInsets.all(10),
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20.0),
-                                color: constants.lightGrey,
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    constants.background,
+                                    constants.background.withValues(
+                                      alpha: 0.95,
+                                    ),
+                                    constants.background.withValues(alpha: 0.6),
+                                    constants.background.withValues(alpha: 0.3),
+                                    constants.background.withValues(alpha: 0.0),
+                                  ],
+                                  stops: const [0.0, 0.7, 0.8, 0.9, 1.0],
+                                ),
                               ),
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton<String>(
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  dropdownColor: constants.lightGrey,
-                                  iconEnabledColor: constants.darkGrey,
-                                  hint: Text("Select a Room"),
-                                  value: viewModel.safeSelectedRoomId,
-                                  items: viewModel.rooms == null
-                                      ? []
-                                      : viewModel.rooms!.map((RoomModel value) {
-                                          return DropdownMenuItem<String>(
-                                            value: value.id.toString(),
-                                            child: Text(value.title),
-                                          );
-                                        }).toList(),
-                                  onChanged: (String? newValue) async {
-                                    if (newValue != null) {
-                                      final success = await viewModel
-                                          .setSelectedId(newValue);
-                                      if (success) {
-                                        await viewModel.onRoomChanged(newValue);
-                                      }
-                                    }
-                                  },
+                              padding: EdgeInsets.fromLTRB(0, 10, 0, 50),
+                              child: Center(
+                                child: Container(
+                                  clipBehavior: Clip.none,
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 10,
+                                    horizontal: 20,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: constants.grey,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: DropdownButtonHideUnderline(
+                                    child: DropdownButton<String>(
+                                      borderRadius: BorderRadius.circular(20.0),
+                                      dropdownColor: constants.grey,
+                                      iconSize: 0,
+                                      hint: Text("Select a Room"),
+                                      value: viewModel.safeSelectedRoomId,
+                                      items: viewModel.rooms == null
+                                          ? []
+                                          : viewModel.rooms!.map((
+                                              RoomModel value,
+                                            ) {
+                                              return DropdownMenuItem<String>(
+                                                value: value.id.toString(),
+                                                child: Text(value.title),
+                                              );
+                                            }).toList(),
+                                      onChanged: (String? newValue) async {
+                                        if (newValue != null) {
+                                          final success = await viewModel
+                                              .setSelectedId(newValue);
+                                          if (success) {
+                                            await viewModel.onRoomChanged(
+                                              newValue,
+                                            );
+                                          }
+                                        }
+                                      },
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        content: viewModel.foundBlocksLength() == 0
-                            ? Padding(
-                                padding: const EdgeInsets.only(top: 40),
-                                child: Center(
-                                  child: Text(
-                                    "No upcoming consultations found.",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: constants.fontSizeSmall,
-                                    ),
-                                  ),
-                                ),
-                              )
-                            : Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(height: 30),
-                                  Center(
+                          content: viewModel.foundBlocksLength() == 0
+                              ? Padding(
+                                  padding: const EdgeInsets.only(top: 40),
+                                  child: Center(
                                     child: Text(
-                                      "Sign up for a consultation",
-                                      textAlign: TextAlign.center,
+                                      "No upcoming consultations found.",
                                       style: TextStyle(
-                                        color: constants.darkGrey,
-                                        fontSize: constants.fontSizeMedium,
-                                        fontWeight: FontWeight.w500,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: constants.fontSizeSmall,
                                       ),
                                     ),
                                   ),
-                                  SizedBox(height: 30),
-                                  ...() {
-                                    final sortedEntries = viewModel
-                                        .slotsInBlocks
-                                        .entries
-                                        .toList();
-                                    sortedEntries.sort((a, b) {
-                                      final blockA = viewModel.blocks
-                                          .firstWhere(
-                                            (block) => block.id == a.key,
-                                          );
-                                      final blockB = viewModel.blocks
-                                          .firstWhere(
-                                            (block) => block.id == b.key,
-                                          );
-                                      return blockA.date.compareTo(blockB.date);
-                                    });
-                                    return sortedEntries.map((block) {
-                                      return Center(
-                                        child: Column(
-                                          children: [
-                                            const SizedBox(height: 20),
-                                            Text(
-                                              viewModel.getDateOfBlock(
-                                                block.key,
+                                )
+                              : Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(height: 30),
+                                    ...() {
+                                      final sortedEntries = viewModel
+                                          .slotsInBlocks
+                                          .entries
+                                          .toList();
+                                      sortedEntries.sort((a, b) {
+                                        final blockA = viewModel.blocks
+                                            .firstWhere(
+                                              (block) => block.id == a.key,
+                                            );
+                                        final blockB = viewModel.blocks
+                                            .firstWhere(
+                                              (block) => block.id == b.key,
+                                            );
+                                        return blockA.date.compareTo(
+                                          blockB.date,
+                                        );
+                                      });
+                                      return sortedEntries.map((block) {
+                                        return Center(
+                                          child: Column(
+                                            children: [
+                                              const SizedBox(height: 20),
+                                              Text(
+                                                viewModel.getDateOfBlock(
+                                                  block.key,
+                                                ),
+                                                style: TextStyle(
+                                                  color: constants.darkGrey,
+                                                  fontSize:
+                                                      constants.fontSizeSmall,
+                                                  fontWeight: FontWeight.w400,
+                                                ),
                                               ),
-                                              style: TextStyle(
-                                                color: constants.darkGrey,
-                                                fontSize:
-                                                    constants.fontSizeSmall,
-                                                fontWeight: FontWeight.w400,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 20),
-                                            (block.value == null ||
-                                                    block.value!.isEmpty)
-                                                ? Text("No slots found")
-                                                : Container(
-                                                    clipBehavior: Clip.hardEdge,
-                                                    width:
-                                                        MediaQuery.of(
-                                                          context,
-                                                        ).size.width *
-                                                        0.9,
-                                                    decoration: BoxDecoration(
-                                                      boxShadow: [
-                                                        BoxShadow(
-                                                          color: Colors
-                                                              .grey
-                                                              .shade600,
-                                                          spreadRadius: 1,
-                                                          blurRadius: 10,
-                                                          offset: const Offset(
-                                                            2,
-                                                            2,
+                                              const SizedBox(height: 20),
+                                              (block.value == null ||
+                                                      block.value!.isEmpty)
+                                                  ? Text("No slots found")
+                                                  : Container(
+                                                      clipBehavior:
+                                                          Clip.hardEdge,
+                                                      width:
+                                                          MediaQuery.of(
+                                                            context,
+                                                          ).size.width *
+                                                          0.9,
+                                                      decoration: constants
+                                                          .figmaLightShadowWith(
+                                                            borderRadius:
+                                                                SmoothBorderRadius(
+                                                                  cornerRadius:
+                                                                      20,
+                                                                  cornerSmoothing:
+                                                                      0.6,
+                                                                ),
+                                                            color: constants
+                                                                .ghostWhite,
                                                           ),
-                                                        ),
-                                                        const BoxShadow(
-                                                          color: Colors.white,
-                                                          offset: Offset(
-                                                            -5,
-                                                            -5,
-                                                          ),
-                                                          blurRadius: 15,
-                                                          spreadRadius: 1,
-                                                        ),
-                                                      ],
-                                                      color: Colors.white,
-                                                      borderRadius:
-                                                          BorderRadius.all(
-                                                            Radius.circular(20),
-                                                          ),
+                                                      child: ListView.builder(
+                                                        physics:
+                                                            const NeverScrollableScrollPhysics(),
+                                                        shrinkWrap: true,
+                                                        padding:
+                                                            EdgeInsets.zero,
+                                                        itemCount:
+                                                            block.value!.length,
+                                                        itemBuilder: (context, index) {
+                                                          final slot = block
+                                                              .value![index];
+                                                          final isFirst =
+                                                              index == 0;
+                                                          final isLast =
+                                                              index ==
+                                                              block
+                                                                      .value!
+                                                                      .length -
+                                                                  1;
+                                                          return SlotWidget(
+                                                            userEmail:
+                                                                widget.email,
+                                                            slot: slot,
+                                                            token: widget.token,
+                                                            roomId: viewModel
+                                                                .selectedRoomId!,
+                                                            context: context,
+                                                            loadData: viewModel
+                                                                .loadData,
+                                                            isFirst: isFirst,
+                                                            isLast: isLast,
+                                                            date: viewModel
+                                                                .getDateOfBlock(
+                                                                  block.key,
+                                                                ),
+                                                          );
+                                                        },
+                                                      ),
                                                     ),
-                                                    child: ListView.builder(
-                                                      physics:
-                                                          const NeverScrollableScrollPhysics(),
-                                                      shrinkWrap: true,
-                                                      padding: EdgeInsets.zero,
-                                                      itemCount:
-                                                          block.value!.length,
-                                                      itemBuilder:
-                                                          (context, index) {
-                                                            final slot = block
-                                                                .value![index];
-                                                            final isFirst =
-                                                                index == 0;
-                                                            final isLast =
-                                                                index ==
-                                                                block
-                                                                        .value!
-                                                                        .length -
-                                                                    1;
-                                                            return SlotWidget(
-                                                              userEmail:
-                                                                  widget.email,
-                                                              slot: slot,
-                                                              token:
-                                                                  widget.token,
-                                                              roomId: viewModel
-                                                                  .selectedRoomId!,
-                                                              context: context,
-                                                              loadData:
-                                                                  viewModel
-                                                                      .loadData,
-                                                              isFirst: isFirst,
-                                                              isLast: isLast,
-                                                            );
-                                                          },
-                                                    ),
-                                                  ),
-                                          ],
-                                        ),
-                                      );
-                                    }).toList();
-                                  }(),
-                                ],
-                              ),
-                      ),
-                    ],
+                                            ],
+                                          ),
+                                        );
+                                      }).toList();
+                                    }(),
+                                  ],
+                                ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

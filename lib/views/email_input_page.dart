@@ -2,7 +2,7 @@ import 'package:consultation_app/viewmodels/email_input_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:consultation_app/setup.dart';
-
+import 'package:figma_squircle/figma_squircle.dart';
 class EmailInputPage extends StatefulWidget {
   const EmailInputPage({super.key});
 
@@ -25,9 +25,8 @@ class _EmailInputPageState extends State<EmailInputPage> {
       create: (_) => EmailInputViewModel(),
       child: Consumer<EmailInputViewModel>(
         builder: (context, viewModel, child) {
-          
           return Scaffold(
-            backgroundColor: constants.darkWhite,
+            backgroundColor: constants.background,
             body: SafeArea(
               child: SingleChildScrollView(
                 child: Padding(
@@ -44,38 +43,58 @@ class _EmailInputPageState extends State<EmailInputPage> {
                         ),
                       ),
                       const SizedBox(height: 50),
-                      TextField(
-                        onChanged: viewModel.updateEmail,
-                       decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: constants.grey),
+                      Container(
+                        clipBehavior: Clip.none,
+                        decoration: constants.figmaLightShadowWith(
+                          color: constants.ghostWhite,
+                          borderRadius: SmoothBorderRadius(
+    cornerRadius: 12,
+    cornerSmoothing: 0.6,
+  ),
                         ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: constants.grey),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: constants.primary,
-                            width: 1.5,
+                        child: TextField(
+                          onChanged: viewModel.updateEmail,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                            ),
+
+                            hintText: 'Email',
                           ),
                         ),
-                        hintText: 'Email',
                       ),
-                      ),
-                      const SizedBox(height: 15),
+                      const SizedBox(height: 25),
                       Row(
                         children: [
-                          Checkbox(
-                            value: viewModel.isChecked,
-                            onChanged: viewModel.toggleRememberMe,
+                          IntrinsicWidth(
+                            child: Container(
+                              width: 25,
+                              height: 25,
+                              clipBehavior: Clip.none,
+                              decoration: constants.figmaLightShadowWith(
+                                color: constants.ghostWhite,
+                                borderRadius: SmoothBorderRadius(
+    cornerRadius: 6,
+    cornerSmoothing: 0.6,
+  ),
+                              ),
+                              child: Checkbox(
+                                value: viewModel.isChecked,
+                                onChanged: viewModel.toggleRememberMe,
+                                side: BorderSide.none,
+                                checkColor: constants.darkGrey,
+                                fillColor: WidgetStateProperty.all(
+                                  constants.ghostWhite,
+                                ),
+                              ),
+                            ),
                           ),
+                          SizedBox(width: 10),
                           const Text('Remember me'),
                         ],
                       ),
-                      const SizedBox(height: 15),
+                      SizedBox(),
+                      const SizedBox(height: 25),
                       SizedBox(
                         width: double.infinity,
                         height: 50,
@@ -93,24 +112,26 @@ class _EmailInputPageState extends State<EmailInputPage> {
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                                  backgroundColor: constants.primary,
-                                  disabledBackgroundColor: constants.primary,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(14),
-                                  ),
-                                  elevation: 2,
-                                  shadowColor: constants.primary.withValues(alpha:
-                                    0.4,
-                                  ),
-                                ),
+                            backgroundColor: constants.primary,
+                            disabledBackgroundColor: constants.primary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            elevation: 2,
+                            shadowColor: constants.primary.withValues(
+                              alpha: 0.4,
+                            ),
+                          ),
                           child: viewModel.isLoading
-                              ? CircularProgressIndicator(color: Colors.white)
-                              :  Text(
+                              ? CircularProgressIndicator(
+                                  color: constants.ghostWhite,
+                                )
+                              : Text(
                                   'Next',
                                   style: TextStyle(
                                     fontSize: 22,
                                     fontWeight: FontWeight.w500,
-                                    color: Color(0xffffffff),
+                                    color: constants.ghostWhite,
                                   ),
                                 ),
                         ),

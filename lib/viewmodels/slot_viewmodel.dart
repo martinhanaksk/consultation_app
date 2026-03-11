@@ -4,6 +4,13 @@ import 'package:flutter/material.dart';
 class SlotViewmodel extends ChangeNotifier {
   bool _isLoading = false;
   bool _temporarybellboolean = false;
+  bool _isOnlineSelected = false;
+  bool get isOnlineSelected => _isOnlineSelected;
+  void setIsOnlineSelected(bool val) {
+    _isOnlineSelected = val;
+    notifyListeners();
+  }
+
   void setTemporarybellboolean(bool val) {
     _temporarybellboolean = val;
     notifyListeners();

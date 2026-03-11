@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:consultation_app/routes/app_router.dart';
 import 'package:overlay_kit/overlay_kit.dart';
 import 'package:consultation_app/setup.dart';
-  
+
 // Author: Martin Hanak
-// email: xhanakm00@stud.fit.vut.cz 
+// email: xhanakm00@stud.fit.vut.cz
 void main() {
   setupDependencies();
-  runApp(const MyApp()); 
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Consultations',
         navigatorKey: nav.navigatorKey,
-        theme: ThemeData(primarySwatch: Colors.blue),
+        theme: ThemeData(primaryColor: constants.primary),
         initialRoute: AppRouter.login,
         debugShowCheckedModeBanner: false,
         onGenerateRoute: AppRouter.generateRoute,

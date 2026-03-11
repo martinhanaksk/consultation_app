@@ -9,6 +9,8 @@ class SlotModel {
   final String? takenByReason;
   final String? history;
   final String? note;
+  final int isOnline;
+  final int roomId;
 
   SlotModel({
     required this.id,
@@ -21,6 +23,8 @@ class SlotModel {
     this.takenByReason,
     this.history,
     this.note,
+    required this.isOnline,
+    required this.roomId,
   });
 
   factory SlotModel.fromJson(Map<String, dynamic> json) => SlotModel(
@@ -34,6 +38,8 @@ class SlotModel {
     takenByReason: json['taken_by_reason'],
     history: json['history'],
     note: json['note'],
+    isOnline: json['is_online'],
+    roomId: json['room_id'],
   );
 
   Map<String, dynamic> toJson() => {
@@ -47,5 +53,7 @@ class SlotModel {
     "taken_by_reason": takenByReason,
     "history": history,
     "note": note,
+    "is_online": isOnline,
+    "room_id": roomId,
   };
 }

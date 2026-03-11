@@ -1,3 +1,4 @@
+import 'package:consultation_app/setup.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -8,8 +9,8 @@ class NotifyUserUtils {
       toastLength: Toast.LENGTH_SHORT,
       gravity: ToastGravity.BOTTOM,
       webPosition: "center",
-      backgroundColor: Colors.white,
-      textColor: Colors.black,
+      backgroundColor: constants.ghostWhite,
+      textColor: constants.darkGrey,
       fontSize: 16.0,
     );
   }

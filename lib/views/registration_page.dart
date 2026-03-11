@@ -42,7 +42,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       child: Consumer<RegisterViewmodel>(
         builder: (context, viewModel, child) {
           return Scaffold(
-            backgroundColor: constants.darkWhite,
+            backgroundColor: constants.background,
             resizeToAvoidBottomInset: true,
             body: SafeArea(
               child: SingleChildScrollView(
@@ -210,12 +210,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           elevation: 2,
                           shadowColor: constants.green.withValues(alpha: 0.4),
                         ),
-                        child: const Text(
+                        child:  Text(
                           'Register',
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.w500,
-                            color: Colors.white,
+                            color: constants.ghostWhite,
                           ),
                         ),
                       ),

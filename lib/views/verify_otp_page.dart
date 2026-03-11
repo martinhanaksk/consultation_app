@@ -2,7 +2,7 @@ import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/verify_otp_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'package:figma_squircle/figma_squircle.dart';
 class VerifyOtpPageArgs {
   final String email;
   final String token;
@@ -63,7 +63,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
       child: Consumer<VerifyOtpViewmodel>(
         builder: (context, viewModel, child) {
           return Scaffold(
-            backgroundColor: constants.darkWhite,
+            backgroundColor: constants.background,
             body: SafeArea(
               child: Padding(
                 padding: EdgeInsets.all(24.0),
@@ -88,26 +88,24 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    TextField(
-                      controller: otpcontroller,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: constants.grey),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: constants.grey),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: constants.primary,
-                            width: 1.5,
+                    Container(
+                      clipBehavior: Clip.none,
+                      decoration: constants.figmaLightShadowWith(
+                        color: constants.ghostWhite,
+                        borderRadius:  SmoothBorderRadius(
+    cornerRadius: 12,
+    cornerSmoothing: 0.6,
+  ),
+                      ),
+                      child: TextField(
+                        controller: otpcontroller,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
                           ),
+
+                          hintText: 'Enter code',
                         ),
-                        hintText: 'Enter code',
                       ),
                     ),
                     SizedBox(height: 32),
@@ -125,22 +123,20 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                                 );
                               },
                         style: ElevatedButton.styleFrom(
-                                  backgroundColor: constants.primary,
-                                  disabledBackgroundColor: constants.primary,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(14),
-                                  ),
-                                  elevation: 2,
-                                  shadowColor: constants.primary.withValues(alpha:
-                                    0.4,
-                                  ),
-                                ),
+                          backgroundColor: constants.primary,
+                          disabledBackgroundColor: constants.primary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          elevation: 2,
+                          shadowColor: constants.primary.withValues(alpha: 0.4),
+                        ),
                         child: Text(
                           'Connect',
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.w500,
-                            color: constants.white,
+                            color: constants.ghostWhite,
                           ),
                         ),
                       ),
