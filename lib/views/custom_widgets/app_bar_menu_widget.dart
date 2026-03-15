@@ -45,7 +45,7 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
               ),
               child: IconButton(
                 padding: EdgeInsets.zero,
-                icon: Icon(Icons.person),
+                icon: Icon(Icons.person_2_outlined),
                 color: constants.darkGrey,
                 iconSize: 20,
                 onPressed: () {

@@ -56,7 +56,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         'Register',
                         style: TextStyle(
                           fontSize: 42,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: constants.fwSemiBold,
                           color: constants.darkGrey,
                         ),
                       ),
@@ -108,7 +108,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     const SizedBox(height: 16),
                     TextField(
                       controller: surnameController,
-                     decoration: InputDecoration(
+                      decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide(color: constants.grey),
@@ -210,12 +210,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           elevation: 2,
                           shadowColor: constants.green.withValues(alpha: 0.4),
                         ),
-                        child:  Text(
+                        child: Text(
                           'Register',
                           style: TextStyle(
                             fontSize: 22,
-                            fontWeight: FontWeight.w500,
-                            color: constants.ghostWhite,
+                            fontWeight: constants.fwSemiBold,
+                            color: constants.background,
                           ),
                         ),
                       ),

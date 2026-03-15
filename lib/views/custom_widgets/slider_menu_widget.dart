@@ -12,14 +12,13 @@ class SliderMenu extends StatefulWidget {
 }
 
 class _SliderMenuState extends State<SliderMenu> {
-   late final SliderMenuViewmodel _viewModel; 
-  
+  late final SliderMenuViewmodel _viewModel;
+
   @override
   void initState() {
     super.initState();
     _viewModel = SliderMenuViewmodel();
     _viewModel.checkSliderMenuFundamentals();
-  
   }
 
   @override
@@ -66,10 +65,29 @@ class _SliderMenuState extends State<SliderMenu> {
                         GestureDetector(
                           child: Container(
                             child: Text(
+                              "Home",
+                              style: TextStyle(fontSize: constants.fsTitle),
+                            ),
+                          ),
+                          onTap: () {
+                            helpers.checkIfValidToken(viewModel.token);
+                            viewModel.isTeacher!
+                                ? nav.toTeacherConsultations(
+                                    token: viewModel.token,
+                                    email: viewModel.email!,
+                                  )
+                                : nav.toStudentConsultations(
+                                    token: viewModel.token,
+                                    email: viewModel.email!,
+                                  );
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        GestureDetector(
+                          child: Container(
+                            child: Text(
                               "Join Room",
-                              style: TextStyle(
-                                fontSize: constants.fontSizeSmall,
-                              ),
+                              style: TextStyle(fontSize: constants.fsTitle),
                             ),
                           ),
                           onTap: () {
@@ -86,7 +104,7 @@ class _SliderMenuState extends State<SliderMenu> {
                                       child: Text(
                                         "Create Room",
                                         style: TextStyle(
-                                          fontSize: constants.fontSizeSmall,
+                                          fontSize: constants.fsTitle,
                                         ),
                                       ),
                                     ),
@@ -102,15 +120,18 @@ class _SliderMenuState extends State<SliderMenu> {
                         GestureDetector(
                           child: Text(
                             "Provide Feedback",
-                            style: TextStyle(fontSize: constants.fontSizeSmall),
+                            style: TextStyle(fontSize: constants.fsTitle),
                           ),
                           onTap: () {
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
-                                  title: const Text(
+                                  title: Text(
                                     "Continue to provide feedback?",
+                                    style: TextStyle(
+                                      fontSize: constants.fsTitle,
+                                    ),
                                   ),
                                   actions: [
                                     TextButton(
@@ -148,7 +169,7 @@ class _SliderMenuState extends State<SliderMenu> {
                         GestureDetector(
                           child: Text(
                             "Settings",
-                            style: TextStyle(fontSize: constants.fontSizeSmall),
+                            style: TextStyle(fontSize: constants.fsTitle),
                           ),
 
                           onTap: () {
@@ -160,9 +181,9 @@ class _SliderMenuState extends State<SliderMenu> {
                           child: Text(
                             "Log out",
                             style: TextStyle(
-                              fontSize: constants.fontSizeSmall,
-                              color: constants.strawberryRed,
-                              fontWeight: FontWeight.w500,
+                              fontSize: constants.fsTitle,
+                              color: constants.red,
+                              fontWeight: constants.fwSemiBold,
                             ),
                           ),
 

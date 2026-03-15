@@ -8,6 +8,7 @@ import 'package:consultation_app/setup.dart';
 import 'package:provider/provider.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 import 'package:figma_squircle/figma_squircle.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class ConsultationsStudentPageArgs {
   final String token;
@@ -68,9 +69,9 @@ class _ConsultationsUserPageState
       body: SafeArea(
         child: viewModel.isLoading
             ? Center(
-                child: CircularProgressIndicator(
+                child: SpinKitPouringHourGlass(
                   color: constants.primary,
-                  strokeWidth: 3,
+                  size: 50.0,
                 ),
               )
             : (viewModel.hasNoRooms || viewModel.selectedRoomId == null)
@@ -88,7 +89,7 @@ class _ConsultationsUserPageState
                               "Try joining room to get started.",
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                fontSize: constants.fontSizeMedium,
+                                fontSize: constants.fsTitle,
                                 color: constants.primary,
                               ),
                             ),
@@ -187,8 +188,8 @@ class _ConsultationsUserPageState
                                     child: Text(
                                       "No upcoming consultations found.",
                                       style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: constants.fontSizeSmall,
+                                        fontWeight: constants.fwSemiBold,
+                                        fontSize: constants.fsTitle,
                                       ),
                                     ),
                                   ),
@@ -226,9 +227,8 @@ class _ConsultationsUserPageState
                                                 ),
                                                 style: TextStyle(
                                                   color: constants.darkGrey,
-                                                  fontSize:
-                                                      constants.fontSizeSmall,
-                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: constants.fsLabel,
+                                                  fontWeight: constants.fwRegular,
                                                 ),
                                               ),
                                               const SizedBox(height: 20),
@@ -253,7 +253,7 @@ class _ConsultationsUserPageState
                                                                       0.6,
                                                                 ),
                                                             color: constants
-                                                                .ghostWhite,
+                                                                .background,
                                                           ),
                                                       child: ListView.builder(
                                                         physics:

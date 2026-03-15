@@ -27,10 +27,17 @@ class EmailInputViewModel extends ChangeNotifier {
       }
     } catch (e) {
       notify.showToast("Please, check your internet connection.");
-    } finally {
-      _isLoading = false;
-      notifyListeners();
+      resetLoading();
     }
+  }
+void setLoading(bool loading) {
+  _isLoading = loading;
+  notifyListeners();
+}
+
+  void resetLoading() {
+    _isLoading = false;
+    notifyListeners();
   }
 
   void handleTestingServer(
@@ -40,6 +47,7 @@ class EmailInputViewModel extends ChangeNotifier {
   ) {
     if (response.statusCode == 200) {
       nav.toVerifyOtp(
+        // ← then navigate
         email: email,
         token: response.body,
         rememberMe: rememberMe,
@@ -49,11 +57,7 @@ class EmailInputViewModel extends ChangeNotifier {
     }
   }
 
-  void handleServer(
-    http.Response response,
-    String email,
-    bool rememberMe,
-  ) async {
+  void handleServer(http.Response response, String email, bool rememberMe) {
     if (response.statusCode == 200) {
       nav.toVerifyOtp(email: email, token: "", rememberMe: rememberMe);
     } else if (response.statusCode == 400) {

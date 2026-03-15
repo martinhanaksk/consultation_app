@@ -5,6 +5,8 @@ import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:figma_squircle/figma_squircle.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+
 class ChangeSettings extends StatefulWidget {
   const ChangeSettings({super.key});
 
@@ -30,8 +32,9 @@ class _ChangeSettingsState extends State<ChangeSettings> {
             body: SafeArea(
               child: viewModel.email == ""
                   ? Center(
-                      child: CircularProgressIndicator(
+                      child: SpinKitPouringHourGlass(
                         color: constants.primary,
+                        size: 50.0,
                       ),
                     )
                   : SingleChildScrollView(
@@ -43,8 +46,8 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                           Text(
                             "Account Settings",
                             style: TextStyle(
-                              fontSize: constants.fontSizeMedium,
-                              fontWeight: FontWeight.bold,
+                              fontSize: constants.fsHeadline,
+                              fontWeight: constants.fwSemiBold,
                               color: constants.darkGrey,
                             ),
                           ),
@@ -52,7 +55,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                           Text(
                             "Manage your profile and preferences",
                             style: TextStyle(
-                              fontSize: constants.fontSizeSmall,
+                              fontSize: constants.fsTitle,
                               color: constants.darkGrey.withValues(alpha: 0.6),
                             ),
                           ),
@@ -62,18 +65,18 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                           Container(
                             width: double.infinity,
                             decoration: constants.figmaLightShadowWith(
-                              color: constants.ghostWhite,
+                              color: constants.background,
                               borderRadius: SmoothBorderRadius(
-    cornerRadius: 12,
-    cornerSmoothing: 0.6,
-  ),
+                                cornerRadius: 12,
+                                cornerSmoothing: 0.6,
+                              ),
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 // Info Rows
                                 _InfoTile(
-                                  icon: Icons.person,
+                                  icon: Icons.person_2_outlined,
                                   label: "Email",
                                   value: viewModel.email,
                                 ),
@@ -114,7 +117,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                           Container(
                             width: double.infinity,
                             decoration: BoxDecoration(
-                              color: constants.ghostWhite,
+                              color: constants.background,
                               borderRadius: BorderRadius.circular(20),
                               boxShadow: [
                                 BoxShadow(
@@ -139,8 +142,8 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                   child: Text(
                                     "Preferences",
                                     style: TextStyle(
-                                      fontSize: constants.fontSizeSmall,
-                                      fontWeight: FontWeight.bold,
+                                      fontSize: constants.fsLabel,
+                                      fontWeight: constants.fwSemiBold,
                                       color: constants.darkGrey,
                                     ),
                                   ),
@@ -168,7 +171,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                         Icon(
                                           Icons.email_outlined,
                                           color: constants.primary,
-                                          size: constants.fontSizeMedium,
+                                          size: constants.fsBody,
                                         ),
                                         const SizedBox(width: 14),
                                         Expanded(
@@ -179,9 +182,9 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                               Text(
                                                 "Receive Emails",
                                                 style: TextStyle(
-                                                  fontSize:
-                                                      constants.fontSizeSmall,
-                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: constants.fsBody,
+                                                  fontWeight:
+                                                      constants.fwSemiBold,
                                                   color: constants.darkGrey,
                                                 ),
                                               ),
@@ -189,8 +192,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                               Text(
                                                 "Get emails about changes in selected consultation blocks",
                                                 style: TextStyle(
-                                                  fontSize: constants
-                                                      .fontSizeVerySmall,
+                                                  fontSize: constants.fsLabel,
                                                   color: constants.darkGrey
                                                       .withValues(alpha: 0.55),
                                                 ),
@@ -245,7 +247,7 @@ class _InfoTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       child: Row(
         children: [
-          Icon(icon, color: constants.primary, size: constants.fontSizeSmall),
+          Icon(icon, color: constants.primary, size: constants.fsBody),
           const SizedBox(width: 14),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -253,7 +255,7 @@ class _InfoTile extends StatelessWidget {
               Text(
                 label,
                 style: TextStyle(
-                  fontSize: constants.fontSizeVerySmall,
+                  fontSize: constants.fsLabel,
                   color: constants.darkGrey.withValues(alpha: 0.6),
                 ),
               ),
@@ -261,8 +263,8 @@ class _InfoTile extends StatelessWidget {
               Text(
                 value,
                 style: TextStyle(
-                  fontSize: constants.fontSizeVerySmall + 5,
-                  fontWeight: FontWeight.w500,
+                  fontSize: constants.fsBody,
+                  fontWeight: constants.fwSemiBold,
                   color: constants.darkGrey,
                 ),
               ),

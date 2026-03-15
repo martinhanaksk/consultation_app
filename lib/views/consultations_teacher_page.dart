@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:provider/provider.dart';
 import 'package:sticky_headers/sticky_headers.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class ConsultationsTeacherPageArgs {
   final String token;
@@ -67,9 +68,9 @@ class _ConsultationsUserPageState
       body: SafeArea(
         child: viewModel.isLoading
             ? Center(
-                child: CircularProgressIndicator(
+                child: SpinKitPouringHourGlass(
                   color: constants.primary,
-                  strokeWidth: 3,
+                  size: 50.0,
                 ),
               )
             : (viewModel.hasNoRooms || viewModel.selectedRoomId == null)
@@ -87,7 +88,7 @@ class _ConsultationsUserPageState
                               "Try joining room to get started.",
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                fontSize: constants.fontSizeMedium,
+                                fontSize: constants.fsTitle,
                                 color: constants.primary,
                               ),
                             ),
@@ -224,8 +225,8 @@ class _ConsultationsUserPageState
                                       child: Text(
                                         "No upcoming consultations found.",
                                         style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: constants.fontSizeSmall,
+                                          fontWeight: constants.fwSemiBold,
+                                          fontSize: constants.fsLabel,
                                         ),
                                       ),
                                     ),
@@ -264,9 +265,8 @@ class _ConsultationsUserPageState
                                                   ),
                                                   style: TextStyle(
                                                     color: constants.darkGrey,
-                                                    fontSize:
-                                                        constants.fontSizeSmall,
-                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: constants.fsLabel,
+                                                    fontWeight: constants.fwRegular,
                                                   ),
                                                 ),
                                                 const SizedBox(height: 20),
@@ -297,7 +297,7 @@ class _ConsultationsUserPageState
                                                             ),
                                                             BoxShadow(
                                                               color: constants
-                                                                  .ghostWhite,
+                                                                  .background,
                                                               offset: Offset(
                                                                 -5,
                                                                 -5,
@@ -307,7 +307,7 @@ class _ConsultationsUserPageState
                                                             ),
                                                           ],
                                                           color: constants
-                                                              .ghostWhite,
+                                                              .background,
                                                           borderRadius:
                                                               BorderRadius.all(
                                                                 Radius.circular(
@@ -348,9 +348,11 @@ class _ConsultationsUserPageState
                                                                   viewModel
                                                                       .loadData,
                                                               isFirst: isFirst,
-                                                              isLast: isLast,date: viewModel.getDateOfBlock(
-                                                block.key,
-                                              ),
+                                                              isLast: isLast,
+                                                              date: viewModel
+                                                                  .getDateOfBlock(
+                                                                    block.key,
+                                                                  ),
                                                             );
                                                           },
                                                         ),

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:figma_squircle/figma_squircle.dart';
+
 class JoinRoom extends StatefulWidget {
   final String token;
   const JoinRoom({super.key, required this.token});
@@ -59,8 +60,8 @@ class _JoinRoomState extends State<JoinRoom> {
                         child: Text(
                           "Join a Room",
                           style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: constants.fontSizeMedium,
+                            fontWeight: constants.fwSemiBold,
+                            fontSize: constants.fsHeadline,
                           ),
                         ),
                       ),
@@ -70,11 +71,11 @@ class _JoinRoomState extends State<JoinRoom> {
                         width: double.infinity,
                         padding: const EdgeInsets.all(24),
                         decoration: constants.figmaLightShadowWith(
-                          color: constants.ghostWhite,
+                          color: constants.background,
                           borderRadius: SmoothBorderRadius(
-    cornerRadius: 20,
-    cornerSmoothing: 0.6,
-  ),
+                            cornerRadius: 20,
+                            cornerSmoothing: 0.6,
+                          ),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,8 +83,8 @@ class _JoinRoomState extends State<JoinRoom> {
                             Text(
                               "Browse authorized rooms",
                               style: TextStyle(
-                                fontWeight: FontWeight.w400,
-                                fontSize: constants.fontSizeVerySmall + 3,
+                                fontWeight: constants.fwRegular,
+                                fontSize: constants.fsBody,
                                 color: constants.darkGrey.withAlpha(100),
                               ),
                             ),
@@ -170,7 +171,7 @@ class _JoinRoomState extends State<JoinRoom> {
                                         elevation: 4.0,
                                         child: Container(
                                           decoration: BoxDecoration(
-                                            color: constants.ghostWhite,
+                                            color: constants.background,
                                           ),
                                           constraints: BoxConstraints(
                                             maxHeight: 200,
@@ -229,9 +230,9 @@ class _JoinRoomState extends State<JoinRoom> {
                                 child: Text(
                                   'Join room',
                                   style: TextStyle(
-                                    fontSize: constants.fontSizeSmall,
-                                    fontWeight: FontWeight.w500,
-                                    color: constants.ghostWhite,
+                                    fontSize: constants.fsBody,
+                                    fontWeight: constants.fwSemiBold,
+                                    color: constants.background,
                                   ),
                                 ),
                               ),

@@ -67,11 +67,11 @@ class _SlotWidgetState extends State<SlotWidget> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                     Text(
                       "Add a visit purpose",
                       style: TextStyle(
                         fontSize: 18,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: constants.fwSemiBold,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -79,7 +79,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                       width: MediaQuery.of(context).size.width * 0.9,
                       padding: const EdgeInsets.all(20),
                       decoration: constants.figmaLightShadowWith(
-                        color: constants.ghostWhite,
+                        color: constants.background,
                         borderRadius: SmoothBorderRadius(
                           cornerRadius: 20,
                           cornerSmoothing: 0.6,
@@ -94,15 +94,15 @@ class _SlotWidgetState extends State<SlotWidget> {
                                 children: [
                                   Icon(
                                     Icons.calendar_month,
-                                    size: constants.fontSizeVerySmall + 5,
+                                    size: constants.fsLabel,
                                     color: constants.darkGrey,
                                   ),
                                   SizedBox(width: 10),
                                   Text(
                                     "Date",
                                     style: TextStyle(
-                                      fontSize: constants.fontSizeVerySmall + 5,
-                                      fontWeight: FontWeight.w400,
+                                      fontSize: constants.fsLabel,
+                                      fontWeight: constants.fwRegular,
                                       color: constants.darkGrey,
                                     ),
                                   ),
@@ -111,8 +111,8 @@ class _SlotWidgetState extends State<SlotWidget> {
                               Text(
                                 date,
                                 style: TextStyle(
-                                  fontSize: constants.fontSizeVerySmall + 5,
-                                  fontWeight: FontWeight.w400,
+                                  fontSize: constants.fsLabel,
+                                  fontWeight: constants.fwRegular,
                                   color: constants.darkGrey,
                                 ),
                               ),
@@ -125,15 +125,15 @@ class _SlotWidgetState extends State<SlotWidget> {
                                 children: [
                                   Icon(
                                     Icons.access_time_outlined,
-                                    size: constants.fontSizeVerySmall + 5,
+                                    size: constants.fsLabel,
                                     color: constants.darkGrey,
                                   ),
                                   SizedBox(width: 10),
                                   Text(
                                     "Time",
                                     style: TextStyle(
-                                      fontSize: constants.fontSizeVerySmall + 5,
-                                      fontWeight: FontWeight.w400,
+                                      fontSize: constants.fsLabel,
+                                      fontWeight: constants.fwRegular,
                                       color: constants.darkGrey,
                                     ),
                                   ),
@@ -142,8 +142,8 @@ class _SlotWidgetState extends State<SlotWidget> {
                               Text(
                                 startTime,
                                 style: TextStyle(
-                                  fontSize: constants.fontSizeVerySmall + 5,
-                                  fontWeight: FontWeight.w400,
+                                  fontSize: constants.fsLabel,
+                                  fontWeight: constants.fwRegular,
                                   color: constants.darkGrey,
                                 ),
                               ),
@@ -156,15 +156,15 @@ class _SlotWidgetState extends State<SlotWidget> {
                                 children: [
                                   Icon(
                                     Icons.hourglass_bottom_rounded,
-                                    size: constants.fontSizeVerySmall + 5,
+                                    size: constants.fsLabel,
                                     color: constants.darkGrey,
                                   ),
                                   SizedBox(width: 10),
                                   Text(
                                     "Duration",
                                     style: TextStyle(
-                                      fontSize: constants.fontSizeVerySmall + 5,
-                                      fontWeight: FontWeight.w400,
+                                      fontSize: constants.fsLabel,
+                                      fontWeight: constants.fwRegular,
                                       color: constants.darkGrey,
                                     ),
                                   ),
@@ -173,8 +173,8 @@ class _SlotWidgetState extends State<SlotWidget> {
                               Text(
                                 duration.toString(),
                                 style: TextStyle(
-                                  fontSize: constants.fontSizeVerySmall + 5,
-                                  fontWeight: FontWeight.w400,
+                                  fontSize: constants.fsLabel,
+                                  fontWeight: constants.fwRegular,
                                   color: constants.darkGrey,
                                 ),
                               ),
@@ -187,7 +187,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                     Container(
                       clipBehavior: Clip.none,
                       decoration: constants.figmaLightShadowWith(
-                        color: constants.ghostWhite,
+                        color: constants.background,
                         borderRadius: SmoothBorderRadius(
                           cornerRadius: 12,
                           cornerSmoothing: 0.6,
@@ -200,7 +200,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                         decoration: InputDecoration(
                           hintText: "Type in visit purpose...",
                           filled: true,
-                          fillColor: constants.ghostWhite,
+                          fillColor: constants.background,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide.none,
@@ -213,11 +213,11 @@ class _SlotWidgetState extends State<SlotWidget> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    const Text(
+                     Text(
                       "Meeting Type:",
                       style: TextStyle(
                         fontSize: 18,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: constants.fwSemiBold,
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -230,14 +230,14 @@ class _SlotWidgetState extends State<SlotWidget> {
                                   onPressed: () =>
                                       viewModel.setIsOnlineSelected(false),
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: constants.ghostWhite,
+                                    backgroundColor: constants.background,
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 14,
                                     ),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
                                       side: BorderSide(
-                                        color: constants.ghostWhite,
+                                        color: constants.background,
                                       ),
                                     ),
                                     elevation: 0,
@@ -250,7 +250,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                                       Text(
                                         "In-Person",
                                         style: TextStyle(
-                                          color: constants.greyNonActive,
+                                          color: constants.grey,
                                         ),
                                       ),
                                     ],
@@ -269,7 +269,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
                                       side: BorderSide(
-                                        color: constants.ghostWhite,
+                                        color: constants.background,
                                       ),
                                     ),
                                     elevation: 0,
@@ -282,7 +282,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                                       Text(
                                         "In-Person",
                                         style: TextStyle(
-                                          color: constants.ghostWhite,
+                                          color: constants.background,
                                         ),
                                       ),
                                     ],
@@ -304,7 +304,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
                                       side: BorderSide(
-                                        color: constants.ghostWhite,
+                                        color: constants.background,
                                       ),
                                     ),
                                     elevation: 0,
@@ -317,7 +317,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                                       Text(
                                         "Online",
                                         style: TextStyle(
-                                          color: constants.ghostWhite,
+                                          color: constants.background,
                                         ),
                                       ),
                                     ],
@@ -329,14 +329,14 @@ class _SlotWidgetState extends State<SlotWidget> {
                                   onPressed: () =>
                                       viewModel.setIsOnlineSelected(true),
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: constants.ghostWhite,
+                                    backgroundColor: constants.background,
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 14,
                                     ),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
                                       side: BorderSide(
-                                        color: constants.ghostWhite,
+                                        color: constants.background,
                                       ),
                                     ),
                                     elevation: 0,
@@ -349,7 +349,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                                       Text(
                                         "Online",
                                         style: TextStyle(
-                                          color: constants.greyNonActive,
+                                          color: constants.grey,
                                         ),
                                       ),
                                     ],
@@ -368,7 +368,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                               padding: EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
-                                side: BorderSide(color: constants.ghostWhite),
+                                side: BorderSide(color: constants.background),
                               ),
                             ),
                             child: Text(
@@ -399,7 +399,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                             ),
                             child: Text(
                               "Submit",
-                              style: TextStyle(color: constants.ghostWhite),
+                              style: TextStyle(color: constants.background),
                             ),
                           ),
                         ),
@@ -445,7 +445,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                               bottomRight: Radius.circular(20.0),
                             )
                           : BorderRadius.circular(0),
-                      color: constants.ghostWhite,
+                      color: constants.background,
                       border: Border.all(color: constants.grey, width: 0.2),
                     ),
                     child: Column(
@@ -461,8 +461,8 @@ class _SlotWidgetState extends State<SlotWidget> {
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   color: constants.darkGrey,
-                                  fontSize: constants.fontSizeSmall,
-                                  fontWeight: FontWeight.w400,
+                                  fontSize: constants.fsLabel,
+                                  fontWeight: constants.fwRegular,
                                 ),
                               ),
                             ),
@@ -522,8 +522,8 @@ class _SlotWidgetState extends State<SlotWidget> {
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
                                           color: constants.background,
-                                          fontSize: constants.fontSizeSmall,
-                                          fontWeight: FontWeight.w400,
+                                          fontSize: constants.fsLabel,
+                                          fontWeight: constants.fwRegular,
                                         ),
                                       ),
                                     ),
@@ -538,8 +538,8 @@ class _SlotWidgetState extends State<SlotWidget> {
                                         textAlign: TextAlign.right,
                                         style: TextStyle(
                                           color: constants.background,
-                                          fontSize: constants.fontSizeSmall,
-                                          fontWeight: FontWeight.w400,
+                                          fontSize: constants.fsLabel,
+                                          fontWeight: constants.fwRegular,
                                         ),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
@@ -560,8 +560,8 @@ class _SlotWidgetState extends State<SlotWidget> {
                                           maxLines: 1,
                                           style: TextStyle(
                                             color: constants.background,
-                                            fontSize: constants.fontSizeSmall,
-                                            fontWeight: FontWeight.w400,
+                                            fontSize: constants.fsLabel,
+                                            fontWeight: constants.fwRegular,
                                           ),
                                         ),
                                       ),
@@ -614,7 +614,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                                   bottomRight: Radius.circular(20.0),
                                 )
                               : BorderRadius.circular(0),
-                          color: constants.strawberryRed,
+                          color: constants.red,
                           border: Border.all(color: constants.grey, width: 0.2),
                         ),
                         child: Column(
@@ -634,8 +634,8 @@ class _SlotWidgetState extends State<SlotWidget> {
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
                                           color: constants.background,
-                                          fontSize: constants.fontSizeSmall,
-                                          fontWeight: FontWeight.w400,
+                                          fontSize: constants.fsLabel,
+                                          fontWeight: constants.fwRegular,
                                         ),
                                       ),
                                     ),
@@ -650,8 +650,8 @@ class _SlotWidgetState extends State<SlotWidget> {
                                         textAlign: TextAlign.right,
                                         style: TextStyle(
                                           color: constants.background,
-                                          fontSize: constants.fontSizeSmall,
-                                          fontWeight: FontWeight.w400,
+                                          fontSize: constants.fsLabel,
+                                          fontWeight: constants.fwRegular,
                                         ),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
@@ -672,8 +672,8 @@ class _SlotWidgetState extends State<SlotWidget> {
                                           maxLines: 1,
                                           style: TextStyle(
                                             color: constants.background,
-                                            fontSize: constants.fontSizeSmall,
-                                            fontWeight: FontWeight.w400,
+                                            fontSize: constants.fsLabel,
+                                            fontWeight: constants.fwRegular,
                                           ),
                                         ),
                                       ),

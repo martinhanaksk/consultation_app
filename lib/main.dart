@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:consultation_app/routes/app_router.dart';
 import 'package:overlay_kit/overlay_kit.dart';
 import 'package:consultation_app/setup.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 // Author: Martin Hanak
 // email: xhanakm00@stud.fit.vut.cz
 void main() {
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   setupDependencies();
   runApp(const MyApp());
 }

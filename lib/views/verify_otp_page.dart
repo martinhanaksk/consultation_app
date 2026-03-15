@@ -3,6 +3,7 @@ import 'package:consultation_app/viewmodels/verify_otp_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:figma_squircle/figma_squircle.dart';
+
 class VerifyOtpPageArgs {
   final String email;
   final String token;
@@ -74,7 +75,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                       'Verification',
                       style: TextStyle(
                         fontSize: 32,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: constants.fwSemiBold,
                         color: constants.darkGrey,
                       ),
                     ),
@@ -83,7 +84,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                       'Please enter the OTP from your email.',
                       style: TextStyle(
                         fontSize: 15,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: constants.fwSemiBold,
                         color: constants.darkGrey,
                       ),
                     ),
@@ -91,11 +92,11 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                     Container(
                       clipBehavior: Clip.none,
                       decoration: constants.figmaLightShadowWith(
-                        color: constants.ghostWhite,
-                        borderRadius:  SmoothBorderRadius(
-    cornerRadius: 12,
-    cornerSmoothing: 0.6,
-  ),
+                        color: constants.background,
+                        borderRadius: SmoothBorderRadius(
+                          cornerRadius: 12,
+                          cornerSmoothing: 0.6,
+                        ),
                       ),
                       child: TextField(
                         controller: otpcontroller,
@@ -135,8 +136,8 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                           'Connect',
                           style: TextStyle(
                             fontSize: 22,
-                            fontWeight: FontWeight.w500,
-                            color: constants.ghostWhite,
+                            fontWeight: constants.fwSemiBold,
+                            color: constants.background,
                           ),
                         ),
                       ),
