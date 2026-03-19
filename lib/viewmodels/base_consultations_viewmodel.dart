@@ -48,7 +48,7 @@ abstract class BaseConsultationsViewmodel extends ChangeNotifier {
     if (isTeacher) {
       rooms = await api.getMyRoomsTeacher(token);
     } else {
-      rooms = await api.getMyRooms(token);
+      rooms = await api.getJoinedRooms(token);
     }
 
     if (rooms == null || rooms!.isEmpty) {

@@ -1,4 +1,5 @@
 import 'package:consultation_app/routes/app_router.dart';
+import 'package:consultation_app/viewmodels/create_room_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
 
@@ -47,15 +48,17 @@ class NavigationService {
   //App
 
   void toTeacherConsultations({required String token, required String email}) {
-    _navigator()?.pushNamed(
+    _navigator()?.pushNamedAndRemoveUntil(
       AppRouter.consultationsTeacherPage,
+      (route) => false,
       arguments: <String, dynamic>{'token': token, 'email': email},
     );
   }
 
   void toStudentConsultations({required String token, required String email}) {
-    _navigator()?.pushNamed(
+    _navigator()?.pushNamedAndRemoveUntil(
       AppRouter.consultationsStudentPage,
+      (route) => false,
       arguments: <String, dynamic>{'token': token, 'email': email},
     );
   }
@@ -66,7 +69,9 @@ class NavigationService {
       arguments: <String, dynamic>{'token': token},
     );
   }
-
+void toDisplayListOfEmails({required CreateRoomViewmodel viewModel}) {
+    _navigator()?.pushNamed(AppRouter.displayListOfEmails, arguments: <String, dynamic>{'viewModel': viewModel},);
+  }
   void toChangeSettings() {
     _navigator()?.pushNamed(AppRouter.changeSettings);
   }

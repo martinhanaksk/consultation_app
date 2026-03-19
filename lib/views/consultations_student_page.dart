@@ -71,7 +71,7 @@ class _ConsultationsUserPageState
             ? Center(
                 child: SpinKitPouringHourGlass(
                   color: constants.primary,
-                  size: 50.0,
+                  size: constants.fsHeadline,
                 ),
               )
             : (viewModel.hasNoRooms || viewModel.selectedRoomId == null)
@@ -186,6 +186,7 @@ class _ConsultationsUserPageState
                                   padding: const EdgeInsets.only(top: 40),
                                   child: Center(
                                     child: Text(
+                                      textAlign: TextAlign.center,
                                       "No upcoming consultations found.",
                                       style: TextStyle(
                                         fontWeight: constants.fwSemiBold,
@@ -221,17 +222,6 @@ class _ConsultationsUserPageState
                                           child: Column(
                                             children: [
                                               const SizedBox(height: 20),
-                                              Text(
-                                                viewModel.getDateOfBlock(
-                                                  block.key,
-                                                ),
-                                                style: TextStyle(
-                                                  color: constants.darkGrey,
-                                                  fontSize: constants.fsLabel,
-                                                  fontWeight: constants.fwRegular,
-                                                ),
-                                              ),
-                                              const SizedBox(height: 20),
                                               (block.value == null ||
                                                       block.value!.isEmpty)
                                                   ? Text("No slots found")
@@ -245,6 +235,11 @@ class _ConsultationsUserPageState
                                                           0.9,
                                                       decoration: constants
                                                           .figmaLightShadowWith(
+                                                            border: Border.all(
+                                                              color: constants
+                                                                  .grey,
+                                                              width: 0.2,
+                                                            ),
                                                             borderRadius:
                                                                 SmoothBorderRadius(
                                                                   cornerRadius:
@@ -255,43 +250,80 @@ class _ConsultationsUserPageState
                                                             color: constants
                                                                 .background,
                                                           ),
-                                                      child: ListView.builder(
-                                                        physics:
-                                                            const NeverScrollableScrollPhysics(),
-                                                        shrinkWrap: true,
-                                                        padding:
-                                                            EdgeInsets.zero,
-                                                        itemCount:
-                                                            block.value!.length,
-                                                        itemBuilder: (context, index) {
-                                                          final slot = block
-                                                              .value![index];
-                                                          final isFirst =
-                                                              index == 0;
-                                                          final isLast =
-                                                              index ==
-                                                              block
-                                                                      .value!
-                                                                      .length -
-                                                                  1;
-                                                          return SlotWidget(
-                                                            userEmail:
-                                                                widget.email,
-                                                            slot: slot,
-                                                            token: widget.token,
-                                                            roomId: viewModel
-                                                                .selectedRoomId!,
-                                                            context: context,
-                                                            loadData: viewModel
-                                                                .loadData,
-                                                            isFirst: isFirst,
-                                                            isLast: isLast,
-                                                            date: viewModel
-                                                                .getDateOfBlock(
-                                                                  block.key,
+                                                      child: Column(
+                                                        children: [
+                                                          Container(
+                                                            child: Padding(
+                                                              padding:
+                                                                  EdgeInsets.fromLTRB(
+                                                                    20,
+                                                                    10,
+                                                                    20,
+                                                                    10,
+                                                                  ),
+                                                              child: Text(
+                                                                viewModel
+                                                                    .getDateOfBlock(
+                                                                      block.key,
+                                                                    ),
+                                                                style: TextStyle(
+                                                                  color: constants
+                                                                      .darkGrey,
+                                                                  fontSize:
+                                                                      constants
+                                                                          .fsLabel,
+                                                                  fontWeight:
+                                                                      constants
+                                                                          .fwSemiBold,
                                                                 ),
-                                                          );
-                                                        },
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          ListView.builder(
+                                                            physics:
+                                                                const NeverScrollableScrollPhysics(),
+                                                            shrinkWrap: true,
+                                                            padding:
+                                                                EdgeInsets.zero,
+                                                            itemCount: block
+                                                                .value!
+                                                                .length,
+                                                            itemBuilder: (context, index) {
+                                                              final slot = block
+                                                                  .value![index];
+                                                              final isFirst =
+                                                                  index == 0;
+                                                              final isLast =
+                                                                  index ==
+                                                                  block
+                                                                          .value!
+                                                                          .length -
+                                                                      1;
+                                                              return SlotWidget(
+                                                                userEmail:
+                                                                    widget
+                                                                        .email,
+                                                                slot: slot,
+                                                                token: widget
+                                                                    .token,
+                                                                roomId: viewModel
+                                                                    .selectedRoomId!,
+                                                                context:
+                                                                    context,
+                                                                loadData:
+                                                                    viewModel
+                                                                        .loadData,
+                                                                isFirst:
+                                                                    isFirst,
+                                                                isLast: isLast,
+                                                                date: viewModel
+                                                                    .getDateOfBlock(
+                                                                      block.key,
+                                                                    ),
+                                                              );
+                                                            },
+                                                          ),
+                                                        ],
                                                       ),
                                                     ),
                                             ],

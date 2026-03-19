@@ -27,6 +27,7 @@ class _JoinRoomState extends State<JoinRoom> {
     super.initState();
     _viewModel = JoinRoomViewmodel();
     _viewModel.fetchAllRooms(widget.token);
+    _viewModel.fetchJoinedRooms(widget.token);
   }
 
   @override
@@ -51,11 +52,11 @@ class _JoinRoomState extends State<JoinRoom> {
               child: Center(
                 child: Container(
                   padding: EdgeInsets.all(10),
-                  width: MediaQuery.of(context).size.width * 0.9,
+                  width: MediaQuery.of(context).size.width * 0.95,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 50),
+                      const SizedBox(height: 48),
                       Center(
                         child: Text(
                           "Join a Room",
@@ -65,7 +66,7 @@ class _JoinRoomState extends State<JoinRoom> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 50),
+                      SizedBox(height: 24),
 
                       Container(
                         width: double.infinity,
@@ -80,12 +81,14 @@ class _JoinRoomState extends State<JoinRoom> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              "Browse authorized rooms",
-                              style: TextStyle(
-                                fontWeight: constants.fwRegular,
-                                fontSize: constants.fsBody,
-                                color: constants.darkGrey.withAlpha(100),
+                            Center(
+                              child: Text(
+                                "Browse and join rooms",
+                                style: TextStyle(
+                                  fontWeight: constants.fwRegular,
+                                  fontSize: constants.fsLabel,
+                                  color: constants.grey,
+                                ),
                               ),
                             ),
                             SizedBox(height: 20),
@@ -119,6 +122,9 @@ class _JoinRoomState extends State<JoinRoom> {
                                     VoidCallback onFieldSubmitted,
                                   ) {
                                     return TextField(
+                                      scrollPadding: EdgeInsets.only(
+                                        bottom: 1000,
+                                      ),
                                       controller: roomController,
                                       focusNode: focusNode,
                                       decoration: InputDecoration(
@@ -150,7 +156,7 @@ class _JoinRoomState extends State<JoinRoom> {
                                         hintText: 'Type to search rooms...',
                                         prefixIcon: Icon(
                                           Icons.search_rounded,
-                                          size: 20,
+                                          size: constants.fsBody,
                                         ),
                                       ),
                                     );
@@ -190,9 +196,21 @@ class _JoinRoomState extends State<JoinRoom> {
                                                     onTap: () {
                                                       onSelected(option);
                                                     },
-                                                    child: ListTile(
-                                                      title: Text(option.title),
-                                                    ),
+                                                    child:
+                                                        viewModel
+                                                            .isInJoinedRooms(
+                                                              option,
+                                                            )
+                                                        ? Container()
+                                                        : ListTile(
+                                                            title: Text(
+                                                              option.title,
+                                                              style: TextStyle(
+                                                                color: constants
+                                                                    .darkGrey,
+                                                              ),
+                                                            ),
+                                                          ),
                                                   );
                                                 },
                                           ),
@@ -201,12 +219,13 @@ class _JoinRoomState extends State<JoinRoom> {
                                     );
                                   },
                             ),
-                            const SizedBox(height: 30),
+                            const SizedBox(height: 32),
                             SizedBox(
                               width: double.infinity,
-                              height: 50,
+                              height: 48,
                               child: ElevatedButton(
                                 onPressed: () async {
+                                  FocusScope.of(context).unfocus();
                                   if (selectedId != null) {
                                     await viewModel.joinRoom(
                                       widget.token,

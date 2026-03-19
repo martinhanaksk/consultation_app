@@ -2,25 +2,42 @@ import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
 
 class CreateRoomViewmodel extends ChangeNotifier {
-  Future<void> createRoom() async {
+  List<String> acceptedEmails = [];
+  Future<void> createRoom(
+    String shortName,
+    String title,
+    String description,
+  ) async {
     String token = await prefs.getItem("token");
-    String shortName = "test", title = "test", description = "test";
-    List<String> acceptedEmailsArray = ["@gmail.com", "gmail.com"];
     try {
-      bool b = await api.createRoom(
-        token,
-        shortName,
-        title,
-        description,
-        acceptedEmailsArray,
-      );
-      if (b) {
-        notify.showToast('Room was successfully created.');
-        print('Room was successfully created.');
+      if (acceptedEmails.isNotEmpty) {
+        bool b = await api.createRoom(
+          token,
+          shortName,
+          title,
+          description,
+          acceptedEmails,
+        );
+        if (b) {
+          notify.showToast('Room was successfully created.');
+        } else {
+          notify.showToast('Room with provided name already exists.');
+        }
+      } else {
+        notify.showToast('No emails or domain names provided.');
       }
     } catch (e) {
-      print(e.toString());
       notify.showToast('Error while creating room.');
     }
+  }
+
+  void addToAcceptedEmails(String value) {
+    acceptedEmails.add(value);
+    notifyListeners();
+  }
+
+  void removeFromAcceptedEmails(String value) {
+    acceptedEmails.remove(value);
+    notifyListeners();
   }
 }

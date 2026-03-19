@@ -34,7 +34,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                   ? Center(
                       child: SpinKitPouringHourGlass(
                         color: constants.primary,
-                        size: 50.0,
+                        size: constants.fsHeadline,
                       ),
                     )
                   : SingleChildScrollView(
@@ -55,8 +55,8 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                           Text(
                             "Manage your profile and preferences",
                             style: TextStyle(
-                              fontSize: constants.fsTitle,
-                              color: constants.darkGrey.withValues(alpha: 0.6),
+                              fontSize: constants.fsLabel,
+                              color: constants.grey,
                             ),
                           ),
                           const SizedBox(height: 28),
@@ -173,7 +173,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                           color: constants.primary,
                                           size: constants.fsBody,
                                         ),
-                                        const SizedBox(width: 14),
+                                        const SizedBox(width: 12),
                                         Expanded(
                                           child: Column(
                                             crossAxisAlignment:
@@ -188,7 +188,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                                   color: constants.darkGrey,
                                                 ),
                                               ),
-                                              const SizedBox(height: 2),
+                                              const SizedBox(height: 4),
                                               Text(
                                                 "Get emails about changes in selected consultation blocks",
                                                 style: TextStyle(
@@ -248,7 +248,7 @@ class _InfoTile extends StatelessWidget {
       child: Row(
         children: [
           Icon(icon, color: constants.primary, size: constants.fsBody),
-          const SizedBox(width: 14),
+          const SizedBox(width: 12),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -256,10 +256,10 @@ class _InfoTile extends StatelessWidget {
                 label,
                 style: TextStyle(
                   fontSize: constants.fsLabel,
-                  color: constants.darkGrey.withValues(alpha: 0.6),
+                  color: constants.grey,
                 ),
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: 4),
               Text(
                 value,
                 style: TextStyle(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class SliderMenu extends StatefulWidget {
   const SliderMenu({super.key});
@@ -40,25 +41,26 @@ class _SliderMenuState extends State<SliderMenu> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 20),
-                        GestureDetector(
-                          child: Image.asset(
-                            'assets/resources/applogo.png',
-
-                            width: 100,
-                            fit: BoxFit.cover,
+                        Center(
+                          child: GestureDetector(
+                            child: SvgPicture.asset(
+                              'assets/resources/logo-whole.svg',
+                              width: 120,
+                              fit: BoxFit.cover,
+                            ),
+                            onTap: () {
+                              helpers.checkIfValidToken(viewModel.token);
+                              viewModel.isTeacher!
+                                  ? nav.toTeacherConsultations(
+                                      token: viewModel.token,
+                                      email: viewModel.email!,
+                                    )
+                                  : nav.toStudentConsultations(
+                                      token: viewModel.token,
+                                      email: viewModel.email!,
+                                    );
+                            },
                           ),
-                          onTap: () {
-                            helpers.checkIfValidToken(viewModel.token);
-                            viewModel.isTeacher!
-                                ? nav.toTeacherConsultations(
-                                    token: viewModel.token,
-                                    email: viewModel.email!,
-                                  )
-                                : nav.toStudentConsultations(
-                                    token: viewModel.token,
-                                    email: viewModel.email!,
-                                  );
-                          },
                         ),
 
                         const SizedBox(height: 20),
@@ -66,7 +68,7 @@ class _SliderMenuState extends State<SliderMenu> {
                           child: Container(
                             child: Text(
                               "Home",
-                              style: TextStyle(fontSize: constants.fsTitle),
+                              style: TextStyle(fontSize: constants.fsBody),
                             ),
                           ),
                           onTap: () {
@@ -87,7 +89,7 @@ class _SliderMenuState extends State<SliderMenu> {
                           child: Container(
                             child: Text(
                               "Join Room",
-                              style: TextStyle(fontSize: constants.fsTitle),
+                              style: TextStyle(fontSize: constants.fsBody),
                             ),
                           ),
                           onTap: () {
@@ -104,7 +106,7 @@ class _SliderMenuState extends State<SliderMenu> {
                                       child: Text(
                                         "Create Room",
                                         style: TextStyle(
-                                          fontSize: constants.fsTitle,
+                                          fontSize: constants.fsBody,
                                         ),
                                       ),
                                     ),
@@ -120,7 +122,7 @@ class _SliderMenuState extends State<SliderMenu> {
                         GestureDetector(
                           child: Text(
                             "Provide Feedback",
-                            style: TextStyle(fontSize: constants.fsTitle),
+                            style: TextStyle(fontSize: constants.fsBody),
                           ),
                           onTap: () {
                             showDialog(
@@ -130,7 +132,7 @@ class _SliderMenuState extends State<SliderMenu> {
                                   title: Text(
                                     "Continue to provide feedback?",
                                     style: TextStyle(
-                                      fontSize: constants.fsTitle,
+                                      fontSize: constants.fsBody,
                                     ),
                                   ),
                                   actions: [
@@ -169,7 +171,7 @@ class _SliderMenuState extends State<SliderMenu> {
                         GestureDetector(
                           child: Text(
                             "Settings",
-                            style: TextStyle(fontSize: constants.fsTitle),
+                            style: TextStyle(fontSize: constants.fsBody),
                           ),
 
                           onTap: () {
@@ -181,7 +183,7 @@ class _SliderMenuState extends State<SliderMenu> {
                           child: Text(
                             "Log out",
                             style: TextStyle(
-                              fontSize: constants.fsTitle,
+                              fontSize: constants.fsBody,
                               color: constants.red,
                               fontWeight: constants.fwSemiBold,
                             ),

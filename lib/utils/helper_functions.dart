@@ -38,15 +38,8 @@ class HelperFunctions {
   }
 
   String acceptedEmailsFormater(List<String> acceptedEmailsArray) {
-    String result = "";
-    for (int i = 0; i < acceptedEmailsArray.length; i++) {
-      if (i == 0) {
-        result = '${result}';
-      } else {
-        result = '${result},${acceptedEmailsArray[i]}';
-      }
-    }
-    return "";
+     if (acceptedEmailsArray.isEmpty) return '';
+  return acceptedEmailsArray.join(',');
   }
 
   void resetLogoutFlag() {

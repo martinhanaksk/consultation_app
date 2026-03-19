@@ -70,7 +70,7 @@ class _ConsultationsUserPageState
             ? Center(
                 child: SpinKitPouringHourGlass(
                   color: constants.primary,
-                  size: 50.0,
+                  size: constants.fsHeadline,
                 ),
               )
             : (viewModel.hasNoRooms || viewModel.selectedRoomId == null)
@@ -266,7 +266,8 @@ class _ConsultationsUserPageState
                                                   style: TextStyle(
                                                     color: constants.darkGrey,
                                                     fontSize: constants.fsLabel,
-                                                    fontWeight: constants.fwRegular,
+                                                    fontWeight:
+                                                        constants.fwRegular,
                                                   ),
                                                 ),
                                                 const SizedBox(height: 20),

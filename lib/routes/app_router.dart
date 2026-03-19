@@ -1,6 +1,8 @@
+import 'package:consultation_app/viewmodels/create_room_viewmodel.dart';
 import 'package:consultation_app/views/consultations_student_page.dart';
 import 'package:consultation_app/views/consultations_teacher_page.dart';
 import 'package:consultation_app/views/create_room_widget.dart';
+import 'package:consultation_app/views/display_list_of_emails_page.dart';
 import 'package:consultation_app/views/email_input_page.dart';
 import 'package:consultation_app/views/join_room_page.dart';
 import 'package:consultation_app/views/change_settings_page.dart';
@@ -19,6 +21,7 @@ class AppRouter {
   static const String changeSettings = '/changeSettings';
   static const String consultationsStudentPage = '/consultationsUserPage';
   static const String consultationsTeacherPage = '/consultationsTeacherPage';
+  static const String displayListOfEmails = '/displayListOfEmails';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -59,6 +62,12 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => JoinRoom(token: token));
       case createRoom:
         return MaterialPageRoute(builder: (_) => CreateRoom());
+      case displayListOfEmails:
+        final args = settings.arguments as Map<String, dynamic>;
+        final viewModel = args['viewModel'] as CreateRoomViewmodel;
+        return MaterialPageRoute(
+          builder: (_) => DisplayListOfEmailsPage(viewModel: viewModel),
+        );
       case changeSettings:
         return MaterialPageRoute(builder: (_) => ChangeSettings());
       default:

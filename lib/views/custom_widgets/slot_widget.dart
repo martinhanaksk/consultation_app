@@ -67,16 +67,16 @@ class _SlotWidgetState extends State<SlotWidget> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                     Text(
+                    Text(
                       "Add a visit purpose",
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: constants.fsBody,
                         fontWeight: constants.fwSemiBold,
                       ),
                     ),
                     const SizedBox(height: 16),
                     Container(
-                      width: MediaQuery.of(context).size.width * 0.9,
+                      width: MediaQuery.of(context).size.width * 0.95,
                       padding: const EdgeInsets.all(20),
                       decoration: constants.figmaLightShadowWith(
                         color: constants.background,
@@ -97,7 +97,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                                     size: constants.fsLabel,
                                     color: constants.darkGrey,
                                   ),
-                                  SizedBox(width: 10),
+                                  SizedBox(width: 12),
                                   Text(
                                     "Date",
                                     style: TextStyle(
@@ -128,7 +128,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                                     size: constants.fsLabel,
                                     color: constants.darkGrey,
                                   ),
-                                  SizedBox(width: 10),
+                                  SizedBox(width: 12),
                                   Text(
                                     "Time",
                                     style: TextStyle(
@@ -159,7 +159,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                                     size: constants.fsLabel,
                                     color: constants.darkGrey,
                                   ),
-                                  SizedBox(width: 10),
+                                  SizedBox(width: 12),
                                   Text(
                                     "Duration",
                                     style: TextStyle(
@@ -183,7 +183,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                         ],
                       ),
                     ),
-                    SizedBox(height: 10),
+                    SizedBox(height: 12),
                     Container(
                       clipBehavior: Clip.none,
                       decoration: constants.figmaLightShadowWith(
@@ -207,16 +207,16 @@ class _SlotWidgetState extends State<SlotWidget> {
                           ),
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16,
-                            vertical: 14,
+                            vertical: 12,
                           ),
                         ),
                       ),
                     ),
                     const SizedBox(height: 20),
-                     Text(
+                    Text(
                       "Meeting Type:",
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: constants.fsBody,
                         fontWeight: constants.fwSemiBold,
                       ),
                     ),
@@ -232,39 +232,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: constants.background,
                                     padding: const EdgeInsets.symmetric(
-                                      vertical: 14,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      side: BorderSide(
-                                        color: constants.background,
-                                      ),
-                                    ),
-                                    elevation: 0,
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      SvgPicture.asset(
-                                        'assets/resources/location_grey.svg',
-                                      ),
-                                      Text(
-                                        "In-Person",
-                                        style: TextStyle(
-                                          color: constants.grey,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )
-                            : Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () =>
-                                      viewModel.setIsOnlineSelected(false),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: constants.primary,
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 14,
+                                      vertical: 12,
                                     ),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
@@ -278,6 +246,44 @@ class _SlotWidgetState extends State<SlotWidget> {
                                     children: [
                                       SvgPicture.asset(
                                         'assets/resources/location.svg',
+                                        colorFilter: ColorFilter.mode(
+                                          constants.grey,
+                                          BlendMode.srcIn,
+                                        ),
+                                      ),
+                                      Text(
+                                        "In-Person",
+                                        style: TextStyle(color: constants.grey),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            : Expanded(
+                                child: ElevatedButton(
+                                  onPressed: () =>
+                                      viewModel.setIsOnlineSelected(false),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: constants.primary,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 12,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      side: BorderSide(
+                                        color: constants.background,
+                                      ),
+                                    ),
+                                    elevation: 0,
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      SvgPicture.asset(
+                                        'assets/resources/location.svg',
+                                        colorFilter: ColorFilter.mode(
+                                          constants.background,
+                                          BlendMode.srcIn,
+                                        ),
                                       ),
                                       Text(
                                         "In-Person",
@@ -299,7 +305,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: constants.primary,
                                     padding: const EdgeInsets.symmetric(
-                                      vertical: 14,
+                                      vertical: 12,
                                     ),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
@@ -313,6 +319,10 @@ class _SlotWidgetState extends State<SlotWidget> {
                                     children: [
                                       SvgPicture.asset(
                                         'assets/resources/screen.svg',
+                                        colorFilter: ColorFilter.mode(
+                                          constants.background,
+                                          BlendMode.srcIn,
+                                        ),
                                       ),
                                       Text(
                                         "Online",
@@ -331,7 +341,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: constants.background,
                                     padding: const EdgeInsets.symmetric(
-                                      vertical: 14,
+                                      vertical: 12,
                                     ),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
@@ -345,12 +355,14 @@ class _SlotWidgetState extends State<SlotWidget> {
                                     children: [
                                       SvgPicture.asset(
                                         'assets/resources/screen_grey.svg',
+                                        colorFilter: ColorFilter.mode(
+                                          constants.grey,
+                                          BlendMode.srcIn,
+                                        ),
                                       ),
                                       Text(
                                         "Online",
-                                        style: TextStyle(
-                                          color: constants.grey,
-                                        ),
+                                        style: TextStyle(color: constants.grey),
                                       ),
                                     ],
                                   ),
@@ -365,7 +377,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                           child: TextButton(
                             onPressed: () => Navigator.pop(context),
                             style: TextButton.styleFrom(
-                              padding: EdgeInsets.symmetric(vertical: 14),
+                              padding: EdgeInsets.symmetric(vertical: 12),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 side: BorderSide(color: constants.background),
@@ -391,7 +403,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: constants.primary,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
@@ -427,17 +439,10 @@ class _SlotWidgetState extends State<SlotWidget> {
               if (widget.slot.takenBy == null)
                 GestureDetector(
                   child: Container(
-                    padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                    width: MediaQuery.of(context).size.width * 0.9,
+                    padding: EdgeInsets.fromLTRB(0, 12, 12, 12),
+                    width: MediaQuery.of(context).size.width * 0.95,
                     decoration: BoxDecoration(
-                      borderRadius: widget.isFirst
-                          ? BorderRadius.only(
-                              topLeft: Radius.circular(20.0),
-                              topRight: Radius.circular(20.0),
-                              bottomLeft: Radius.circular(0.0),
-                              bottomRight: Radius.circular(0.0),
-                            )
-                          : widget.isLast
+                      borderRadius: widget.isLast
                           ? BorderRadius.only(
                               topLeft: Radius.circular(0.0),
                               topRight: Radius.circular(0.0),
@@ -454,7 +459,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             SizedBox(
-                              width: 55,
+                              width: 56,
                               child: Text(
                                 '${widget.slot.startTime.split(":")[0]}${":"}${widget.slot.startTime.split(":")[1]}',
                                 textAlign: TextAlign.right,
@@ -484,17 +489,10 @@ class _SlotWidgetState extends State<SlotWidget> {
                 //my slot
                 widget.slot.takenBy == widget.userEmail
                     ? Container(
-                        padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                        width: MediaQuery.of(context).size.width * 0.9,
+                        padding: EdgeInsets.fromLTRB(0, 12, 12, 12),
+                        width: MediaQuery.of(context).size.width * 0.95,
                         decoration: BoxDecoration(
-                          borderRadius: widget.isFirst
-                              ? BorderRadius.only(
-                                  topLeft: Radius.circular(20.0),
-                                  topRight: Radius.circular(20.0),
-                                  bottomLeft: Radius.circular(0.0),
-                                  bottomRight: Radius.circular(0.0),
-                                )
-                              : widget.isLast
+                          borderRadius: widget.isLast
                               ? BorderRadius.only(
                                   topLeft: Radius.circular(0.0),
                                   topRight: Radius.circular(0.0),
@@ -502,7 +500,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                                   bottomRight: Radius.circular(20.0),
                                 )
                               : BorderRadius.circular(0),
-                          color: constants.green,
+                          color: constants.lightPrimary,
                           border: Border.all(color: constants.grey, width: 0.2),
                         ),
                         child: Column(
@@ -514,20 +512,20 @@ class _SlotWidgetState extends State<SlotWidget> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     SizedBox(
-                                      width: 55,
+                                      width: 56,
 
                                       child: Text(
                                         '${widget.slot.startTime.split(":")[0]}${":"}${widget.slot.startTime.split(":")[1]}',
                                         textAlign: TextAlign.right,
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
-                                          color: constants.background,
+                                          color: constants.darkGrey,
                                           fontSize: constants.fsLabel,
                                           fontWeight: constants.fwRegular,
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(width: 10),
+                                    const SizedBox(width: 12),
                                     Flexible(
                                       flex: 2,
                                       fit: FlexFit.loose,
@@ -537,7 +535,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                                         ),
                                         textAlign: TextAlign.right,
                                         style: TextStyle(
-                                          color: constants.background,
+                                          color: constants.darkGrey,
                                           fontSize: constants.fsLabel,
                                           fontWeight: constants.fwRegular,
                                         ),
@@ -545,7 +543,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
-                                    const SizedBox(width: 10),
+                                    const SizedBox(width: 12),
                                   ],
                                 ),
                                 Flexible(
@@ -559,7 +557,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                                           widget.slot.note ?? '',
                                           maxLines: 1,
                                           style: TextStyle(
-                                            color: constants.background,
+                                            color: constants.darkGrey,
                                             fontSize: constants.fsLabel,
                                             fontWeight: constants.fwRegular,
                                           ),
@@ -568,10 +566,17 @@ class _SlotWidgetState extends State<SlotWidget> {
                                       const SizedBox(width: 8),
                                       widget.slot.isOnline == 1
                                           ? SvgPicture.asset(
-                                              'assets/resources/screen.svg',
+                                              'assets/resources/screen.svg',colorFilter: ColorFilter.mode(
+                                          constants.background,
+                                          BlendMode.srcIn,
+                                        ),
                                             )
                                           : SvgPicture.asset(
                                               'assets/resources/location.svg',
+                                              colorFilter: ColorFilter.mode(
+                                                constants.background,
+                                                BlendMode.srcIn,
+                                              ),
                                             ),
                                       const SizedBox(width: 8),
                                       GestureDetector(
@@ -584,6 +589,10 @@ class _SlotWidgetState extends State<SlotWidget> {
                                         },
                                         child: SvgPicture.asset(
                                           'assets/resources/cross.svg',
+                                          colorFilter: ColorFilter.mode(
+                                            constants.red,
+                                            BlendMode.srcIn,
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -596,17 +605,10 @@ class _SlotWidgetState extends State<SlotWidget> {
                       )
                     //someone's slot
                     : Container(
-                        padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                        width: MediaQuery.of(context).size.width * 0.9,
+                        padding: EdgeInsets.fromLTRB(0, 12, 12, 12),
+                        width: MediaQuery.of(context).size.width * 0.95,
                         decoration: BoxDecoration(
-                          borderRadius: widget.isFirst
-                              ? BorderRadius.only(
-                                  topLeft: Radius.circular(20.0),
-                                  topRight: Radius.circular(20.0),
-                                  bottomLeft: Radius.circular(0.0),
-                                  bottomRight: Radius.circular(0.0),
-                                )
-                              : widget.isLast
+                          borderRadius: widget.isLast
                               ? BorderRadius.only(
                                   topLeft: Radius.circular(0.0),
                                   topRight: Radius.circular(0.0),
@@ -614,7 +616,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                                   bottomRight: Radius.circular(20.0),
                                 )
                               : BorderRadius.circular(0),
-                          color: constants.red,
+                          color: constants.lightRed,
                           border: Border.all(color: constants.grey, width: 0.2),
                         ),
                         child: Column(
@@ -626,20 +628,20 @@ class _SlotWidgetState extends State<SlotWidget> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     SizedBox(
-                                      width: 55,
+                                      width: 56,
 
                                       child: Text(
                                         '${widget.slot.startTime.split(":")[0]}${":"}${widget.slot.startTime.split(":")[1]}',
                                         textAlign: TextAlign.right,
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
-                                          color: constants.background,
+                                          color: constants.darkGrey,
                                           fontSize: constants.fsLabel,
                                           fontWeight: constants.fwRegular,
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(width: 10),
+                                    const SizedBox(width: 12),
                                     Flexible(
                                       flex: 2,
                                       fit: FlexFit.loose,
@@ -649,7 +651,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                                         ),
                                         textAlign: TextAlign.right,
                                         style: TextStyle(
-                                          color: constants.background,
+                                          color: constants.darkGrey,
                                           fontSize: constants.fsLabel,
                                           fontWeight: constants.fwRegular,
                                         ),
@@ -657,7 +659,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
-                                    const SizedBox(width: 10),
+                                    const SizedBox(width: 12),
                                   ],
                                 ),
                                 Flexible(
@@ -671,7 +673,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                                           widget.slot.note ?? '',
                                           maxLines: 1,
                                           style: TextStyle(
-                                            color: constants.background,
+                                            color: constants.darkGrey,
                                             fontSize: constants.fsLabel,
                                             fontWeight: constants.fwRegular,
                                           ),
@@ -680,10 +682,17 @@ class _SlotWidgetState extends State<SlotWidget> {
                                       const SizedBox(width: 8),
                                       widget.slot.isOnline == 1
                                           ? SvgPicture.asset(
-                                              'assets/resources/screen.svg',
+                                              'assets/resources/screen.svg',colorFilter: ColorFilter.mode(
+                                          constants.background,
+                                          BlendMode.srcIn,
+                                        ),
                                             )
                                           : SvgPicture.asset(
                                               'assets/resources/location.svg',
+                                              colorFilter: ColorFilter.mode(
+                                                constants.background,
+                                                BlendMode.srcIn,
+                                              ),
                                             ),
                                       const SizedBox(width: 8),
                                       SizedBox(
@@ -710,10 +719,17 @@ class _SlotWidgetState extends State<SlotWidget> {
                                           },
                                           child: viewModel.temporaryBellBoolean
                                               ? SvgPicture.asset(
-                                                  'assets/resources/notifications_bell_on.svg',
+                                                  'assets/resources/notifications_bell_full.svg',
+                                                  colorFilter: ColorFilter.mode(
+                                          constants.background,
+                                          BlendMode.srcIn,
+                                        ),
                                                 )
                                               : SvgPicture.asset(
-                                                  'assets/resources/notifications_bell_off.svg',
+                                                  'assets/resources/notifications_bell_empty.svg',colorFilter: ColorFilter.mode(
+                                          constants.background,
+                                          BlendMode.srcIn,
+                                        ),
                                                 ),
                                         ),
                                       ),

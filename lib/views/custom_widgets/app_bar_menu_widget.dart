@@ -11,11 +11,11 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
       leadingWidth: 56,
       leading: Center(
         child: Padding(
-          padding: EdgeInsets.only(left: 10),
+          padding: EdgeInsets.only(left: 12),
 
           child: Container(
-            width: 45,
-            height: 45,
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
               color: constants.grey,
               shape: BoxShape.circle,
@@ -23,7 +23,7 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
             child: IconButton(
               padding: EdgeInsets.zero,
               icon: Icon(Icons.menu_rounded),
-              iconSize: 20,
+              iconSize: constants.fsBody,
               color: constants.darkGrey,
               onPressed: () {
                 Scaffold.of(context).openDrawer();
@@ -34,10 +34,10 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
       ),
       actions: [
         Padding(
-          padding: EdgeInsets.only(right: 10),
+          padding: EdgeInsets.only(right: 12),
           child: SizedBox(
-            width: 45,
-            height: 45,
+            width: 48,
+            height: 48,
             child: Container(
               decoration: BoxDecoration(
                 color: constants.grey,
@@ -47,7 +47,7 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
                 padding: EdgeInsets.zero,
                 icon: Icon(Icons.person_2_outlined),
                 color: constants.darkGrey,
-                iconSize: 20,
+                iconSize: constants.fsBody,
                 onPressed: () {
                   nav.toChangeSettings();
                 },

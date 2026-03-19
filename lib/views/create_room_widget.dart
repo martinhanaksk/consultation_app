@@ -18,6 +18,10 @@ class _CreateRoomState extends State<CreateRoom> {
     super.initState();
   }
 
+  final TextEditingController roomNameController = TextEditingController();
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+  final TextEditingController acceptedEmailController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -29,14 +33,182 @@ class _CreateRoomState extends State<CreateRoom> {
             drawer: SliderMenu(),
             backgroundColor: constants.background,
             body: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Center(
-                  child: GestureDetector(
-                    child: Text("Create Room"),
-                    onTap: () {
-                      viewModel.createRoom();
-                    },
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    children: [
+                      Text(
+                        'Create Room',
+                        style: TextStyle(
+                          fontSize: constants.fsHeadline,
+                          fontWeight: constants.fwSemiBold,
+                          color: constants.darkGrey,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: roomNameController,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: constants.grey),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: constants.grey),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: constants.primary,
+                              width: 1.5,
+                            ),
+                          ),
+                          hintText: 'Room name',
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: titleController,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: constants.grey),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: constants.grey),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: constants.primary,
+                              width: 1.5,
+                            ),
+                          ),
+                          hintText: 'Title',
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: descriptionController,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: constants.grey),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: constants.grey),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: constants.primary,
+                              width: 1.5,
+                            ),
+                          ),
+                          hintText: 'description',
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: acceptedEmailController,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: constants.grey),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: constants.grey),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: constants.primary,
+                              width: 1.5,
+                            ),
+                          ),
+                          suffixIcon: GestureDetector(
+                            child: Icon(Icons.add_circle_outline),
+                            onTap: () {
+                              if (validator.validateNotEmpty(
+                                acceptedEmailController.text.trim(),
+                                context,
+                              )) {
+                                viewModel.addToAcceptedEmails(
+                                  helpers.trimText(
+                                    acceptedEmailController.text.trim(),
+                                  ),
+                                );
+                                acceptedEmailController.clear();
+                              }
+                            },
+                          ),
+                          hintText: 'Accepted Email format',
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      GestureDetector(
+                        child: Text(
+                          "Show the list of emails entered (${viewModel.acceptedEmails.length})",
+                        ),
+                        onTap: () {
+                          nav.toDisplayListOfEmails(viewModel: viewModel);
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            FocusScope.of(context).unfocus();
+                            if (validator.validateNotEmpty(
+                                  roomNameController.text.trim(),
+                                  context,
+                                ) &&
+                                validator.validateNotEmpty(
+                                  titleController.text.trim(),
+                                  context,
+                                ) &&
+                                validator.validateNotEmpty(
+                                  descriptionController.text.trim(),
+                                  context,
+                                )) {
+                              viewModel.createRoom(
+                                helpers.trimText(
+                                  roomNameController.text.trim(),
+                                ),
+                                helpers.trimText(titleController.text.trim()),
+                                helpers.trimText(
+                                  descriptionController.text.trim(),
+                                ),
+                              );
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: constants.primary,
+                            disabledBackgroundColor: constants.primary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            elevation: 2,
+                            shadowColor: constants.primary,
+                          ),
+                          child: Text(
+                            'Create',
+                            style: TextStyle(
+                              fontSize: constants.fsBody,
+                              fontWeight: constants.fwSemiBold,
+                              color: constants.background,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

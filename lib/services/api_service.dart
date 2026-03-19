@@ -149,7 +149,7 @@ class ApiService {
     }
   }
 
-  Future<List<RoomModel>> getMyRooms(String token) async {
+  Future<List<RoomModel>> getJoinedRooms(String token) async {
     final Uri urlToGetRooms = Uri.parse('${constants.url}/users/my-rooms');
     final responseToGetRooms = await http.get(
       urlToGetRooms,
@@ -334,14 +334,14 @@ class ApiService {
       },
       body: jsonEncode({
         "shortname": roomName,
-        "name": title,
-        "surname": description,
-        "visit_reason": convertedAcceptedEmails,
+        "title": title,
+        "description": description,
+        "accepted_emails": convertedAcceptedEmails,
       }),
     );
     if (response.statusCode != 200) {
-     return false;
-    }else{
+      return false;
+    } else {
       return true;
     }
   }
@@ -356,7 +356,8 @@ class ApiService {
         'Authorization': 'Bearer $token',
       },
     );
-    if (response.statusCode != 200) {return false;
+    if (response.statusCode != 200) {
+      return false;
     } else {
       return true;
     }

@@ -74,18 +74,20 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                     Text(
                       'Verification',
                       style: TextStyle(
-                        fontSize: 32,
+                        fontSize: constants.fsHeadline,
                         fontWeight: constants.fwSemiBold,
                         color: constants.darkGrey,
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Text(
-                      'Please enter the OTP from your email.',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: constants.fwSemiBold,
-                        color: constants.darkGrey,
+                    Center(
+                      child: Text(
+                        'Enter OTP from email.',
+                        style: TextStyle(
+                          fontSize: constants.fsLabel,
+                          fontWeight: constants.fwRegular,
+                          color: constants.grey,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -98,21 +100,22 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                           cornerSmoothing: 0.6,
                         ),
                       ),
-                      child: TextField(
+                      child: TextField(scrollPadding: EdgeInsets.only(bottom: 1000),
                         controller: otpcontroller,
+                        keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
                             borderSide: BorderSide.none,
                           ),
 
-                          hintText: 'Enter code',
+                          hintText: 'Code',
                         ),
                       ),
                     ),
                     SizedBox(height: 32),
                     SizedBox(
                       width: double.infinity,
-                      height: 50,
+                      height: 48,
                       child: ElevatedButton(
                         onPressed: viewModel.isLoading()
                             ? null
@@ -130,12 +133,12 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                             borderRadius: BorderRadius.circular(14),
                           ),
                           elevation: 2,
-                          shadowColor: constants.primary.withValues(alpha: 0.4),
+                          shadowColor: constants.primary,
                         ),
                         child: Text(
                           'Connect',
                           style: TextStyle(
-                            fontSize: 22,
+                            fontSize: constants.fsBody,
                             fontWeight: constants.fwSemiBold,
                             color: constants.background,
                           ),

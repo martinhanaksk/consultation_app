@@ -50,12 +50,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 70),
+                    const SizedBox(height: 72),
                     Center(
                       child: Text(
                         'Register',
                         style: TextStyle(
-                          fontSize: 42,
+                          fontSize: constants.fsHeadline,
                           fontWeight: constants.fwSemiBold,
                           color: constants.darkGrey,
                         ),
@@ -63,7 +63,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     ),
                     const SizedBox(height: 16),
                     TextField(
-                      controller: emailController,
+                      controller: emailController,scrollPadding: EdgeInsets.only(bottom: 1000),
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -85,7 +85,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     ),
                     const SizedBox(height: 16),
                     TextField(
-                      controller: nameController,
+                      controller: nameController,scrollPadding: EdgeInsets.only(bottom: 1000),
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -107,7 +107,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     ),
                     const SizedBox(height: 16),
                     TextField(
-                      controller: surnameController,
+                      controller: surnameController,scrollPadding: EdgeInsets.only(bottom: 1000),
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -130,6 +130,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     const SizedBox(height: 16),
                     TextField(
                       controller: visitReasonController,
+                      scrollPadding: EdgeInsets.only(bottom: 1000),
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -150,30 +151,31 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       ),
                     ),
 
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 16),
                     SizedBox(
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
                         onPressed: () async {
+                          FocusScope.of(context).unfocus();
                           if (validator.validateNotEmpty(
                                 emailController.text.trim(),
-                                'E-mail',
+
                                 context,
                               ) &&
                               validator.validateNotEmpty(
                                 nameController.text.trim(),
-                                'Name',
+
                                 context,
                               ) &&
                               validator.validateNotEmpty(
                                 surnameController.text.trim(),
-                                'Surname',
+
                                 context,
                               ) &&
                               validator.validateNotEmpty(
                                 visitReasonController.text.trim(),
-                                'Visit reason',
+
                                 context,
                               ) &&
                               validator.validateEmail(
@@ -208,12 +210,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             borderRadius: BorderRadius.circular(14),
                           ),
                           elevation: 2,
-                          shadowColor: constants.green.withValues(alpha: 0.4),
+                          shadowColor: constants.green,
                         ),
                         child: Text(
                           'Register',
                           style: TextStyle(
-                            fontSize: 22,
+                            fontSize: constants.fsBody,
                             fontWeight: constants.fwSemiBold,
                             color: constants.background,
                           ),

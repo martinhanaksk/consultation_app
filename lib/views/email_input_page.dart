@@ -6,7 +6,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 import 'dart:async';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-
+import 'package:flutter_svg/flutter_svg.dart';
 class EmailInputPage extends StatefulWidget {
   const EmailInputPage({super.key});
 
@@ -69,8 +69,8 @@ class _EmailInputPageState extends State<EmailInputPage> {
                           children: [
                             const SizedBox(height: 80),
                             Center(
-                              child: Image.asset(
-                                'assets/resources/applogo.png',
+                              child: SvgPicture.asset(
+                                'assets/resources/logo-whole.svg',
                                 width: 232,
                                 fit: BoxFit.cover,
                               ),
@@ -85,7 +85,7 @@ class _EmailInputPageState extends State<EmailInputPage> {
                                   cornerSmoothing: 0.6,
                                 ),
                               ),
-                              child: TextField(
+                              child: TextField(scrollPadding: EdgeInsets.only(bottom: 1000),
                                 onChanged: viewModel.updateEmail,
                                 decoration: InputDecoration(
                                   border: OutlineInputBorder(
@@ -152,9 +152,7 @@ class _EmailInputPageState extends State<EmailInputPage> {
                                     borderRadius: BorderRadius.circular(14),
                                   ),
                                   elevation: 2,
-                                  shadowColor: constants.primary.withValues(
-                                    alpha: 0.4,
-                                  ),
+                                  shadowColor: constants.primary,
                                 ),
                                 child: Text(
                                   'Next',

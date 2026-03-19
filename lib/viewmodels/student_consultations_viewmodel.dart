@@ -31,7 +31,7 @@ class StudentConsultationsViewmodel extends BaseConsultationsViewmodel {
   Future<bool> setSelectedId(String? id) async {
     if (id == null) return false;
 
-    final myRooms = await api.getMyRooms(await prefs.getItem('token'));
+    final myRooms = await api.getJoinedRooms(await prefs.getItem('token'));
     final isValidRoom = myRooms.any((room) => room.id.toString() == id);
 
     if (isValidRoom) {
@@ -53,7 +53,7 @@ class StudentConsultationsViewmodel extends BaseConsultationsViewmodel {
     helpers.checkIfValidToken(token);
     isTeacherVal = await isTeacher(token, email);
 
-    final myRooms = await api.getMyRooms(token);
+    final myRooms = await api.getJoinedRooms(token);
     if (myRooms.isEmpty) {
       hasNoRooms = true;
       notifyListeners();

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 class JoinRoomViewmodel extends ChangeNotifier {
   List<RoomModel>? _allRooms = [];
+  List<RoomModel>? _joinedRooms = [];
   bool _isLoading = false;
   bool get isLoading => _isLoading;
   List<RoomModel>? allRooms() {
@@ -35,8 +36,26 @@ class JoinRoomViewmodel extends ChangeNotifier {
     }
   }
 
+  bool isInJoinedRooms(RoomModel option) {
+    if (_joinedRooms != null) {
+      final joinedIds = _joinedRooms!.map((room) => room.id).toList();
+      if (joinedIds.contains(option.id)) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
   Future<void> fetchAllRooms(String token) async {
     _allRooms = await api.getAllRooms(token);
+    notifyListeners();
+  }
+
+  Future<void> fetchJoinedRooms(String token) async {
+    _joinedRooms = await api.getJoinedRooms(token);
     notifyListeners();
   }
 }
