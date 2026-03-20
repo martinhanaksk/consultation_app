@@ -5,39 +5,38 @@ import 'package:consultation_app/models/user_model.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:flutter/foundation.dart';
 
-abstract class BaseConsultationsViewmodel extends ChangeNotifier {
+class BaseConsultationsViewmodel extends ChangeNotifier {
   List<UserModel>? users = [];
   List<RoomModel>? rooms = [];
+  bool isTeacher = false;
+  bool isLoading = false;
   Map<int, List<SlotModel>?> slotsInBlocks = {};
   List<BlockModel> blocks = [];
   bool blocksFiltered = false;
   String? selectedRoomId;
-  bool hasNoRooms = false;
-
-  int foundBlocksLength() {
+  bool noRoomsFound = false;
+  bool teacherView = true;
+  Future<List<RoomModel>> fetchRooms(String token) => api.getJoinedRooms(token);
+  int? get roomIdNumber =>
+      selectedRoomId == null ? null : int.parse(selectedRoomId!);
+  int getBlocksCount() {
     if (blocksFiltered && blocks.isNotEmpty) {
       return blocks.length;
     }
     return 0;
   }
 
-  Future<void> loadRoom(String token, int roomId,bool isTeacher) async {
-    if (!await helpers.handleIsInternetConnection()) {
-      notify.showToast('Please connect to internet.');
-      return;
+  Future<void> loadRoom(String token) async {
+    helpers.checkIfValidToken(token);
+    if (selectedRoomId != null) {
+      await refreshRoomData(token, roomIdNumber!);
     }
 
-    helpers.checkIfValidToken(token);
-    selectedRoomId = roomId.toString();
-    await fetchData(token, roomId,isTeacher);
     notifyListeners();
   }
 
-  Future<void> fetchData(String token, int roomId, bool isTeacher) async {
-    if (!await helpers.handleIsInternetConnection()) {
-      notify.showToast('Please connect to internet.');
-      return;
-    }
+  Future<void> refreshRoomData(String token, int roomId) async {
+    if (!await _checkConnection()) return;
 
     users = [];
     rooms = [];
@@ -45,40 +44,35 @@ abstract class BaseConsultationsViewmodel extends ChangeNotifier {
     slotsInBlocks = {};
 
     users = await api.getUsers(token);
-    if (isTeacher) {
-      rooms = await api.getMyRoomsTeacher(token);
-    } else {
-      rooms = await api.getJoinedRooms(token);
-    }
+    rooms = await fetchRooms(token);
 
     if (rooms == null || rooms!.isEmpty) {
-      hasNoRooms = true;
+      noRoomsFound = true;
       notifyListeners();
-      return;
+    } else {
+      noRoomsFound = false;
+      blocks = await api.getBlocks(token, roomId);
+
+      DateTime now = DateTime.now();
+      blocks.removeWhere((b) => !b.date.isAfter(now));
+
+      blocks.sort((a, b) => a.date.compareTo(b.date));
+      blocksFiltered = true;
+
+      List<Future<void>> futures = [];
+      for (var block in blocks) {
+        futures.add(() async {
+          final slots = await api.getSlotsForBlock(block.id, token);
+          if (slots != null) {
+            slots.sort((a, b) => a.startTime.compareTo(b.startTime));
+          }
+          slotsInBlocks[block.id] = slots;
+        }());
+      }
+      await Future.wait(futures);
+
+      notifyListeners();
     }
-
-    hasNoRooms = false;
-    blocks = await api.getBlocks(token, roomId);
-
-    DateTime now = DateTime.now();
-    blocks.removeWhere((b) => !b.date.isAfter(now));
-
-    blocks.sort((a, b) => a.date.compareTo(b.date));
-    blocksFiltered = true;
-
-    List<Future<void>> futures = [];
-    for (var block in blocks) {
-      futures.add(() async {
-        final slots = await api.getSlotsForBlock(block.id, token);
-        if (slots != null) {
-          slots.sort((a, b) => a.startTime.compareTo(b.startTime));
-        }
-        slotsInBlocks[block.id] = slots;
-      }());
-    }
-    await Future.wait(futures);
-
-    notifyListeners();
   }
 
   String? get safeSelectedRoomId {
@@ -98,20 +92,16 @@ abstract class BaseConsultationsViewmodel extends ChangeNotifier {
     return null;
   }
 
-  String getDateOfBlock(int blockId) {
+  String blockDateLabel(int blockId) {
     for (var tmpBlock in blocks) {
       if (tmpBlock.id == blockId) {
-        return helpers.getTDateOnlySimple(
-              DateTime.parse(tmpBlock.date.toString()),
-            ) +
-            " " +
-            getDaysRemainingTillDate(tmpBlock.date);
+        return "${helpers.getTDateOnlySimple(DateTime.parse(tmpBlock.date.toString()))} ${daysRemainingLabel(tmpBlock.date)}";
       }
     }
     return "";
   }
 
-  String getDaysRemainingTillDate(DateTime date) {
+  String daysRemainingLabel(DateTime date) {
     final now = DateTime.now();
 
     final today = DateTime(now.year, now.month, now.day);
@@ -123,5 +113,69 @@ abstract class BaseConsultationsViewmodel extends ChangeNotifier {
     if (diff == 1) return "(tomorrow)";
 
     return "($diff d.)";
+  }
+
+  //Student functionalities
+  Future<void> switchRoom(String newRoomId) async {
+    isLoading = true;
+    notifyListeners();
+    selectedRoomId = newRoomId;
+    await loadRoom(await prefs.getItem("token"));
+
+    isLoading = false;
+    notifyListeners();
+  }
+
+  Future<bool> validateAndSelectRoom(String? id) async {
+    if (id == null) return false;
+
+    final myRooms = await fetchRooms(await prefs.getItem('token'));
+    final isValidRoom = myRooms.any((room) => room.id.toString() == id);
+
+    if (isValidRoom) {
+      selectedRoomId = id;
+      notifyListeners();
+      return true;
+    } else {
+      notify.showToast('Invalid room or access denied.');
+      return false;
+    }
+  }
+
+  Future<bool> _checkConnection() async {
+    if (await helpers.handleIsInternetConnection()) return true;
+    notify.showToast('Please connect to internet.');
+    return false;
+  }
+
+  Future<void> init(String token, String email) async {
+    isLoading = true;
+    notifyListeners();
+    if (!await _checkConnection()) return;
+
+    helpers.checkIfValidToken(token);
+    isTeacher = await resolveUserRole(token, email);
+
+    final myRooms = await fetchRooms(token);
+    if (myRooms.isEmpty) {
+      noRoomsFound = true;
+      isLoading = false;
+      notifyListeners();
+      return;
+    }
+
+    selectedRoomId = myRooms[0].id.toString();
+    await refreshRoomData(token, myRooms[0].id);
+    isLoading = false;
+    notifyListeners();
+  }
+
+  Future<bool> resolveUserRole(String token, String email) async {
+    try {
+      return await api.getRole(token, email) == "teacher";
+    } catch (_) {
+      notify.showToast('Error while acquiring role.');
+      return false;
+    }
   }
 }

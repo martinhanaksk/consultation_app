@@ -1,5 +1,5 @@
 import 'package:consultation_app/models/room_model.dart';
-import 'package:consultation_app/viewmodels/student_consultations_viewmodel.dart';
+import 'package:consultation_app/viewmodels/base_consultations_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slot_widget.dart';
@@ -28,7 +28,7 @@ class ConsultationsStudentPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => StudentConsultationsViewmodel(),
+      create: (_) => BaseConsultationsViewmodel(),
       child: _ConsultationsStudentPageInner(token: token, email: email),
     );
   }
@@ -53,15 +53,14 @@ class _ConsultationsUserPageState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final _viewModel = context.read<StudentConsultationsViewmodel>();
-      _viewModel.init(widget.token, widget.email);
-      _viewModel.loadData();
+      final viewModel = context.read<BaseConsultationsViewmodel>();
+      viewModel.init(widget.token, widget.email);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<StudentConsultationsViewmodel>();
+    final viewModel = context.watch<BaseConsultationsViewmodel>();
     return Scaffold(
       appBar: AppBarMenu(),
       drawer: SliderMenu(),
@@ -74,7 +73,7 @@ class _ConsultationsUserPageState
                   size: constants.fsHeadline,
                 ),
               )
-            : (viewModel.hasNoRooms || viewModel.selectedRoomId == null)
+            : (viewModel.noRoomsFound || viewModel.selectedRoomId == null)
             ? Center(
                 child: ConstrainedBox(
                   constraints: BoxConstraints(maxWidth: 600),
@@ -167,9 +166,9 @@ class _ConsultationsUserPageState
                                       onChanged: (String? newValue) async {
                                         if (newValue != null) {
                                           final success = await viewModel
-                                              .setSelectedId(newValue);
+                                              .validateAndSelectRoom(newValue);
                                           if (success) {
-                                            await viewModel.onRoomChanged(
+                                            await viewModel.switchRoom(
                                               newValue,
                                             );
                                           }
@@ -181,7 +180,7 @@ class _ConsultationsUserPageState
                               ),
                             ),
                           ),
-                          content: viewModel.foundBlocksLength() == 0
+                          content: viewModel.getBlocksCount() == 0
                               ? Padding(
                                   padding: const EdgeInsets.only(top: 40),
                                   child: Center(
@@ -263,7 +262,7 @@ class _ConsultationsUserPageState
                                                                   ),
                                                               child: Text(
                                                                 viewModel
-                                                                    .getDateOfBlock(
+                                                                    .blockDateLabel(
                                                                       block.key,
                                                                     ),
                                                                 style: TextStyle(
@@ -310,14 +309,18 @@ class _ConsultationsUserPageState
                                                                     .selectedRoomId!,
                                                                 context:
                                                                     context,
-                                                                loadData:
-                                                                    viewModel
-                                                                        .loadData,
+                                                                loadData: () {
+                                                                  viewModel
+                                                                      .loadRoom(
+                                                                        widget
+                                                                            .token,
+                                                                      );
+                                                                },
                                                                 isFirst:
                                                                     isFirst,
                                                                 isLast: isLast,
                                                                 date: viewModel
-                                                                    .getDateOfBlock(
+                                                                    .blockDateLabel(
                                                                       block.key,
                                                                     ),
                                                               );
