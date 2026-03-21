@@ -1,5 +1,6 @@
 import 'package:consultation_app/models/room_model.dart';
 import 'package:consultation_app/viewmodels/teacher_consultations_viewmodel.dart';
+import 'package:consultation_app/views/custom_widgets/animated_toggle_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slot_widget.dart';
@@ -51,6 +52,7 @@ class _ConsultationsUserPageState
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final viewModel = context.read<TeacherConsultationsViewmodel>();
       viewModel.init(widget.token, widget.email);
@@ -128,7 +130,10 @@ class _ConsultationsUserPageState
                                   borderRadius: BorderRadius.circular(20.0),
                                   dropdownColor: constants.grey,
                                   iconSize: 0,
-                                  hint: Text("Select a Room"),
+                                  hint: Text(
+                                    "Select a Room",
+                                    textAlign: TextAlign.center,
+                                  ),
                                   value: viewModel.safeSelectedRoomId,
                                   items: viewModel.rooms == null
                                       ? []
@@ -154,6 +159,18 @@ class _ConsultationsUserPageState
                         ),
                         content: Column(
                           children: [
+                            SizedBox(height: 30),
+                            AnimatedToggle(
+                              values: ['Admin', 'Reserver'],
+                              onToggleCallback: (value) {
+                                viewModel.toggleView(widget.token, value);
+                              },
+                              width: 200,
+                              height: 50,
+                              buttonColor: constants.primary,
+                              backgroundColor: constants.grey,
+                              textColor: constants.background,
+                            ),
                             SizedBox(height: 40),
                             Center(
                               child: Container(
@@ -345,10 +362,11 @@ class _ConsultationsUserPageState
                                                                   .selectedRoomId!,
                                                               context: context,
                                                               loadData: () {
-                                                                viewModel.loadRoom(
-                                                                  widget.token,
-                                                                 
-                                                                );
+                                                                viewModel
+                                                                    .loadRoom(
+                                                                      widget
+                                                                          .token,
+                                                                    );
                                                               },
                                                               isFirst: isFirst,
                                                               isLast: isLast,

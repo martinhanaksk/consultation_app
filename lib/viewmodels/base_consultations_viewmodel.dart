@@ -6,16 +6,23 @@ import 'package:consultation_app/setup.dart';
 import 'package:flutter/foundation.dart';
 
 class BaseConsultationsViewmodel extends ChangeNotifier {
-  List<UserModel>? users = [];
-  List<RoomModel>? rooms = [];
   bool isTeacher = false;
   bool isLoading = false;
+  bool blocksFiltered = false;
+  bool noRoomsFound = false;
+  List<UserModel>? users = [];
+  List<RoomModel>? rooms = [];
   Map<int, List<SlotModel>?> slotsInBlocks = {};
   List<BlockModel> blocks = [];
-  bool blocksFiltered = false;
   String? selectedRoomId;
-  bool noRoomsFound = false;
-  bool teacherView = true;
+  int? _teacherView;
+  int get teacherView => _teacherView ?? 0;
+  Future<void> setTeacherView(int value) async {
+    _teacherView = value;
+    await prefs.saveItem("teacherView", value);
+    notifyListeners();
+  }
+
   Future<List<RoomModel>> fetchRooms(String token) => api.getJoinedRooms(token);
   int? get roomIdNumber =>
       selectedRoomId == null ? null : int.parse(selectedRoomId!);
@@ -31,7 +38,6 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     if (selectedRoomId != null) {
       await refreshRoomData(token, roomIdNumber!);
     }
-
     notifyListeners();
   }
 
@@ -149,6 +155,12 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   }
 
   Future<void> init(String token, String email) async {
+    if (await prefs.containsItem("teacherView") == false) {
+      setTeacherView(0);
+    } else {
+      setTeacherView(await prefs.getItem('teacherView'));
+    }
+
     isLoading = true;
     notifyListeners();
     if (!await _checkConnection()) return;

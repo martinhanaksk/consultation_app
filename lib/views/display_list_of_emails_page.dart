@@ -14,6 +14,8 @@ class _DisplayListOfEmailsPageState extends State<DisplayListOfEmailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: constants.background,
+      appBar: AppBar(),
       body: SafeArea(
         child: ListenableBuilder(
           listenable: widget.viewModel,

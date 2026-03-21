@@ -22,6 +22,12 @@ class UserPreferences {
     return value ?? '';
   }
 
+  Future<dynamic> containsItem(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey(key)) return true;
+    return false;
+  }
+
   Future<void> removeItem(String key) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(key);
