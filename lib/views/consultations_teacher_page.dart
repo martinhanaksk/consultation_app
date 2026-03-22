@@ -161,6 +161,9 @@ class _ConsultationsUserPageState
                           children: [
                             SizedBox(height: 30),
                             AnimatedToggle(
+                              isAdmin: viewModel.adminView == 1
+                                  ? true
+                                  : false,
                               values: ['Admin', 'Reserver'],
                               onToggleCallback: (value) {
                                 viewModel.toggleView(widget.token, value);

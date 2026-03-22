@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
 
 class AnimatedToggle extends StatefulWidget {
+  final bool isAdmin;
   final List<String> values;
   final ValueChanged<int> onToggleCallback;
   final double width;
@@ -13,6 +14,7 @@ class AnimatedToggle extends StatefulWidget {
   const AnimatedToggle({
     super.key,
     required this.values,
+    required this.isAdmin,
     required this.onToggleCallback,
     required this.width,
     required this.height,
@@ -27,13 +29,18 @@ class AnimatedToggle extends StatefulWidget {
 
 class _AnimatedToggleState extends State<AnimatedToggle> {
   bool initialPosition = true;
+  @override
+  void initState() {
+    super.initState();
+    initialPosition = widget.isAdmin;
+  }
 
   void _toggle() {
     setState(() {
       initialPosition = !initialPosition;
     });
 
-    widget.onToggleCallback(initialPosition ? 0 : 1);
+    widget.onToggleCallback(initialPosition ? 1 : 0);
   }
 
   @override
@@ -90,8 +97,9 @@ class _AnimatedToggleState extends State<AnimatedToggle> {
           AnimatedAlign(
             duration: const Duration(milliseconds: 250),
             curve: Curves.decelerate,
-            alignment:
-                initialPosition ? Alignment.centerLeft : Alignment.centerRight,
+            alignment: initialPosition
+                ? Alignment.centerLeft
+                : Alignment.centerRight,
             child: Container(
               width: widget.width / 2,
               height: widget.height,

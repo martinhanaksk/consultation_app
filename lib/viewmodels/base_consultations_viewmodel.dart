@@ -10,22 +10,43 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   bool isLoading = false;
   bool blocksFiltered = false;
   bool noRoomsFound = false;
+  //reserver atributes
+  List<UserModel>? reserverUsers = [];
+  List<RoomModel>? reserverRooms = [];
+  Map<int, List<SlotModel>?> reserverSlotsInBlocks = {};
+  List<BlockModel> reserverBlocks = [];
+  //admin atributes
+  List<UserModel>? adminUsers = [];
+  List<RoomModel>? adminRooms = [];
+  Map<int, List<SlotModel>?> adminSlotsInBlocks = {};
+  List<BlockModel> adminBlocks = [];
+  //base atributes
   List<UserModel>? users = [];
   List<RoomModel>? rooms = [];
   Map<int, List<SlotModel>?> slotsInBlocks = {};
   List<BlockModel> blocks = [];
+
+  String? adminSelectedRoomId;
+  String? reserverSelectedRoomId;
+
+  int _adminView = 0;
+  int get adminView => _adminView;
   String? selectedRoomId;
-  int? _teacherView;
-  int get teacherView => _teacherView ?? 0;
-  Future<void> setTeacherView(int value) async {
-    _teacherView = value;
-    await prefs.saveItem("teacherView", value);
+  Future<void> setAdminView(int value) async {
+    _adminView = value;
+    await prefs.saveItem("adminView", value);
     notifyListeners();
   }
 
   Future<List<RoomModel>> fetchRooms(String token) => api.getJoinedRooms(token);
-  int? get roomIdNumber =>
-      selectedRoomId == null ? null : int.parse(selectedRoomId!);
+  int? get roomIdNumber => adminView == 0
+      ? reserverSelectedRoomId == null
+            ? null
+            : int.parse(reserverSelectedRoomId!)
+      : adminSelectedRoomId == null
+      ? null
+      : int.parse(adminSelectedRoomId!);
+
   int getBlocksCount() {
     if (blocksFiltered && blocks.isNotEmpty) {
       return blocks.length;
@@ -35,7 +56,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
 
   Future<void> loadRoom(String token) async {
     helpers.checkIfValidToken(token);
-    if (selectedRoomId != null) {
+    if (roomIdNumber != null) {
       await refreshRoomData(token, roomIdNumber!);
     }
     notifyListeners();
@@ -125,7 +146,12 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   Future<void> switchRoom(String newRoomId) async {
     isLoading = true;
     notifyListeners();
-    selectedRoomId = newRoomId;
+    _adminView == 1
+        ? adminSelectedRoomId = newRoomId
+        : reserverSelectedRoomId = newRoomId;
+    selectedRoomId = _adminView == 1
+        ? adminSelectedRoomId
+        : reserverSelectedRoomId;
     await loadRoom(await prefs.getItem("token"));
 
     isLoading = false;
@@ -139,6 +165,11 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     final isValidRoom = myRooms.any((room) => room.id.toString() == id);
 
     if (isValidRoom) {
+      if (adminView == 0) {
+        reserverSelectedRoomId = id;
+      } else {
+        adminSelectedRoomId = id;
+      }
       selectedRoomId = id;
       notifyListeners();
       return true;
@@ -155,10 +186,10 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   }
 
   Future<void> init(String token, String email) async {
-    if (await prefs.containsItem("teacherView") == false) {
-      setTeacherView(0);
+    if (await prefs.containsItem("adminView") == false) {
+      await setAdminView(0);
     } else {
-      setTeacherView(await prefs.getItem('teacherView'));
+      await setAdminView(int.parse(await prefs.getItem('adminView')));
     }
 
     isLoading = true;
@@ -175,8 +206,11 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
       notifyListeners();
       return;
     }
-
-    selectedRoomId = myRooms[0].id.toString();
+    reserverSelectedRoomId = myRooms[0].id.toString();
+    adminSelectedRoomId = myRooms[0].id.toString();
+    selectedRoomId = _adminView == 1
+        ? adminSelectedRoomId
+        : reserverSelectedRoomId;
     await refreshRoomData(token, myRooms[0].id);
     isLoading = false;
     notifyListeners();
