@@ -78,7 +78,7 @@ class _EmailInputPageState extends State<EmailInputPage> {
                             const SizedBox(height: 56),
                             Container(
                               clipBehavior: Clip.none,
-                              decoration: constants.figmaLightShadowWith(
+                              decoration: constants.squircleShadow(
                                 color: constants.background,
                                 borderRadius: SmoothBorderRadius(
                                   cornerRadius: 12,
@@ -103,7 +103,7 @@ class _EmailInputPageState extends State<EmailInputPage> {
                                     width: 24,
                                     height: 24,
                                     clipBehavior: Clip.none,
-                                    decoration: constants.figmaLightShadowWith(
+                                    decoration: constants.squircleShadow(
                                       color: constants.background,
                                       borderRadius: SmoothBorderRadius(
                                         cornerRadius: 6,

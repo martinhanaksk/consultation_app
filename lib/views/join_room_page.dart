@@ -71,7 +71,7 @@ class _JoinRoomState extends State<JoinRoom> {
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(24),
-                        decoration: constants.figmaLightShadowWith(
+                        decoration: constants.squircleShadow(
                           color: constants.background,
                           borderRadius: SmoothBorderRadius(
                             cornerRadius: 20,

@@ -50,7 +50,6 @@ class _SlotWidgetState extends State<SlotWidget> {
       backgroundColor: constants.transparent,
       builder: (context) {
         return ListenableBuilder(
-          // 👈 ADD THIS WRAPPER
           listenable: viewModel,
           builder: (context, _) {
             return Padding(
@@ -78,7 +77,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                     Container(
                       width: MediaQuery.of(context).size.width * 0.95,
                       padding: const EdgeInsets.all(20),
-                      decoration: constants.figmaLightShadowWith(
+                      decoration: constants.squircleShadow(
                         color: constants.background,
                         borderRadius: SmoothBorderRadius(
                           cornerRadius: 20,
@@ -186,7 +185,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                     SizedBox(height: 12),
                     Container(
                       clipBehavior: Clip.none,
-                      decoration: constants.figmaLightShadowWith(
+                      decoration: constants.squircleShadow(
                         color: constants.background,
                         borderRadius: SmoothBorderRadius(
                           cornerRadius: 12,

@@ -232,7 +232,7 @@ class ApiService {
 
       return decoded.map((json) => SlotModel.fromJson(json)).toList();
     } else {
-      throw Exception('Failed to fetch slots: ${response.statusCode}');
+      return null;
     }
   }
 
@@ -337,6 +337,59 @@ class ApiService {
         "title": title,
         "description": description,
         "accepted_emails": convertedAcceptedEmails,
+      }),
+    );
+    if (response.statusCode != 200) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  Future<bool> createBlock(String token, int id, String date) async {
+    final Uri url = Uri.parse('${constants.url}/block/create');
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({"room_id": id, "date": date}),
+    );
+    if (response.statusCode != 200) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  Future<bool> createSlot(
+    String token,
+    int block_id,
+    String start_time,
+    int duration,
+    bool is_online,
+    String note,
+  ) async {
+    final Uri url = Uri.parse('${constants.url}/slot/create');
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        "block_id": block_id,
+        "slots": [
+          {
+            "start_time": start_time,
+            "duration": duration,
+            "is_online": is_online,
+            "note": note,
+          },
+        ],
       }),
     );
     if (response.statusCode != 200) {

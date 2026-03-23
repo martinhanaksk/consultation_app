@@ -10,16 +10,6 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   bool isLoading = false;
   bool blocksFiltered = false;
   bool noRoomsFound = false;
-  //reserver atributes
-  List<UserModel>? reserverUsers = [];
-  List<RoomModel>? reserverRooms = [];
-  Map<int, List<SlotModel>?> reserverSlotsInBlocks = {};
-  List<BlockModel> reserverBlocks = [];
-  //admin atributes
-  List<UserModel>? adminUsers = [];
-  List<RoomModel>? adminRooms = [];
-  Map<int, List<SlotModel>?> adminSlotsInBlocks = {};
-  List<BlockModel> adminBlocks = [];
   //base atributes
   List<UserModel>? users = [];
   List<RoomModel>? rooms = [];
@@ -63,7 +53,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   }
 
   Future<void> refreshRoomData(String token, int roomId) async {
-    if (!await _checkConnection()) return;
+    if (!await checkConnection()) return;
 
     users = [];
     rooms = [];
@@ -92,8 +82,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
           final slots = await api.getSlotsForBlock(block.id, token);
           if (slots != null) {
             slots.sort((a, b) => a.startTime.compareTo(b.startTime));
-          }
-          slotsInBlocks[block.id] = slots;
+          } else return;
         }());
       }
       await Future.wait(futures);
@@ -179,38 +168,32 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     }
   }
 
-  Future<bool> _checkConnection() async {
+  Future<bool> checkConnection() async {
     if (await helpers.handleIsInternetConnection()) return true;
     notify.showToast('Please connect to internet.');
     return false;
   }
 
+  // base_consultations_viewmodel.dart
   Future<void> init(String token, String email) async {
-    if (await prefs.containsItem("adminView") == false) {
-      await setAdminView(0);
-    } else {
-      await setAdminView(int.parse(await prefs.getItem('adminView')));
-    }
-
+    await setAdminView(0); // students are always reserver view
     isLoading = true;
     notifyListeners();
-    if (!await _checkConnection()) return;
+    if (!await checkConnection()) return;
 
     helpers.checkIfValidToken(token);
     isTeacher = await resolveUserRole(token, email);
 
-    final myRooms = await fetchRooms(token);
+    final myRooms = await fetchRooms(token); // getJoinedRooms only
     if (myRooms.isEmpty) {
       noRoomsFound = true;
       isLoading = false;
       notifyListeners();
       return;
     }
+
     reserverSelectedRoomId = myRooms[0].id.toString();
-    adminSelectedRoomId = myRooms[0].id.toString();
-    selectedRoomId = _adminView == 1
-        ? adminSelectedRoomId
-        : reserverSelectedRoomId;
+    selectedRoomId = reserverSelectedRoomId;
     await refreshRoomData(token, myRooms[0].id);
     isLoading = false;
     notifyListeners();

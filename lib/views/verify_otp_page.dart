@@ -93,7 +93,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                     const SizedBox(height: 20),
                     Container(
                       clipBehavior: Clip.none,
-                      decoration: constants.figmaLightShadowWith(
+                      decoration: constants.squircleShadow(
                         color: constants.background,
                         borderRadius: SmoothBorderRadius(
                           cornerRadius: 12,

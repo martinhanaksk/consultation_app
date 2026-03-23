@@ -136,44 +136,87 @@ class _ConsultationsUserPageState
                               ),
                               padding: EdgeInsets.fromLTRB(0, 10, 0, 50),
                               child: Center(
-                                child: Container(
-                                  clipBehavior: Clip.none,
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: 10,
-                                    horizontal: 20,
+                                child: PopupMenuButton<String>(
+                                  position: PopupMenuPosition.under,
+                                  offset: const Offset(0, 6),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
                                   ),
-                                  decoration: BoxDecoration(
-                                    color: constants.grey,
-                                    borderRadius: BorderRadius.circular(20),
+                                  color: constants.background,
+                                  elevation: 12,
+                                  shadowColor: constants.darkGrey.withValues(
+                                    alpha: 0.12,
                                   ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: DropdownButton<String>(
-                                      borderRadius: BorderRadius.circular(20.0),
-                                      dropdownColor: constants.grey,
-                                      iconSize: 0,
-                                      hint: Text("Select a Room"),
-                                      value: viewModel.safeSelectedRoomId,
-                                      items: viewModel.rooms == null
-                                          ? []
-                                          : viewModel.rooms!.map((
-                                              RoomModel value,
-                                            ) {
-                                              return DropdownMenuItem<String>(
-                                                value: value.id.toString(),
-                                                child: Text(value.title),
-                                              );
-                                            }).toList(),
-                                      onChanged: (String? newValue) async {
-                                        if (newValue != null) {
-                                          final success = await viewModel
-                                              .validateAndSelectRoom(newValue);
-                                          if (success) {
-                                            await viewModel.switchRoom(
-                                              newValue,
-                                            );
-                                          }
-                                        }
-                                      },
+                                  onSelected: (String newValue) async {
+                                    final success = await viewModel
+                                        .validateAndSelectRoom(newValue);
+                                    if (success) {
+                                      await viewModel.switchRoom(newValue);
+                                    }
+                                  },
+                                  itemBuilder: (context) =>
+                                      viewModel.rooms == null
+                                      ? []
+                                      : viewModel.rooms!.map((RoomModel value) {
+                                          final isSelected =
+                                              value.id.toString() ==
+                                              viewModel.safeSelectedRoomId;
+                                          return PopupMenuItem<String>(
+                                            value: value.id.toString(),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 20,
+                                              vertical: 4,
+                                            ),
+                                            child: Text(
+                                              value.title,
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: isSelected
+                                                    ? constants.fwSemiBold
+                                                    : constants.fwRegular,
+                                                color: isSelected
+                                                    ? constants.primary
+                                                    : constants.darkGrey,
+                                              ),
+                                            ),
+                                          );
+                                        }).toList(),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                      vertical: 12,
+                                    ),
+                                    decoration: constants.squircleShadow(
+                                      color: constants.grey,
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          viewModel.rooms
+                                                  ?.cast<RoomModel?>()
+                                                  .firstWhere(
+                                                    (r) =>
+                                                        r!.id.toString() ==
+                                                        viewModel
+                                                            .safeSelectedRoomId,
+                                                    orElse: () => null,
+                                                  )
+                                                  ?.title ??
+                                              "Select a Room",
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: constants.fwSemiBold,
+                                            color: constants.darkGrey,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Icon(
+                                          Icons.keyboard_arrow_down_rounded,
+                                          size: 20,
+                                          color: constants.darkGrey,
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -203,6 +246,7 @@ class _ConsultationsUserPageState
                                           .slotsInBlocks
                                           .entries
                                           .toList();
+
                                       sortedEntries.sort((a, b) {
                                         final blockA = viewModel.blocks
                                             .firstWhere(
@@ -216,119 +260,178 @@ class _ConsultationsUserPageState
                                           blockB.date,
                                         );
                                       });
+
+                                      if (sortedEntries.isEmpty) {
+                                        return viewModel.blocks.map((block) {
+                                          return Center(
+                                            child: Column(
+                                              children: [
+                                                const SizedBox(height: 20),
+                                                Container(
+                                                  clipBehavior: Clip.hardEdge,
+                                                  width:
+                                                      MediaQuery.of(
+                                                        context,
+                                                      ).size.width *
+                                                      0.9,
+                                                  decoration: constants
+                                                      .squircleShadow(
+                                                        border: Border.all(
+                                                          color: constants.grey,
+                                                          width: 0.2,
+                                                        ),
+
+                                                        color: constants
+                                                            .background,
+                                                      ),
+                                                  child: Column(
+                                                    children: [
+                                                      Container(
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets.fromLTRB(
+                                                                20,
+                                                                10,
+                                                                20,
+                                                                10,
+                                                              ),
+                                                          child: Text(
+                                                            viewModel
+                                                                .blockDateLabel(
+                                                                  block.id,
+                                                                ),
+                                                            style: TextStyle(
+                                                              color: constants
+                                                                  .darkGrey,
+                                                              fontSize:
+                                                                  constants
+                                                                      .fsLabel,
+                                                              fontWeight:
+                                                                  constants
+                                                                      .fwSemiBold,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets.fromLTRB(
+                                                              20,
+                                                              10,
+                                                              20,
+                                                              20,
+                                                            ),
+                                                        child: Text(
+                                                          "No slots available",
+                                                          style: TextStyle(
+                                                            color:
+                                                                constants.grey,
+                                                            fontSize: constants
+                                                                .fsBody,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        }).toList();
+                                      }
                                       return sortedEntries.map((block) {
                                         return Center(
                                           child: Column(
                                             children: [
                                               const SizedBox(height: 20),
-                                              (block.value == null ||
-                                                      block.value!.isEmpty)
-                                                  ? Text("No slots found")
-                                                  : Container(
-                                                      clipBehavior:
-                                                          Clip.hardEdge,
-                                                      width:
-                                                          MediaQuery.of(
-                                                            context,
-                                                          ).size.width *
-                                                          0.9,
-                                                      decoration: constants
-                                                          .figmaLightShadowWith(
-                                                            border: Border.all(
-                                                              color: constants
-                                                                  .grey,
-                                                              width: 0.2,
+                                              Container(
+                                                clipBehavior: Clip.hardEdge,
+                                                width:
+                                                    MediaQuery.of(
+                                                      context,
+                                                    ).size.width *
+                                                    0.9,
+                                                decoration: constants
+                                                    .squircleShadow(
+                                                      border: Border.all(
+                                                        color: constants.grey,
+                                                        width: 0.2,
+                                                      ),
+
+                                                      color:
+                                                          constants.background,
+                                                    ),
+                                                child: Column(
+                                                  children: [
+                                                    Container(
+                                                      child: Padding(
+                                                        padding:
+                                                            EdgeInsets.fromLTRB(
+                                                              20,
+                                                              10,
+                                                              20,
+                                                              10,
                                                             ),
-                                                            borderRadius:
-                                                                SmoothBorderRadius(
-                                                                  cornerRadius:
-                                                                      20,
-                                                                  cornerSmoothing:
-                                                                      0.6,
-                                                                ),
-                                                            color: constants
-                                                                .background,
-                                                          ),
-                                                      child: Column(
-                                                        children: [
-                                                          Container(
-                                                            child: Padding(
-                                                              padding:
-                                                                  EdgeInsets.fromLTRB(
-                                                                    20,
-                                                                    10,
-                                                                    20,
-                                                                    10,
-                                                                  ),
-                                                              child: Text(
-                                                                viewModel
-                                                                    .blockDateLabel(
-                                                                      block.key,
-                                                                    ),
-                                                                style: TextStyle(
-                                                                  color: constants
-                                                                      .darkGrey,
-                                                                  fontSize:
-                                                                      constants
-                                                                          .fsLabel,
-                                                                  fontWeight:
-                                                                      constants
-                                                                          .fwSemiBold,
-                                                                ),
+                                                        child: Text(
+                                                          viewModel
+                                                              .blockDateLabel(
+                                                                block.key,
                                                               ),
-                                                            ),
+                                                          style: TextStyle(
+                                                            color: constants
+                                                                .darkGrey,
+                                                            fontSize: constants
+                                                                .fsLabel,
+                                                            fontWeight:
+                                                                constants
+                                                                    .fwSemiBold,
                                                           ),
-                                                          ListView.builder(
-                                                            physics:
-                                                                const NeverScrollableScrollPhysics(),
-                                                            shrinkWrap: true,
-                                                            padding:
-                                                                EdgeInsets.zero,
-                                                            itemCount: block
-                                                                .value!
-                                                                .length,
-                                                            itemBuilder: (context, index) {
-                                                              final slot = block
-                                                                  .value![index];
-                                                              final isFirst =
-                                                                  index == 0;
-                                                              final isLast =
-                                                                  index ==
-                                                                  block
-                                                                          .value!
-                                                                          .length -
-                                                                      1;
-                                                              return SlotWidget(
-                                                                userEmail:
-                                                                    widget
-                                                                        .email,
-                                                                slot: slot,
-                                                                token: widget
-                                                                    .token,
-                                                                roomId: viewModel
-                                                                    .selectedRoomId!,
-                                                                context:
-                                                                    context,
-                                                                loadData: () {
-                                                                  viewModel
-                                                                      .loadRoom(
-                                                                        widget
-                                                                            .token,
-                                                                      );
-                                                                },
-                                                                isFirst:
-                                                                    isFirst,
-                                                                isLast: isLast,
-                                                                date: viewModel
-                                                                    .blockDateLabel(
-                                                                      block.key,
-                                                                    ),
-                                                              );
-                                                            },
-                                                          ),
-                                                        ],
+                                                        ),
                                                       ),
                                                     ),
+                                                    ListView.builder(
+                                                      physics:
+                                                          const NeverScrollableScrollPhysics(),
+                                                      shrinkWrap: true,
+                                                      padding: EdgeInsets.zero,
+                                                      itemCount:
+                                                          block.value!.length,
+                                                      itemBuilder: (context, index) {
+                                                        final slot =
+                                                            block.value![index];
+                                                        final isFirst =
+                                                            index == 0;
+                                                        final isLast =
+                                                            index ==
+                                                            block
+                                                                    .value!
+                                                                    .length -
+                                                                1;
+                                                        return SlotWidget(
+                                                          userEmail:
+                                                              widget.email,
+                                                          slot: slot,
+                                                          token: widget.token,
+                                                          roomId: viewModel
+                                                              .selectedRoomId!,
+                                                          context: context,
+                                                          loadData: () {
+                                                            viewModel.loadRoom(
+                                                              widget.token,
+                                                            );
+                                                          },
+                                                          isFirst: isFirst,
+                                                          isLast: isLast,
+                                                          date: viewModel
+                                                              .blockDateLabel(
+                                                                block.key,
+                                                              ),
+                                                        );
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
                                             ],
                                           ),
                                         );

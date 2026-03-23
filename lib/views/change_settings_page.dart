@@ -64,7 +64,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                           // Profile Card
                           Container(
                             width: double.infinity,
-                            decoration: constants.figmaLightShadowWith(
+                            decoration: constants.squircleShadow(
                               color: constants.background,
                               borderRadius: SmoothBorderRadius(
                                 cornerRadius: 12,

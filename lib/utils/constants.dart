@@ -23,7 +23,7 @@ class Constants {
   double oneItemHeight = 80;
   bool testing = false;
   String url = '';
-  ShapeDecoration figmaLightShadowWith({
+  ShapeDecoration squircleShadow({
     Color? color,
     SmoothBorderRadius? borderRadius,
     BoxBorder? border,
@@ -45,7 +45,7 @@ class Constants {
         borderRadius:
             borderRadius ??
             SmoothBorderRadius(
-              cornerRadius: 0,
+              cornerRadius: 16,
               cornerSmoothing: cornerSmoothing,
             ),
         side: border is Border
