@@ -95,12 +95,9 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                       clipBehavior: Clip.none,
                       decoration: constants.squircleShadow(
                         color: constants.background,
-                        borderRadius: SmoothBorderRadius(
-                          cornerRadius: 12,
-                          cornerSmoothing: 0.6,
-                        ),
                       ),
-                      child: TextField(scrollPadding: EdgeInsets.only(bottom: 1000),
+                      child: TextField(
+                        scrollPadding: EdgeInsets.only(bottom: 1000),
                         controller: otpcontroller,
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(

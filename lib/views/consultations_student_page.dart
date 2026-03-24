@@ -260,8 +260,6 @@ class _ConsultationsUserPageState
                                           blockB.date,
                                         );
                                       });
-
-                                     
                                       return sortedEntries.map((block) {
                                         return Center(
                                           child: Column(

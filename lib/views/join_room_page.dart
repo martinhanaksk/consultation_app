@@ -171,48 +171,83 @@ class _JoinRoomState extends State<JoinRoom> {
                                     return Align(
                                       alignment: Alignment.topLeft,
                                       child: Material(
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(20.0),
-                                        ),
-                                        elevation: 4.0,
+                                        color: Colors.transparent,
                                         child: Container(
+                                          margin: const EdgeInsets.only(top: 6),
                                           decoration: BoxDecoration(
                                             color: constants.background,
+                                            borderRadius: BorderRadius.circular(
+                                              16,
+                                            ),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: constants.darkGrey
+                                                    .withValues(alpha: 0.12),
+                                                blurRadius: 12,
+                                                spreadRadius: 2,
+                                                offset: const Offset(0, 4),
+                                              ),
+                                            ],
                                           ),
-                                          constraints: BoxConstraints(
+                                          constraints: const BoxConstraints(
                                             maxHeight: 200,
                                           ),
-                                          child: ListView.builder(
-                                            padding: EdgeInsets.all(8.0),
-                                            itemCount: options.length,
-                                            itemBuilder:
-                                                (
-                                                  BuildContext context,
-                                                  int index,
-                                                ) {
-                                                  final RoomModel option =
-                                                      options.elementAt(index);
-                                                  return GestureDetector(
-                                                    onTap: () {
-                                                      onSelected(option);
-                                                    },
-                                                    child:
-                                                        viewModel
-                                                            .isInJoinedRooms(
-                                                              option,
-                                                            )
-                                                        ? Container()
-                                                        : ListTile(
-                                                            title: Text(
-                                                              option.title,
-                                                              style: TextStyle(
-                                                                color: constants
-                                                                    .darkGrey,
-                                                              ),
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.circular(
+                                              16,
+                                            ),
+                                            child: ListView.builder(
+                                              padding: EdgeInsets.zero,
+                                              shrinkWrap: true,
+                                              itemCount: options.length,
+                                              itemBuilder:
+                                                  (
+                                                    BuildContext context,
+                                                    int index,
+                                                  ) {
+                                                    final RoomModel option =
+                                                        options.elementAt(
+                                                          index,
+                                                        );
+                                                    final bool isSelected =
+                                                        option.id.toString() ==
+                                                        selectedRoomId;
+
+                                                    if (viewModel
+                                                        .isInJoinedRooms(
+                                                          option,
+                                                        )) {
+                                                      return const SizedBox.shrink();
+                                                    }
+
+                                                    return InkWell(
+                                                      onTap: () =>
+                                                          onSelected(option),
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets.symmetric(
+                                                              horizontal: 20,
+                                                              vertical: 4,
+                                                            ),
+                                                        child: ListTile(
+                                                          contentPadding:
+                                                              EdgeInsets.zero,
+                                                          title: Text(
+                                                            option.title,
+                                                            style: TextStyle(
+                                                              fontSize: 15,
+                                                              fontWeight:
+                                                                  constants
+                                                                      .fwRegular,
+                                                              color: constants
+                                                                  .darkGrey,
                                                             ),
                                                           ),
-                                                  );
-                                                },
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                            ),
                                           ),
                                         ),
                                       ),

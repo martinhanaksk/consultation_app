@@ -353,7 +353,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                                   child: Column(
                                     children: [
                                       SvgPicture.asset(
-                                        'assets/resources/screen_grey.svg',
+                                        'assets/resources/screen.svg',
                                         colorFilter: ColorFilter.mode(
                                           constants.grey,
                                           BlendMode.srcIn,
@@ -565,10 +565,11 @@ class _SlotWidgetState extends State<SlotWidget> {
                                       const SizedBox(width: 8),
                                       widget.slot.isOnline == 1
                                           ? SvgPicture.asset(
-                                              'assets/resources/screen.svg',colorFilter: ColorFilter.mode(
-                                          constants.background,
-                                          BlendMode.srcIn,
-                                        ),
+                                              'assets/resources/screen.svg',
+                                              colorFilter: ColorFilter.mode(
+                                                constants.background,
+                                                BlendMode.srcIn,
+                                              ),
                                             )
                                           : SvgPicture.asset(
                                               'assets/resources/location.svg',
@@ -681,10 +682,11 @@ class _SlotWidgetState extends State<SlotWidget> {
                                       const SizedBox(width: 8),
                                       widget.slot.isOnline == 1
                                           ? SvgPicture.asset(
-                                              'assets/resources/screen.svg',colorFilter: ColorFilter.mode(
-                                          constants.background,
-                                          BlendMode.srcIn,
-                                        ),
+                                              'assets/resources/screen.svg',
+                                              colorFilter: ColorFilter.mode(
+                                                constants.background,
+                                                BlendMode.srcIn,
+                                              ),
                                             )
                                           : SvgPicture.asset(
                                               'assets/resources/location.svg',
@@ -720,15 +722,16 @@ class _SlotWidgetState extends State<SlotWidget> {
                                               ? SvgPicture.asset(
                                                   'assets/resources/notifications_bell_full.svg',
                                                   colorFilter: ColorFilter.mode(
-                                          constants.background,
-                                          BlendMode.srcIn,
-                                        ),
+                                                    constants.background,
+                                                    BlendMode.srcIn,
+                                                  ),
                                                 )
                                               : SvgPicture.asset(
-                                                  'assets/resources/notifications_bell_empty.svg',colorFilter: ColorFilter.mode(
-                                          constants.background,
-                                          BlendMode.srcIn,
-                                        ),
+                                                  'assets/resources/notifications_bell_empty.svg',
+                                                  colorFilter: ColorFilter.mode(
+                                                    constants.background,
+                                                    BlendMode.srcIn,
+                                                  ),
                                                 ),
                                         ),
                                       ),
