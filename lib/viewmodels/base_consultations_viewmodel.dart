@@ -82,7 +82,10 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
           final slots = await api.getSlotsForBlock(block.id, token);
           if (slots != null) {
             slots.sort((a, b) => a.startTime.compareTo(b.startTime));
-          } else return;
+            slotsInBlocks[block.id] = slots;
+          } else {
+            slotsInBlocks[block.id] = [];
+          }
         }());
       }
       await Future.wait(futures);

@@ -1,7 +1,8 @@
 import 'package:consultation_app/viewmodels/create_room_viewmodel.dart';
 import 'package:consultation_app/views/consultations_student_page.dart';
 import 'package:consultation_app/views/consultations_teacher_page.dart';
-import 'package:consultation_app/views/create_room_widget.dart';
+import 'package:consultation_app/views/create_block_page.dart';
+import 'package:consultation_app/views/create_room_page.dart';
 import 'package:consultation_app/views/display_list_of_emails_page.dart';
 import 'package:consultation_app/views/email_input_page.dart';
 import 'package:consultation_app/views/join_room_page.dart';
@@ -17,6 +18,7 @@ class AppRouter {
   static const String detail = '/detail';
   static const String joinRoom = '/joinroom';
   static const String createRoom = '/createRoom';
+  static const String createBlock = '/createBlock';
   static const String provideFeedback = '/provideFeedback';
   static const String changeSettings = '/changeSettings';
   static const String consultationsStudentPage = '/consultationsUserPage';
@@ -62,6 +64,11 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => JoinRoom(token: token));
       case createRoom:
         return MaterialPageRoute(builder: (_) => CreateRoom());
+      case createBlock:
+        final args = settings.arguments as Map<String, dynamic>;
+        final token = args['token'] as String;
+        final roomId = args['roomId'] as String;
+        return MaterialPageRoute(builder: (_) => CreateBlock(token:token,roomId:roomId));
       case displayListOfEmails:
         final args = settings.arguments as Map<String, dynamic>;
         final viewModel = args['viewModel'] as CreateRoomViewmodel;

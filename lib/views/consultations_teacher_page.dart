@@ -156,18 +156,17 @@ class _ConsultationsUserPageState
                                             vertical: 4,
                                           ),
                                           child: Text(
-                                              value.title,
-                                              style: TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: isSelected
-                                                    ? constants.fwSemiBold
-                                                    : constants.fwRegular,
-                                                color: isSelected
-                                                    ? constants.primary
-                                                    : constants.darkGrey,
-                                              ),
+                                            value.title,
+                                            style: TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: isSelected
+                                                  ? constants.fwSemiBold
+                                                  : constants.fwRegular,
+                                              color: isSelected
+                                                  ? constants.primary
+                                                  : constants.darkGrey,
                                             ),
-                                          
+                                          ),
                                         );
                                       }).toList(),
                                 child: Container(
@@ -236,37 +235,51 @@ class _ConsultationsUserPageState
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceAround,
                                     children: [
-                                      GestureDetector(
-                                        child: Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: constants.squircleShadow(
-                                            color: constants.grey,
-                                          ),
-                                          child: Icon(
-                                            Icons.add,
-                                            size: 25,
-                                            color: constants.darkGrey,
-                                          ),
-                                        ),
-                                        onTap: () {},
-                                      ),
+                                      viewModel.adminView == 1
+                                          ? GestureDetector(
+                                              child: Container(
+                                                padding: EdgeInsets.all(10),
+                                                decoration: constants
+                                                    .squircleShadow(
+                                                      color: constants.grey,
+                                                    ),
+                                                child: Icon(
+                                                  Icons.add,
+                                                  size: 25,
+                                                  color: constants.darkGrey,
+                                                ),
+                                              ),
+                                              onTap: () {
+                                                nav.toCreateBlock(
+                                                  token: widget.token,
+                                                  roomId: viewModel
+                                                      .safeSelectedRoomId!,
+                                                );
+                                              },
+                                            )
+                                          : SizedBox.shrink(),
 
-                                      GestureDetector(
-                                        child: Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: constants.squircleShadow(
-                                            color: constants.grey,
-                                          ),
-                                          child: Icon(
-                                            Icons.delete_outline_rounded,
-                                            size: 25,
-                                            color: constants.darkGrey,
-                                          ),
-                                        ),
-                                        onTap: () {
-                                          viewModel.deleteRoom(widget.token);
-                                        },
-                                      ),
+                                      viewModel.adminView == 1
+                                          ? GestureDetector(
+                                              child: Container(
+                                                padding: EdgeInsets.all(10),
+                                                decoration: constants
+                                                    .squircleShadow(
+                                                      color: constants.grey,
+                                                    ),
+                                                child: Icon(
+                                                  Icons.delete_outline_rounded,
+                                                  size: 25,
+                                                  color: constants.darkGrey,
+                                                ),
+                                              ),
+                                              onTap: () {
+                                                viewModel.deleteRoom(
+                                                  widget.token,
+                                                );
+                                              },
+                                            )
+                                          : SizedBox.shrink(),
                                       Container(
                                         padding: EdgeInsets.all(10),
                                         decoration: constants.squircleShadow(
@@ -401,90 +414,108 @@ class _ConsultationsUserPageState
                                               );
                                             }).toList();
                                           }
+                                          print(sortedEntries.toString());
 
                                           return sortedEntries.map((block) {
                                             return Center(
                                               child: Column(
                                                 children: [
                                                   const SizedBox(height: 20),
-                                                  Text(
-                                                    viewModel.blockDateLabel(
-                                                      block.key,
-                                                    ),
-                                                    style: TextStyle(
-                                                      color: constants.darkGrey,
-                                                      fontSize:
-                                                          constants.fsLabel,
-                                                      fontWeight:
-                                                          constants.fwRegular,
-                                                    ),
-                                                  ),
-                                                  const SizedBox(height: 20),
-                                                  (block.value == null ||
-                                                          block.value!.isEmpty)
-                                                      ? Text("No slots found")
-                                                      : Container(
-                                                          clipBehavior:
-                                                              Clip.hardEdge,
-                                                          width:
-                                                              MediaQuery.of(
-                                                                context,
-                                                              ).size.width *
-                                                              0.9,
-                                                          decoration: constants
-                                                              .squircleShadow(
-                                                                color: constants
-                                                                    .background,
-                                                              ),
-                                                          child: ListView.builder(
-                                                            physics:
-                                                                const NeverScrollableScrollPhysics(),
-                                                            shrinkWrap: true,
+                                                  Container(
+                                                    clipBehavior: Clip.hardEdge,
+                                                    width:
+                                                        MediaQuery.of(
+                                                          context,
+                                                        ).size.width *
+                                                        0.9,
+                                                    decoration: constants
+                                                        .squircleShadow(
+                                                          border: Border.all(
+                                                            color:
+                                                                constants.grey,
+                                                            width: 0.2,
+                                                          ),
+
+                                                          color: constants
+                                                              .background,
+                                                        ),
+                                                    child: Column(
+                                                      children: [
+                                                        Container(
+                                                          child: Padding(
                                                             padding:
-                                                                EdgeInsets.zero,
-                                                            itemCount: block
-                                                                .value!
-                                                                .length,
-                                                            itemBuilder: (context, index) {
-                                                              final slot = block
-                                                                  .value![index];
-                                                              final isFirst =
-                                                                  index == 0;
-                                                              final isLast =
-                                                                  index ==
-                                                                  block
-                                                                          .value!
-                                                                          .length -
-                                                                      1;
-                                                              return SlotWidget(
-                                                                userEmail:
-                                                                    widget
-                                                                        .email,
-                                                                slot: slot,
-                                                                token: widget
-                                                                    .token,
-                                                                roomId: viewModel
-                                                                    .selectedRoomId!,
-                                                                context:
-                                                                    context,
-                                                                loadData: () {
-                                                                  viewModel
-                                                                      .loadRoom(
-                                                                        widget
-                                                                            .token,
-                                                                      );
-                                                                },
-                                                                isFirst:
-                                                                    isFirst,
-                                                                isLast: isLast,
-                                                                date: viewModel
-                                                                    .blockDateLabel(
-                                                                      block.key,
-                                                                    ),
-                                                              );
-                                                            },
+                                                                EdgeInsets.fromLTRB(
+                                                                  20,
+                                                                  10,
+                                                                  20,
+                                                                  10,
+                                                                ),
+                                                            child: Text(
+                                                              viewModel
+                                                                  .blockDateLabel(
+                                                                    block.key,
+                                                                  ),
+                                                              style: TextStyle(
+                                                                color: constants
+                                                                    .darkGrey,
+                                                                fontSize:
+                                                                    constants
+                                                                        .fsLabel,
+                                                                fontWeight:
+                                                                    constants
+                                                                        .fwSemiBold,
+                                                              ),
+                                                            ),
                                                           ),
                                                         ),
+                                                        ListView.builder(
+                                                          physics:
+                                                              const NeverScrollableScrollPhysics(),
+                                                          shrinkWrap: true,
+                                                          padding:
+                                                              EdgeInsets.zero,
+                                                          itemCount: block
+                                                              .value!
+                                                              .length,
+                                                          itemBuilder: (context, index) {
+                                                            final slot = block
+                                                                .value![index];
+                                                            final isFirst =
+                                                                index == 0;
+                                                            final isLast =
+                                                                index ==
+                                                                block
+                                                                        .value!
+                                                                        .length -
+                                                                    1;
+                                                            return SlotWidget(
+                                                              userEmail:
+                                                                  widget.email,
+                                                              slot: slot,
+                                                              token:
+                                                                  widget.token,
+                                                              roomId: viewModel
+                                                                  .selectedRoomId!,
+                                                              context: context,
+                                                              loadData: () {
+                                                                viewModel
+                                                                    .loadRoom(
+                                                                      widget
+                                                                          .token,
+                                                                    );
+                                                              },
+                                                              isFirst: isFirst,
+                                                              isLast: isLast,
+                                                              date: viewModel
+                                                                  .blockDateLabel(
+                                                                    block.key,
+                                                                  ),
+                                                            );
+                                                          },
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
                                                 ],
                                               ),
                                             );

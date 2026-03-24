@@ -69,6 +69,12 @@ class NavigationService {
       arguments: <String, dynamic>{'token': token},
     );
   }
+   void toCreateBlock({required String token,required String roomId}) {
+    _navigator()?.pushNamed(
+      AppRouter.createBlock,
+      arguments: <String, dynamic>{'token': token,'roomId':roomId},
+    );
+  }
 void toDisplayListOfEmails({required CreateRoomViewmodel viewModel}) {
     _navigator()?.pushNamed(AppRouter.displayListOfEmails, arguments: <String, dynamic>{'viewModel': viewModel},);
   }
