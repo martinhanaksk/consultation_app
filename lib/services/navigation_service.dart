@@ -69,15 +69,46 @@ class NavigationService {
       arguments: <String, dynamic>{'token': token},
     );
   }
-   void toCreateBlock({required String token,required String roomId}) {
+
+  void toCreateBlock({
+    required String token,
+    required String roomId,
+    required VoidCallback? onSuccess,
+  }) {
     _navigator()?.pushNamed(
       AppRouter.createBlock,
-      arguments: <String, dynamic>{'token': token,'roomId':roomId},
+      arguments: <String, dynamic>{
+        'token': token,
+        'roomId': roomId,
+        'onSuccess': onSuccess,
+      },
     );
   }
-void toDisplayListOfEmails({required CreateRoomViewmodel viewModel}) {
-    _navigator()?.pushNamed(AppRouter.displayListOfEmails, arguments: <String, dynamic>{'viewModel': viewModel},);
+
+  void toEditBlock({
+    required String token,
+    required String roomId,
+    required String blockId,
+    required VoidCallback? onSuccess,
+  }) {
+    _navigator()?.pushNamed(
+      AppRouter.editBlock,
+      arguments: <String, dynamic>{
+        'token': token,
+        'roomId': roomId,
+        'blockId': blockId,
+        'onSuccess': onSuccess,
+      },
+    );
   }
+
+  void toDisplayListOfEmails({required CreateRoomViewmodel viewModel}) {
+    _navigator()?.pushNamed(
+      AppRouter.displayListOfEmails,
+      arguments: <String, dynamic>{'viewModel': viewModel},
+    );
+  }
+
   void toChangeSettings() {
     _navigator()?.pushNamed(AppRouter.changeSettings);
   }

@@ -346,7 +346,7 @@ class ApiService {
     }
   }
 
-  Future<bool> createBlock(String token, int id, String date) async {
+  Future<String> createBlock(String token, int id, String date) async {
     final Uri url = Uri.parse('${constants.url}/block/create');
 
     final response = await http.post(
@@ -358,9 +358,10 @@ class ApiService {
       body: jsonEncode({"room_id": id, "date": date}),
     );
     if (response.statusCode != 200) {
-      return false;
+      notify.showToast("Failed to create block");
+      return "";
     } else {
-      return true;
+      return response.body;
     }
   }
 

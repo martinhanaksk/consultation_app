@@ -4,9 +4,9 @@ import 'package:consultation_app/views/custom_widgets/animated_toggle_widget.dar
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slot_widget.dart';
-import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -149,6 +149,7 @@ class _ConsultationsUserPageState
                                         final isSelected =
                                             value.id.toString() ==
                                             viewModel.safeSelectedRoomId;
+
                                         return PopupMenuItem<String>(
                                           value: value.id.toString(),
                                           padding: const EdgeInsets.symmetric(
@@ -181,16 +182,7 @@ class _ConsultationsUserPageState
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Text(
-                                        viewModel.rooms
-                                                ?.cast<RoomModel?>()
-                                                .firstWhere(
-                                                  (r) =>
-                                                      r!.id.toString() ==
-                                                      viewModel
-                                                          .safeSelectedRoomId,
-                                                  orElse: () => null,
-                                                )
-                                                ?.title ??
+                                        viewModel.getRoomNameById() ??
                                             "Select a Room",
                                         style: TextStyle(
                                           fontSize: 15,
@@ -254,6 +246,8 @@ class _ConsultationsUserPageState
                                                   token: widget.token,
                                                   roomId: viewModel
                                                       .safeSelectedRoomId!,
+                                                  onSuccess: () => viewModel
+                                                      .loadRoom(widget.token),
                                                 );
                                               },
                                             )
@@ -273,9 +267,81 @@ class _ConsultationsUserPageState
                                                   color: constants.darkGrey,
                                                 ),
                                               ),
-                                              onTap: () {
-                                                viewModel.deleteRoom(
-                                                  widget.token,
+                                              onTap: () async {
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (BuildContext context) {
+                                                    return AlertDialog(
+                                                      title: RichText(
+                                                        text: TextSpan(
+                                                          style:
+                                                              const TextStyle(
+                                                                fontSize: 14.0,
+                                                                color: Colors
+                                                                    .black,
+                                                              ),
+                                                          children: <TextSpan>[
+                                                            TextSpan(
+                                                              text: 'Delete ',
+                                                              style: TextStyle(
+                                                                fontWeight:
+                                                                    constants
+                                                                        .fwRegular,
+                                                                fontSize:
+                                                                    constants
+                                                                        .fsBody,
+                                                              ),
+                                                            ),
+                                                            TextSpan(
+                                                              text:
+                                                                  '${viewModel.getRoomNameById()}?',
+                                                              style: TextStyle(
+                                                                fontWeight:
+                                                                    constants
+                                                                        .fwSemiBold,
+                                                                fontSize:
+                                                                    constants
+                                                                        .fsBody,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      actions: [
+                                                        TextButton(
+                                                          onPressed: () {
+                                                            nav.pop();
+                                                          },
+                                                          child: Text(
+                                                            "Cancel",
+                                                            style: TextStyle(
+                                                              color: constants
+                                                                  .primary,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        ElevatedButton(
+                                                          onPressed: () async {
+                                                            await viewModel
+                                                                .deleteRoom(
+                                                                  widget.token,
+                                                                );
+                                                            await viewModel
+                                                                .loadRoom(
+                                                                  widget.token,
+                                                                );
+                                                          },
+                                                          child: Text(
+                                                            "Delete",
+                                                            style: TextStyle(
+                                                              color: constants
+                                                                  .primary,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    );
+                                                  },
                                                 );
                                               },
                                             )
@@ -366,21 +432,59 @@ class _ConsultationsUserPageState
                                                                   20,
                                                                   10,
                                                                 ),
-                                                            child: Text(
-                                                              viewModel
-                                                                  .blockDateLabel(
-                                                                    block.key,
+                                                            child: Stack(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              children: [
+                                                                Text(
+                                                                  viewModel
+                                                                      .blockDateLabel(
+                                                                        block
+                                                                            .key,
+                                                                      ),
+                                                                  style: TextStyle(
+                                                                    color: constants
+                                                                        .darkGrey,
+                                                                    fontSize:
+                                                                        constants
+                                                                            .fsLabel,
+                                                                    fontWeight:
+                                                                        constants
+                                                                            .fwSemiBold,
                                                                   ),
-                                                              style: TextStyle(
-                                                                color: constants
-                                                                    .darkGrey,
-                                                                fontSize:
-                                                                    constants
-                                                                        .fsLabel,
-                                                                fontWeight:
-                                                                    constants
-                                                                        .fwSemiBold,
-                                                              ),
+                                                                ),
+                                                                Align(
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .centerRight,
+                                                                  child: GestureDetector(
+                                                                    onTap: () {
+                                                                      nav.toEditBlock(
+                                                                        token: widget
+                                                                            .token,
+                                                                        roomId:
+                                                                            viewModel.safeSelectedRoomId!,blockId: block.key.toString(),
+                                                                        onSuccess: () => viewModel.loadRoom(
+                                                                          widget
+                                                                              .token,
+                                                                        ),
+                                                                      );
+                                                                    },
+                                                                    child: SvgPicture.asset(
+                                                                      'assets/resources/edit.svg',
+                                                                      height:
+                                                                          24,
+                                                                      colorFilter: ColorFilter.mode(
+                                                                        constants
+                                                                            .darkGrey,
+                                                                        BlendMode
+                                                                            .srcIn,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ],
                                                             ),
                                                           ),
                                                         ),

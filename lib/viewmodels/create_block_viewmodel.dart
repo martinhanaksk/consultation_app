@@ -1,9 +1,15 @@
+import 'dart:convert';
+
+import 'package:consultation_app/setup.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class CreateBlockViewmodel extends ChangeNotifier {
   // --- Date Picker ---
+
+  bool _isChecked = false;
+  bool get isChecked => _isChecked;
   String dateCount = '';
   String range = '';
   DateRangePickerSelectionMode _selectionMode =
@@ -13,6 +19,18 @@ class CreateBlockViewmodel extends ChangeNotifier {
   dynamic get selectedDates => _selectedDates;
   static final DateFormat _fmt = DateFormat('MMM d');
   static final DateFormat _fmtYear = DateFormat('MMM d, y');
+  //Slot number
+  final TextEditingController slotNumberController = TextEditingController();
+  // --- Note ---
+  final TextEditingController noteController = TextEditingController();
+  void toggleisOnline(bool? value) {
+    _isChecked = value ?? false;
+    notifyListeners();
+  }
+
+  CreateBlockViewmodel() {
+    slotNumberController.addListener(updateEndTime);
+  }
   String _formatDate(DateTime d) {
     final now = DateTime.now();
     return d.year == now.year ? _fmt.format(d) : _fmtYear.format(d);
@@ -98,26 +116,127 @@ class CreateBlockViewmodel extends ChangeNotifier {
   Duration? get duration => _duration;
   void setStartTime(Duration value) {
     _startTime = value;
+    updateEndTime();
     notifyListeners();
   }
 
   void setEndTime(Duration value) {
-    _endTime = value;
+    if (value.inHours > 24) {
+      _endTime = null;
+    } else {
+      _endTime = value;
+    }
+
     notifyListeners();
   }
 
   void setDuration(Duration value) {
     _duration = value;
+    updateEndTime();
     notifyListeners();
   }
 
-  // --- Note ---
-  final TextEditingController noteController = TextEditingController();
+  String getPrintableTimeFormat(TimePickerAction action) {
+    String result = "";
+    final temp = switch (action) {
+      TimePickerAction.startTime => startTime ?? Duration(hours: 0),
+      TimePickerAction.endTime => endTime ?? Duration(hours: 0),
+      TimePickerAction.duration => duration ?? Duration(hours: 0),
+    };
+    result = _formatTime(temp);
+    return result;
+  }
+
+  void updateEndTime() {
+    if (_startTime == null ||
+        _duration == null ||
+        slotNumberController.text.trim().isEmpty) {
+      return;
+    }
+
+    final slots = int.tryParse(slotNumberController.text.trim());
+    if (slots == null || slots <= 0) return;
+
+    final resultEndTime = Duration(
+      minutes: _startTime!.inMinutes + slots * _duration!.inMinutes,
+    );
+    setEndTime(resultEndTime);
+  }
+
+  String _formatTime(Duration d) {
+    final hours = d.inHours;
+    final minutes = d.inMinutes % 60;
+    return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
+  }
 
   @override
   void dispose() {
     noteController.dispose();
+    slotNumberController.dispose();
     super.dispose();
+  }
+
+  String? validateCreate() {
+    if (getSelectedDatesIso().isEmpty) return 'Please select at least one date';
+    if (_startTime == null) return 'Please set a start time';
+    if (_duration == null) return 'Please set a duration';
+
+    final slots = int.tryParse(slotNumberController.text.trim());
+    if (slots == null || slots <= 0) {
+      return 'Please enter a valid number of slots';
+    }
+
+    if (_endTime == null) return 'End time is invalid (exceeds 24h)';
+
+    return null; // all good
+  }
+
+  String _formatTimeWithSeconds(Duration d) {
+    final hours = d.inHours.toString().padLeft(2, '0');
+    final minutes = (d.inMinutes % 60).toString().padLeft(2, '0');
+    const seconds = '00';
+    return '$hours:$minutes:$seconds';
+  }
+
+  void createBlock(String token, String roomId, VoidCallback? onSuccess) async {
+    final error = validateCreate();
+    if (error != null) {
+      notify.showToast(error);
+      return;
+    }
+
+    List<String> dates = getSelectedDatesIso();
+    final int slotCount = int.parse(slotNumberController.text.trim());
+    final String note = noteController.text.trim();
+    final bool isOnline = isChecked;
+    for (int i = 0; i < dates.length; i++) {
+      String response = await api.createBlock(
+        token,
+        int.parse(roomId),
+        dates[i],
+      );
+      final int blockId = jsonDecode(response)['id'];
+      final List<Map<String, dynamic>> slots = [];
+      for (int j = 0; j < slotCount; j++) {
+        final Duration slotStart = _startTime! + (_duration! * j);
+        final String startTimeStr = _formatTimeWithSeconds(slotStart);
+        bool success = await api.createSlot(
+          token,
+          blockId,
+          startTimeStr,
+          _duration!.inMinutes,
+          isOnline,
+          note,
+        );
+        if (!success) {
+          notify.showToast('Failed to create slot $j for block $blockId');
+          return;
+        }
+      }
+      notify.showToast('All blocks and slots created successfully');
+      onSuccess?.call(); // ← trigger reload
+      nav.pop();
+    }
   }
 }
 

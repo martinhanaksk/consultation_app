@@ -9,8 +9,8 @@ import 'package:flutter/cupertino.dart';
 
 class CreateBlock extends StatefulWidget {
   final String token;
-  final String roomId;
-  const CreateBlock({super.key, required this.token, required this.roomId});
+  final String roomId;final VoidCallback? onSuccess; 
+  const CreateBlock({super.key, required this.token, required this.roomId,required this.onSuccess});
 
   @override
   State<CreateBlock> createState() => _CreateBlockState();
@@ -22,8 +22,6 @@ class _CreateBlockState extends State<CreateBlock> {
     super.initState();
   }
 
-  final TextEditingController noteController = TextEditingController();
-  final TextEditingController slotNumberController = TextEditingController();
   void _showDatePickerDialog(
     BuildContext context,
     CreateBlockViewmodel viewModel,
@@ -332,7 +330,12 @@ class _CreateBlockState extends State<CreateBlock> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
-                                        'Start Time',
+                                        viewModel.startTime == null
+                                            ? 'Start Time'
+                                            : "Start ${viewModel.getPrintableTimeFormat(
+                                                TimePickerAction.startTime)}",
+                                                 
+                                                     
                                         style: TextStyle(
                                           fontSize: constants.fsBody,
                                         ),
@@ -346,11 +349,8 @@ class _CreateBlockState extends State<CreateBlock> {
                             Flexible(flex: 1, child: SizedBox()),
                             Flexible(
                               flex: 10,
-                              child: GestureDetector(
-                                onTap: () => _showTimePicker(
-                                  TimePickerAction.endTime,
-                                  viewModel,
-                                ),
+                              child: Opacity(
+                                opacity: 0.5,
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
                                     vertical: 12,
@@ -364,7 +364,11 @@ class _CreateBlockState extends State<CreateBlock> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
-                                        'End time',
+                                        viewModel.endTime == null
+                                            ? 'End Time'
+                                            : "End ${viewModel.getPrintableTimeFormat(
+                                                TimePickerAction.endTime)}",
+                                            
                                         style: TextStyle(
                                           fontSize: constants.fsBody,
                                         ),
@@ -401,7 +405,13 @@ class _CreateBlockState extends State<CreateBlock> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
-                                        'Duration',
+                                        viewModel.duration == null
+                                            ? 'Duration'
+                                            : "Duration ${viewModel.getPrintableTimeFormat(
+                                                TimePickerAction.duration)}",
+                                                
+                                                
+                                               
                                         style: TextStyle(
                                           fontSize: constants.fsBody,
                                         ),
@@ -425,7 +435,7 @@ class _CreateBlockState extends State<CreateBlock> {
                                 ),
                                 child: TextField(
                                   scrollPadding: EdgeInsets.only(bottom: 1000),
-                                  controller: slotNumberController,
+                                  controller: viewModel.slotNumberController,
                                   keyboardType: TextInputType.number,
                                   decoration: InputDecoration(
                                     border: OutlineInputBorder(
@@ -448,22 +458,48 @@ class _CreateBlockState extends State<CreateBlock> {
                           ),
                           child: TextField(
                             scrollPadding: EdgeInsets.only(bottom: 1000),
-                            controller: noteController,
+                            controller: viewModel.noteController,
                             decoration: InputDecoration(
                               border: OutlineInputBorder(
                                 borderSide: BorderSide.none,
                               ),
-
                               hintText: 'Note',
                             ),
                           ),
                         ),
                         SizedBox(height: 20),
+                        Row(
+                              children: [
+                                IntrinsicWidth(
+                                  child: Container(
+                                    width: 24,
+                                    height: 24,
+                                    clipBehavior: Clip.none,
+                                    decoration: constants.squircleShadow(
+                                      color: constants.background,
+                                      
+                                    ),
+                                    child: Checkbox(
+                                      value: viewModel.isChecked,
+                                      onChanged: viewModel.toggleisOnline,
+                                      side: BorderSide.none,
+                                      checkColor: constants.darkGrey,
+                                      fillColor: WidgetStateProperty.all(
+                                        constants.background,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 8),
+                                const Text('In-Person'),
+                              ],
+                            ),
+                        SizedBox(height: 20,),
                         SizedBox(
                           width: double.infinity,
                           height: 48,
                           child: ElevatedButton(
-                            onPressed: () => {notify.showToast("Created")},
+                            onPressed: () => {viewModel.createBlock(widget.token,widget.roomId,widget.onSuccess)},
                             style: ElevatedButton.styleFrom(
                               backgroundColor: constants.primary,
                               disabledBackgroundColor: constants.primary,

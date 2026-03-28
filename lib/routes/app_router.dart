@@ -4,6 +4,7 @@ import 'package:consultation_app/views/consultations_teacher_page.dart';
 import 'package:consultation_app/views/create_block_page.dart';
 import 'package:consultation_app/views/create_room_page.dart';
 import 'package:consultation_app/views/display_list_of_emails_page.dart';
+import 'package:consultation_app/views/edit_block_page.dart';
 import 'package:consultation_app/views/email_input_page.dart';
 import 'package:consultation_app/views/join_room_page.dart';
 import 'package:consultation_app/views/change_settings_page.dart';
@@ -19,6 +20,7 @@ class AppRouter {
   static const String joinRoom = '/joinroom';
   static const String createRoom = '/createRoom';
   static const String createBlock = '/createBlock';
+  static const String editBlock = '/editBlock';
   static const String provideFeedback = '/provideFeedback';
   static const String changeSettings = '/changeSettings';
   static const String consultationsStudentPage = '/consultationsUserPage';
@@ -68,7 +70,21 @@ class AppRouter {
         final args = settings.arguments as Map<String, dynamic>;
         final token = args['token'] as String;
         final roomId = args['roomId'] as String;
-        return MaterialPageRoute(builder: (_) => CreateBlock(token:token,roomId:roomId));
+        final onSuccess = args['onSuccess'] as VoidCallback?;
+        return MaterialPageRoute(
+          builder: (_) =>
+              CreateBlock(token: token, roomId: roomId, onSuccess: onSuccess),
+        );
+      case editBlock:
+        final args = settings.arguments as Map<String, dynamic>;
+        final token = args['token'] as String;
+        final roomId = args['roomId'] as String;
+        final blockId = args['blockId'] as String;
+        final onSuccess = args['onSuccess'] as VoidCallback?;
+        return MaterialPageRoute(
+          builder: (_) =>
+              EditBlock(token: token, roomId: roomId,blockId: blockId, onSuccess: onSuccess),
+        );
       case displayListOfEmails:
         final args = settings.arguments as Map<String, dynamic>;
         final viewModel = args['viewModel'] as CreateRoomViewmodel;

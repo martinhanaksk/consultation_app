@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:provider/provider.dart';
 import 'package:sticky_headers/sticky_headers.dart';
-import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class ConsultationsStudentPageArgs {

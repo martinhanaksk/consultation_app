@@ -20,46 +20,51 @@ class TeacherConsultationsViewmodel extends BaseConsultationsViewmodel {
       notify.showToast('Error while deleting room.');
     }
   }
-// teacher_consultations_viewmodel.dart
-@override
-Future<void> init(String token, String email) async {
-  if (await prefs.containsItem("adminView") == false) {
-    await setAdminView(0);
-  } else {
-    await setAdminView(int.parse(await prefs.getItem('adminView')));
-  }
 
-  isLoading = true;
-  notifyListeners();
-  if (!await checkConnection()) return;
+  // teacher_consultations_viewmodel.dart
+  @override
+  Future<void> init(String token, String email) async {
+    if (await prefs.containsItem("adminView") == false) {
+      await setAdminView(0);
+    } else {
+      await setAdminView(int.parse(await prefs.getItem('adminView')));
+    }
 
-  helpers.checkIfValidToken(token);
-  isTeacher = await resolveUserRole(token, email);
+    isLoading = true;
+    notifyListeners();
+    if (!await checkConnection()) return;
 
-  final fetchedReserverRooms = await api.getJoinedRooms(token);
-  final fetchedAdminRooms = await api.getMyRoomsTeacher(token);
+    helpers.checkIfValidToken(token);
+    isTeacher = await resolveUserRole(token, email);
 
-  if (fetchedReserverRooms.isEmpty && fetchedAdminRooms.isEmpty) {
-    noRoomsFound = true;
+    final fetchedReserverRooms = await api.getJoinedRooms(token);
+    final fetchedAdminRooms = await api.getMyRoomsTeacher(token);
+
+    if (fetchedReserverRooms.isEmpty && fetchedAdminRooms.isEmpty) {
+      noRoomsFound = true;
+      isLoading = false;
+      notifyListeners();
+      return;
+    }
+
+    reserverSelectedRoomId = fetchedReserverRooms.isNotEmpty
+        ? fetchedReserverRooms[0].id.toString()
+        : null;
+    adminSelectedRoomId = fetchedAdminRooms.isNotEmpty
+        ? fetchedAdminRooms[0].id.toString()
+        : null;
+
+    selectedRoomId = adminView == 1
+        ? adminSelectedRoomId
+        : reserverSelectedRoomId;
+    final firstRoomId =
+        selectedRoomId ?? reserverSelectedRoomId ?? adminSelectedRoomId;
+
+    await refreshRoomData(token, int.parse(firstRoomId!));
     isLoading = false;
     notifyListeners();
-    return;
   }
 
-  reserverSelectedRoomId = fetchedReserverRooms.isNotEmpty
-      ? fetchedReserverRooms[0].id.toString()
-      : null;
-  adminSelectedRoomId = fetchedAdminRooms.isNotEmpty
-      ? fetchedAdminRooms[0].id.toString()
-      : null;
-
-  selectedRoomId = adminView == 1 ? adminSelectedRoomId : reserverSelectedRoomId;
-  final firstRoomId = selectedRoomId ?? reserverSelectedRoomId ?? adminSelectedRoomId;
-
-  await refreshRoomData(token, int.parse(firstRoomId!));
-  isLoading = false;
-  notifyListeners();
-}
   Future<void> addBlock(String token) async {
     try {
       bool b = await api.deleteRoom(token, int.parse(safeSelectedRoomId!));
@@ -69,6 +74,16 @@ Future<void> init(String token, String email) async {
     } catch (e) {
       notify.showToast('Error while deleting room.');
     }
+  }
+
+  String? getRoomNameById() {
+    return rooms
+        ?.cast<RoomModel?>()
+        .firstWhere(
+          (r) => r!.id.toString() == safeSelectedRoomId,
+          orElse: () => null,
+        )
+        ?.title;
   }
 
   void toggleView(String token, int value) async {
