@@ -15,6 +15,7 @@ class SliderMenuViewmodel extends ChangeNotifier {
       throw Exception('Could not launch $_url');
     }
   }
+
   bool get isLoading => _isLoading;
   String get token => _token;
   bool? get isTeacher => _isTeacher;
@@ -33,7 +34,8 @@ class SliderMenuViewmodel extends ChangeNotifier {
       if (!await helpers.handleIsInternetConnection()) {
         notify.showToast('Please connect to internet.');
       } else {
-        bool isTeacherTemp = await getIsTeacher();
+        bool isTeacherTemp = await api.getIsTeacher();
+        notifyListeners();
         _isTeacher = isTeacherTemp;
       }
     } finally {
@@ -42,12 +44,5 @@ class SliderMenuViewmodel extends ChangeNotifier {
     }
   }
 
-  Future<bool> getIsTeacher() async {
-    String? role = await prefs.getItem('role');
-    notifyListeners();
-    if (role == 'teacher') {
-      return true;
-    }
-    return false;
-  }
+  
 }

@@ -1,5 +1,5 @@
 import 'package:consultation_app/viewmodels/create_room_viewmodel.dart';
-import 'package:consultation_app/views/consultations_student_page.dart';
+import 'package:consultation_app/views/consultations_base_page.dart';
 import 'package:consultation_app/views/consultations_teacher_page.dart';
 import 'package:consultation_app/views/create_block_page.dart';
 import 'package:consultation_app/views/create_room_page.dart';
@@ -42,7 +42,7 @@ class AppRouter {
         final token = args['token'] as String;
         final email = args['email'] as String;
         return MaterialPageRoute(
-          builder: (_) => ConsultationsStudentPage(token: token, email: email),
+          builder: (_) => BaseConsultationsPage(token: token, email: email),
         );
       case consultationsTeacherPage:
         final args = settings.arguments as Map<String, dynamic>;

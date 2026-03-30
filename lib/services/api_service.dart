@@ -416,4 +416,12 @@ class ApiService {
       return true;
     }
   }
+
+  Future<bool> getIsTeacher() async {
+    String? role = await prefs.getItem('role');
+    if (role == 'teacher') {
+      return true;
+    }
+    return false;
+  }
 }
