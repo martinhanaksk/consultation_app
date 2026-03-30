@@ -65,15 +65,72 @@ class TeacherConsultationsViewmodel extends BaseConsultationsViewmodel {
     notifyListeners();
   }
 
-  Future<void> addBlock(String token) async {
-    try {
-      bool b = await api.deleteRoom(token, int.parse(safeSelectedRoomId!));
-      if (b) {
-        notify.showToast('Room was successfully deleted.');
+  Future<void> addSlotBeforeBlock(String token, int blockId) async {
+    final slotsForBlock = await api.getSlotsForBlock(blockId, token);
+    if (slotsForBlock != null && slotsForBlock.isNotEmpty) {
+      bool slotCreated = await api.createSlot(
+        token,
+        blockId,
+        calculateMarginTimes(
+          0,
+          slotsForBlock[0].startTime,
+          slotsForBlock[0].duration,
+        ),
+        slotsForBlock[0].duration,
+        slotsForBlock[0].isOnline,
+        slotsForBlock[0].note ?? " ",
+      );
+      if (!slotCreated) {
+        notify.showToast("Could not create new slot.");
       }
-    } catch (e) {
-      notify.showToast('Error while deleting room.');
+    } else {
+      return;
     }
+  }
+
+  Future<void> addSlotAfterBlock(String token, int blockId) async {
+    final slotsForBlock = await api.getSlotsForBlock(blockId, token);
+    if (slotsForBlock != null && slotsForBlock.isNotEmpty) {
+      print(slotsForBlock.length-1);
+      bool slotCreated = await api.createSlot(
+        token,
+        blockId,
+        calculateMarginTimes(
+          1,
+          slotsForBlock[slotsForBlock.length - 1].startTime,
+          slotsForBlock[slotsForBlock.length - 1].duration,
+        ),
+        slotsForBlock[0].duration,
+        slotsForBlock[0].isOnline,
+        slotsForBlock[0].note ?? " ",
+      );
+      if (!slotCreated) {
+        notify.showToast("Could not create new slot.");
+      }
+    } else {
+      return;
+    }
+  }
+
+  String calculateMarginTimes(int isEndTime, String oldTime, int duration) {
+    String result = "";
+    final parts = oldTime.split(':');
+    final originalStart = Duration(
+      hours: int.parse(parts[0]),
+      minutes: int.parse(parts[1]),
+      seconds: int.parse(parts[2]),
+    );
+    Duration newStart;
+    if (isEndTime == 0) {
+      newStart = originalStart - Duration(minutes: duration);
+    } else if (isEndTime == 1) {
+      newStart = originalStart + Duration(minutes: duration);
+    } else {
+      return "";
+    }
+    return '${newStart.inHours.toString().padLeft(2, '0')}:'
+        '${(newStart.inMinutes % 60).toString().padLeft(2, '0')}:'
+        '${(newStart.inSeconds % 60).toString().padLeft(2, '0')}';
   }
 
   String? getRoomNameById() {

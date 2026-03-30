@@ -12,20 +12,25 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 class BaseConsultationsPage extends StatefulWidget {
   final String token;
   final String email;
-
   final Widget? toggle;
   final Widget? addButton;
   final Widget? deleteButton;
-   final BaseConsultationsViewmodel? viewModel;
+  final BaseConsultationsViewmodel? viewModel;
   final Widget Function(int blockId)? editBlockButton;
+  final Widget? Function(int blockId,bool isEmpty)? addSlotBefore;
+  final Widget? Function(int blockId,bool isEmpty)? addSlotAfter;
+
   const BaseConsultationsPage({
     super.key,
     required this.token,
-    required this.email, this.viewModel, 
+    required this.email,
+    this.viewModel,
     this.toggle,
     this.addButton,
     this.deleteButton,
     this.editBlockButton,
+    this.addSlotBefore,
+    this.addSlotAfter,
   });
 
   @override
@@ -34,10 +39,12 @@ class BaseConsultationsPage extends StatefulWidget {
 
 class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
   late final BaseConsultationsViewmodel _viewModel;
+
   @override
   void initState() {
     super.initState();
-   _viewModel = widget.viewModel ?? BaseConsultationsViewmodel(); if (widget.viewModel == null) {
+    _viewModel = widget.viewModel ?? BaseConsultationsViewmodel();
+    if (widget.viewModel == null) {
       _viewModel.init(widget.token, widget.email);
     }
   }
@@ -61,37 +68,10 @@ class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
                       ),
                     )
                   : (viewModel.noRoomsFound || viewModel.selectedRoomId == null)
-                  ? Center(
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(maxWidth: 600),
-                        child: Padding(
-                          padding: const EdgeInsets.all(24.0),
-                          child: Center(
-                            child: Column(
-                              children: [
-                                SizedBox(height: 80),
-                                GestureDetector(
-                                  child: Text(
-                                    "Try joining room to get started.",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: constants.fsTitle,
-                                      color: constants.primary,
-                                    ),
-                                  ),
-                                  onTap: () =>
-                                      nav.toJoinRoom(token: widget.token),
-                                ),
-                                SizedBox(height: 20),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
+                  ? _NoRoomsFound(token: widget.token)
                   : Center(
                       child: ConstrainedBox(
-                        constraints: BoxConstraints(maxWidth: 600),
+                        constraints: const BoxConstraints(maxWidth: 600),
                         child: ScrollConfiguration(
                           behavior: ScrollConfiguration.of(context).copyWith(
                             physics: const BouncingScrollPhysics(
@@ -101,332 +81,21 @@ class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
                           ),
                           child: ListView(
                             children: [
-                              SizedBox(height: 100),
+                              const SizedBox(height: 100),
                               StickyHeader(
-                                header: Transform.translate(
-                                  offset: const Offset(0, -1),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter,
-                                        colors: [
-                                          constants.background,
-                                          constants.background.withValues(
-                                            alpha: 0.95,
-                                          ),
-                                          constants.background.withValues(
-                                            alpha: 0.6,
-                                          ),
-                                          constants.background.withValues(
-                                            alpha: 0.3,
-                                          ),
-                                          constants.background.withValues(
-                                            alpha: 0.0,
-                                          ),
-                                        ],
-                                        stops: const [0.0, 0.7, 0.8, 0.9, 1.0],
-                                      ),
-                                    ),
-                                    padding: EdgeInsets.fromLTRB(0, 10, 0, 50),
-                                    child: Center(
-                                      child: PopupMenuButton<String>(
-                                        position: PopupMenuPosition.under,
-                                        offset: const Offset(0, 6),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            16,
-                                          ),
-                                        ),
-                                        color: constants.background,
-                                        elevation: 12,
-                                        shadowColor: constants.darkGrey
-                                            .withValues(alpha: 0.12),
-                                        onSelected: (String newValue) async {
-                                          final success = await viewModel
-                                              .validateAndSelectRoom(newValue);
-                                          if (success) {
-                                            await viewModel.switchRoom(
-                                              newValue,
-                                            );
-                                          }
-                                        },
-                                        itemBuilder: (context) =>
-                                            viewModel.rooms == null
-                                            ? []
-                                            : viewModel.rooms!.map((
-                                                RoomModel value,
-                                              ) {
-                                                final isSelected =
-                                                    value.id.toString() ==
-                                                    viewModel
-                                                        .safeSelectedRoomId;
-                                                return PopupMenuItem<String>(
-                                                  value: value.id.toString(),
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                        horizontal: 20,
-                                                        vertical: 4,
-                                                      ),
-                                                  child: Text(
-                                                    value.title,
-                                                    style: TextStyle(
-                                                      fontSize: 15,
-                                                      fontWeight: isSelected
-                                                          ? constants.fwSemiBold
-                                                          : constants.fwRegular,
-                                                      color: isSelected
-                                                          ? constants.primary
-                                                          : constants.darkGrey,
-                                                    ),
-                                                  ),
-                                                );
-                                              }).toList(),
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 20,
-                                            vertical: 12,
-                                          ),
-                                          decoration: constants.squircleShadow(
-                                            color: constants.grey,
-                                          ),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Text(
-                                                viewModel.rooms
-                                                        ?.cast<RoomModel?>()
-                                                        .firstWhere(
-                                                          (r) =>
-                                                              r!.id
-                                                                  .toString() ==
-                                                              viewModel
-                                                                  .safeSelectedRoomId,
-                                                          orElse: () => null,
-                                                        )
-                                                        ?.title ??
-                                                    "Select a Room",
-                                                style: TextStyle(
-                                                  fontSize: 15,
-                                                  fontWeight:
-                                                      constants.fwSemiBold,
-                                                  color: constants.darkGrey,
-                                                ),
-                                              ),
-                                              const SizedBox(width: 6),
-                                              Icon(
-                                                Icons
-                                                    .keyboard_arrow_down_rounded,
-                                                size: 20,
-                                                color: constants.darkGrey,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
+                                header: _RoomSelectorButton(
+                                  viewModel: viewModel,
                                 ),
-                                content: Column(
-                                  children: [
-                                    SizedBox(height: 30),
-                                    if (widget.toggle != null) ...[
-                                      widget.toggle!,
-                                      SizedBox(height: 20),
-                                    ],
-                                    if (widget.addButton != null ||
-                                        widget.deleteButton != null) ...[
-                                      Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          if (widget.addButton != null)
-                                            widget.addButton!,
-                                          if (widget.addButton != null &&
-                                              widget.deleteButton != null)
-                                            SizedBox(width: 16),
-                                          if (widget.deleteButton != null)
-                                            widget.deleteButton!,
-                                        ],
-                                      ),
-                                      SizedBox(height: 20),
-                                    ],
-                                    viewModel.getBlocksCount() == 0
-                                        ? Padding(
-                                            padding: const EdgeInsets.only(
-                                              top: 40,
-                                            ),
-                                            child: Center(
-                                              child: Text(
-                                                textAlign: TextAlign.center,
-                                                "No upcoming consultations found.",
-                                                style: TextStyle(
-                                                  fontWeight:
-                                                      constants.fwSemiBold,
-                                                  fontSize: constants.fsTitle,
-                                                ),
-                                              ),
-                                            ),
-                                          )
-                                        : Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              SizedBox(height: 30),
-                                              ...() {
-                                                final sortedEntries = viewModel
-                                                    .slotsInBlocks
-                                                    .entries
-                                                    .toList();
-                                                sortedEntries.sort((a, b) {
-                                                  final blockA = viewModel
-                                                      .blocks
-                                                      .firstWhere(
-                                                        (block) =>
-                                                            block.id == a.key,
-                                                      );
-                                                  final blockB = viewModel
-                                                      .blocks
-                                                      .firstWhere(
-                                                        (block) =>
-                                                            block.id == b.key,
-                                                      );
-                                                  return blockA.date.compareTo(
-                                                    blockB.date,
-                                                  );
-                                                });
-                                                return sortedEntries.map((
-                                                  block,
-                                                ) {
-                                                  return Center(
-                                                    child: Column(
-                                                      children: [
-                                                        const SizedBox(
-                                                          height: 20,
-                                                        ),
-                                                        Container(
-                                                          clipBehavior:
-                                                              Clip.hardEdge,
-                                                          width:
-                                                              MediaQuery.of(
-                                                                context,
-                                                              ).size.width *
-                                                              0.9,
-                                                          decoration: constants
-                                                              .squircleShadow(
-                                                                border: Border.all(
-                                                                  color:
-                                                                      constants
-                                                                          .grey,
-                                                                  width: 0.2,
-                                                                ),
-                                                                color: constants
-                                                                    .background,
-                                                              ),
-                                                          child: Column(
-                                                            children: [
-                                                              Padding(
-                                                                padding:
-                                                                    EdgeInsets.fromLTRB(
-                                                                      20,
-                                                                      10,
-                                                                      20,
-                                                                      10,
-                                                                    ),
-                                                                child: Stack(
-                                                                  alignment:
-                                                                      Alignment
-                                                                          .center,
-                                                                  children: [
-                                                                    Text(
-                                                                      viewModel
-                                                                          .blockDateLabel(
-                                                                            block.key,
-                                                                          ),
-                                                                      style: TextStyle(
-                                                                        color: constants
-                                                                            .darkGrey,
-                                                                        fontSize:
-                                                                            constants.fsLabel,
-                                                                        fontWeight:
-                                                                            constants.fwSemiBold,
-                                                                      ),
-                                                                    ),
-                                                                    if (widget
-                                                                            .editBlockButton !=
-                                                                        null)
-                                                                      Align(
-                                                                        alignment:
-                                                                            Alignment.centerRight,
-                                                                        child: widget.editBlockButton!(
-                                                                          block
-                                                                              .key,
-                                                                        ),
-                                                                      ),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                              ListView.builder(
-                                                                physics:
-                                                                    const NeverScrollableScrollPhysics(),
-                                                                shrinkWrap:
-                                                                    true,
-                                                                padding:
-                                                                    EdgeInsets
-                                                                        .zero,
-                                                                itemCount: block
-                                                                    .value!
-                                                                    .length,
-                                                                itemBuilder: (context, index) {
-                                                                  final slot = block
-                                                                      .value![index];
-                                                                  final isFirst =
-                                                                      index ==
-                                                                      0;
-                                                                  final isLast =
-                                                                      index ==
-                                                                      block.value!.length -
-                                                                          1;
-                                                                  return SlotWidget(
-                                                                    userEmail:
-                                                                        widget
-                                                                            .email,
-                                                                    slot: slot,
-                                                                    token: widget
-                                                                        .token,
-                                                                    roomId: viewModel
-                                                                        .selectedRoomId!,
-                                                                    context:
-                                                                        context,
-                                                                    loadData: () =>
-                                                                        viewModel.loadRoom(
-                                                                          widget
-                                                                              .token,
-                                                                        ),
-                                                                    isFirst:
-                                                                        isFirst,
-                                                                    isLast:
-                                                                        isLast,
-                                                                    date: viewModel
-                                                                        .blockDateLabel(
-                                                                          block
-                                                                              .key,
-                                                                        ),
-                                                                  );
-                                                                },
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  );
-                                                }).toList();
-                                              }(),
-                                            ],
-                                          ),
-                                  ],
+                                content: _ConsultationsContent(
+                                  viewModel: viewModel,
+                                  token: widget.token,
+                                  email: widget.email,
+                                  toggle: widget.toggle,
+                                  addButton: widget.addButton,
+                                  deleteButton: widget.deleteButton,
+                                  editBlockButton: widget.editBlockButton,
+                                  addSlotBefore: widget.addSlotBefore,
+                                  addSlotAfter: widget.addSlotAfter,
                                 ),
                               ),
                             ],
@@ -437,6 +106,329 @@ class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+
+class _NoRoomsFound extends StatelessWidget {
+  final String token;
+
+  const _NoRoomsFound({required this.token});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 600),
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            children: [
+              const SizedBox(height: 80),
+              GestureDetector(
+                onTap: () => nav.toJoinRoom(token: token),
+                child: Text(
+                  "Try joining room to get started.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: constants.fsTitle,
+                    color: constants.primary,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+
+class _RoomSelectorButton extends StatelessWidget {
+  final BaseConsultationsViewmodel viewModel;
+
+  const _RoomSelectorButton({required this.viewModel});
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.translate(
+      offset: const Offset(0, -1),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              constants.background,
+              constants.background.withValues(alpha: 0.95),
+              constants.background.withValues(alpha: 0.6),
+              constants.background.withValues(alpha: 0.3),
+              constants.background.withValues(alpha: 0.0),
+            ],
+            stops: const [0.0, 0.7, 0.8, 0.9, 1.0],
+          ),
+        ),
+        padding: const EdgeInsets.fromLTRB(0, 10, 0, 50),
+        child: Center(
+          child: PopupMenuButton<String>(
+            position: PopupMenuPosition.under,
+            offset: const Offset(0, 6),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            color: constants.background,
+            elevation: 12,
+            shadowColor: constants.darkGrey.withValues(alpha: 0.12),
+            onSelected: (String newValue) async {
+              final success = await viewModel.validateAndSelectRoom(newValue);
+              if (success) await viewModel.switchRoom(newValue);
+            },
+            itemBuilder: (context) => viewModel.rooms == null
+                ? []
+                : viewModel.rooms!.map((RoomModel value) {
+                    final isSelected =
+                        value.id.toString() == viewModel.safeSelectedRoomId;
+                    return PopupMenuItem<String>(
+                      value: value.id.toString(),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 4,
+                      ),
+                      child: Text(
+                        value.title,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: isSelected
+                              ? constants.fwSemiBold
+                              : constants.fwRegular,
+                          color: isSelected
+                              ? constants.primary
+                              : constants.darkGrey,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              decoration: constants.squircleShadow(color: constants.grey),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    viewModel.rooms
+                            ?.cast<RoomModel?>()
+                            .firstWhere(
+                              (r) =>
+                                  r!.id.toString() ==
+                                  viewModel.safeSelectedRoomId,
+                              orElse: () => null,
+                            )
+                            ?.title ??
+                        "Select a Room",
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: constants.fwSemiBold,
+                      color: constants.darkGrey,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    size: 20,
+                    color: constants.darkGrey,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+
+class _ConsultationsContent extends StatelessWidget {
+  final BaseConsultationsViewmodel viewModel;
+  final String token;
+  final String email;
+  final Widget? toggle;
+  final Widget? addButton;
+  final Widget? deleteButton;
+  final Widget? Function(int blockId,bool isEmpty)? addSlotBefore;
+  final Widget? Function(int blockId,bool isEmpty)? addSlotAfter;
+  final Widget Function(int blockId)? editBlockButton;
+
+  const _ConsultationsContent({
+    required this.viewModel,
+    required this.token,
+    required this.email,
+    this.toggle,
+    this.addButton,
+    this.deleteButton,
+    this.editBlockButton,
+    this.addSlotBefore,
+    this.addSlotAfter,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const SizedBox(height: 30),
+        if (toggle != null) ...[toggle!, const SizedBox(height: 20)],
+        if (addButton != null || deleteButton != null) ...[
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (addButton != null) addButton!,
+              if (addButton != null && deleteButton != null)
+                const SizedBox(width: 16),
+              if (deleteButton != null) deleteButton!,
+            ],
+          ),
+          const SizedBox(height: 20),
+        ],
+        if (viewModel.getBlocksCount() == 0)
+          Padding(
+            padding: const EdgeInsets.only(top: 40),
+            child: Center(
+              child: Text(
+                "No upcoming consultations found.",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: constants.fwSemiBold,
+                  fontSize: constants.fsTitle,
+                ),
+              ),
+            ),
+          )
+        else
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 30),
+              ..._sortedBlocks().map(
+                (block) => _ConsultationBlockCard(
+                  viewModel: viewModel,
+                  blockEntry: block,
+                  token: token,
+                  email: email,
+                  editBlockButton: editBlockButton,
+                  addSlotBefore: addSlotBefore,
+                  addSlotAfter: addSlotAfter,
+                ),
+              ),
+            ],
+          ),
+      ],
+    );
+  }
+
+  List<MapEntry<int, List?>> _sortedBlocks() {
+    final sorted = viewModel.slotsInBlocks.entries.toList();
+    sorted.sort((a, b) {
+      final blockA = viewModel.blocks.firstWhere((block) => block.id == a.key);
+      final blockB = viewModel.blocks.firstWhere((block) => block.id == b.key);
+      return blockA.date.compareTo(blockB.date);
+    });
+    return sorted;
+  }
+}
+
+// ---------------------------------------------------------------------------
+
+class _ConsultationBlockCard extends StatelessWidget {
+  final BaseConsultationsViewmodel viewModel;
+  final MapEntry<int, List?> blockEntry;
+  final String token;
+  final String email;
+  final Widget Function(int blockId)? editBlockButton;
+  final Widget? Function(int blockId,bool isEmpty)? addSlotBefore;
+  final Widget? Function(int blockId,bool isEmpty)? addSlotAfter;
+
+  const _ConsultationBlockCard({
+    required this.viewModel,
+    required this.blockEntry,
+    required this.token,
+    required this.email,
+    this.editBlockButton,
+    this.addSlotBefore,
+    this.addSlotAfter,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final slots = blockEntry.value!;
+
+    return Center(
+      child: Column(
+        children: [
+          const SizedBox(height: 20),
+          Container(
+            clipBehavior: Clip.hardEdge,
+            width: MediaQuery.of(context).size.width * 0.9,
+            decoration: constants.squircleShadow(
+              border: Border.all(color: constants.grey, width: 0.2),
+              color: constants.background,
+            ),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Text(
+                        viewModel.blockDateLabel(blockEntry.key),
+                        style: TextStyle(
+                          color: constants.darkGrey,
+                          fontSize: constants.fsLabel,
+                          fontWeight: constants.fwSemiBold,
+                        ),
+                      ),
+                      if (editBlockButton != null)
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: editBlockButton!(blockEntry.key),
+                        ),
+                    ],
+                  ),
+                ),
+                if (addSlotBefore != null) addSlotBefore!(blockEntry.key,slots.isEmpty)!,
+              
+                ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  padding: EdgeInsets.zero,
+                  itemCount: slots.length,
+                  itemBuilder: (context, index) {
+                    return SlotWidget(
+                      userEmail: email,
+                      slot: slots[index],
+                      token: token,
+                      roomId: viewModel.selectedRoomId!,
+                      context: context,
+                      loadData: () => viewModel.loadRoom(token),
+                      isFirst: index == 0,
+                      isLast: index == slots.length - 1,
+                      date: viewModel.blockDateLabel(blockEntry.key),
+                    );
+                  },
+                ),
+                if (addSlotAfter != null) addSlotAfter!(blockEntry.key,slots.isEmpty)!,
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

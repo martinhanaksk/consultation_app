@@ -5,6 +5,8 @@ class Constants {
   Color background = Color(0xfff9f9f9);
   Color grey = Color(0xFFD0D0D0);
   Color darkGrey = Color(0xff191c1f);
+  Color textUnavailableGrey = Color(0xff191c1f);
+  Color onyxBlack = Color(0xFF0a0a0a);
   Color green = Color(0xff15803d);
   Color lightGreen = Color(0xffbbf7d0);
   Color orange = Color(0xffc2410c);

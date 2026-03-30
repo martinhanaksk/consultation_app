@@ -208,7 +208,7 @@ class CreateBlockViewmodel extends ChangeNotifier {
     List<String> dates = getSelectedDatesIso();
     final int slotCount = int.parse(slotNumberController.text.trim());
     final String note = noteController.text.trim();
-    final bool isOnline = isChecked;
+    final int isOnline = isChecked?1:0;
     for (int i = 0; i < dates.length; i++) {
       String response = await api.createBlock(
         token,

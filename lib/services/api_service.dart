@@ -229,7 +229,6 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final List<dynamic> decoded = jsonDecode(response.body);
-
       return decoded.map((json) => SlotModel.fromJson(json)).toList();
     } else {
       return null;
@@ -250,7 +249,8 @@ class ApiService {
       },
     );
     if (response.statusCode != 200) {
-      throw Exception('Failed to take slot: ${response.statusCode}');
+      //TODO
+      //throw Exception('Failed to take slot: ${response.statusCode}');
     }
   }
 
@@ -370,7 +370,7 @@ class ApiService {
     int block_id,
     String start_time,
     int duration,
-    bool is_online,
+    int is_online,
     String note,
   ) async {
     final Uri url = Uri.parse('${constants.url}/slot/create');

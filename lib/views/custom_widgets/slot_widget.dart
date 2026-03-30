@@ -518,7 +518,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                                         textAlign: TextAlign.right,
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
-                                          color: constants.darkGrey,
+                                          color: constants.onyxBlack,
                                           fontSize: constants.fsLabel,
                                           fontWeight: constants.fwRegular,
                                         ),
@@ -534,7 +534,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                                         ),
                                         textAlign: TextAlign.right,
                                         style: TextStyle(
-                                          color: constants.darkGrey,
+                                          color: constants.onyxBlack,
                                           fontSize: constants.fsLabel,
                                           fontWeight: constants.fwRegular,
                                         ),
@@ -556,25 +556,25 @@ class _SlotWidgetState extends State<SlotWidget> {
                                           widget.slot.note ?? '',
                                           maxLines: 1,
                                           style: TextStyle(
-                                            color: constants.darkGrey,
+                                            color: constants.onyxBlack,
                                             fontSize: constants.fsLabel,
                                             fontWeight: constants.fwRegular,
                                           ),
                                         ),
                                       ),
                                       const SizedBox(width: 8),
-                                      widget.slot.isOnline == 1
+                                      widget.slot.isOnline==1
                                           ? SvgPicture.asset(
                                               'assets/resources/screen.svg',
                                               colorFilter: ColorFilter.mode(
-                                                constants.background,
+                                                constants.onyxBlack,
                                                 BlendMode.srcIn,
                                               ),
                                             )
                                           : SvgPicture.asset(
                                               'assets/resources/location.svg',
                                               colorFilter: ColorFilter.mode(
-                                                constants.background,
+                                                constants.onyxBlack,
                                                 BlendMode.srcIn,
                                               ),
                                             ),
@@ -590,7 +590,8 @@ class _SlotWidgetState extends State<SlotWidget> {
                                         child: SvgPicture.asset(
                                           'assets/resources/cross.svg',
                                           colorFilter: ColorFilter.mode(
-                                            constants.red,
+                                            constants.onyxBlack,
+                                            
                                             BlendMode.srcIn,
                                           ),
                                         ),
@@ -635,7 +636,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                                         textAlign: TextAlign.right,
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
-                                          color: constants.darkGrey,
+                                          color: constants.textUnavailableGrey,
                                           fontSize: constants.fsLabel,
                                           fontWeight: constants.fwRegular,
                                         ),
@@ -651,7 +652,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                                         ),
                                         textAlign: TextAlign.right,
                                         style: TextStyle(
-                                          color: constants.darkGrey,
+                                          color: constants.textUnavailableGrey,
                                           fontSize: constants.fsLabel,
                                           fontWeight: constants.fwRegular,
                                         ),
@@ -673,25 +674,25 @@ class _SlotWidgetState extends State<SlotWidget> {
                                           widget.slot.note ?? '',
                                           maxLines: 1,
                                           style: TextStyle(
-                                            color: constants.darkGrey,
+                                            color: constants.textUnavailableGrey,
                                             fontSize: constants.fsLabel,
                                             fontWeight: constants.fwRegular,
                                           ),
                                         ),
                                       ),
                                       const SizedBox(width: 8),
-                                      widget.slot.isOnline == 1
+                                      widget.slot.isOnline==1
                                           ? SvgPicture.asset(
                                               'assets/resources/screen.svg',
                                               colorFilter: ColorFilter.mode(
-                                                constants.background,
+                                                constants.textUnavailableGrey,
                                                 BlendMode.srcIn,
                                               ),
                                             )
                                           : SvgPicture.asset(
                                               'assets/resources/location.svg',
                                               colorFilter: ColorFilter.mode(
-                                                constants.background,
+                                                constants.textUnavailableGrey,
                                                 BlendMode.srcIn,
                                               ),
                                             ),
@@ -722,14 +723,14 @@ class _SlotWidgetState extends State<SlotWidget> {
                                               ? SvgPicture.asset(
                                                   'assets/resources/notifications_bell_full.svg',
                                                   colorFilter: ColorFilter.mode(
-                                                    constants.background,
+                                                    constants.textUnavailableGrey,
                                                     BlendMode.srcIn,
                                                   ),
                                                 )
                                               : SvgPicture.asset(
                                                   'assets/resources/notifications_bell_empty.svg',
                                                   colorFilter: ColorFilter.mode(
-                                                    constants.background,
+                                                    constants.textUnavailableGrey,
                                                     BlendMode.srcIn,
                                                   ),
                                                 ),
