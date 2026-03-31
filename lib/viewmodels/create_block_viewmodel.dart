@@ -8,7 +8,7 @@ import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 class CreateBlockViewmodel extends ChangeNotifier {
   // --- Date Picker ---
 
-  bool _isChecked = false;
+  bool _isChecked = true;
   bool get isChecked => _isChecked;
   String dateCount = '';
   String range = '';
@@ -208,7 +208,7 @@ class CreateBlockViewmodel extends ChangeNotifier {
     List<String> dates = getSelectedDatesIso();
     final int slotCount = int.parse(slotNumberController.text.trim());
     final String note = noteController.text.trim();
-    final int isOnline = isChecked?1:0;
+    final int isOnline = isChecked ? 1 : 0;
     for (int i = 0; i < dates.length; i++) {
       String response = await api.createBlock(
         token,
@@ -233,10 +233,10 @@ class CreateBlockViewmodel extends ChangeNotifier {
           return;
         }
       }
-      notify.showToast('All blocks and slots created successfully');
-      onSuccess?.call();
-      nav.pop();
     }
+    notify.showToast('All blocks and slots created successfully');
+    onSuccess?.call();
+    nav.pop();
   }
 }
 

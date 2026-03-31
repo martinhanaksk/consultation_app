@@ -2,6 +2,7 @@ import 'package:consultation_app/viewmodels/teacher_consultations_viewmodel.dart
 import 'package:consultation_app/views/consultations_base_page.dart';
 import 'package:consultation_app/views/custom_widgets/animated_toggle_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:consultation_app/setup.dart';
@@ -113,17 +114,18 @@ class _AddSlotOnOutskirts extends StatelessWidget {
     return isEmpty
         ? const SizedBox.shrink()
         : GestureDetector(
-            onTap: () => {
-              if (isBefore)
-                {
-                  viewModel.addSlotBeforeBlock(token, blockId),
-                  viewModel.loadRoom(token),
-                }
-              else
-                {
-                  viewModel.addSlotAfterBlock(token, blockId),
-                  viewModel.loadRoom(token),
-                },
+            onTap: () async {
+              if (isBefore) {
+                viewModel.setIsLoading(true);
+                await viewModel.addSlotBeforeBlock(token, blockId);
+                await viewModel.loadRoom(token);
+                viewModel.setIsLoading(false);
+              } else {
+                viewModel.setIsLoading(true);
+                await viewModel.addSlotAfterBlock(token, blockId);
+                await viewModel.loadRoom(token);
+                viewModel.setIsLoading(false);
+              }
             },
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
@@ -204,6 +206,7 @@ class _DeleteRoomDialog extends StatelessWidget {
             TextSpan(
               text: 'Delete ',
               style: TextStyle(
+                color: constants.darkGrey,
                 fontWeight: constants.fwRegular,
                 fontSize: constants.fsBody,
               ),
@@ -211,6 +214,7 @@ class _DeleteRoomDialog extends StatelessWidget {
             TextSpan(
               text: '${viewModel.getRoomNameById()}?',
               style: TextStyle(
+                color: constants.darkGrey,
                 fontWeight: constants.fwSemiBold,
                 fontSize: constants.fsBody,
               ),

@@ -68,20 +68,26 @@ class TeacherConsultationsViewmodel extends BaseConsultationsViewmodel {
   Future<void> addSlotBeforeBlock(String token, int blockId) async {
     final slotsForBlock = await api.getSlotsForBlock(blockId, token);
     if (slotsForBlock != null && slotsForBlock.isNotEmpty) {
+      final newStartTime = calculateMarginTimes(
+        0,
+        slotsForBlock[0].startTime,
+        slotsForBlock[0].duration,
+      );
+      if (newStartTime == null) {
+        notify.showToast("Cannot add a slot before 00:00.");
+        return;
+      }
       bool slotCreated = await api.createSlot(
         token,
         blockId,
-        calculateMarginTimes(
-          0,
-          slotsForBlock[0].startTime,
-          slotsForBlock[0].duration,
-        ),
+        newStartTime,
         slotsForBlock[0].duration,
         slotsForBlock[0].isOnline,
         slotsForBlock[0].note ?? " ",
       );
       if (!slotCreated) {
         notify.showToast("Could not create new slot.");
+        setIsLoading(false);
       }
     } else {
       return;
@@ -91,27 +97,33 @@ class TeacherConsultationsViewmodel extends BaseConsultationsViewmodel {
   Future<void> addSlotAfterBlock(String token, int blockId) async {
     final slotsForBlock = await api.getSlotsForBlock(blockId, token);
     if (slotsForBlock != null && slotsForBlock.isNotEmpty) {
+      final newStartTime = calculateMarginTimes(
+        1,
+        slotsForBlock[slotsForBlock.length - 1].startTime,
+        slotsForBlock[slotsForBlock.length - 1].duration,
+      );
+      if (newStartTime == null) {
+        notify.showToast("Cannot add a slot after 24:00.");
+        return;
+      }
       bool slotCreated = await api.createSlot(
         token,
         blockId,
-        calculateMarginTimes(
-          1,
-          slotsForBlock[slotsForBlock.length - 1].startTime,
-          slotsForBlock[slotsForBlock.length - 1].duration,
-        ),
+        newStartTime,
         slotsForBlock[0].duration,
         slotsForBlock[0].isOnline,
         slotsForBlock[0].note ?? " ",
       );
       if (!slotCreated) {
         notify.showToast("Could not create new slot.");
+        setIsLoading(false);
       }
     } else {
       return;
     }
   }
 
-  String calculateMarginTimes(int isEndTime, String oldTime, int duration) {
+  String? calculateMarginTimes(int isEndTime, String oldTime, int duration) {
     String result = "";
     final parts = oldTime.split(':');
     final originalStart = Duration(
@@ -127,6 +139,8 @@ class TeacherConsultationsViewmodel extends BaseConsultationsViewmodel {
     } else {
       return "";
     }
+    if (newStart.isNegative || newStart.inHours > 24) return null;
+
     return '${newStart.inHours.toString().padLeft(2, '0')}:'
         '${(newStart.inMinutes % 60).toString().padLeft(2, '0')}:'
         '${(newStart.inSeconds % 60).toString().padLeft(2, '0')}';
@@ -143,6 +157,9 @@ class TeacherConsultationsViewmodel extends BaseConsultationsViewmodel {
   }
 
   void toggleView(String token, int value) async {
+    isLoading = true;
+    notifyListeners();
+
     await setAdminView(value);
     selectedRoomId = value == 1 ? adminSelectedRoomId : reserverSelectedRoomId;
 
@@ -151,6 +168,7 @@ class TeacherConsultationsViewmodel extends BaseConsultationsViewmodel {
     if (fetchedRooms.isEmpty) {
       rooms = [];
       noRoomsFound = true;
+      isLoading = false;
       notifyListeners();
       return;
     }
@@ -168,6 +186,7 @@ class TeacherConsultationsViewmodel extends BaseConsultationsViewmodel {
     }
 
     await loadRoom(token);
+    isLoading = false;
     notifyListeners();
   }
 }

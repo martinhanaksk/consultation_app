@@ -28,6 +28,15 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setIsLoading(bool value) {
+    if (value) {
+      isLoading = true;
+    } else {
+      isLoading = false;
+    }
+    notifyListeners();
+  }
+
   Future<List<RoomModel>> fetchRooms(String token) => api.getJoinedRooms(token);
   int? get roomIdNumber => adminView == 0
       ? reserverSelectedRoomId == null
