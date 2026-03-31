@@ -234,7 +234,7 @@ class CreateBlockViewmodel extends ChangeNotifier {
         }
       }
       notify.showToast('All blocks and slots created successfully');
-      onSuccess?.call(); // ← trigger reload
+      onSuccess?.call();
       nav.pop();
     }
   }

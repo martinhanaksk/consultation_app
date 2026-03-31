@@ -9,7 +9,8 @@ import 'package:flutter/cupertino.dart';
 
 class CreateBlock extends StatefulWidget {
   final String token;
-  final String roomId;final VoidCallback? onSuccess; 
+  final String roomId;
+  final VoidCallback? onSuccess; 
   const CreateBlock({super.key, required this.token, required this.roomId,required this.onSuccess});
 
   @override

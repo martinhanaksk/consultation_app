@@ -416,6 +416,22 @@ class ApiService {
       return true;
     }
   }
+  Future<bool> deleteBlock(String token, int blockId) async {
+    final Uri url = Uri.parse('${constants.url}/block/delete?block_id=$blockId');
+
+    final response = await http.delete(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode != 200) {
+      return false;
+    } else {
+      return true;
+    }
+  }
 
   Future<bool> getIsTeacher() async {
     String? role = await prefs.getItem('role');

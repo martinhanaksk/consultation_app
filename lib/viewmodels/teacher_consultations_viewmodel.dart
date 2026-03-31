@@ -91,7 +91,6 @@ class TeacherConsultationsViewmodel extends BaseConsultationsViewmodel {
   Future<void> addSlotAfterBlock(String token, int blockId) async {
     final slotsForBlock = await api.getSlotsForBlock(blockId, token);
     if (slotsForBlock != null && slotsForBlock.isNotEmpty) {
-      print(slotsForBlock.length-1);
       bool slotCreated = await api.createSlot(
         token,
         blockId,
