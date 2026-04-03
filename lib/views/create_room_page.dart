@@ -3,6 +3,7 @@ import 'package:consultation_app/viewmodels/create_room_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
 class CreateRoom extends StatefulWidget {
@@ -160,55 +161,63 @@ class _CreateRoomState extends State<CreateRoom> {
                         },
                       ),
                       const SizedBox(height: 16),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 48,
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            FocusScope.of(context).unfocus();
-                            if (validator.validateNotEmpty(
-                                  roomNameController.text.trim(),
-                                  context,
-                                ) &&
-                                validator.validateNotEmpty(
-                                  titleController.text.trim(),
-                                  context,
-                                ) &&
-                                validator.validateNotEmpty(
-                                  descriptionController.text.trim(),
-                                  context,
-                                )) {
-                              viewModel.createRoom(
-                                helpers.trimText(
-                                  roomNameController.text.trim(),
+                      viewModel.isLoading
+                          ? Center(
+                              child: SpinKitPouringHourGlass(
+                                color: constants.primary,
+                                size: constants.fsHeadline,
+                              ),
+                            )
+                          : SizedBox(
+                              width: double.infinity,
+                              height: 48,
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  FocusScope.of(context).unfocus();
+                                  if (validator.validateNotEmpty(
+                                        roomNameController.text.trim(),
+                                        context,
+                                      ) &&
+                                      validator.validateNotEmpty(
+                                        titleController.text.trim(),
+                                        context,
+                                      ) &&
+                                      validator.validateNotEmpty(
+                                        descriptionController.text.trim(),
+                                        context,
+                                      )) {
+                                    viewModel.createRoom(
+                                      helpers.trimText(
+                                        roomNameController.text.trim(),
+                                      ),
+                                      helpers.trimText(
+                                        titleController.text.trim(),
+                                      ),
+                                      helpers.trimText(
+                                        descriptionController.text.trim(),
+                                      ),
+                                    );
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: constants.primary,
+                                  disabledBackgroundColor: constants.primary,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                  elevation: 2,
+                                  shadowColor: constants.primary,
                                 ),
-                                helpers.trimText(titleController.text.trim()),
-                                helpers.trimText(
-                                  descriptionController.text.trim(),
+                                child: Text(
+                                  'Create',
+                                  style: TextStyle(
+                                    fontSize: constants.fsBody,
+                                    fontWeight: constants.fwSemiBold,
+                                    color: constants.background,
+                                  ),
                                 ),
-                              );
-                            }
-                            
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: constants.primary,
-                            disabledBackgroundColor: constants.primary,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
+                              ),
                             ),
-                            elevation: 2,
-                            shadowColor: constants.primary,
-                          ),
-                          child: Text(
-                            'Create',
-                            style: TextStyle(
-                              fontSize: constants.fsBody,
-                              fontWeight: constants.fwSemiBold,
-                              color: constants.background,
-                            ),
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),
