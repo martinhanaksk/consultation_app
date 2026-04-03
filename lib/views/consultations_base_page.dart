@@ -56,7 +56,11 @@ class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
       child: Consumer<BaseConsultationsViewmodel>(
         builder: (context, viewModel, child) {
           return Scaffold(
-            appBar: AppBarMenu(),
+            appBar: AppBarMenu(
+              viewModel: viewModel,
+              toggle: widget.toggle,
+              token: widget.token,
+            ),
             drawer: SliderMenu(),
             backgroundColor: constants.background,
             body: SafeArea(
@@ -170,20 +174,6 @@ class _RoomSelectorButton extends StatelessWidget {
     return Transform.translate(
       offset: const Offset(0, -1),
       child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              constants.background,
-              constants.background.withValues(alpha: 0.95),
-              constants.background.withValues(alpha: 0.6),
-              constants.background.withValues(alpha: 0.3),
-              constants.background.withValues(alpha: 0.0),
-            ],
-            stops: const [0.0, 0.7, 0.8, 0.9, 1.0],
-          ),
-        ),
         padding: const EdgeInsets.fromLTRB(0, 10, 0, 50),
         child: Center(
           child: PopupMenuButton<String>(
@@ -302,7 +292,7 @@ class _ConsultationsContent extends StatelessWidget {
     return Column(
       children: [
         const SizedBox(height: 30),
-        if (toggle != null) ...[toggle!, const SizedBox(height: 20)],
+
         (viewModel.noRoomsFound || viewModel.selectedRoomId == null)
             ? _NoRoomsFound(token: token, viewModel: viewModel)
             : Column(

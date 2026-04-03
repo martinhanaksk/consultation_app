@@ -10,8 +10,13 @@ import 'package:flutter/cupertino.dart';
 class CreateBlock extends StatefulWidget {
   final String token;
   final String roomId;
-  final VoidCallback? onSuccess; 
-  const CreateBlock({super.key, required this.token, required this.roomId,required this.onSuccess});
+  final VoidCallback? onSuccess;
+  const CreateBlock({
+    super.key,
+    required this.token,
+    required this.roomId,
+    required this.onSuccess,
+  });
 
   @override
   State<CreateBlock> createState() => _CreateBlockState();
@@ -187,34 +192,33 @@ class _CreateBlockState extends State<CreateBlock> {
     );
   }
 
-  void _showTimePicker(
-    TimePickerAction action,
-    CreateBlockViewmodel viewModel,
-  ) {
-    Duration? tempTime = switch (action) {
-      TimePickerAction.startTime => viewModel.startTime ?? Duration.zero,
-      TimePickerAction.endTime => viewModel.endTime ?? Duration.zero,
-      TimePickerAction.duration => viewModel.duration ?? Duration.zero,
-    };
+  void _showDurationPicker(CreateBlockViewmodel viewModel) {
+    Duration? tempTime = viewModel.duration ?? Duration.zero;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(switch (action) {
-          TimePickerAction.startTime => 'Select Start Time',
-          TimePickerAction.endTime => 'Select End Time',
-          TimePickerAction.duration => 'Select Duration',
-        }),
+        title: Text('Select Minutes per Slot'),
         contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
         backgroundColor: constants.background,
         content: SizedBox(
           width: 300,
           height: 150,
-          child: CupertinoTimerPicker(
+          child: CupertinoPicker(
             backgroundColor: constants.background,
-            mode: CupertinoTimerPickerMode.hm,
-            initialTimerDuration: tempTime!,
-            minuteInterval: 5,
-            onTimerDurationChanged: (d) => tempTime = d,
+            itemExtent: 40,
+
+            onSelectedItemChanged: (index) {
+              tempTime = Duration(minutes: index * 5);
+            },
+            children: List.generate(
+              24, // 0–115 minutes, step 5
+              (i) => Center(
+                child: Text(
+                  '${i * 5} min',
+                  style: TextStyle(fontSize: constants.fsBody),
+                ),
+              ),
+            ),
           ),
         ),
         actions: [
@@ -231,18 +235,86 @@ class _CreateBlockState extends State<CreateBlock> {
           ),
           GestureDetector(
             onTap: () {
-              switch (action) {
-                case TimePickerAction.startTime:
-                  viewModel.setStartTime(tempTime!);
-                case TimePickerAction.endTime:
-                  viewModel.setEndTime(tempTime!);
-                case TimePickerAction.duration:
-                  viewModel.setDuration(tempTime!);
-              }
+              viewModel.setDuration(tempTime!);
+
               Navigator.pop(context);
             },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: constants.squircleShadow(color: constants.primary),
+              child: Text(
+                'Confirm',
+                style: TextStyle(
+                  color: constants.background,
+                  fontWeight: constants.fwRegular,
+                  fontSize: constants.fsLabel,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showTimePicker(CreateBlockViewmodel viewModel) {
+    TimeOfDay now = TimeOfDay.now();
+    int roundedMinute = now.minute - (now.minute % 5);
+
+    TimeOfDay tempTime = viewModel.startTime != null
+        ? TimeOfDay(
+            hour: viewModel.startTime!.inHours,
+            minute: viewModel.startTime!.inMinutes % 60,
+          )
+        : TimeOfDay(hour: now.hour, minute: roundedMinute);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Select Start Time'),
+        contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+        backgroundColor: constants.background,
+        content: SizedBox(
+          width: 300,
+          height: 150,
+          child: CupertinoDatePicker(
+            backgroundColor: constants.background,
+            mode: CupertinoDatePickerMode.time,
+            use24hFormat: true,
+            initialDateTime: DateTime(
+              2000,
+              1,
+              1,
+              tempTime.hour,
+              tempTime.minute,
+            ),
+            minuteInterval: 5,
+            onDateTimeChanged: (dt) {
+              tempTime = TimeOfDay(hour: dt.hour, minute: dt.minute);
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: constants.primary,
+                fontWeight: constants.fwRegular,
+                fontSize: constants.fsLabel,
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              viewModel.setStartTime(
+                Duration(hours: tempTime.hour, minutes: tempTime.minute),
+              );
+              Navigator.pop(context);
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: constants.squircleShadow(color: constants.primary),
               child: Text(
                 'Confirm',
@@ -314,10 +386,7 @@ class _CreateBlockState extends State<CreateBlock> {
                             Flexible(
                               flex: 10,
                               child: GestureDetector(
-                                onTap: () => _showTimePicker(
-                                  TimePickerAction.startTime,
-                                  viewModel,
-                                ),
+                                onTap: () => _showTimePicker(viewModel),
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
                                     vertical: 12,
@@ -333,10 +402,8 @@ class _CreateBlockState extends State<CreateBlock> {
                                       Text(
                                         viewModel.startTime == null
                                             ? 'Start Time'
-                                            : "Start ${viewModel.getPrintableTimeFormat(
-                                                TimePickerAction.startTime)}",
-                                                 
-                                                     
+                                            : "Start ${viewModel.getPrintableTimeFormat(TimePickerAction.startTime)}",
+
                                         style: TextStyle(
                                           fontSize: constants.fsBody,
                                         ),
@@ -367,9 +434,8 @@ class _CreateBlockState extends State<CreateBlock> {
                                       Text(
                                         viewModel.endTime == null
                                             ? 'End Time'
-                                            : "End ${viewModel.getPrintableTimeFormat(
-                                                TimePickerAction.endTime)}",
-                                            
+                                            : "End ${viewModel.getPrintableTimeFormat(TimePickerAction.endTime)}",
+
                                         style: TextStyle(
                                           fontSize: constants.fsBody,
                                         ),
@@ -389,10 +455,7 @@ class _CreateBlockState extends State<CreateBlock> {
                             Flexible(
                               flex: 10,
                               child: GestureDetector(
-                                onTap: () => _showTimePicker(
-                                  TimePickerAction.duration,
-                                  viewModel,
-                                ),
+                                onTap: () => _showDurationPicker(viewModel),
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
                                     vertical: 12,
@@ -408,11 +471,8 @@ class _CreateBlockState extends State<CreateBlock> {
                                       Text(
                                         viewModel.duration == null
                                             ? 'Duration'
-                                            : "Duration ${viewModel.getPrintableTimeFormat(
-                                                TimePickerAction.duration)}",
-                                                
-                                                
-                                               
+                                            : "Duration ${viewModel.getPrintableTimeFormat(TimePickerAction.duration)}",
+
                                         style: TextStyle(
                                           fontSize: constants.fsBody,
                                         ),
@@ -470,37 +530,42 @@ class _CreateBlockState extends State<CreateBlock> {
                         ),
                         SizedBox(height: 20),
                         Row(
-                              children: [
-                                IntrinsicWidth(
-                                  child: Container(
-                                    width: 24,
-                                    height: 24,
-                                    clipBehavior: Clip.none,
-                                    decoration: constants.squircleShadow(
-                                      color: constants.background,
-                                      
-                                    ),
-                                    child: Checkbox(
-                                      value: viewModel.isChecked,
-                                      onChanged: viewModel.toggleisOnline,
-                                      side: BorderSide.none,
-                                      checkColor: constants.darkGrey,
-                                      fillColor: WidgetStateProperty.all(
-                                        constants.background,
-                                      ),
-                                    ),
+                          children: [
+                            IntrinsicWidth(
+                              child: Container(
+                                width: 24,
+                                height: 24,
+                                clipBehavior: Clip.none,
+                                decoration: constants.squircleShadow(
+                                  color: constants.background,
+                                ),
+                                child: Checkbox(
+                                  value: viewModel.isChecked,
+                                  onChanged: viewModel.toggleisOnline,
+                                  side: BorderSide.none,
+                                  checkColor: constants.darkGrey,
+                                  fillColor: WidgetStateProperty.all(
+                                    constants.background,
                                   ),
                                 ),
-                                SizedBox(width: 8),
-                                const Text('In-Person'),
-                              ],
+                              ),
                             ),
-                        SizedBox(height: 20,),
+                            SizedBox(width: 8),
+                            const Text('In-Person'),
+                          ],
+                        ),
+                        SizedBox(height: 20),
                         SizedBox(
                           width: double.infinity,
                           height: 48,
                           child: ElevatedButton(
-                            onPressed: () => {viewModel.createBlock(widget.token,widget.roomId,widget.onSuccess)},
+                            onPressed: () => {
+                              viewModel.createBlock(
+                                widget.token,
+                                widget.roomId,
+                                widget.onSuccess,
+                              ),
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: constants.primary,
                               disabledBackgroundColor: constants.primary,

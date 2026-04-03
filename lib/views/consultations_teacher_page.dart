@@ -2,7 +2,6 @@ import 'package:consultation_app/viewmodels/teacher_consultations_viewmodel.dart
 import 'package:consultation_app/views/consultations_base_page.dart';
 import 'package:consultation_app/views/custom_widgets/animated_toggle_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:consultation_app/setup.dart';
@@ -48,8 +47,8 @@ class _ConsultationsTeacherPageState extends State<ConsultationsTeacherPage> {
               values: const ['Owner', 'Visitor'],
               onToggleCallback: (value) =>
                   viewModel.toggleView(widget.token, value),
-              width: 200,
-              height: 50,
+              width: 150,
+              height: 32,
               buttonColor: constants.primary,
               backgroundColor: constants.grey,
               textColor: constants.background,
@@ -235,7 +234,6 @@ class _DeleteRoomDialog extends StatelessWidget {
         ElevatedButton(
           onPressed: () async {
             await viewModel.deleteRoom(token);
-            
           },
           child: Text("Delete", style: TextStyle(color: constants.primary)),
         ),

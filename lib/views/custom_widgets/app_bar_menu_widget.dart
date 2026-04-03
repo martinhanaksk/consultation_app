@@ -1,8 +1,13 @@
+import 'package:consultation_app/viewmodels/base_consultations_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
 
 class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
-  AppBarMenu({super.key});
+  final BaseConsultationsViewmodel? viewModel;
+  final String? token;
+  final Widget? toggle;
+
+  AppBarMenu({super.key, this.viewModel, this.toggle, this.token});
   @override
   Widget build(BuildContext context) {
     return AppBar(
@@ -31,7 +36,9 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
             ),
           ),
         ),
-      ),
+      ),  flexibleSpace: SafeArea(
+    child: Center(child: toggle),
+  ),
       actions: [
         Padding(
           padding: EdgeInsets.only(right: 12),
