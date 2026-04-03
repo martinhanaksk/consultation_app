@@ -111,7 +111,15 @@ class _SliderMenuState extends State<SliderMenu> {
                                       ),
                                     ),
                                     onTap: () {
-                                      nav.toCreateRoom();
+                                     viewModel.isTeacher!
+                                  ? nav.toTeacherConsultations(
+                                      token: viewModel.token,
+                                      email: viewModel.email!,
+                                    )
+                                  : nav.toStudentConsultations(
+                                      token: viewModel.token,
+                                      email: viewModel.email!,
+                                    );
                                     },
                                   ),
                                   SizedBox(height: 20),

@@ -9,6 +9,7 @@ class CreateRoomViewmodel extends ChangeNotifier {
     String description,
   ) async {
     String token = await prefs.getItem("token");
+    String email = await prefs.getItem("email");
     try {
       if (acceptedEmails.isNotEmpty) {
         bool b = await api.createRoom(
@@ -28,6 +29,8 @@ class CreateRoomViewmodel extends ChangeNotifier {
       }
     } catch (e) {
       notify.showToast('Error while creating room.');
+    } finally {
+      nav.toTeacherConsultations(token: token, email: email);
     }
   }
 

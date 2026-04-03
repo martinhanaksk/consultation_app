@@ -38,14 +38,14 @@ class _ConsultationsTeacherPageState extends State<ConsultationsTeacherPage> {
       value: _viewModel,
       child: Consumer<TeacherConsultationsViewmodel>(
         builder: (context, viewModel, child) {
-          final isAdmin = viewModel.adminView == 1;
+          final isOwner = viewModel.ownerView == 1;
           return BaseConsultationsPage(
             token: widget.token,
             email: widget.email,
             viewModel: viewModel,
             toggle: AnimatedToggle(
-              isAdmin: isAdmin,
-              values: const ['Admin', 'Reserver'],
+              isOwner: isOwner,
+              values: const ['Owner', 'Visitor'],
               onToggleCallback: (value) =>
                   viewModel.toggleView(widget.token, value),
               width: 200,
@@ -54,20 +54,20 @@ class _ConsultationsTeacherPageState extends State<ConsultationsTeacherPage> {
               backgroundColor: constants.grey,
               textColor: constants.background,
             ),
-            addButton: isAdmin
+            addButton: isOwner
                 ? _AddBlockButton(token: widget.token, viewModel: viewModel)
                 : null,
-            deleteButton: isAdmin
+            deleteButton: isOwner
                 ? _DeleteRoomButton(token: widget.token, viewModel: viewModel)
                 : null,
-            editBlockButton: isAdmin
+            editBlockButton: isOwner
                 ? (blockId) => _EditBlockButton(
                     token: widget.token,
                     blockId: blockId,
                     viewModel: viewModel,
                   )
                 : null,
-            addSlotBefore: isAdmin
+            addSlotBefore: isOwner
                 ? (blockId, isEmpty) => _AddSlotOnOutskirts(
                     token: widget.token,
                     viewModel: viewModel,
@@ -76,7 +76,7 @@ class _ConsultationsTeacherPageState extends State<ConsultationsTeacherPage> {
                     isEmpty: isEmpty,
                   )
                 : null,
-            addSlotAfter: isAdmin
+            addSlotAfter: isOwner
                 ? (blockId, isEmpty) => _AddSlotOnOutskirts(
                     token: widget.token,
                     viewModel: viewModel,

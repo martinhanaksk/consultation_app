@@ -17,8 +17,8 @@ class BaseConsultationsPage extends StatefulWidget {
   final Widget? deleteButton;
   final BaseConsultationsViewmodel? viewModel;
   final Widget Function(int blockId)? editBlockButton;
-  final Widget? Function(int blockId,bool isEmpty)? addSlotBefore;
-  final Widget? Function(int blockId,bool isEmpty)? addSlotAfter;
+  final Widget? Function(int blockId, bool isEmpty)? addSlotBefore;
+  final Widget? Function(int blockId, bool isEmpty)? addSlotAfter;
 
   const BaseConsultationsPage({
     super.key,
@@ -67,8 +67,6 @@ class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
                         size: constants.fsHeadline,
                       ),
                     )
-                  : (viewModel.noRoomsFound || viewModel.selectedRoomId == null)
-                  ? _NoRoomsFound(token: widget.token)
                   : Center(
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: 600),
@@ -115,8 +113,8 @@ class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
 
 class _NoRoomsFound extends StatelessWidget {
   final String token;
-
-  const _NoRoomsFound({required this.token});
+  final BaseConsultationsViewmodel viewModel;
+  const _NoRoomsFound({required this.token, required this.viewModel});
 
   @override
   Widget build(BuildContext context) {
@@ -128,17 +126,29 @@ class _NoRoomsFound extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(height: 80),
-              GestureDetector(
-                onTap: () => nav.toJoinRoom(token: token),
-                child: Text(
-                  "Try joining room to get started.",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: constants.fsTitle,
-                    color: constants.primary,
-                  ),
-                ),
-              ),
+              viewModel.ownerView == 0
+                  ? GestureDetector(
+                      onTap: () => nav.toJoinRoom(token: token),
+                      child: Text(
+                        "Try joining room to get started.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: constants.fsTitle,
+                          color: constants.primary,
+                        ),
+                      ),
+                    )
+                  : GestureDetector(
+                      onTap: () => nav.toCreateRoom(),
+                      child: Text(
+                        "Try creating room to get started.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: constants.fsTitle,
+                          color: constants.primary,
+                        ),
+                      ),
+                    ),
               const SizedBox(height: 20),
             ],
           ),
@@ -234,14 +244,23 @@ class _RoomSelectorButton extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: constants.fwSemiBold,
-                      color: constants.darkGrey,
+
+                      color:
+                          (viewModel.noRoomsFound ||
+                              viewModel.selectedRoomId == null)
+                          ? constants.darkGrey.withAlpha(50)
+                          : constants.darkGrey,
                     ),
                   ),
                   const SizedBox(width: 6),
                   Icon(
                     Icons.keyboard_arrow_down_rounded,
                     size: 20,
-                    color: constants.darkGrey,
+                    color:
+                        (viewModel.noRoomsFound ||
+                            viewModel.selectedRoomId == null)
+                        ? constants.darkGrey.withAlpha(50)
+                        : constants.darkGrey,
                   ),
                 ],
               ),
@@ -262,8 +281,8 @@ class _ConsultationsContent extends StatelessWidget {
   final Widget? toggle;
   final Widget? addButton;
   final Widget? deleteButton;
-  final Widget? Function(int blockId,bool isEmpty)? addSlotBefore;
-  final Widget? Function(int blockId,bool isEmpty)? addSlotAfter;
+  final Widget? Function(int blockId, bool isEmpty)? addSlotBefore;
+  final Widget? Function(int blockId, bool isEmpty)? addSlotAfter;
   final Widget Function(int blockId)? editBlockButton;
 
   const _ConsultationsContent({
@@ -284,51 +303,57 @@ class _ConsultationsContent extends StatelessWidget {
       children: [
         const SizedBox(height: 30),
         if (toggle != null) ...[toggle!, const SizedBox(height: 20)],
-        if (addButton != null || deleteButton != null) ...[
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (addButton != null) addButton!,
-              if (addButton != null && deleteButton != null)
-                const SizedBox(width: 16),
-              if (deleteButton != null) deleteButton!,
-            ],
-          ),
-          const SizedBox(height: 20),
-        ],
-        if (viewModel.getBlocksCount() == 0)
-          Padding(
-            padding: const EdgeInsets.only(top: 40),
-            child: Center(
-              child: Text(
-                "No upcoming consultations found.",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontWeight: constants.fwSemiBold,
-                  fontSize: constants.fsTitle,
-                ),
+        (viewModel.noRoomsFound || viewModel.selectedRoomId == null)
+            ? _NoRoomsFound(token: token, viewModel: viewModel)
+            : Column(
+                children: [
+                  if (addButton != null || deleteButton != null) ...[
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (addButton != null) addButton!,
+                        if (addButton != null && deleteButton != null)
+                          const SizedBox(width: 16),
+                        if (deleteButton != null) deleteButton!,
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                  if (viewModel.getBlocksCount() == 0)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 40),
+                      child: Center(
+                        child: Text(
+                          "No upcoming consultations found.",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontWeight: constants.fwSemiBold,
+                            fontSize: constants.fsTitle,
+                          ),
+                        ),
+                      ),
+                    )
+                  else
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 30),
+                        ..._sortedBlocks().map(
+                          (block) => _ConsultationBlockCard(
+                            viewModel: viewModel,
+                            blockEntry: block,
+                            token: token,
+                            email: email,
+                            editBlockButton: editBlockButton,
+                            addSlotBefore: addSlotBefore,
+                            addSlotAfter: addSlotAfter,
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
               ),
-            ),
-          )
-        else
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 30),
-              ..._sortedBlocks().map(
-                (block) => _ConsultationBlockCard(
-                  viewModel: viewModel,
-                  blockEntry: block,
-                  token: token,
-                  email: email,
-                  editBlockButton: editBlockButton,
-                  addSlotBefore: addSlotBefore,
-                  addSlotAfter: addSlotAfter,
-                ),
-              ),
-            ],
-          ),
       ],
     );
   }
@@ -352,8 +377,8 @@ class _ConsultationBlockCard extends StatelessWidget {
   final String token;
   final String email;
   final Widget Function(int blockId)? editBlockButton;
-  final Widget? Function(int blockId,bool isEmpty)? addSlotBefore;
-  final Widget? Function(int blockId,bool isEmpty)? addSlotAfter;
+  final Widget? Function(int blockId, bool isEmpty)? addSlotBefore;
+  final Widget? Function(int blockId, bool isEmpty)? addSlotAfter;
 
   const _ConsultationBlockCard({
     required this.viewModel,
@@ -403,8 +428,9 @@ class _ConsultationBlockCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                if (addSlotBefore != null) addSlotBefore!(blockEntry.key,slots.isEmpty)!,
-              
+                if (addSlotBefore != null)
+                  addSlotBefore!(blockEntry.key, slots.isEmpty)!,
+
                 ListView.builder(
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
@@ -424,7 +450,8 @@ class _ConsultationBlockCard extends StatelessWidget {
                     );
                   },
                 ),
-                if (addSlotAfter != null) addSlotAfter!(blockEntry.key,slots.isEmpty)!,
+                if (addSlotAfter != null)
+                  addSlotAfter!(blockEntry.key, slots.isEmpty)!,
               ],
             ),
           ),
