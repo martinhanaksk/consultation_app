@@ -11,13 +11,23 @@ class TeacherConsultationsViewmodel extends BaseConsultationsViewmodel {
       ownerView == 0 ? api.getJoinedRooms(token) : api.getMyRoomsTeacher(token);
 
   Future<void> deleteRoom(String token) async {
+    isLoading = true;
+    notifyListeners();
     try {
+      nav.pop();
       bool b = await api.deleteRoom(token, int.parse(safeSelectedRoomId!));
       if (b) {
         notify.showToast('Room was successfully deleted.');
       }
     } catch (e) {
       notify.showToast('Error while deleting room.');
+    } finally {
+      isLoading = false;
+      notifyListeners();
+      nav.toTeacherConsultations(
+        token: token,
+        email: await prefs.getItem("email"),
+      );
     }
   }
 

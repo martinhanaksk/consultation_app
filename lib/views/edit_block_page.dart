@@ -1,5 +1,4 @@
 import 'package:consultation_app/setup.dart';
-import 'package:consultation_app/viewmodels/create_block_viewmodel.dart';
 import 'package:consultation_app/viewmodels/edit_block_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';

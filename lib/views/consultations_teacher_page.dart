@@ -148,18 +148,20 @@ class _AddBlockButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => nav.toCreateBlock(
-        token: token,
-        roomId: viewModel.safeSelectedRoomId!,
-        onSuccess: () => viewModel.loadRoom(token),
-      ),
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: constants.squircleShadow(color: constants.grey),
-        child: Icon(Icons.add, size: 25, color: constants.darkGrey),
-      ),
-    );
+    return (viewModel.noRoomsFound || viewModel.selectedRoomId == null)
+        ? const SizedBox.shrink()
+        : GestureDetector(
+            onTap: () => nav.toCreateBlock(
+              token: token,
+              roomId: viewModel.safeSelectedRoomId!,
+              onSuccess: () => viewModel.loadRoom(token),
+            ),
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: constants.squircleShadow(color: constants.grey),
+              child: Icon(Icons.add, size: 25, color: constants.darkGrey),
+            ),
+          );
   }
 }
 
@@ -173,21 +175,24 @@ class _DeleteRoomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => showDialog(
-        context: context,
-        builder: (_) => _DeleteRoomDialog(token: token, viewModel: viewModel),
-      ),
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: constants.squircleShadow(color: constants.grey),
-        child: Icon(
-          Icons.delete_outline_rounded,
-          size: 25,
-          color: constants.darkGrey,
-        ),
-      ),
-    );
+    return (viewModel.noRoomsFound || viewModel.selectedRoomId == null)
+        ? const SizedBox.shrink()
+        : GestureDetector(
+            onTap: () => showDialog(
+              context: context,
+              builder: (_) =>
+                  _DeleteRoomDialog(token: token, viewModel: viewModel),
+            ),
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: constants.squircleShadow(color: constants.grey),
+              child: Icon(
+                Icons.delete_outline_rounded,
+                size: 25,
+                color: constants.darkGrey,
+              ),
+            ),
+          );
   }
 }
 
@@ -230,8 +235,7 @@ class _DeleteRoomDialog extends StatelessWidget {
         ElevatedButton(
           onPressed: () async {
             await viewModel.deleteRoom(token);
-            await viewModel.loadRoom(token);
-            nav.pop();
+            
           },
           child: Text("Delete", style: TextStyle(color: constants.primary)),
         ),
