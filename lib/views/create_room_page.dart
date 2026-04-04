@@ -51,28 +51,7 @@ class _CreateRoomState extends State<CreateRoom> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      TextField(
-                        controller: roomNameController,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: constants.grey),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: constants.grey),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: constants.primary,
-                              width: 1.5,
-                            ),
-                          ),
-                          hintText: 'Room name',
-                        ),
-                      ),
-                      const SizedBox(height: 16),
+
                       TextField(
                         controller: titleController,
                         decoration: InputDecoration(
@@ -94,6 +73,29 @@ class _CreateRoomState extends State<CreateRoom> {
                           hintText: 'Title',
                         ),
                       ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: roomNameController,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: constants.grey),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: constants.grey),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: constants.primary,
+                              width: 1.5,
+                            ),
+                          ),
+                          hintText: 'Room name',
+                        ),
+                      ),
+
                       const SizedBox(height: 16),
                       TextField(
                         controller: descriptionController,

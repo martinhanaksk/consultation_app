@@ -156,6 +156,68 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                 ),
                                 GestureDetector(
                                   onTap: () {
+                                    viewModel.setVisibility(
+                                      !viewModel.visibility,
+                                    );
+                                  },
+
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                      vertical: 14,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.visibility,
+                                          color: constants.primary,
+                                          size: constants.fsBody,
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                "Visibility",
+                                                style: TextStyle(
+                                                  fontSize: constants.fsBody,
+                                                  fontWeight:
+                                                      constants.fwSemiBold,
+                                                  color: constants.darkGrey,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                "Show your name to others.",
+                                                style: TextStyle(
+                                                  fontSize: constants.fsLabel,
+                                                  color: constants.darkGrey
+                                                      .withValues(alpha: 0.55),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Checkbox(
+                                          value: viewModel.visibility,
+                                          activeColor: constants.primary,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              4,
+                                            ),
+                                          ),
+                                          onChanged: (val) {
+                                            viewModel.setVisibility(val);
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
                                     viewModel.setReceiveEmail(
                                       !viewModel.receiveEmails,
                                     );
@@ -249,26 +311,30 @@ class _InfoTile extends StatelessWidget {
         children: [
           Icon(icon, color: constants.primary, size: constants.fsBody),
           const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: constants.fsLabel,
-                  color: constants.grey,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: constants.fsLabel,
+                    color: constants.grey,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: constants.fsBody,
-                  fontWeight: constants.fwSemiBold,
-                  color: constants.darkGrey,
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: constants.fsBody,
+                    fontWeight: constants.fwSemiBold,
+                    color: constants.darkGrey,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

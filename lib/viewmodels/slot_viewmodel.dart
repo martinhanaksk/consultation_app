@@ -22,8 +22,9 @@ class SlotViewmodel extends ChangeNotifier {
       return;
     }
     _isLoading = true;
+    int temp = isOnlineSelected ? 1 : 0;
     try {
-      await api.takeSlot(token, id, note);
+      await api.takeSlot(token, id, note, temp);
       _isLoading = false;
     } catch (e) {
       _isLoading = false;

@@ -14,12 +14,12 @@ class TeacherConsultationsViewmodel extends BaseConsultationsViewmodel {
     isLoading = true;
     notifyListeners();
     try {
-      nav.pop();
+      
       bool b = await api.deleteRoom(token, int.parse(safeSelectedRoomId!));
-      if (b) {
+      if (b) {nav.pop();
         notify.showToast('Room was successfully deleted.');
       }
-    } catch (e) {
+    } catch (e) {nav.pop();
       notify.showToast('Error while deleting room.');
     } finally {
       isLoading = false;
@@ -28,18 +28,13 @@ class TeacherConsultationsViewmodel extends BaseConsultationsViewmodel {
         token: token,
         email: await prefs.getItem("email"),
       );
+      
     }
   }
 
   // teacher_consultations_viewmodel.dart
   @override
   Future<void> init(String token, String email) async {
-    if (await prefs.containsItem("ownerView") == false) {
-      await setOwnerView(0);
-    } else {
-      await setOwnerView(int.parse(await prefs.getItem('ownerView')));
-    }
-
     isLoading = true;
     notifyListeners();
     if (!await checkConnection()) return;
@@ -67,11 +62,8 @@ class TeacherConsultationsViewmodel extends BaseConsultationsViewmodel {
     selectedRoomId = ownerView == 1
         ? ownerSelectedRoomId
         : visitorSelectedRoomId;
-
     final firstRoomId = selectedRoomId;
-    if (selectedRoomId == ownerSelectedRoomId && ownerView == 0) {
-      await setOwnerView(1);
-    }
+
     if (firstRoomId != null) {
       await refreshRoomData(token, int.parse(firstRoomId));
     }

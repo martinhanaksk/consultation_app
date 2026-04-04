@@ -3,6 +3,7 @@ import 'package:consultation_app/viewmodels/create_block_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:flutter/cupertino.dart';
@@ -23,9 +24,17 @@ class CreateBlock extends StatefulWidget {
 }
 
 class _CreateBlockState extends State<CreateBlock> {
+  late final CreateBlockViewmodel _viewModel;
   @override
   void initState() {
     super.initState();
+    _viewModel = CreateBlockViewmodel();
+  }
+
+  @override
+  void dispose() {
+    _viewModel.dispose();
+    super.dispose();
   }
 
   void _showDatePickerDialog(
@@ -192,149 +201,11 @@ class _CreateBlockState extends State<CreateBlock> {
     );
   }
 
-  void _showDurationPicker(CreateBlockViewmodel viewModel) {
-    Duration? tempTime = viewModel.duration ?? Duration.zero;
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Select Minutes per Slot'),
-        contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
-        backgroundColor: constants.background,
-        content: SizedBox(
-          width: 300,
-          height: 150,
-          child: CupertinoPicker(
-            backgroundColor: constants.background,
-            itemExtent: 40,
-
-            onSelectedItemChanged: (index) {
-              tempTime = Duration(minutes: index * 5);
-            },
-            children: List.generate(
-              24, // 0–115 minutes, step 5
-              (i) => Center(
-                child: Text(
-                  '${i * 5} min',
-                  style: TextStyle(fontSize: constants.fsBody),
-                ),
-              ),
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Cancel',
-              style: TextStyle(
-                color: constants.primary,
-                fontWeight: constants.fwRegular,
-                fontSize: constants.fsLabel,
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              viewModel.setDuration(tempTime!);
-
-              Navigator.pop(context);
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: constants.squircleShadow(color: constants.primary),
-              child: Text(
-                'Confirm',
-                style: TextStyle(
-                  color: constants.background,
-                  fontWeight: constants.fwRegular,
-                  fontSize: constants.fsLabel,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showTimePicker(CreateBlockViewmodel viewModel) {
-    TimeOfDay now = TimeOfDay.now();
-    int roundedMinute = now.minute - (now.minute % 5);
-
-    TimeOfDay tempTime = viewModel.startTime != null
-        ? TimeOfDay(
-            hour: viewModel.startTime!.inHours,
-            minute: viewModel.startTime!.inMinutes % 60,
-          )
-        : TimeOfDay(hour: now.hour, minute: roundedMinute);
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Select Start Time'),
-        contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
-        backgroundColor: constants.background,
-        content: SizedBox(
-          width: 300,
-          height: 150,
-          child: CupertinoDatePicker(
-            backgroundColor: constants.background,
-            mode: CupertinoDatePickerMode.time,
-            use24hFormat: true,
-            initialDateTime: DateTime(
-              2000,
-              1,
-              1,
-              tempTime.hour,
-              tempTime.minute,
-            ),
-            minuteInterval: 5,
-            onDateTimeChanged: (dt) {
-              tempTime = TimeOfDay(hour: dt.hour, minute: dt.minute);
-            },
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Cancel',
-              style: TextStyle(
-                color: constants.primary,
-                fontWeight: constants.fwRegular,
-                fontSize: constants.fsLabel,
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              viewModel.setStartTime(
-                Duration(hours: tempTime.hour, minutes: tempTime.minute),
-              );
-              Navigator.pop(context);
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: constants.squircleShadow(color: constants.primary),
-              child: Text(
-                'Confirm',
-                style: TextStyle(
-                  color: constants.background,
-                  fontWeight: constants.fwRegular,
-                  fontSize: constants.fsLabel,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => CreateBlockViewmodel(),
+    return ChangeNotifierProvider.value(
+      value: _viewModel,
+
       child: Consumer<CreateBlockViewmodel>(
         builder: (context, viewModel, child) {
           return Scaffold(
@@ -384,32 +255,61 @@ class _CreateBlockState extends State<CreateBlock> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Flexible(
+                              flex: 8,
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "Minutes per Slot",
+                                    style: TextStyle(
+                                      fontSize: constants.fsLabel,
+                                      fontWeight: constants.fwSemiBold,
+                                      color: constants.darkGrey,
+                                    ),
+                                  ),
+                                  _DurationPicker(viewModel: viewModel),
+                                ],
+                              ),
+                            ),
+                            Flexible(flex: 1, child: SizedBox()),
+                            Flexible(
                               flex: 10,
-                              child: GestureDetector(
-                                onTap: () => _showTimePicker(viewModel),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 12,
-                                    horizontal: 16,
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "Block Start Time",
+                                    style: TextStyle(
+                                      fontSize: constants.fsLabel,
+                                      fontWeight: constants.fwSemiBold,
+                                      color: constants.darkGrey,
+                                    ),
                                   ),
-                                  decoration: constants.squircleShadow(
-                                    color: constants.background,
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        viewModel.startTime == null
-                                            ? 'Start Time'
-                                            : "Start ${viewModel.getPrintableTimeFormat(TimePickerAction.startTime)}",
+                                  _StartTimePicker(viewModel: viewModel),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Flexible(
+                              flex: 5,
+                              child: Container(
+                                clipBehavior: Clip.none,
+                                decoration: constants.squircleShadow(
+                                  color: constants.background,
+                                ),
+                                child: TextField(
+                                  scrollPadding: EdgeInsets.only(bottom: 1000),
+                                  controller: viewModel.slotNumberController,
+                                  keyboardType: TextInputType.number,
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                    ),
 
-                                        style: TextStyle(
-                                          fontSize: constants.fsBody,
-                                        ),
-                                      ),
-                                      const Icon(Icons.access_time, size: 18),
-                                    ],
+                                    hintText: 'Slots',
                                   ),
                                 ),
                               ),
@@ -434,7 +334,7 @@ class _CreateBlockState extends State<CreateBlock> {
                                       Text(
                                         viewModel.endTime == null
                                             ? 'End Time'
-                                            : "End ${viewModel.getPrintableTimeFormat(TimePickerAction.endTime)}",
+                                            : "End Time ${viewModel.getPrintableTimeFormat(TimePickerAction.endTime)}",
 
                                         style: TextStyle(
                                           fontSize: constants.fsBody,
@@ -442,68 +342,6 @@ class _CreateBlockState extends State<CreateBlock> {
                                       ),
                                       const Icon(Icons.access_time, size: 18),
                                     ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Flexible(
-                              flex: 10,
-                              child: GestureDetector(
-                                onTap: () => _showDurationPicker(viewModel),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 12,
-                                    horizontal: 16,
-                                  ),
-                                  decoration: constants.squircleShadow(
-                                    color: constants.background,
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        viewModel.duration == null
-                                            ? 'Duration'
-                                            : "Duration ${viewModel.getPrintableTimeFormat(TimePickerAction.duration)}",
-
-                                        style: TextStyle(
-                                          fontSize: constants.fsBody,
-                                        ),
-                                      ),
-                                      const Icon(
-                                        Icons.hourglass_bottom_rounded,
-                                        size: 18,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Flexible(flex: 1, child: SizedBox()),
-                            Flexible(
-                              flex: 5,
-                              child: Container(
-                                clipBehavior: Clip.none,
-                                decoration: constants.squircleShadow(
-                                  color: constants.background,
-                                ),
-                                child: TextField(
-                                  scrollPadding: EdgeInsets.only(bottom: 1000),
-                                  controller: viewModel.slotNumberController,
-                                  keyboardType: TextInputType.number,
-                                  decoration: InputDecoration(
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide.none,
-                                    ),
-
-                                    hintText: 'Slots',
                                   ),
                                 ),
                               ),
@@ -555,36 +393,43 @@ class _CreateBlockState extends State<CreateBlock> {
                           ],
                         ),
                         SizedBox(height: 20),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 48,
-                          child: ElevatedButton(
-                            onPressed: () => {
-                              viewModel.createBlock(
-                                widget.token,
-                                widget.roomId,
-                                widget.onSuccess,
+                        viewModel.isLoading
+                            ? Center(
+                                child: SpinKitPouringHourGlass(
+                                  color: constants.primary,
+                                  size: constants.fsHeadline,
+                                ),
+                              )
+                            : SizedBox(
+                                width: double.infinity,
+                                height: 48,
+                                child: ElevatedButton(
+                                  onPressed: () => {
+                                    viewModel.createBlock(
+                                      widget.token,
+                                      widget.roomId,
+                                      widget.onSuccess,
+                                    ),
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: constants.primary,
+                                    disabledBackgroundColor: constants.primary,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(14),
+                                    ),
+                                    elevation: 2,
+                                    shadowColor: constants.primary,
+                                  ),
+                                  child: Text(
+                                    'Create',
+                                    style: TextStyle(
+                                      fontSize: constants.fsBody,
+                                      fontWeight: constants.fwSemiBold,
+                                      color: constants.background,
+                                    ),
+                                  ),
+                                ),
                               ),
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: constants.primary,
-                              disabledBackgroundColor: constants.primary,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              elevation: 2,
-                              shadowColor: constants.primary,
-                            ),
-                            child: Text(
-                              'Create',
-                              style: TextStyle(
-                                fontSize: constants.fsBody,
-                                fontWeight: constants.fwSemiBold,
-                                color: constants.background,
-                              ),
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                   ),
@@ -593,6 +438,106 @@ class _CreateBlockState extends State<CreateBlock> {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _StartTimePicker extends StatefulWidget {
+  final CreateBlockViewmodel viewModel;
+  const _StartTimePicker({required this.viewModel});
+
+  @override
+  State<_StartTimePicker> createState() => _StartTimePickerState();
+}
+
+class _StartTimePickerState extends State<_StartTimePicker> {
+  late DateTime _current;
+
+  @override
+  void initState() {
+    super.initState();
+    final now = TimeOfDay.now();
+    final rounded = now.minute - (now.minute % 5);
+
+    _current = widget.viewModel.startTime != null
+        ? DateTime(
+            2000,
+            1,
+            1,
+            widget.viewModel.startTime!.inHours,
+            widget.viewModel.startTime!.inMinutes % 60,
+          )
+        : DateTime(2000, 1, 1, now.hour, rounded);
+    widget.viewModel.setStartTime(
+      Duration(hours: _current.hour, minutes: _current.minute),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 150,
+      child: CupertinoDatePicker(
+        backgroundColor: constants.background,
+        mode: CupertinoDatePickerMode.time,
+        use24hFormat: true,
+        initialDateTime: _current,
+        minuteInterval: 5,
+        onDateTimeChanged: (dt) {
+          _current = dt;
+          widget.viewModel.setStartTime(
+            Duration(hours: dt.hour, minutes: dt.minute),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _DurationPicker extends StatefulWidget {
+  final CreateBlockViewmodel viewModel;
+  const _DurationPicker({required this.viewModel});
+
+  @override
+  State<_DurationPicker> createState() => _DurationPickerState();
+}
+
+class _DurationPickerState extends State<_DurationPicker> {
+  late FixedExtentScrollController _scrollController;
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = FixedExtentScrollController(initialItem: 3);
+    widget.viewModel.setDuration(Duration(minutes: 15));
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 150,
+      child: CupertinoPicker(
+        backgroundColor: constants.background,
+        itemExtent: 40,
+        scrollController: _scrollController,
+        onSelectedItemChanged: (index) {
+          widget.viewModel.setDuration(Duration(minutes: index * 5));
+        },
+        children: List.generate(
+          24,
+          (i) => Center(
+            child: Text(
+              '${i * 5} min',
+              style: TextStyle(fontSize: constants.fsBody),
+            ),
+          ),
+        ),
       ),
     );
   }

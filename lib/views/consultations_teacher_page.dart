@@ -2,6 +2,7 @@ import 'package:consultation_app/viewmodels/teacher_consultations_viewmodel.dart
 import 'package:consultation_app/views/consultations_base_page.dart';
 import 'package:consultation_app/views/custom_widgets/animated_toggle_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:consultation_app/setup.dart';
@@ -28,7 +29,11 @@ class _ConsultationsTeacherPageState extends State<ConsultationsTeacherPage> {
   void initState() {
     super.initState();
     _viewModel = TeacherConsultationsViewmodel();
-    _viewModel.init(widget.token, widget.email);
+    initialize();
+  }
+
+  void initialize() async {
+    await _viewModel.init(widget.token, widget.email);
   }
 
   @override
@@ -203,41 +208,64 @@ class _DeleteRoomDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: RichText(
-        text: TextSpan(
-          children: [
-            TextSpan(
-              text: 'Delete ',
-              style: TextStyle(
-                color: constants.darkGrey,
-                fontWeight: constants.fwRegular,
-                fontSize: constants.fsBody,
-              ),
+    return ListenableBuilder(
+      listenable: viewModel, 
+      builder: (context, _) {
+        return AlertDialog(
+          title: RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: 'Delete ',
+                  style: TextStyle(
+                    color: constants.darkGrey,
+                    fontWeight: constants.fwRegular,
+                    fontSize: constants.fsBody,
+                  ),
+                ),
+                TextSpan(
+                  text: '${viewModel.getRoomNameById()}?',
+                  style: TextStyle(
+                    color: constants.darkGrey,
+                    fontWeight: constants.fwSemiBold,
+                    fontSize: constants.fsBody,
+                  ),
+                ),
+              ],
             ),
-            TextSpan(
-              text: '${viewModel.getRoomNameById()}?',
-              style: TextStyle(
-                color: constants.darkGrey,
-                fontWeight: constants.fwSemiBold,
-                fontSize: constants.fsBody,
-              ),
-            ),
+          ),
+          actions: [
+            viewModel.isLoading
+                ? Center(
+                    child: SpinKitPouringHourGlass(
+                      color: constants.primary,
+                      size: constants.fsHeadline,
+                    ),
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () => nav.pop(),
+                        child: Text(
+                          "Cancel",
+                          style: TextStyle(color: constants.primary),
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          await viewModel.deleteRoom(token);
+                        },
+                        child: Text(
+                          "Delete",
+                          style: TextStyle(color: constants.primary),
+                        ),
+                      ),
+                    ],
+                  ),
           ],
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => nav.pop(),
-          child: Text("Cancel", style: TextStyle(color: constants.primary)),
-        ),
-        ElevatedButton(
-          onPressed: () async {
-            await viewModel.deleteRoom(token);
-          },
-          child: Text("Delete", style: TextStyle(color: constants.primary)),
-        ),
-      ],
+        );
+      },
     );
   }
 }

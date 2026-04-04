@@ -46,6 +46,7 @@ class _SliderMenuState extends State<SliderMenu> {
                             child: SvgPicture.asset(
                               'assets/resources/logo-whole.svg',
                               width: 120,
+                              color: constants.primary,
                               fit: BoxFit.cover,
                             ),
                             onTap: () {

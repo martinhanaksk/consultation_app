@@ -19,12 +19,11 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   String? ownerSelectedRoomId;
   String? visitorSelectedRoomId;
 
-  int _ownerView = 0;
+  int _ownerView = 1;
   int get ownerView => _ownerView;
   String? selectedRoomId;
   Future<void> setOwnerView(int value) async {
     _ownerView = value;
-    await prefs.saveItem("ownerView", value);
     notifyListeners();
   }
 
@@ -188,7 +187,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
 
   // base_consultations_viewmodel.dart
   Future<void> init(String token, String email) async {
-    await setOwnerView(0); // students are always visitor view
+    await setOwnerView(0);
     isLoading = true;
     notifyListeners();
     if (!await checkConnection()) return;
@@ -196,7 +195,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     helpers.checkIfValidToken(token);
     isTeacher = await resolveUserRole(token, email);
 
-    final myRooms = await fetchRooms(token); // getJoinedRooms only
+    final myRooms = await fetchRooms(token);
     if (myRooms.isEmpty) {
       noRoomsFound = true;
       isLoading = false;
@@ -220,3 +219,5 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     }
   }
 }
+
+enum ViewMode { visitor, owner }

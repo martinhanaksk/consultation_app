@@ -236,9 +236,14 @@ class ApiService {
   }
 
   //slot
-  Future<void> takeSlot(String token, int id, String note) async {
+  Future<void> takeSlot(
+    String token,
+    int id,
+    String note,
+    int is_online,
+  ) async {
     final Uri url = Uri.parse(
-      '${constants.url}/slot/take?slot_id=$id&note=$note',
+      '${constants.url}/slot/take?slot_id=$id&note=$note&is_online=$is_online',
     );
 
     final response = await http.post(
@@ -266,6 +271,41 @@ class ApiService {
     );
     if (response.statusCode != 200) {
       throw Exception('Failed to release slot: ${response.statusCode}');
+    }
+  }
+
+  Future<bool> getVisibility(String token, String email) async {
+    final Uri url = Uri.parse('${constants.url}/users/visible?email=${email}');
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    final data = jsonDecode(response.body);
+    if (data != null) {
+      return data['visible'] ?? false;
+    }
+    if (response.statusCode != 200) {
+      throw Exception('Failed to get visibility ${response.statusCode}');
+    }
+    return false;
+  }
+
+  Future<void> setVisibility(String token) async {
+    final Uri url = Uri.parse('${constants.url}/users/visible');
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to set visibility ${response.statusCode}');
     }
   }
 
@@ -416,8 +456,11 @@ class ApiService {
       return true;
     }
   }
+
   Future<bool> deleteBlock(String token, int blockId) async {
-    final Uri url = Uri.parse('${constants.url}/block/delete?block_id=$blockId');
+    final Uri url = Uri.parse(
+      '${constants.url}/block/delete?block_id=$blockId',
+    );
 
     final response = await http.delete(
       url,

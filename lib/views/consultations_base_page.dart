@@ -45,8 +45,12 @@ class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
     super.initState();
     _viewModel = widget.viewModel ?? BaseConsultationsViewmodel();
     if (widget.viewModel == null) {
-      _viewModel.init(widget.token, widget.email);
+      initialize();
     }
+  }
+
+  void initialize() async {
+    await _viewModel.init(widget.token, widget.email);
   }
 
   @override
@@ -174,7 +178,8 @@ class _RoomSelectorButton extends StatelessWidget {
     return Transform.translate(
       offset: const Offset(0, -1),
       child: Container(
-        padding: const EdgeInsets.fromLTRB(0, 10, 0, 50),
+        decoration: BoxDecoration(color: constants.background),
+        padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
         child: Center(
           child: PopupMenuButton<String>(
             position: PopupMenuPosition.under,

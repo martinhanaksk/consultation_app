@@ -7,6 +7,7 @@ import 'package:figma_squircle/figma_squircle.dart';
 import 'dart:async';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
 class EmailInputPage extends StatefulWidget {
   const EmailInputPage({super.key});
 
@@ -72,6 +73,7 @@ class _EmailInputPageState extends State<EmailInputPage> {
                               child: SvgPicture.asset(
                                 'assets/resources/logo-whole.svg',
                                 width: 232,
+                                color: constants.primary,
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -85,7 +87,8 @@ class _EmailInputPageState extends State<EmailInputPage> {
                                   cornerSmoothing: 0.6,
                                 ),
                               ),
-                              child: TextField(scrollPadding: EdgeInsets.only(bottom: 1000),
+                              child: TextField(
+                                scrollPadding: EdgeInsets.only(bottom: 1000),
                                 onChanged: viewModel.updateEmail,
                                 decoration: InputDecoration(
                                   border: OutlineInputBorder(

@@ -46,7 +46,6 @@ class _AnimatedToggleState extends State<AnimatedToggle> {
   @override
   Widget build(BuildContext context) {
     final selectedText = initialPosition ? widget.values[0] : widget.values[1];
-
     return SizedBox(
       width: widget.width,
       height: widget.height,

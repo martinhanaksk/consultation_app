@@ -7,7 +7,7 @@ import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class CreateBlockViewmodel extends ChangeNotifier {
   // --- Date Picker ---
-
+  bool isLoading = false;
   bool _isChecked = true;
   bool get isChecked => _isChecked;
   String dateCount = '';
@@ -117,11 +117,10 @@ class CreateBlockViewmodel extends ChangeNotifier {
   void setStartTime(Duration value) {
     _startTime = value;
     updateEndTime();
-    notifyListeners();
   }
 
   void setEndTime(Duration value) {
-    if (value.inHours > 24) {
+    if (value.inHours > 23) {
       _endTime = null;
     } else {
       _endTime = value;
@@ -133,7 +132,6 @@ class CreateBlockViewmodel extends ChangeNotifier {
   void setDuration(Duration value) {
     _duration = value;
     updateEndTime();
-    notifyListeners();
   }
 
   String getPrintableTimeFormat(TimePickerAction action) {
@@ -199,9 +197,13 @@ class CreateBlockViewmodel extends ChangeNotifier {
   }
 
   void createBlock(String token, String roomId, VoidCallback? onSuccess) async {
+    isLoading = true;
+    notifyListeners();
     final error = validateCreate();
     if (error != null) {
       notify.showToast(error);
+      isLoading = false;
+      notifyListeners();
       return;
     }
 
@@ -230,12 +232,17 @@ class CreateBlockViewmodel extends ChangeNotifier {
         );
         if (!success) {
           notify.showToast('Failed to create slot $j for block $blockId');
+          isLoading = false;
+          notifyListeners();
           return;
         }
       }
     }
     notify.showToast('All blocks and slots created successfully');
+    isLoading = false;
+    notifyListeners();
     onSuccess?.call();
+
     nav.pop();
   }
 }
