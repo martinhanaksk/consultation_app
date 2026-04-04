@@ -68,13 +68,14 @@ class TeacherConsultationsViewmodel extends BaseConsultationsViewmodel {
         ? ownerSelectedRoomId
         : visitorSelectedRoomId;
 
-    final firstRoomId =
-        selectedRoomId ?? visitorSelectedRoomId ?? ownerSelectedRoomId;
-    selectedRoomId ??= firstRoomId;
+    final firstRoomId = selectedRoomId;
     if (selectedRoomId == ownerSelectedRoomId && ownerView == 0) {
       await setOwnerView(1);
     }
-    await refreshRoomData(token, int.parse(firstRoomId!));
+    if (firstRoomId != null) {
+      await refreshRoomData(token, int.parse(firstRoomId));
+    }
+
     isLoading = false;
     notifyListeners();
   }

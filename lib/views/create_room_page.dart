@@ -38,13 +38,16 @@ class _CreateRoomState extends State<CreateRoom> {
                 child: Padding(
                   padding: const EdgeInsets.all(24.0),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Create Room',
-                        style: TextStyle(
-                          fontSize: constants.fsHeadline,
-                          fontWeight: constants.fwSemiBold,
-                          color: constants.darkGrey,
+                      Center(
+                        child: Text(
+                          'Create Room',
+                          style: TextStyle(
+                            fontSize: constants.fsHeadline,
+                            fontWeight: constants.fwSemiBold,
+                            color: constants.darkGrey,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -110,10 +113,18 @@ class _CreateRoomState extends State<CreateRoom> {
                               width: 1.5,
                             ),
                           ),
-                          hintText: 'description',
+                          hintText: 'Description',
                         ),
                       ),
                       const SizedBox(height: 16),
+                      Text(
+                        "Allowed email domains",
+                        style: TextStyle(
+                          fontSize: constants.fsLabel,
+                          color: constants.darkGrey.withAlpha(70),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
                       TextField(
                         controller: acceptedEmailController,
                         decoration: InputDecoration(
@@ -133,7 +144,10 @@ class _CreateRoomState extends State<CreateRoom> {
                             ),
                           ),
                           suffixIcon: GestureDetector(
-                            child: Icon(Icons.add_circle_outline),
+                            child: Icon(
+                              Icons.add_circle_outline,
+                              color: constants.primary,
+                            ),
                             onTap: () {
                               if (validator.validateNotEmpty(
                                 acceptedEmailController.text.trim(),
@@ -148,17 +162,25 @@ class _CreateRoomState extends State<CreateRoom> {
                               }
                             },
                           ),
-                          hintText: 'Accepted Email format',
+                          hintText: '@domain.com, user@domain.com..',
                         ),
                       ),
                       const SizedBox(height: 16),
-                      GestureDetector(
-                        child: Text(
-                          "Show the list of emails entered (${viewModel.acceptedEmails.length})",
+                      Center(
+                        child: GestureDetector(
+                          onTap: () =>
+                              nav.toDisplayListOfEmails(viewModel: viewModel),
+                          child: Text(
+                            "View added domains (${viewModel.acceptedEmails.length})",
+                            style: TextStyle(
+                              color: constants.primary,
+                              fontSize: constants.fsLabel,
+                              fontWeight: constants.fwSemiBold,
+                              decoration: TextDecoration.underline,
+                              decorationColor: constants.primary,
+                            ),
+                          ),
                         ),
-                        onTap: () {
-                          nav.toDisplayListOfEmails(viewModel: viewModel);
-                        },
                       ),
                       const SizedBox(height: 16),
                       viewModel.isLoading
