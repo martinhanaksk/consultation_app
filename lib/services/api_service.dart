@@ -309,6 +309,25 @@ class ApiService {
     }
   }
 
+  Future<void> changeConsultationType(String token, String slot_id) async {
+    final Uri url = Uri.parse(
+      '${constants.url}/slot/change-consultation-type?slot_id=${slot_id}',
+    );
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception(
+        'Failed to change consultation type ${response.statusCode}',
+      );
+    }
+  }
+
   Future<void> subscribeToBlock(String token, int blockid) async {
     final Uri url = Uri.parse(
       '${constants.url}/block/subscribe?block_id=$blockid',

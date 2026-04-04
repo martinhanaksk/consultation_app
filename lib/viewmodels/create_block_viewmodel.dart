@@ -8,7 +8,7 @@ import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 class CreateBlockViewmodel extends ChangeNotifier {
   // --- Date Picker ---
   bool isLoading = false;
-  bool _isChecked = true;
+  bool _isChecked = false;
   bool get isChecked => _isChecked;
   String dateCount = '';
   String range = '';
@@ -217,6 +217,11 @@ class CreateBlockViewmodel extends ChangeNotifier {
         int.parse(roomId),
         dates[i],
       );
+      if (response == "") {
+        isLoading = false;
+        notifyListeners();
+        return;
+      }
       final int blockId = jsonDecode(response)['id'];
       final List<Map<String, dynamic>> slots = [];
       for (int j = 0; j < slotCount; j++) {

@@ -211,165 +211,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    Text(
-                      "Meeting Type:",
-                      style: TextStyle(
-                        fontSize: constants.fsBody,
-                        fontWeight: constants.fwSemiBold,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      children: [
-                        // in-person
-                        viewModel.isOnlineSelected
-                            ? Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () =>
-                                      viewModel.setIsOnlineSelected(false),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: constants.background,
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 12,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      side: BorderSide(
-                                        color: constants.background,
-                                      ),
-                                    ),
-                                    elevation: 0,
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      SvgPicture.asset(
-                                        'assets/resources/location.svg',
-                                        colorFilter: ColorFilter.mode(
-                                          constants.grey,
-                                          BlendMode.srcIn,
-                                        ),
-                                      ),
-                                      Text(
-                                        "In-Person",
-                                        style: TextStyle(color: constants.grey),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )
-                            : Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () =>
-                                      viewModel.setIsOnlineSelected(false),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: constants.primary,
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 12,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      side: BorderSide(
-                                        color: constants.background,
-                                      ),
-                                    ),
-                                    elevation: 0,
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      SvgPicture.asset(
-                                        'assets/resources/location.svg',
-                                        colorFilter: ColorFilter.mode(
-                                          constants.background,
-                                          BlendMode.srcIn,
-                                        ),
-                                      ),
-                                      Text(
-                                        "In-Person",
-                                        style: TextStyle(
-                                          color: constants.background,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                        const SizedBox(width: 12),
-                        // Online
-                        viewModel.isOnlineSelected
-                            ? Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () =>
-                                      viewModel.setIsOnlineSelected(true),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: constants.primary,
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 12,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      side: BorderSide(
-                                        color: constants.background,
-                                      ),
-                                    ),
-                                    elevation: 0,
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      SvgPicture.asset(
-                                        'assets/resources/screen.svg',
-                                        colorFilter: ColorFilter.mode(
-                                          constants.background,
-                                          BlendMode.srcIn,
-                                        ),
-                                      ),
-                                      Text(
-                                        "Online",
-                                        style: TextStyle(
-                                          color: constants.background,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )
-                            : Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () =>
-                                      viewModel.setIsOnlineSelected(true),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: constants.background,
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 12,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      side: BorderSide(
-                                        color: constants.background,
-                                      ),
-                                    ),
-                                    elevation: 0,
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      SvgPicture.asset(
-                                        'assets/resources/screen.svg',
-                                        colorFilter: ColorFilter.mode(
-                                          constants.grey,
-                                          BlendMode.srcIn,
-                                        ),
-                                      ),
-                                      Text(
-                                        "Online",
-                                        style: TextStyle(color: constants.grey),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
+
                     Row(
                       children: [
                         Expanded(
@@ -563,21 +405,15 @@ class _SlotWidgetState extends State<SlotWidget> {
                                         ),
                                       ),
                                       const SizedBox(width: 8),
-                                      widget.slot.isOnline == 1
-                                          ? SvgPicture.asset(
-                                              'assets/resources/screen.svg',
-                                              colorFilter: ColorFilter.mode(
-                                                constants.background,
-                                                BlendMode.srcIn,
-                                              ),
-                                            )
-                                          : SvgPicture.asset(
-                                              'assets/resources/location.svg',
-                                              colorFilter: ColorFilter.mode(
-                                                constants.background,
-                                                BlendMode.srcIn,
-                                              ),
-                                            ),
+                                      if (widget.slot.isOnline == 1)
+                                        SvgPicture.asset(
+                                          'assets/resources/screen.svg',
+                                          colorFilter: ColorFilter.mode(
+                                            constants.background,
+                                            BlendMode.srcIn,
+                                          ),
+                                        ),
+
                                       const SizedBox(width: 8),
                                       GestureDetector(
                                         onTap: () async {
@@ -682,21 +518,15 @@ class _SlotWidgetState extends State<SlotWidget> {
                                         ),
                                       ),
                                       const SizedBox(width: 8),
-                                      widget.slot.isOnline == 1
-                                          ? SvgPicture.asset(
-                                              'assets/resources/screen.svg',
-                                              colorFilter: ColorFilter.mode(
-                                                constants.textUnavailableGrey,
-                                                BlendMode.srcIn,
-                                              ),
-                                            )
-                                          : SvgPicture.asset(
-                                              'assets/resources/location.svg',
-                                              colorFilter: ColorFilter.mode(
-                                                constants.textUnavailableGrey,
-                                                BlendMode.srcIn,
-                                              ),
-                                            ),
+                                      if (widget.slot.isOnline == 1)
+                                        SvgPicture.asset(
+                                          'assets/resources/screen.svg',
+                                          colorFilter: ColorFilter.mode(
+                                            constants.textUnavailableGrey,
+                                            BlendMode.srcIn,
+                                          ),
+                                        ),
+
                                       const SizedBox(width: 8),
                                       SizedBox(
                                         width: 20,

@@ -389,7 +389,7 @@ class _CreateBlockState extends State<CreateBlock> {
                               ),
                             ),
                             SizedBox(width: 8),
-                            const Text('In-Person'),
+                            const Text('Online'),
                           ],
                         ),
                         SizedBox(height: 20),

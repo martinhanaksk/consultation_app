@@ -36,7 +36,6 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
     _email = await prefs.getItem("email");
     _token = await prefs.getItem("token");
     bool visibilityResponse = await api.getVisibility(_token,_email);
-    print(visibilityResponse);
     UserModel um = await api.getUserByEmail(token, email);
     setReceiveEmail((await prefs.getItem('receiveEmails')));
     _name = um.name;
