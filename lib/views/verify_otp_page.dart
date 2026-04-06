@@ -1,6 +1,7 @@
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/verify_otp_viewmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 
@@ -113,34 +114,37 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                     SizedBox(
                       width: double.infinity,
                       height: 48,
-                      child: ElevatedButton(
-                        onPressed: viewModel.isLoading()
-                            ? null
-                            : () {
+                      child: viewModel.isLoading()
+                          ? SpinKitPouringHourGlass(
+                              color: constants.primary,
+                              size: constants.fsBody,
+                            )
+                          : ElevatedButton(
+                              onPressed: () {
                                 viewModel.connect(
                                   widget.email,
                                   otpcontroller.text.trim(),
                                   widget.rememberMe,
                                 );
                               },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: constants.primary,
-                          disabledBackgroundColor: constants.primary,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          elevation: 2,
-                          shadowColor: constants.primary,
-                        ),
-                        child: Text(
-                          'Connect',
-                          style: TextStyle(
-                            fontSize: constants.fsBody,
-                            fontWeight: constants.fwSemiBold,
-                            color: constants.background,
-                          ),
-                        ),
-                      ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: constants.primary,
+                                disabledBackgroundColor: constants.primary,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                                elevation: 2,
+                                shadowColor: constants.primary,
+                              ),
+                              child: Text(
+                                'Connect',
+                                style: TextStyle(
+                                  fontSize: constants.fsBody,
+                                  fontWeight: constants.fwSemiBold,
+                                  color: constants.background,
+                                ),
+                              ),
+                            ),
                     ),
                   ],
                 ),

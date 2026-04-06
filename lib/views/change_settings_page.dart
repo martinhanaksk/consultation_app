@@ -157,7 +157,6 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                 GestureDetector(
                                   onTap: () {
                                     viewModel.setVisibility(
-                                      !viewModel.visibility,
                                     );
                                   },
 
@@ -209,7 +208,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                             ),
                                           ),
                                           onChanged: (val) {
-                                            viewModel.setVisibility(val);
+                                            viewModel.setVisibility();
                                           },
                                         ),
                                       ],

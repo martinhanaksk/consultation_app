@@ -25,6 +25,9 @@ class ApiService {
       if ((await prefs.getItem('receiveEmails') == "")) {
         await prefs.saveItem('receiveEmails', false);
       }
+      bool visibilityResponse = await api.getVisibility(data['token'], email);
+
+      await prefs.saveItem('visibility', visibilityResponse);
 
       return true;
     } else {
@@ -405,10 +408,7 @@ class ApiService {
     }
   }
 
-  Future<List<String>> getConnectedUsersInRoom(
-    String token,
-    int roomId,
-  ) async {
+  Future<List<String>> getConnectedUsersInRoom(String token, int roomId) async {
     final Uri url = Uri.parse(
       '${constants.url}/room/get/conected_users?room_id=$roomId',
     );
@@ -422,8 +422,8 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
-     final List<dynamic> decoded = jsonDecode(response.body);
-    return decoded.map((json) => json['user_email'] as String).toList();
+      final List<dynamic> decoded = jsonDecode(response.body);
+      return decoded.map((json) => json['user_email'] as String).toList();
     } else {
       throw Exception(
         'Failed to fetch connected users: ${response.statusCode}',

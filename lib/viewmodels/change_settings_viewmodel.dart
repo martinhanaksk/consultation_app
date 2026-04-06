@@ -10,7 +10,7 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
   String _role = "";
   bool _receiveEmails = true;
   bool get receiveEmails => _receiveEmails;
-  bool _visibility = false;
+  bool _visibility = true;
   bool get visibility => _visibility;
   String get role => _role;
   String get name => _name;
@@ -25,17 +25,31 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setVisibility(bool? val) {
-    _visibility = val ?? false;
-    api.setVisibility(token);
+  Future<void> loadVisibility() async {
+    _visibility = await api.getVisibility(token, email);
+    await prefs.saveItem('visibility', _visibility);
     notifyListeners();
+  }
+
+  void setVisibility() async {
+    final newVal = !_visibility;
+    _visibility = newVal;
+    notifyListeners();
+    try {
+      await api.setVisibility(token);
+      await prefs.saveItem('visibility', newVal);
+    } catch (e) {
+      _visibility = !newVal;
+      notifyListeners();
+    }
   }
 
   Future<void> initialize() async {
     _hasBeenInitialized = true;
     _email = await prefs.getItem("email");
     _token = await prefs.getItem("token");
-    bool visibilityResponse = await api.getVisibility(_token, _email);
+
+    await loadVisibility();
     UserModel um = await api.getUserByEmail(token, email);
     setReceiveEmail((await prefs.getItem('receiveEmails')) ?? true);
     _name = um.name;

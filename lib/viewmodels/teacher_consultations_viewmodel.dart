@@ -5,21 +5,24 @@ import 'package:consultation_app/viewmodels/base_consultations_viewmodel.dart';
 
 class TeacherConsultationsViewmodel extends BaseConsultationsViewmodel {
   //0=visitor, 1=owner
-
+  List<RoomModel> _ownerRooms = [];
+  List<RoomModel> _visitorRooms = [];
   @override
-  Future<List<RoomModel>> fetchRooms(String token) =>
-      ownerView == 0 ? api.getJoinedRooms(token) : api.getMyRoomsTeacher(token);
+  Future<List<RoomModel>> fetchRooms(String token) async {
+    return ownerView == 0 ? _visitorRooms : _ownerRooms;
+  }
 
   Future<void> deleteRoom(String token) async {
     isLoading = true;
     notifyListeners();
     try {
-      
       bool b = await api.deleteRoom(token, int.parse(safeSelectedRoomId!));
-      if (b) {nav.pop();
+      if (b) {
+        nav.pop();
         notify.showToast('Room was successfully deleted.');
       }
-    } catch (e) {nav.pop();
+    } catch (e) {
+      nav.pop();
       notify.showToast('Error while deleting room.');
     } finally {
       isLoading = false;
@@ -28,7 +31,6 @@ class TeacherConsultationsViewmodel extends BaseConsultationsViewmodel {
         token: token,
         email: await prefs.getItem("email"),
       );
-      
     }
   }
 
@@ -42,30 +44,28 @@ class TeacherConsultationsViewmodel extends BaseConsultationsViewmodel {
     helpers.checkIfValidToken(token);
     isTeacher = await resolveUserRole(token, email);
 
-    final fetchedVisitorRooms = await api.getJoinedRooms(token);
-    final fetchedOwnerRooms = await api.getMyRoomsTeacher(token);
+    _visitorRooms = await api.getJoinedRooms(token);
+    _ownerRooms = await api.getMyRoomsTeacher(token);
 
-    if (fetchedVisitorRooms.isEmpty && fetchedOwnerRooms.isEmpty) {
+    if (_visitorRooms.isEmpty && _ownerRooms.isEmpty) {
       noRoomsFound = true;
       isLoading = false;
       notifyListeners();
       return;
     }
 
-    visitorSelectedRoomId = fetchedVisitorRooms.isNotEmpty
-        ? fetchedVisitorRooms[0].id.toString()
+    visitorSelectedRoomId = _visitorRooms.isNotEmpty
+        ? _visitorRooms[0].id.toString()
         : null;
-    ownerSelectedRoomId = fetchedOwnerRooms.isNotEmpty
-        ? fetchedOwnerRooms[0].id.toString()
+    ownerSelectedRoomId = _ownerRooms.isNotEmpty
+        ? _ownerRooms[0].id.toString()
         : null;
-
     selectedRoomId = ownerView == 1
         ? ownerSelectedRoomId
         : visitorSelectedRoomId;
-    final firstRoomId = selectedRoomId;
 
-    if (firstRoomId != null) {
-      await refreshRoomData(token, int.parse(firstRoomId));
+    if (selectedRoomId != null) {
+      await refreshRoomData(token, int.parse(selectedRoomId!));
     }
 
     isLoading = false;
@@ -164,34 +164,35 @@ class TeacherConsultationsViewmodel extends BaseConsultationsViewmodel {
   }
 
   void toggleView(String token, int value) async {
-    isLoading = true;
-    notifyListeners();
-
     await setOwnerView(value);
-    selectedRoomId = value == 1 ? ownerSelectedRoomId : visitorSelectedRoomId;
 
-    final fetchedRooms = await fetchRooms(token);
+    rooms = value == 1 ? _ownerRooms : _visitorRooms;
 
-    if (fetchedRooms.isEmpty) {
-      rooms = [];
+    if (rooms == null || rooms!.isEmpty) {
       noRoomsFound = true;
-      isLoading = false;
+      blocks = [];
+      slotsInBlocks = {};
       notifyListeners();
       return;
     }
 
-    final isValid = fetchedRooms.any((r) => r.id.toString() == selectedRoomId);
+    noRoomsFound = false;
+    selectedRoomId = value == 1 ? ownerSelectedRoomId : visitorSelectedRoomId;
 
+    final isValid = rooms!.any((r) => r.id.toString() == selectedRoomId);
     if (!isValid) {
-      final firstId = fetchedRooms[0].id.toString();
-      if (value == 1) {
+      final firstId = rooms![0].id.toString();
+      if (value == 1)
         ownerSelectedRoomId = firstId;
-      } else {
+      else
         visitorSelectedRoomId = firstId;
-      }
       selectedRoomId = firstId;
     }
 
+    notifyListeners();
+
+    isLoading = true;
+    notifyListeners();
     await loadRoom(token);
     isLoading = false;
     notifyListeners();

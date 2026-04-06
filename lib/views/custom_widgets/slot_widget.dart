@@ -325,7 +325,7 @@ class _SlotWidgetState extends State<SlotWidget> {
                             viewModel.isTakingSlot
                                 ? SpinKitPouringHourGlass(
                                     color: constants.primary,
-                                    size: constants.fsHeadline,
+                                    size: constants.fsLabel,
                                   )
                                 : SvgPicture.asset(
                                     'assets/resources/take_slot.svg',

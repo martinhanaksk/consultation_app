@@ -69,31 +69,34 @@ class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
             drawer: SliderMenu(),
             backgroundColor: constants.background,
             body: SafeArea(
-              child: viewModel.isLoading
-                  ? Center(
-                      child: SpinKitPouringHourGlass(
-                        color: constants.primary,
-                        size: constants.fsHeadline,
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 600),
+                  child: ScrollConfiguration(
+                    behavior: ScrollConfiguration.of(context).copyWith(
+                      physics: const BouncingScrollPhysics(
+                        parent: AlwaysScrollableScrollPhysics(),
                       ),
-                    )
-                  : Center(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 600),
-                        child: ScrollConfiguration(
-                          behavior: ScrollConfiguration.of(context).copyWith(
-                            physics: const BouncingScrollPhysics(
-                              parent: AlwaysScrollableScrollPhysics(),
-                            ),
-                            overscroll: false,
-                          ),
-                          child: ListView(
-                            children: [
-                              const SizedBox(height: 100),
-                              StickyHeader(
-                                header: _RoomSelectorButton(
-                                  viewModel: viewModel,
-                                ),
-                                content: _ConsultationsContent(
+                      overscroll: false,
+                    ),
+                    child: ListView(
+                      children: [
+                        const SizedBox(height: 100),
+                        StickyHeader(
+                          header: _RoomSelectorButton(viewModel: viewModel),
+                          content: viewModel.isLoading
+                              ? Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 200,
+                                  ),
+                                  child: Center(
+                                    child: SpinKitPouringHourGlass(
+                                      color: constants.primary,
+                                      size: constants.fsHeadline,
+                                    ),
+                                  ),
+                                )
+                              : _ConsultationsContent(
                                   viewModel: viewModel,
                                   token: widget.token,
                                   email: widget.email,
@@ -104,12 +107,12 @@ class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
                                   addSlotBefore: widget.addSlotBefore,
                                   addSlotAfter: widget.addSlotAfter,
                                 ),
-                              ),
-                            ],
-                          ),
                         ),
-                      ),
+                      ],
                     ),
+                  ),
+                ),
+              ),
             ),
           );
         },
@@ -426,27 +429,29 @@ class _ConsultationBlockCard extends StatelessWidget {
                                     bool canRecieveEmails =
                                         await prefs.getItem('receiveEmails') ==
                                         true;
-                                    if (!canRecieveEmails){notify.showToast(
+                                    if (!canRecieveEmails) {
+                                      notify.showToast(
                                         "Turn on email recieving in the settings",
-                                      ); return;}
-                                      viewModel.setTemporarybellboolean(
-                                        !viewModel.temporaryBellBoolean,
                                       );
-                                      viewModel.handleEmailSubscribe(
-                                        token,
-                                        blockEntry.key,
-                                      );
+                                      return;
+                                    }
+                                    viewModel.setTemporarybellboolean(
+                                      !viewModel.temporaryBellBoolean,
+                                    );
+                                    viewModel.handleEmailSubscribe(
+                                      token,
+                                      blockEntry.key,
+                                    );
 
-                                      if (viewModel.temporaryBellBoolean) {
-                                        notify.showToast(
-                                          "Notifications enabled for selected slot",
-                                        );
-                                      } else {
-                                        notify.showToast(
-                                          "Notifications disabled for selected slot",
-                                        );
-                                      }
-                                    
+                                    if (viewModel.temporaryBellBoolean) {
+                                      notify.showToast(
+                                        "Notifications enabled for selected slot",
+                                      );
+                                    } else {
+                                      notify.showToast(
+                                        "Notifications disabled for selected slot",
+                                      );
+                                    }
                                   },
                                   child: viewModel.temporaryBellBoolean
                                       ? SvgPicture.asset(
