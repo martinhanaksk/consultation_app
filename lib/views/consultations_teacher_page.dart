@@ -62,7 +62,10 @@ class _ConsultationsTeacherPageState extends State<ConsultationsTeacherPage> {
                 ? _AddBlockButton(token: widget.token, viewModel: viewModel)
                 : null,
             deleteButton: isOwner
-                ? _DeleteRoomButton(token: widget.token, viewModel: viewModel)
+                ? _SettingsDropdownButton(
+                    token: widget.token,
+                    viewModel: viewModel,
+                  )
                 : null,
             editBlockButton: isOwner
                 ? (blockId) => _EditBlockButton(
@@ -161,7 +164,9 @@ class _AddBlockButton extends StatelessWidget {
               onSuccess: () => viewModel.loadRoom(token),
             ),
             child: Container(
-              padding: const EdgeInsets.all(10),
+              width: 40,
+              height: 40,
+              padding: const EdgeInsets.all(8),
               decoration: constants.squircleShadow(color: constants.grey),
               child: Icon(Icons.add, size: 25, color: constants.darkGrey),
             ),
@@ -170,33 +175,82 @@ class _AddBlockButton extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-
-class _DeleteRoomButton extends StatelessWidget {
+class _SettingsDropdownButton extends StatelessWidget {
   final String token;
   final TeacherConsultationsViewmodel viewModel;
 
-  const _DeleteRoomButton({required this.token, required this.viewModel});
+  const _SettingsDropdownButton({required this.token, required this.viewModel});
 
   @override
   Widget build(BuildContext context) {
-    return (viewModel.noRoomsFound || viewModel.selectedRoomId == null)
-        ? const SizedBox.shrink()
-        : GestureDetector(
-            onTap: () => showDialog(
-              context: context,
-              builder: (_) =>
-                  _DeleteRoomDialog(token: token, viewModel: viewModel),
-            ),
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: constants.squircleShadow(color: constants.grey),
-              child: Icon(
-                Icons.delete_outline_rounded,
-                size: 25,
+    return Container(
+      width: 40,
+      height: 40,
+      padding: const EdgeInsets.all(12),
+      decoration: constants.squircleShadow(color: constants.grey),
+      child: PopupMenuButton<dynamic>(
+        position: PopupMenuPosition.under,
+        offset: const Offset(96, 20),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        color: constants.background,
+        elevation: 12,
+        shadowColor: constants.darkGrey.withValues(alpha: 0.12),
+        child: SvgPicture.asset(
+          'assets/resources/more.svg',
+          width: 24,
+          colorFilter: ColorFilter.mode(constants.darkGrey, BlendMode.srcIn),
+        ),
+
+        itemBuilder: (context) => [
+          PopupMenuItem<dynamic>(
+            value: "see_all_users_joined",
+            child: Text(
+              'See all users joined',
+              style: TextStyle(
                 color: constants.darkGrey,
+                fontWeight: constants.fwSemiBold,
+                fontSize: constants.fsLabel,
               ),
             ),
-          );
+          ),
+          PopupMenuItem<dynamic>(
+            value: "delete_room",
+            child: Text(
+              'Delete room',
+              style: TextStyle(
+                color: constants.darkGrey,
+                fontWeight: constants.fwSemiBold,
+                fontSize: constants.fsLabel,
+              ),
+            ),
+          ),
+        ],
+        onSelected: (mode) {
+          if (mode != null) {
+            switch (mode) {
+              case "delete_room":
+                showDialog(
+                  context: context,
+                  builder: (_) =>
+                      _DeleteRoomDialog(token: token, viewModel: viewModel),
+                );
+                break;
+              case "see_all_users_joined":
+                int? roomId = viewModel.roomIdNumber;
+                String roomName = viewModel.getRoomNameById() ?? "";
+                if (roomId != null) {
+                  nav.toDisplayUsersInRoom(
+                    token: token,
+                    roomId: roomId,
+                    roomName: roomName,
+                  );
+                }
+                break;
+            }
+          }
+        },
+      ),
+    );
   }
 }
 
@@ -209,7 +263,7 @@ class _DeleteRoomDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: viewModel, 
+      listenable: viewModel,
       builder: (context, _) {
         return AlertDialog(
           title: RichText(

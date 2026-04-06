@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:consultation_app/models/slot_model.dart';
 import 'package:consultation_app/viewmodels/slot_viewmodel.dart';
@@ -233,15 +234,23 @@ class _SlotWidgetState extends State<SlotWidget> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: ElevatedButton(
-                            onPressed: () async {
-                              Navigator.pop(context);
-                              await viewModel.takeSlot(
-                                widget.token,
-                                widget.slot.id,
-                                controller.text.trim(),
-                              );
-                              widget.loadData();
-                            },
+                            onPressed: viewModel.isTakingSlot
+                                ? null
+                                : () async {
+                                    Navigator.pop(context);
+                                    try {
+                                      await viewModel.takeSlot(
+                                        widget.token,
+                                        widget.slot.id,
+                                        controller.text.trim(),
+                                      );
+                                      widget.loadData();
+                                    } catch (e) {
+                                      notify.showToast(
+                                        'Failed to book slot. Please try again.',
+                                      );
+                                    }
+                                  },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: constants.primary,
                               padding: const EdgeInsets.symmetric(vertical: 12),
@@ -274,10 +283,11 @@ class _SlotWidgetState extends State<SlotWidget> {
       create: (_) => SlotViewmodel(),
       child: Consumer<SlotViewmodel>(
         builder: (context, viewModel, child) {
+          final bool treatAsFree = viewModel.optimisticallyReleased;
           return Column(
             children: [
               //free slot
-              if (widget.slot.takenBy == null)
+              if (widget.slot.takenBy == null || treatAsFree)
                 GestureDetector(
                   child: Container(
                     padding: EdgeInsets.fromLTRB(0, 12, 12, 12),
@@ -312,21 +322,31 @@ class _SlotWidgetState extends State<SlotWidget> {
                                 ),
                               ),
                             ),
-                            SvgPicture.asset('assets/resources/take_slot.svg'),
+                            viewModel.isTakingSlot
+                                ? SpinKitPouringHourGlass(
+                                    color: constants.primary,
+                                    size: constants.fsHeadline,
+                                  )
+                                : SvgPicture.asset(
+                                    'assets/resources/take_slot.svg',
+                                  ),
                           ],
                         ),
                       ],
                     ),
                   ),
-                  onTap: () => _showNoteDialog(
-                    context,
-                    viewModel,
-                    widget.slot.startTime,
-                    widget.slot.duration,
-                    widget.date,
-                  ),
+
+                  onTap: viewModel.isTakingSlot
+                      ? null
+                      : () => _showNoteDialog(
+                          context,
+                          viewModel,
+                          widget.slot.startTime,
+                          widget.slot.duration,
+                          widget.date,
+                        ),
                 ),
-              if (widget.slot.takenBy != null)
+              if (widget.slot.takenBy != null && !treatAsFree)
                 //my slot
                 widget.slot.takenBy == widget.userEmail
                     ? Container(
@@ -417,11 +437,20 @@ class _SlotWidgetState extends State<SlotWidget> {
                                       const SizedBox(width: 8),
                                       GestureDetector(
                                         onTap: () async {
-                                          await viewModel.releaseSlot(
-                                            widget.token,
-                                            widget.slot.id,
-                                          );
-                                          widget.loadData();
+                                          viewModel
+                                              .releaseSlot(
+                                                widget.token,
+                                                widget.slot.id,
+                                              )
+                                              .then((_) {
+                                                widget
+                                                    .loadData();
+                                              })
+                                              .catchError((_) {
+                                                notify.showToast(
+                                                  'Failed to release slot. Please try again.',
+                                                );
+                                              });
                                         },
                                         child: SvgPicture.asset(
                                           'assets/resources/cross.svg',
@@ -526,47 +555,6 @@ class _SlotWidgetState extends State<SlotWidget> {
                                             BlendMode.srcIn,
                                           ),
                                         ),
-
-                                      const SizedBox(width: 8),
-                                      SizedBox(
-                                        width: 20,
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            // viewModel.handleEmailSubscribe(
-                                            //   widget.token,
-                                            //   widget.slot.blockId,
-                                            // );
-                                            viewModel.setTemporarybellboolean(
-                                              !viewModel.temporaryBellBoolean,
-                                            );
-                                            if (viewModel
-                                                .temporaryBellBoolean) {
-                                              notify.showToast(
-                                                "Notifications enabled for selected slot",
-                                              );
-                                            } else {
-                                              notify.showToast(
-                                                "Notifications disabled for selected slot",
-                                              );
-                                            }
-                                          },
-                                          child: viewModel.temporaryBellBoolean
-                                              ? SvgPicture.asset(
-                                                  'assets/resources/notifications_bell_full.svg',
-                                                  colorFilter: ColorFilter.mode(
-                                                    constants.background,
-                                                    BlendMode.srcIn,
-                                                  ),
-                                                )
-                                              : SvgPicture.asset(
-                                                  'assets/resources/notifications_bell_empty.svg',
-                                                  colorFilter: ColorFilter.mode(
-                                                    constants.background,
-                                                    BlendMode.srcIn,
-                                                  ),
-                                                ),
-                                        ),
-                                      ),
                                     ],
                                   ),
                                 ),

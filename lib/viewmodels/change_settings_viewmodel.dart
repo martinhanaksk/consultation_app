@@ -8,7 +8,7 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
   String _email = "";
   String _token = "";
   String _role = "";
-  bool _receiveEmails = false;
+  bool _receiveEmails = true;
   bool get receiveEmails => _receiveEmails;
   bool _visibility = false;
   bool get visibility => _visibility;
@@ -35,9 +35,9 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
     _hasBeenInitialized = true;
     _email = await prefs.getItem("email");
     _token = await prefs.getItem("token");
-    bool visibilityResponse = await api.getVisibility(_token,_email);
+    bool visibilityResponse = await api.getVisibility(_token, _email);
     UserModel um = await api.getUserByEmail(token, email);
-    setReceiveEmail((await prefs.getItem('receiveEmails')));
+    setReceiveEmail((await prefs.getItem('receiveEmails')) ?? true);
     _name = um.name;
     _surname = um.surname;
     _role = um.role;

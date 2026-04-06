@@ -5,6 +5,7 @@ import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slot_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -415,11 +416,60 @@ class _ConsultationBlockCard extends StatelessWidget {
                           fontWeight: constants.fwSemiBold,
                         ),
                       ),
-                      if (editBlockButton != null)
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: editBlockButton!(blockEntry.key),
-                        ),
+                      editBlockButton == null
+                          ? Align(
+                              alignment: Alignment.centerRight,
+                              child: SizedBox(
+                                width: 20,
+                                child: GestureDetector(
+                                  onTap: () async {
+                                    bool canRecieveEmails =
+                                        await prefs.getItem('receiveEmails') ==
+                                        true;
+                                    if (!canRecieveEmails){notify.showToast(
+                                        "Turn on email recieving in the settings",
+                                      ); return;}
+                                      viewModel.setTemporarybellboolean(
+                                        !viewModel.temporaryBellBoolean,
+                                      );
+                                      viewModel.handleEmailSubscribe(
+                                        token,
+                                        blockEntry.key,
+                                      );
+
+                                      if (viewModel.temporaryBellBoolean) {
+                                        notify.showToast(
+                                          "Notifications enabled for selected slot",
+                                        );
+                                      } else {
+                                        notify.showToast(
+                                          "Notifications disabled for selected slot",
+                                        );
+                                      }
+                                    
+                                  },
+                                  child: viewModel.temporaryBellBoolean
+                                      ? SvgPicture.asset(
+                                          'assets/resources/notifications_bell_full.svg',
+                                          colorFilter: ColorFilter.mode(
+                                            constants.darkGrey,
+                                            BlendMode.srcIn,
+                                          ),
+                                        )
+                                      : SvgPicture.asset(
+                                          'assets/resources/notifications_bell_empty.svg',
+                                          colorFilter: ColorFilter.mode(
+                                            constants.darkGrey,
+                                            BlendMode.srcIn,
+                                          ),
+                                        ),
+                                ),
+                              ),
+                            )
+                          : Align(
+                              alignment: Alignment.centerRight,
+                              child: editBlockButton!(blockEntry.key),
+                            ),
                     ],
                   ),
                 ),

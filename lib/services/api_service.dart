@@ -405,6 +405,32 @@ class ApiService {
     }
   }
 
+  Future<List<String>> getConnectedUsersInRoom(
+    String token,
+    int roomId,
+  ) async {
+    final Uri url = Uri.parse(
+      '${constants.url}/room/get/conected_users?room_id=$roomId',
+    );
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+     final List<dynamic> decoded = jsonDecode(response.body);
+    return decoded.map((json) => json['user_email'] as String).toList();
+    } else {
+      throw Exception(
+        'Failed to fetch connected users: ${response.statusCode}',
+      );
+    }
+  }
+
   Future<String> createBlock(String token, int id, String date) async {
     final Uri url = Uri.parse('${constants.url}/block/create');
 

@@ -22,6 +22,20 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   int _ownerView = 1;
   int get ownerView => _ownerView;
   String? selectedRoomId;
+  bool _temporarybellboolean = false;
+  bool get temporaryBellBoolean => _temporarybellboolean;
+  void setTemporarybellboolean(bool val) {
+    _temporarybellboolean = val;
+    notifyListeners();
+  }
+
+  void handleEmailSubscribe(String token, int block) async {
+    bool receiveEmails = await prefs.getItem('receiveEmails');
+    if (receiveEmails == true) {
+      api.subscribeToBlock(token, block);
+    }
+  }
+
   Future<void> setOwnerView(int value) async {
     _ownerView = value;
     notifyListeners();

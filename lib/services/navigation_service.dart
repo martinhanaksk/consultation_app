@@ -102,6 +102,21 @@ class NavigationService {
     );
   }
 
+  void toDisplayUsersInRoom({
+    required String token,
+    required int roomId,
+    required String roomName,
+  }) {
+    _navigator()?.pushNamed(
+      AppRouter.displayUsersInRoom,
+      arguments: <String, dynamic>{
+        'token': token,
+        'roomId': roomId,
+        'roomName': roomName,
+      },
+    );
+  }
+
   void toDisplayListOfEmails({required CreateRoomViewmodel viewModel}) {
     _navigator()?.pushNamed(
       AppRouter.displayListOfEmails,
