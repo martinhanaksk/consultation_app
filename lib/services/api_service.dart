@@ -242,9 +242,9 @@ class ApiService {
   Future<void> takeSlot(
     String token,
     int id,
-    String note,
-    int is_online,
-  ) async {
+    String note, {
+    int is_online = 0,
+  }) async {
     final Uri url = Uri.parse(
       '${constants.url}/slot/take?slot_id=$id&note=$note&is_online=$is_online',
     );

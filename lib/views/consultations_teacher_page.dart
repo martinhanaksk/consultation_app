@@ -120,29 +120,39 @@ class _AddSlotOnOutskirts extends StatelessWidget {
   Widget build(BuildContext context) {
     return isEmpty
         ? const SizedBox.shrink()
-        : GestureDetector(
-            onTap: () async {
-              if (isBefore) {
-                viewModel.setIsLoading(true);
-                await viewModel.addSlotBeforeBlock(token, blockId);
-                await viewModel.loadRoom(token);
-                viewModel.setIsLoading(false);
-              } else {
-                viewModel.setIsLoading(true);
-                await viewModel.addSlotAfterBlock(token, blockId);
-                await viewModel.loadRoom(token);
-                viewModel.setIsLoading(false);
-              }
-            },
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-              child: Icon(
-                Icons.add,
+        : Consumer<TeacherConsultationsViewmodel>(
+            builder: (context, viewModel, child) {
+              final bool isLoading = isBefore
+                  ? viewModel.isAddingSlotBefore(blockId)
+                  : viewModel.isAddingSlotAfter(blockId);
 
-                color: constants.darkGrey,
-                size: constants.fsHeadline,
-              ),
-            ),
+              return GestureDetector(
+                onTap: isLoading
+                    ? null
+                    : () async {
+                        if (isBefore) {
+                          await viewModel.addSlotBeforeBlock(token, blockId);
+                          await viewModel.loadRoom(token);
+                        } else {
+                          await viewModel.addSlotAfterBlock(token, blockId);
+                          await viewModel.loadRoom(token);
+                        }
+                      },
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                  child: isLoading
+                      ? SpinKitPouringHourGlass(
+                          color: constants.primary,
+                          size: constants.fsHeadline,
+                        )
+                      : Icon(
+                          Icons.add,
+                          color: constants.darkGrey,
+                          size: constants.fsHeadline,
+                        ),
+                ),
+              );
+            },
           );
   }
 }

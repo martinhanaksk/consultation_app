@@ -72,9 +72,16 @@ class TeacherConsultationsViewmodel extends BaseConsultationsViewmodel {
     notifyListeners();
   }
 
+  // In TeacherConsultationsViewmodel
+
   Future<void> addSlotBeforeBlock(String token, int blockId) async {
-    final slotsForBlock = await api.getSlotsForBlock(blockId, token);
-    if (slotsForBlock != null && slotsForBlock.isNotEmpty) {
+    setAddingSlotBefore(blockId, true);
+    try {
+      final slotsForBlock = await api.getSlotsForBlock(blockId, token);
+      if (slotsForBlock == null || slotsForBlock.isEmpty) {
+        notify.showToast("No slots found in block.");
+        return;
+      }
       final newStartTime = calculateMarginTimes(
         0,
         slotsForBlock[0].startTime,
@@ -84,7 +91,7 @@ class TeacherConsultationsViewmodel extends BaseConsultationsViewmodel {
         notify.showToast("Cannot add a slot before 00:00.");
         return;
       }
-      bool slotCreated = await api.createSlot(
+      final slotCreated = await api.createSlot(
         token,
         blockId,
         newStartTime,
@@ -94,44 +101,55 @@ class TeacherConsultationsViewmodel extends BaseConsultationsViewmodel {
       );
       if (!slotCreated) {
         notify.showToast("Could not create new slot.");
-        setIsLoading(false);
+        return;
       }
-    } else {
-      return;
+      await loadRoom(token);
+    } catch (e) {
+      notify.showToast("Error adding slot.");
+    } finally {
+      setAddingSlotBefore(blockId, false);
     }
   }
 
   Future<void> addSlotAfterBlock(String token, int blockId) async {
-    final slotsForBlock = await api.getSlotsForBlock(blockId, token);
-    if (slotsForBlock != null && slotsForBlock.isNotEmpty) {
+    setAddingSlotAfter(blockId, true);
+    try {
+      final slotsForBlock = await api.getSlotsForBlock(blockId, token);
+      if (slotsForBlock == null || slotsForBlock.isEmpty) {
+        notify.showToast("No slots found in block.");
+        return;
+      }
+      final lastSlot = slotsForBlock.last;
       final newStartTime = calculateMarginTimes(
         1,
-        slotsForBlock[slotsForBlock.length - 1].startTime,
-        slotsForBlock[slotsForBlock.length - 1].duration,
+        lastSlot.startTime,
+        lastSlot.duration,
       );
       if (newStartTime == null) {
         notify.showToast("Cannot add a slot after 24:00.");
         return;
       }
-      bool slotCreated = await api.createSlot(
+      final slotCreated = await api.createSlot(
         token,
         blockId,
         newStartTime,
-        slotsForBlock[0].duration,
-        slotsForBlock[0].isOnline,
-        slotsForBlock[0].note ?? " ",
+        lastSlot.duration,
+        lastSlot.isOnline,
+        lastSlot.note ?? " ",
       );
       if (!slotCreated) {
         notify.showToast("Could not create new slot.");
-        setIsLoading(false);
+        return;
       }
-    } else {
-      return;
+      await loadRoom(token);
+    } catch (e) {
+      notify.showToast("Error adding slot.");
+    } finally {
+      setAddingSlotAfter(blockId, false);
     }
   }
 
   String? calculateMarginTimes(int isEndTime, String oldTime, int duration) {
-    String result = "";
     final parts = oldTime.split(':');
     final originalStart = Duration(
       hours: int.parse(parts[0]),

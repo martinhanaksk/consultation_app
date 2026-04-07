@@ -72,43 +72,47 @@ class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
               child: Center(
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 600),
-                  child: ScrollConfiguration(
-                    behavior: ScrollConfiguration.of(context).copyWith(
-                      physics: const BouncingScrollPhysics(
-                        parent: AlwaysScrollableScrollPhysics(),
-                      ),
-                      overscroll: false,
-                    ),
-                    child: ListView(
-                      children: [
-                        const SizedBox(height: 100),
-                        StickyHeader(
-                          header: _RoomSelectorButton(viewModel: viewModel),
-                          content: viewModel.isLoading
-                              ? Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 200,
-                                  ),
-                                  child: Center(
-                                    child: SpinKitPouringHourGlass(
-                                      color: constants.primary,
-                                      size: constants.fsHeadline,
-                                    ),
-                                  ),
-                                )
-                              : _ConsultationsContent(
-                                  viewModel: viewModel,
-                                  token: widget.token,
-                                  email: widget.email,
-                                  toggle: widget.toggle,
-                                  addButton: widget.addButton,
-                                  deleteButton: widget.deleteButton,
-                                  editBlockButton: widget.editBlockButton,
-                                  addSlotBefore: widget.addSlotBefore,
-                                  addSlotAfter: widget.addSlotAfter,
-                                ),
+                  child: RefreshIndicator(
+                    color: constants.primary,
+                    onRefresh: () => viewModel.loadRoom(widget.token),
+                    child: ScrollConfiguration(
+                      behavior: ScrollConfiguration.of(context).copyWith(
+                        physics: const BouncingScrollPhysics(
+                          parent: AlwaysScrollableScrollPhysics(),
                         ),
-                      ],
+                        overscroll: false,
+                      ),
+                      child: ListView(
+                        children: [
+                          const SizedBox(height: 100),
+                          StickyHeader(
+                            header: _RoomSelectorButton(viewModel: viewModel),
+                            content: viewModel.isLoading
+                                ? Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 200,
+                                    ),
+                                    child: Center(
+                                      child: SpinKitPouringHourGlass(
+                                        color: constants.primary,
+                                        size: constants.fsHeadline,
+                                      ),
+                                    ),
+                                  )
+                                : _ConsultationsContent(
+                                    viewModel: viewModel,
+                                    token: widget.token,
+                                    email: widget.email,
+                                    toggle: widget.toggle,
+                                    addButton: widget.addButton,
+                                    deleteButton: widget.deleteButton,
+                                    editBlockButton: widget.editBlockButton,
+                                    addSlotBefore: widget.addSlotBefore,
+                                    addSlotAfter: widget.addSlotAfter,
+                                  ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -434,15 +438,16 @@ class _ConsultationBlockCard extends StatelessWidget {
                                       );
                                       return;
                                     }
-                                    viewModel.setTemporarybellboolean(
-                                      !viewModel.temporaryBellBoolean,
-                                    );
+                                    // TODO viewModel.setTemporarybellboolean(
+                                    //   !viewModel.temporaryBellBoolean,
+                                    // );
                                     viewModel.handleEmailSubscribe(
                                       token,
                                       blockEntry.key,
                                     );
 
-                                    if (viewModel.temporaryBellBoolean) {
+                                    if (true) {
+                                      //viewModel.temporaryBellBoolean TODO
                                       notify.showToast(
                                         "Notifications enabled for selected slot",
                                       );
@@ -452,7 +457,8 @@ class _ConsultationBlockCard extends StatelessWidget {
                                       );
                                     }
                                   },
-                                  child: viewModel.temporaryBellBoolean
+                                  child:
+                                      true //viewModel.temporaryBellBoolean TODO
                                       ? SvgPicture.asset(
                                           'assets/resources/notifications_bell_full.svg',
                                           colorFilter: ColorFilter.mode(
@@ -486,16 +492,28 @@ class _ConsultationBlockCard extends StatelessWidget {
                   padding: EdgeInsets.zero,
                   itemCount: slots.length,
                   itemBuilder: (context, index) {
-                    return SlotWidget(
-                      userEmail: email,
-                      slot: slots[index],
-                      token: token,
-                      roomId: viewModel.selectedRoomId!,
-                      context: context,
-                      loadData: () => viewModel.loadRoom(token),
-                      isFirst: index == 0,
-                      isLast: index == slots.length - 1,
-                      date: viewModel.blockDateLabel(blockEntry.key),
+                    final slot = slots[index];
+                    return Consumer<BaseConsultationsViewmodel>(
+                      builder: (context, vm, _) {
+                        return RepaintBoundary(
+                          child: SlotWidget(
+                            userEmail: email,
+                            slot: slots[index],
+                            token: token,
+                            roomId: vm.selectedRoomId!,
+                            onTakeSlot: (note) =>
+                                vm.takeSlot(token, slot.id, note),
+                            onReleaseSlot: () => vm.releaseSlot(token, slot.id),
+                            context: context,
+                            isTakingSlot: vm.isTakingSlot(slot.id),
+                            isOptimisticallyReleased: vm
+                                .isOptimisticallyReleased(slot.id),
+                            isFirst: index == 0,
+                            isLast: index == slots.length - 1,
+                            date: vm.blockDateLabel(blockEntry.key),
+                          ),
+                        );
+                      },
                     );
                   },
                 ),

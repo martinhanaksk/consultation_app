@@ -7,7 +7,11 @@ import 'package:flutter/foundation.dart';
 
 class BaseConsultationsViewmodel extends ChangeNotifier {
   bool isTeacher = false;
-  bool isLoading = false;
+  bool isLoading = false;Map<int, bool> _addingSlotBefore = {};
+Map<int, bool> _addingSlotAfter = {};
+
+bool isAddingSlotBefore(int blockId) => _addingSlotBefore[blockId] ?? false;
+bool isAddingSlotAfter(int blockId) => _addingSlotAfter[blockId] ?? false;
   bool blocksFiltered = false;
   bool noRoomsFound = false;
   //base atributes
@@ -22,12 +26,56 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   int _ownerView = 1;
   int get ownerView => _ownerView;
   String? selectedRoomId;
-  bool _temporarybellboolean = false;
-  bool get temporaryBellBoolean => _temporarybellboolean;
-  void setTemporarybellboolean(bool val) {
-    _temporarybellboolean = val;
+
+  //Slot
+
+  Map<int, bool> _slotLoading = {};
+
+  bool isSlotLoading(int slotId) => _slotLoading[slotId] ?? false;
+
+  
+
+  Map<int, bool> _optimisticallyReleased = {};
+
+  bool isOptimisticallyReleased(int slotId) =>
+      _optimisticallyReleased[slotId] ?? false;
+  Map<int, bool> _takingSlot = {};
+
+  bool isTakingSlot(int slotId) => _takingSlot[slotId] ?? false;
+  // Move takeSlot logic here
+  Future<void> takeSlot(String token, int slotId, String note) async {
+   
+    _takingSlot[slotId] = true;
     notifyListeners();
+    try {
+      await api.takeSlot(token, slotId, note);
+    } catch (e) {
+      _takingSlot[slotId] = false;
+      notify.showToast('Failed to book slot.');
+      rethrow;
+    } finally {
+      _takingSlot.remove(slotId);
+      loadRoom(token);
+    }
   }
+
+  // Move releaseSlot logic here
+  Future<void> releaseSlot(String token, int slotId) async {
+    _optimisticallyReleased[slotId] = true;
+    notifyListeners();
+    try {
+      await api.releaseSlot(token, slotId);
+    } catch (e) {
+      _optimisticallyReleased[slotId] = false;
+      notify.showToast('Failed to release slot.');
+      rethrow;
+    } finally {
+      _optimisticallyReleased.remove(slotId);
+      loadRoom(token);
+    }
+  }
+
+  //blocks
 
   void handleEmailSubscribe(String token, int block) async {
     bool receiveEmails = await prefs.getItem('receiveEmails');
@@ -37,11 +85,19 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   }
 
   Future<void> setOwnerView(int value) async {
-     if (_ownerView == value) return;
+    if (_ownerView == value) return;
     _ownerView = value;
     notifyListeners();
   }
+void setAddingSlotBefore(int blockId, bool value) {
+  _addingSlotBefore[blockId] = value;
+  notifyListeners();
+}
 
+void setAddingSlotAfter(int blockId, bool value) {
+  _addingSlotAfter[blockId] = value;
+  notifyListeners();
+}
   void setIsLoading(bool value) {
     if (value) {
       isLoading = true;
@@ -72,51 +128,49 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     if (roomIdNumber != null) {
       await refreshRoomData(token, roomIdNumber!);
     }
-    notifyListeners();
   }
 
   Future<void> refreshRoomData(String token, int roomId) async {
-    blocksFiltered = false;
     if (!await checkConnection()) return;
 
-    users = [];
-    rooms = [];
-    blocks = [];
-    slotsInBlocks = {};
+    final newUsers = await api.getUsers(token);
+    final newRooms = await fetchRooms(token);
 
-    users = await api.getUsers(token);
-    rooms = await fetchRooms(token);
-
-    if (rooms == null || rooms!.isEmpty) {
+    if (newRooms.isEmpty) {
       noRoomsFound = true;
       notifyListeners();
-    } else {
-      noRoomsFound = false;
-      blocks = await api.getBlocks(token, roomId);
-
-      DateTime now = DateTime.now();
-      blocks.removeWhere((b) => !b.date.isAfter(now));
-
-      blocks.sort((a, b) => a.date.compareTo(b.date));
-      blocksFiltered = true;
-
-      List<Future<void>> futures = [];
-      for (var block in blocks) {
-        futures.add(() async {
-          final slots = await api.getSlotsForBlock(block.id, token);
-          //TODO blockNotificationEnabled[block.id]=api.get   api.get-my-subscribtions;
-          if (slots != null) {
-            slots.sort((a, b) => a.startTime.compareTo(b.startTime));
-            slotsInBlocks[block.id] = slots;
-          } else {
-            slotsInBlocks[block.id] = [];
-          }
-        }());
-      }
-      await Future.wait(futures);
-
-      notifyListeners();
+      return;
     }
+
+    noRoomsFound = false;
+    List<BlockModel> newBlocks = await api.getBlocks(token, roomId);
+
+    DateTime now = DateTime.now();
+    newBlocks.removeWhere((b) => !b.date.isAfter(now));
+    newBlocks.sort((a, b) => a.date.compareTo(b.date));
+
+    Map<int, List<SlotModel>?> newSlotsInBlocks = {};
+    List<Future<void>> futures = [];
+    for (var block in newBlocks) {
+      //TODO blockNotificationEnabled[block.id]=api.get   api.get-my-subscribtions;
+      futures.add(() async {
+        final slots = await api.getSlotsForBlock(block.id, token);
+        if (slots != null) {
+          slots.sort((a, b) => a.startTime.compareTo(b.startTime));
+          newSlotsInBlocks[block.id] = slots;
+        } else {
+          newSlotsInBlocks[block.id] = [];
+        }
+      }());
+    }
+    await Future.wait(futures);
+
+    users = newUsers;
+    rooms = newRooms;
+    blocks = newBlocks;
+    slotsInBlocks = newSlotsInBlocks;
+    blocksFiltered = true;
+    notifyListeners();
   }
 
   String? get safeSelectedRoomId {
@@ -161,20 +215,13 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
 
   //Student functionalities
   Future<void> switchRoom(String newRoomId) async {
-    try {
-      isLoading = true;
-      notifyListeners();
-      _ownerView == 1
-          ? ownerSelectedRoomId = newRoomId
-          : visitorSelectedRoomId = newRoomId;
-      selectedRoomId = _ownerView == 1
-          ? ownerSelectedRoomId
-          : visitorSelectedRoomId;
-      await loadRoom(await prefs.getItem("token"));
-    } finally {
-      isLoading = false;
-      notifyListeners();
-    }
+    _ownerView == 1
+        ? ownerSelectedRoomId = newRoomId
+        : visitorSelectedRoomId = newRoomId;
+    selectedRoomId = _ownerView == 1
+        ? ownerSelectedRoomId
+        : visitorSelectedRoomId;
+    await loadRoom(await prefs.getItem("token"));
   }
 
   Future<bool> validateAndSelectRoom(String? id) async {
