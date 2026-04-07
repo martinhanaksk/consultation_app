@@ -15,41 +15,34 @@ class SlotViewmodel extends ChangeNotifier {
   }
 
   Future<void> takeSlot(String token, int id, String note) async {
-    if (_isLoading) {
-      return;
-    }
+    if (_isLoading) return;
     _isLoading = true;
     _isTakingSlot = true;
     notifyListeners();
-    int temp = isOnlineSelected ? 1 : 0;
     try {
-      await api.takeSlot(token, id, note, temp);
-      _isLoading = false;
+      await api.takeSlot(token, id, note, isOnlineSelected ? 1 : 0);
     } catch (e) {
+      rethrow;
+    } finally {
       _isLoading = false;
       _isTakingSlot = false;
-      rethrow;
-    } finally {}
-    _isTakingSlot = false;
-    notifyListeners();
+      notifyListeners();
+    }
   }
 
   Future<void> releaseSlot(String token, int id) async {
-    if (_isLoading) {
-      return;
-    }
+    if (_isLoading) return;
     _isLoading = true;
     _optimisticallyReleased = true;
     notifyListeners();
     try {
       await api.releaseSlot(token, id);
-      _isLoading = false;
     } catch (e) {
       _optimisticallyReleased = false;
-      _isLoading = false;
       rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
-    _isLoading = false;
-    notifyListeners();
   }
 }

@@ -63,7 +63,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     ),
                     const SizedBox(height: 16),
                     TextField(
-                      controller: emailController,scrollPadding: EdgeInsets.only(bottom: 1000),
+                      controller: emailController,
+                      scrollPadding: EdgeInsets.only(bottom: 1000),
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -85,7 +86,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     ),
                     const SizedBox(height: 16),
                     TextField(
-                      controller: nameController,scrollPadding: EdgeInsets.only(bottom: 1000),
+                      controller: nameController,
+                      scrollPadding: EdgeInsets.only(bottom: 1000),
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -107,7 +109,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     ),
                     const SizedBox(height: 16),
                     TextField(
-                      controller: surnameController,scrollPadding: EdgeInsets.only(bottom: 1000),
+                      controller: surnameController,
+                      scrollPadding: EdgeInsets.only(bottom: 1000),
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -200,7 +203,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 visible: 0,
                               );
                               await viewModel.registerUser(um);
-                            } catch (e) {}
+                            } catch (e) {
+                              notify.showToast("Error while registering user.");
+                            }
                           }
                         },
                         style: ElevatedButton.styleFrom(

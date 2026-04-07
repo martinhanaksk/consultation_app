@@ -359,11 +359,10 @@ class _ConsultationsContent extends StatelessWidget {
 
   List<MapEntry<int, List?>> _sortedBlocks() {
     final sorted = viewModel.slotsInBlocks.entries.toList();
-    sorted.sort((a, b) {
-      final blockA = viewModel.blocks.firstWhere((block) => block.id == a.key);
-      final blockB = viewModel.blocks.firstWhere((block) => block.id == b.key);
-      return blockA.date.compareTo(blockB.date);
-    });
+    final blockMap = {for (var b in viewModel.blocks) b.id: b};
+    sorted.sort(
+      (a, b) => blockMap[a.key]!.date.compareTo(blockMap[b.key]!.date),
+    );
     return sorted;
   }
 }
