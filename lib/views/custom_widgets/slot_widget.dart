@@ -50,9 +50,8 @@ class _SlotWidgetState extends State<SlotWidget> {
       isScrollControlled: true,
       backgroundColor: constants.transparent,
       builder: (context) {
-        return ListenableBuilder(
-          listenable: viewModel,
-          builder: (context, _) {
+        return StatefulBuilder(
+    builder: (context, setState) {
             return Padding(
               padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).viewInsets.bottom,

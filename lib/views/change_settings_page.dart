@@ -154,75 +154,64 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                   ),
                                   height: 1,
                                 ),
-                                GestureDetector(
-                                  onTap: () {
-                                    viewModel.setVisibility(
-                                    );
-                                  },
-
-                                  child: Container(
+                                 Container(
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 20,
                                       vertical: 14,
                                     ),
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.visibility,
-                                          color: constants.primary,
-                                          size: constants.fsBody,
-                                        ),
-                                        const SizedBox(width: 12),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                "Visibility",
-                                                style: TextStyle(
-                                                  fontSize: constants.fsBody,
-                                                  fontWeight:
-                                                      constants.fwSemiBold,
-                                                  color: constants.darkGrey,
-                                                ),
-                                              ),
-                                              const SizedBox(height: 4),
-                                              Text(
-                                                "Show your name to others.",
-                                                style: TextStyle(
-                                                  fontSize: constants.fsLabel,
-                                                  color: constants.darkGrey
-                                                      .withValues(alpha: 0.55),
-                                                ),
-                                              ),
-                                            ],
+                                    child:  Row(
+                                        children: [
+                                          Icon(
+                                            Icons.visibility,
+                                            color: constants.primary,
+                                            size: constants.fsBody,
                                           ),
-                                        ),
-                                        Checkbox(
-                                          value: viewModel.visibility,
-                                          activeColor: constants.primary,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              4,
+                                          const SizedBox(width: 12),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  "Visibility",
+                                                  style: TextStyle(
+                                                    fontSize: constants.fsBody,
+                                                    fontWeight:
+                                                        constants.fwSemiBold,
+                                                    color: constants.darkGrey,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  "Show your name to others.",
+                                                  style: TextStyle(
+                                                    fontSize: constants.fsLabel,
+                                                    color: constants.darkGrey
+                                                        .withValues(
+                                                          alpha: 0.55,
+                                                        ),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
-                                          onChanged: (val) {
-                                            viewModel.setVisibility();
-                                          },
-                                        ),
-                                      ],
+                                          Checkbox(
+                                            value: viewModel.visibility,
+                                            activeColor: constants.primary,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                            ),
+                                             onChanged: (val) {
+    viewModel.setVisibility(); 
+  },
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    viewModel.setReceiveEmail(
-                                      !viewModel.receiveEmails,
-                                    );
-                                  },
-
-                                  child: Container(
+                                 
+                               
+                               Container(
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 20,
                                       vertical: 14,
@@ -276,7 +265,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                       ],
                                     ),
                                   ),
-                                ),
+                              
                               ],
                             ),
                           ),

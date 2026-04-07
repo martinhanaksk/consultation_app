@@ -58,17 +58,17 @@ class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
       value: _viewModel,
-      child: Consumer<BaseConsultationsViewmodel>(
-        builder: (context, viewModel, child) {
-          return Scaffold(
-            appBar: AppBarMenu(
-              viewModel: viewModel,
-              toggle: widget.toggle,
-              token: widget.token,
-            ),
-            drawer: SliderMenu(),
-            backgroundColor: constants.background,
-            body: SafeArea(
+      child: Scaffold(
+        appBar: AppBarMenu(
+          viewModel: _viewModel,
+          toggle: widget.toggle,
+          token: widget.token,
+        ),
+        drawer: SliderMenu(),
+        backgroundColor: constants.background,
+        body: Consumer<BaseConsultationsViewmodel>(
+          builder: (context, viewModel, child) {
+            return SafeArea(
               child: Center(
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 600),
@@ -113,9 +113,9 @@ class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
                   ),
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

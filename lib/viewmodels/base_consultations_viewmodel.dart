@@ -15,7 +15,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   List<RoomModel>? rooms = [];
   Map<int, List<SlotModel>?> slotsInBlocks = {};
   List<BlockModel> blocks = [];
-
+  Map<int, bool> blockNotificationEnabled = {};
   String? ownerSelectedRoomId;
   String? visitorSelectedRoomId;
 
@@ -37,6 +37,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   }
 
   Future<void> setOwnerView(int value) async {
+     if (_ownerView == value) return;
     _ownerView = value;
     notifyListeners();
   }
@@ -75,6 +76,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   }
 
   Future<void> refreshRoomData(String token, int roomId) async {
+    blocksFiltered = false;
     if (!await checkConnection()) return;
 
     users = [];
@@ -102,6 +104,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
       for (var block in blocks) {
         futures.add(() async {
           final slots = await api.getSlotsForBlock(block.id, token);
+          //TODO blockNotificationEnabled[block.id]=api.get   api.get-my-subscribtions;
           if (slots != null) {
             slots.sort((a, b) => a.startTime.compareTo(b.startTime));
             slotsInBlocks[block.id] = slots;
@@ -158,18 +161,20 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
 
   //Student functionalities
   Future<void> switchRoom(String newRoomId) async {
-    isLoading = true;
-    notifyListeners();
-    _ownerView == 1
-        ? ownerSelectedRoomId = newRoomId
-        : visitorSelectedRoomId = newRoomId;
-    selectedRoomId = _ownerView == 1
-        ? ownerSelectedRoomId
-        : visitorSelectedRoomId;
-    await loadRoom(await prefs.getItem("token"));
-
-    isLoading = false;
-    notifyListeners();
+    try {
+      isLoading = true;
+      notifyListeners();
+      _ownerView == 1
+          ? ownerSelectedRoomId = newRoomId
+          : visitorSelectedRoomId = newRoomId;
+      selectedRoomId = _ownerView == 1
+          ? ownerSelectedRoomId
+          : visitorSelectedRoomId;
+      await loadRoom(await prefs.getItem("token"));
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<bool> validateAndSelectRoom(String? id) async {

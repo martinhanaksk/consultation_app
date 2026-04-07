@@ -30,18 +30,19 @@ class CreateRoomViewmodel extends ChangeNotifier {
           notifyListeners();
           nav.toTeacherConsultations(token: token, email: email);
         } else {
-          notify.showToast('Room with provided name already exists.');_isLoading = false;
-      notifyListeners();
+          notify.showToast('Room with provided name already exists.');
+          _isLoading = false;
+          notifyListeners();
         }
       } else {
-        notify.showToast('No emails or domain names provided.');_isLoading = false;
-      notifyListeners();
+        notify.showToast('No emails or domain names provided.');
+        _isLoading = false;
+        notifyListeners();
       }
     } catch (e) {
       notify.showToast('Error while creating room.');
       _isLoading = false;
       notifyListeners();
-      nav.toTeacherConsultations(token: token, email: email);
     }
   }
 

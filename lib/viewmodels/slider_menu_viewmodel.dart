@@ -33,6 +33,7 @@ class SliderMenuViewmodel extends ChangeNotifier {
       _email = await prefs.getItem('email');
       if (!await helpers.handleIsInternetConnection()) {
         notify.showToast('Please connect to internet.');
+        _isTeacher = false;
       } else {
         bool isTeacherTemp = await api.getIsTeacher();
         notifyListeners();
@@ -43,6 +44,4 @@ class SliderMenuViewmodel extends ChangeNotifier {
       notifyListeners();
     }
   }
-
-  
 }

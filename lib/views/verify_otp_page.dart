@@ -40,10 +40,10 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
     _viewModel = VerifyOtpViewmodel();
 
     if (widget.token.isNotEmpty) {
-      if(widget.token.length>1){
- otpcontroller.text = widget.token.substring(1, widget.token.length - 1);
+      if (widget.token.length > 1) {
+        otpcontroller.text = widget.token..replaceAll('"', '');
       }
-     
+
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _viewModel.connect(
           widget.email,
