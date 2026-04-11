@@ -242,9 +242,9 @@ class ApiService {
   Future<void> takeSlot(
     String token,
     int id,
-    String note, {
-    int is_online = 0,
-  }) async {
+    String note,
+    int is_online,
+  ) async {
     final Uri url = Uri.parse(
       '${constants.url}/slot/take?slot_id=$id&note=$note&is_online=$is_online',
     );
@@ -312,7 +312,7 @@ class ApiService {
     }
   }
 
-  Future<void> changeConsultationType(String token, String slot_id) async {
+  Future<void> changeConsultationType(String token, int slot_id) async {
     final Uri url = Uri.parse(
       '${constants.url}/slot/change-consultation-type?slot_id=${slot_id}',
     );
@@ -410,7 +410,7 @@ class ApiService {
 
   Future<List<String>> getConnectedUsersInRoom(String token, int roomId) async {
     final Uri url = Uri.parse(
-      '${constants.url}/room/get/conected_users?room_id=$roomId',
+      '${constants.url}/room/get-conected-users?room_id=$roomId',
     );
 
     final response = await http.get(
@@ -423,8 +423,10 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final List<dynamic> decoded = jsonDecode(response.body);
+      print(decoded.toString());
       return decoded.map((json) => json['user_email'] as String).toList();
     } else {
+      print(response.body);
       throw Exception(
         'Failed to fetch connected users: ${response.statusCode}',
       );

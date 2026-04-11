@@ -500,9 +500,11 @@ class _ConsultationBlockCard extends StatelessWidget {
                             userEmail: email,
                             slot: slots[index],
                             token: token,
-                            roomId: vm.selectedRoomId!,
-                            onTakeSlot: (note) =>
-                                vm.takeSlot(token, slot.id, note),
+                            roomId: vm.selectedRoomId!,isOwnerView: vm.ownerView,
+                             onChangeConsultationType: 
+                               ()=> vm.onChangeConsultationType(token, slot.id),
+                            onTakeSlot: (note,isOnline) =>
+                                vm.takeSlot(token, slot.id, note,isOnline),
                             onReleaseSlot: () => vm.releaseSlot(token, slot.id),
                             context: context,
                             isTakingSlot: vm.isTakingSlot(slot.id),

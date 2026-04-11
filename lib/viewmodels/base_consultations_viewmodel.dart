@@ -7,11 +7,12 @@ import 'package:flutter/foundation.dart';
 
 class BaseConsultationsViewmodel extends ChangeNotifier {
   bool isTeacher = false;
-  bool isLoading = false;Map<int, bool> _addingSlotBefore = {};
-Map<int, bool> _addingSlotAfter = {};
+  bool isLoading = false;
+  Map<int, bool> _addingSlotBefore = {};
+  Map<int, bool> _addingSlotAfter = {};
 
-bool isAddingSlotBefore(int blockId) => _addingSlotBefore[blockId] ?? false;
-bool isAddingSlotAfter(int blockId) => _addingSlotAfter[blockId] ?? false;
+  bool isAddingSlotBefore(int blockId) => _addingSlotBefore[blockId] ?? false;
+  bool isAddingSlotAfter(int blockId) => _addingSlotAfter[blockId] ?? false;
   bool blocksFiltered = false;
   bool noRoomsFound = false;
   //base atributes
@@ -33,8 +34,6 @@ bool isAddingSlotAfter(int blockId) => _addingSlotAfter[blockId] ?? false;
 
   bool isSlotLoading(int slotId) => _slotLoading[slotId] ?? false;
 
-  
-
   Map<int, bool> _optimisticallyReleased = {};
 
   bool isOptimisticallyReleased(int slotId) =>
@@ -43,15 +42,14 @@ bool isAddingSlotAfter(int blockId) => _addingSlotAfter[blockId] ?? false;
 
   bool isTakingSlot(int slotId) => _takingSlot[slotId] ?? false;
   // Move takeSlot logic here
-  Future<void> takeSlot(String token, int slotId, String note) async {
-   
+  Future<void> takeSlot(String token, int slotId, String note,int isOnline) async {
     _takingSlot[slotId] = true;
     notifyListeners();
     try {
-      await api.takeSlot(token, slotId, note);
+      await api.takeSlot(token, slotId, note,isOnline);
     } catch (e) {
       _takingSlot[slotId] = false;
-      notify.showToast('Failed to book slot.');
+      notify.showToast('manipulated');
       rethrow;
     } finally {
       _takingSlot.remove(slotId);
@@ -75,6 +73,20 @@ bool isAddingSlotAfter(int blockId) => _addingSlotAfter[blockId] ?? false;
     }
   }
 
+  Future<void> onChangeConsultationType(String token, int slotId) async {
+    isLoading = true;
+    notifyListeners();
+    try {
+      await api.changeConsultationType(token, slotId);
+    } catch (e) {
+      notify.showToast('Slot cannot be manipulated.');
+      rethrow;
+    } finally {
+      isLoading = false;
+      notifyListeners();
+      loadRoom(token);
+    }
+  }
   //blocks
 
   void handleEmailSubscribe(String token, int block) async {
@@ -89,15 +101,17 @@ bool isAddingSlotAfter(int blockId) => _addingSlotAfter[blockId] ?? false;
     _ownerView = value;
     notifyListeners();
   }
-void setAddingSlotBefore(int blockId, bool value) {
-  _addingSlotBefore[blockId] = value;
-  notifyListeners();
-}
 
-void setAddingSlotAfter(int blockId, bool value) {
-  _addingSlotAfter[blockId] = value;
-  notifyListeners();
-}
+  void setAddingSlotBefore(int blockId, bool value) {
+    _addingSlotBefore[blockId] = value;
+    notifyListeners();
+  }
+
+  void setAddingSlotAfter(int blockId, bool value) {
+    _addingSlotAfter[blockId] = value;
+    notifyListeners();
+  }
+
   void setIsLoading(bool value) {
     if (value) {
       isLoading = true;

@@ -116,15 +116,15 @@ class _DisplayUsersInRoomPageState extends State<DisplayUsersInRoomPage> {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha:0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   '${viewModel.users.length}',
                   style: TextStyle(
                     color: constants.primary,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
+                    fontWeight: constants.fwSemiBold,
+                    fontSize: constants.fsLabel,
                   ),
                 ),
               ),
