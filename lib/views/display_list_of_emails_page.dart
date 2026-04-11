@@ -15,7 +15,10 @@ class _DisplayListOfEmailsPageState extends State<DisplayListOfEmailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: constants.background,
-      appBar: AppBar(title: Text('Allowed email domains')),
+      appBar: AppBar(
+        title: Text('Allowed email domains'),
+        backgroundColor: constants.background,
+      ),
       body: SafeArea(
         child: ListenableBuilder(
           listenable: widget.viewModel,

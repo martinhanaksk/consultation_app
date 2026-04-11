@@ -43,6 +43,7 @@ class _DisplayUsersInRoomPageState extends State<DisplayUsersInRoomPage> {
           return Scaffold(
             backgroundColor: constants.background,
             appBar: AppBar(
+              backgroundColor: constants.background,
               title: Text(widget.roomName),
               actions: [
                 TextButton(
@@ -116,7 +117,9 @@ class _DisplayUsersInRoomPageState extends State<DisplayUsersInRoomPage> {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary.withValues(alpha:0.1),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(

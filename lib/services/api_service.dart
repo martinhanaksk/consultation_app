@@ -213,7 +213,7 @@ class ApiService {
 
       return decoded.map((json) => BlockModel.fromJson(json)).toList();
     } else {
-      throw Exception('Failed to fetch blocks: ${response.statusCode}');
+      return [];
     }
   }
 
@@ -363,7 +363,6 @@ class ApiService {
       mySubscriptions = List<int>.from(
         decoded.map((json) => json['block_id'] as int),
       );
-      print(mySubscriptions.toString());
       return mySubscriptions;
     } else {
       throw Exception(
@@ -447,10 +446,8 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final List<dynamic> decoded = jsonDecode(response.body);
-      print(decoded.toString());
       return decoded.map((json) => json['user_email'] as String).toList();
     } else {
-      print(response.body);
       throw Exception(
         'Failed to fetch connected users: ${response.statusCode}',
       );
@@ -545,6 +542,44 @@ class ApiService {
     } else {
       return true;
     }
+  }
+
+  Future<bool> createTeacher(
+    String token,
+    String email,
+    String name,
+    String surname,
+  ) async {
+    final Uri url = Uri.parse(
+      '${constants.url}/users/create-teacher?email=$email&name=$name&surname=$surname',
+    );
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  Future<bool> deleteSlot(String token, int slotId) async {
+    final Uri url = Uri.parse('${constants.url}/slot/delete?slot_id=$slotId');
+
+    final response = await http.delete(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    return response.statusCode == 200;
   }
 
   Future<bool> getIsOwner() async {

@@ -48,7 +48,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       child: Consumer<RegisterViewmodel>(
         builder: (context, viewModel, child) {
           return Scaffold(
-            appBar: AppBar(actions: [
+            appBar: AppBar( backgroundColor: constants.background,actions: [
               ],
             ),
             backgroundColor: constants.background,

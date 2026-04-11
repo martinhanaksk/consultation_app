@@ -5,7 +5,7 @@ class Constants {
   Color background = Color(0xfff9f9f9);
   Color grey = Color(0xFFD0D0D0);
   Color darkGrey = Color(0xff191c1f);
-  Color textUnavailableGrey = Color.fromARGB(255, 193, 151, 146);
+  Color textUnavailableGrey = Color(0xFFfdc6c1);
   Color onyxBlack = Color(0xFF0a0a0a);
   Color green = Color(0xff15803d);
   Color red = Color(0xffB71C1C);
@@ -57,9 +57,7 @@ class Constants {
   factory Constants() => _instance;
   Constants._internal();
   void setServerUrl() {
-    
-      url = "https://office-hours.fit.vutbr.cz/api/dev";
-    
+    url = "https://office-hours.fit.vutbr.cz/api/dev";
   }
   //school server:
 

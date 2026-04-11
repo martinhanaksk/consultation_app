@@ -184,6 +184,7 @@ Future<void> handleEmailSubscribe(String token, int block) async {
     }
 
     noRoomsFound = false;
+    
     List<BlockModel> newBlocks = await api.getBlocks(token, roomId);
 
     DateTime now = DateTime.now();

@@ -46,7 +46,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
       child: Consumer<VerifyOtpViewmodel>(
         builder: (context, viewModel, child) {
           return Scaffold(
-            appBar: AppBar(actions: [
+            appBar: AppBar( backgroundColor: constants.background,actions: [
               ],
             ),
             backgroundColor: constants.background,
@@ -89,7 +89,6 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                           border: OutlineInputBorder(
                             borderSide: BorderSide.none,
                           ),
-
                           hintText: 'Code',
                         ),
                       ),

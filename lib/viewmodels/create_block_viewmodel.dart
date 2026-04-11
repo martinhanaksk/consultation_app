@@ -174,19 +174,18 @@ class CreateBlockViewmodel extends ChangeNotifier {
     super.dispose();
   }
 
-  String? validateCreate() {
+  String? validateCreate(int? slots) {
     if (getSelectedDatesIso().isEmpty) return 'Please select at least one date';
     if (_startTime == null) return 'Please set a start time';
     if (_duration == null) return 'Please set a duration';
 
-    final slots = int.tryParse(slotNumberController.text.trim());
-    if (slots == null || slots <= 0) {
+    if (slots == null || slots < 0) {
       return 'Please enter a valid number of slots';
     }
 
-    if (_endTime == null) return 'End time is invalid (exceeds 24h)';
+    if (_endTime == null && slots!=0) return 'End time is invalid (exceeds 24h)';
 
-    return null; // all good
+    return null;
   }
 
   String _formatTimeWithSeconds(Duration d) {
@@ -199,7 +198,8 @@ class CreateBlockViewmodel extends ChangeNotifier {
   void createBlock(String token, String roomId, VoidCallback? onSuccess) async {
     isLoading = true;
     notifyListeners();
-    final error = validateCreate();
+    final slotCount = int.tryParse(slotNumberController.text.trim());
+    final error = validateCreate(slotCount);
     if (error != null) {
       notify.showToast(error);
       isLoading = false;
@@ -208,7 +208,6 @@ class CreateBlockViewmodel extends ChangeNotifier {
     }
 
     List<String> dates = getSelectedDatesIso();
-    final int slotCount = int.parse(slotNumberController.text.trim());
     final String note = noteController.text.trim();
     final int isOnline = isChecked ? 1 : 0;
     for (int i = 0; i < dates.length; i++) {
@@ -223,27 +222,29 @@ class CreateBlockViewmodel extends ChangeNotifier {
         return;
       }
       final int blockId = jsonDecode(response)['id'];
-      final List<Map<String, dynamic>> slots = [];
-      for (int j = 0; j < slotCount; j++) {
-        final Duration slotStart = _startTime! + (_duration! * j);
-        final String startTimeStr = _formatTimeWithSeconds(slotStart);
-        bool success = await api.createSlot(
-          token,
-          blockId,
-          startTimeStr,
-          _duration!.inMinutes,
-          isOnline,
-          note,
-        );
-        if (!success) {
-          notify.showToast('Failed to create slot $j for block $blockId');
-          isLoading = false;
-          notifyListeners();
-          return;
+      if (slotCount != 0) {
+        final List<Map<String, dynamic>> slots = [];
+        for (int j = 0; j < slotCount!; j++) {
+          final Duration slotStart = _startTime! + (_duration! * j);
+          final String startTimeStr = _formatTimeWithSeconds(slotStart);
+          bool success = await api.createSlot(
+            token,
+            blockId,
+            startTimeStr,
+            _duration!.inMinutes,
+            isOnline,
+            note,
+          );
+          if (!success) {
+            notify.showToast('Failed to create slot $j for block $blockId');
+            isLoading = false;
+            notifyListeners();
+            return;
+          }
         }
       }
     }
-    notify.showToast('All blocks and slots created successfully');
+    notify.showToast('Blocks created successfully.');
     isLoading = false;
     notifyListeners();
     onSuccess?.call();

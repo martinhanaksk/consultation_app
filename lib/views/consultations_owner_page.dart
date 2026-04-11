@@ -1,4 +1,3 @@
-
 import 'package:consultation_app/viewmodels/owner_consultations_viewmodel.dart';
 import 'package:consultation_app/views/consultations_base_page.dart';
 import 'package:consultation_app/views/custom_widgets/animated_toggle_widget.dart';
@@ -19,8 +18,7 @@ class ConsultationsOwnerPage extends StatefulWidget {
   });
 
   @override
-  State<ConsultationsOwnerPage> createState() =>
-      _ConsultationsOwnerPageState();
+  State<ConsultationsOwnerPage> createState() => _ConsultationsOwnerPageState();
 }
 
 class _ConsultationsOwnerPageState extends State<ConsultationsOwnerPage> {
