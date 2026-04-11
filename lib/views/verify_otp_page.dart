@@ -3,7 +3,6 @@ import 'package:consultation_app/viewmodels/verify_otp_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
-import 'package:figma_squircle/figma_squircle.dart';
 
 class VerifyOtpPageArgs {
   final String email;

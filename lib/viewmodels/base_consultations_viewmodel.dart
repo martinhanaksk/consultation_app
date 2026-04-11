@@ -16,11 +16,11 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   bool blocksFiltered = false;
   bool noRoomsFound = false;
   //base atributes
+  List<int> subscribedBlocks = [];
   List<UserModel>? users = [];
   List<RoomModel>? rooms = [];
   Map<int, List<SlotModel>?> slotsInBlocks = {};
   List<BlockModel> blocks = [];
-  Map<int, bool> blockNotificationEnabled = {};
   String? ownerSelectedRoomId;
   String? visitorSelectedRoomId;
 
@@ -42,11 +42,16 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
 
   bool isTakingSlot(int slotId) => _takingSlot[slotId] ?? false;
   // Move takeSlot logic here
-  Future<void> takeSlot(String token, int slotId, String note,int isOnline) async {
+  Future<void> takeSlot(
+    String token,
+    int slotId,
+    String note,
+    int isOnline,
+  ) async {
     _takingSlot[slotId] = true;
     notifyListeners();
     try {
-      await api.takeSlot(token, slotId, note,isOnline);
+      await api.takeSlot(token, slotId, note, isOnline);
     } catch (e) {
       _takingSlot[slotId] = false;
       notify.showToast('manipulated');
@@ -88,13 +93,35 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     }
   }
   //blocks
+  // Inside BaseConsultationsViewmodel
 
-  void handleEmailSubscribe(String token, int block) async {
-    bool receiveEmails = await prefs.getItem('receiveEmails');
-    if (receiveEmails == true) {
-      api.subscribeToBlock(token, block);
-    }
+Future<void> handleEmailSubscribe(String token, int block) async {
+  bool receiveEmails = await prefs.getItem('receiveEmails');
+  if (receiveEmails != true) return;
+
+  final isCurrentlySubscribed = subscribedBlocks.contains(block);
+
+  if (isCurrentlySubscribed) {
+    subscribedBlocks.remove(block);
+  } else {
+    subscribedBlocks.add(block);
   }
+  notifyListeners(); 
+
+  try {
+    await api.subscribeToBlock(token, block);
+    subscribedBlocks = await api.getMySubscriptions(token); 
+    notifyListeners();
+  } catch (e) {
+    if (isCurrentlySubscribed) {
+      subscribedBlocks.add(block);
+    } else {
+      subscribedBlocks.remove(block);
+    }
+    notifyListeners();
+    notify.showToast('Failed to update subscription. Please try again.');
+  }
+}
 
   Future<void> setOwnerView(int value) async {
     if (_ownerView == value) return;
@@ -146,7 +173,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
 
   Future<void> refreshRoomData(String token, int roomId) async {
     if (!await checkConnection()) return;
-
+    final subscriptions = await api.getMySubscriptions(token);
     final newUsers = await api.getUsers(token);
     final newRooms = await fetchRooms(token);
 
@@ -166,7 +193,6 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     Map<int, List<SlotModel>?> newSlotsInBlocks = {};
     List<Future<void>> futures = [];
     for (var block in newBlocks) {
-      //TODO blockNotificationEnabled[block.id]=api.get   api.get-my-subscribtions;
       futures.add(() async {
         final slots = await api.getSlotsForBlock(block.id, token);
         if (slots != null) {
@@ -178,7 +204,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
       }());
     }
     await Future.wait(futures);
-
+    subscribedBlocks = subscriptions;
     users = newUsers;
     rooms = newRooms;
     blocks = newBlocks;
@@ -274,7 +300,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
 
     helpers.checkIfValidToken(token);
     isTeacher = await resolveUserRole(token, email);
-
+    subscribedBlocks = await api.getMySubscriptions(token);
     final myRooms = await fetchRooms(token);
     if (myRooms.isEmpty) {
       noRoomsFound = true;

@@ -348,6 +348,31 @@ class ApiService {
     }
   }
 
+  Future<List<int>> getMySubscriptions(String token) async {
+    final Uri url = Uri.parse('${constants.url}/block/get-my-subscriptions');
+    List<int> mySubscriptions = [];
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final decoded = jsonDecode(response.body);
+      mySubscriptions = List<int>.from(
+        decoded.map((json) => json['block_id'] as int),
+      );
+      print(mySubscriptions.toString());
+      return mySubscriptions;
+    } else {
+      throw Exception(
+        'Failed to get subscriptions for user: ${response.statusCode}',
+      );
+    }
+  }
+
   Future<String> getRole(String token, String email) async {
     final Uri url = Uri.parse('${constants.url}/users?email=$email');
 

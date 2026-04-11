@@ -438,27 +438,27 @@ class _ConsultationBlockCard extends StatelessWidget {
                                       );
                                       return;
                                     }
-                                    // TODO viewModel.setTemporarybellboolean(
-                                    //   !viewModel.temporaryBellBoolean,
-                                    // );
                                     viewModel.handleEmailSubscribe(
                                       token,
                                       blockEntry.key,
                                     );
 
-                                    if (true) {
-                                      //viewModel.temporaryBellBoolean TODO
+                                    if (viewModel.subscribedBlocks.contains(
+                                      blockEntry.key,
+                                    )) {
                                       notify.showToast(
-                                        "Notifications enabled for selected slot",
+                                        "Notifications disabled for selected slot",
                                       );
                                     } else {
                                       notify.showToast(
-                                        "Notifications disabled for selected slot",
+                                        "Notifications enabled for selected slot",
                                       );
                                     }
                                   },
                                   child:
-                                      true //viewModel.temporaryBellBoolean TODO
+                                      viewModel.subscribedBlocks.contains(
+                                        blockEntry.key,
+                                      )
                                       ? SvgPicture.asset(
                                           'assets/resources/notifications_bell_full.svg',
                                           colorFilter: ColorFilter.mode(
@@ -500,11 +500,12 @@ class _ConsultationBlockCard extends StatelessWidget {
                             userEmail: email,
                             slot: slots[index],
                             token: token,
-                            roomId: vm.selectedRoomId!,isOwnerView: vm.ownerView,
-                             onChangeConsultationType: 
-                               ()=> vm.onChangeConsultationType(token, slot.id),
-                            onTakeSlot: (note,isOnline) =>
-                                vm.takeSlot(token, slot.id, note,isOnline),
+                            roomId: vm.selectedRoomId!,
+                            isOwnerView: vm.ownerView,
+                            onChangeConsultationType: () =>
+                                vm.onChangeConsultationType(token, slot.id),
+                            onTakeSlot: (note, isOnline) =>
+                                vm.takeSlot(token, slot.id, note, isOnline),
                             onReleaseSlot: () => vm.releaseSlot(token, slot.id),
                             context: context,
                             isTakingSlot: vm.isTakingSlot(slot.id),
