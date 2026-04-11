@@ -21,12 +21,12 @@ class JoinRoomViewmodel extends ChangeNotifier {
       notifyListeners();
       notify.showToast('Room joined.');
       if (await prefs.getItem("role") == "teacher") {
-        nav.toTeacherConsultations(
+        nav.toOwnerConsultations(
           token: token,
           email: await prefs.getItem("email"),
         );
       } else {
-        nav.toStudentConsultations(
+        nav.toBaseConsultations(
           token: token,
           email: await prefs.getItem("email"),
         );

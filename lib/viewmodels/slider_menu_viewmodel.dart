@@ -5,7 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 class SliderMenuViewmodel extends ChangeNotifier {
   String _token = "";
   String? _email = "";
-  bool? _isTeacher;
+  bool? _isOwner;
   bool _isLoading = false;
   final Uri _url = Uri.parse(
     'https://docs.google.com/forms/d/e/1FAIpQLScm7rfzCowdWgC_8-yCJURY5DqBcwrsp9zDaRoVqFF2O3Bc2Q/viewform?usp=publish-editor',
@@ -18,7 +18,7 @@ class SliderMenuViewmodel extends ChangeNotifier {
 
   bool get isLoading => _isLoading;
   String get token => _token;
-  bool? get isTeacher => _isTeacher;
+  bool? get isOwner => _isOwner;
   String? get email => _email;
 
   void checkSliderMenuFundamentals() async {
@@ -33,11 +33,11 @@ class SliderMenuViewmodel extends ChangeNotifier {
       _email = await prefs.getItem('email');
       if (!await helpers.handleIsInternetConnection()) {
         notify.showToast('Please connect to internet.');
-        _isTeacher = false;
+        _isOwner = false;
       } else {
-        bool isTeacherTemp = await api.getIsTeacher();
+        bool isOwnerTemp = await api.getIsOwner();
         notifyListeners();
-        _isTeacher = isTeacherTemp;
+        _isOwner = isOwnerTemp;
       }
     } finally {
       _isLoading = false;

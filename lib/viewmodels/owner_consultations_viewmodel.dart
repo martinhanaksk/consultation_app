@@ -1,9 +1,9 @@
-// teacher_consultations_viewmodel.dart
+// owner_consultations_viewmodel.dart
 import 'package:consultation_app/models/room_model.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/base_consultations_viewmodel.dart';
 
-class TeacherConsultationsViewmodel extends BaseConsultationsViewmodel {
+class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
   //0=visitor, 1=owner
   List<RoomModel> _ownerRooms = [];
   List<RoomModel> _visitorRooms = [];
@@ -27,14 +27,14 @@ class TeacherConsultationsViewmodel extends BaseConsultationsViewmodel {
     } finally {
       isLoading = false;
       notifyListeners();
-      nav.toTeacherConsultations(
+      nav.toOwnerConsultations(
         token: token,
         email: await prefs.getItem("email"),
       );
     }
   }
 
-  // teacher_consultations_viewmodel.dart
+  // owner_consultations_viewmodel.dart
   @override
   Future<void> init(String token, String email) async {
     isLoading = true;
@@ -42,10 +42,10 @@ class TeacherConsultationsViewmodel extends BaseConsultationsViewmodel {
     if (!await checkConnection()) return;
 
     helpers.checkIfValidToken(token);
-    isTeacher = await resolveUserRole(token, email);
+    isOwner = await resolveUserRole(token, email);
 
     _visitorRooms = await api.getJoinedRooms(token);
-    _ownerRooms = await api.getMyRoomsTeacher(token);
+    _ownerRooms = await api.getMyRoomsOwner(token);
 
     if (_visitorRooms.isEmpty && _ownerRooms.isEmpty) {
       noRoomsFound = true;
@@ -72,7 +72,7 @@ class TeacherConsultationsViewmodel extends BaseConsultationsViewmodel {
     notifyListeners();
   }
 
-  // In TeacherConsultationsViewmodel
+  // In OwnerConsultationsViewmodel
 
   Future<void> addSlotBeforeBlock(String token, int blockId) async {
     setAddingSlotBefore(blockId, true);

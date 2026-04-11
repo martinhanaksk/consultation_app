@@ -51,12 +51,12 @@ class _SliderMenuState extends State<SliderMenu> {
                             ),
                             onTap: () {
                               helpers.checkIfValidToken(viewModel.token);
-                              viewModel.isTeacher!
-                                  ? nav.toTeacherConsultations(
+                              viewModel.isOwner!
+                                  ? nav.toOwnerConsultations(
                                       token: viewModel.token,
                                       email: viewModel.email!,
                                     )
-                                  : nav.toStudentConsultations(
+                                  : nav.toBaseConsultations(
                                       token: viewModel.token,
                                       email: viewModel.email!,
                                     );
@@ -74,12 +74,12 @@ class _SliderMenuState extends State<SliderMenu> {
                           ),
                           onTap: () {
                             helpers.checkIfValidToken(viewModel.token);
-                            viewModel.isTeacher!
-                                ? nav.toTeacherConsultations(
+                            viewModel.isOwner!
+                                ? nav.toOwnerConsultations(
                                     token: viewModel.token,
                                     email: viewModel.email!,
                                   )
-                                : nav.toStudentConsultations(
+                                : nav.toBaseConsultations(
                                     token: viewModel.token,
                                     email: viewModel.email!,
                                   );
@@ -99,7 +99,7 @@ class _SliderMenuState extends State<SliderMenu> {
                           },
                         ),
                         const SizedBox(height: 20),
-                        (viewModel.isTeacher != null && viewModel.isTeacher!)
+                        (viewModel.isOwner != null && viewModel.isOwner!)
                             ? Column(
                                 children: [
                                   GestureDetector(

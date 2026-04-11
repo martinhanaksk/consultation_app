@@ -19,16 +19,15 @@ class NavigationService {
     _navigator()?.pushReplacementNamed(AppRouter.login);
   }
 
-  void toVerifyOtp({
-    required String email,
-    required String token,
-    bool rememberMe = false,
-  }) {
-    _navigator()?.pushNamed(
-      AppRouter.verifyOtp,
-      arguments: {'email': email, 'token': token, 'rememberMe': rememberMe},
-    );
-  }
+Future<dynamic> toVerifyOtp({
+  required String email,
+  bool rememberMe = false,
+}) {
+  return _navigator()!.pushNamed(
+    AppRouter.verifyOtp,
+    arguments: {'email': email, 'rememberMe': rememberMe},
+  );
+}
 
   void redirectToRegister(BuildContext context, String email) {
     Navigator.pushNamed(
@@ -38,26 +37,26 @@ class NavigationService {
     );
   }
 
-  void toRegister({required String email}) {
+  void toRegister({required String email,required bool rememberMe}) {
     _navigator()?.pushNamed(
       AppRouter.register,
-      arguments: <String, dynamic>{'email': email},
+      arguments: <String, dynamic>{'email': email,'rememberMe': rememberMe},
     );
   }
 
   //App
 
-  void toTeacherConsultations({required String token, required String email}) {
+  void toOwnerConsultations({required String token, required String email}) {
     _navigator()?.pushNamedAndRemoveUntil(
-      AppRouter.consultationsTeacherPage,
+      AppRouter.consultationsOwnerPage,
       (route) => false,
       arguments: <String, dynamic>{'token': token, 'email': email},
     );
   }
 
-  void toStudentConsultations({required String token, required String email}) {
+  void toBaseConsultations({required String token, required String email}) {
     _navigator()?.pushNamedAndRemoveUntil(
-      AppRouter.consultationsStudentPage,
+      AppRouter.consultationsBasePage,
       (route) => false,
       arguments: <String, dynamic>{'token': token, 'email': email},
     );

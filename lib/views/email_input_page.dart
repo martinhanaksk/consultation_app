@@ -55,109 +55,109 @@ class _EmailInputPageState extends State<EmailInputPage> {
           return Scaffold(
             backgroundColor: constants.background,
             body: SafeArea(
-              child: viewModel.isLoading
-                  ? Center(
-                      child: SpinKitPouringHourGlass(
-                        color: constants.primary,
-                        size: constants.fsHeadline,
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 80),
+                      Center(
+                        child: SvgPicture.asset(
+                          'assets/resources/logo-whole.svg',
+                          width: 232,
+                          color: constants.primary,
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                    )
-                  : SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 80),
-                            Center(
-                              child: SvgPicture.asset(
-                                'assets/resources/logo-whole.svg',
-                                width: 232,
-                                color: constants.primary,
-                                fit: BoxFit.cover,
-                              ),
+                      const SizedBox(height: 56),
+                      Container(
+                        clipBehavior: Clip.none,
+                        decoration: constants.squircleShadow(
+                          color: constants.background,
+                          borderRadius: SmoothBorderRadius(
+                            cornerRadius: 12,
+                            cornerSmoothing: 0.6,
+                          ),
+                        ),
+                        child: TextField(
+                          scrollPadding: EdgeInsets.only(bottom: 1000),
+                          onChanged: viewModel.updateEmail,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
                             ),
-                            const SizedBox(height: 56),
-                            Container(
+                            hintText: 'Email',
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Row(
+                        children: [
+                          IntrinsicWidth(
+                            child: Container(
+                              width: 24,
+                              height: 24,
                               clipBehavior: Clip.none,
                               decoration: constants.squircleShadow(
                                 color: constants.background,
                                 borderRadius: SmoothBorderRadius(
-                                  cornerRadius: 12,
+                                  cornerRadius: 6,
                                   cornerSmoothing: 0.6,
                                 ),
                               ),
-                              child: TextField(
-                                scrollPadding: EdgeInsets.only(bottom: 1000),
-                                onChanged: viewModel.updateEmail,
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  hintText: 'Email',
+                              child: Checkbox(
+                                value: viewModel.isChecked,
+                                onChanged: viewModel.toggleRememberMe,
+                                side: BorderSide.none,
+                                checkColor: constants.darkGrey,
+                                fillColor: WidgetStateProperty.all(
+                                  constants.background,
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 24),
-                            Row(
-                              children: [
-                                IntrinsicWidth(
-                                  child: Container(
-                                    width: 24,
-                                    height: 24,
-                                    clipBehavior: Clip.none,
-                                    decoration: constants.squircleShadow(
-                                      color: constants.background,
-                                      borderRadius: SmoothBorderRadius(
-                                        cornerRadius: 6,
-                                        cornerSmoothing: 0.6,
-                                      ),
-                                    ),
-                                    child: Checkbox(
-                                      value: viewModel.isChecked,
-                                      onChanged: viewModel.toggleRememberMe,
-                                      side: BorderSide.none,
-                                      checkColor: constants.darkGrey,
-                                      fillColor: WidgetStateProperty.all(
-                                        constants.background,
-                                      ),
-                                    ),
+                          ),
+                          SizedBox(width: 8),
+                          const Text('Remember me'),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: viewModel.isLoading
+                              ? Center(
+                                  child: SpinKitPouringHourGlass(
+                                    color: constants.primary,
+                                    size: constants.fsTitle,
                                   ),
-                                ),
-                                SizedBox(width: 8),
-                                const Text('Remember me'),
-                              ],
-                            ),
-                            const SizedBox(height: 24),
-                            SizedBox(
-                              width: double.infinity,
-                              height: 48,
-                              child: ElevatedButton(
-                                onPressed: () async {
-                                  if (!viewModel.isLoading &&
-                                      validator.validateEmail(
-                                        viewModel.email,
-                                        context,
-                                      )) {
-                                    // Start 5-second timeout before API call
-                                    _startLoadingTimeout(context);
+                                )
+                              : ElevatedButton(
+                          onPressed: () async {
+                            if (!viewModel.isLoading &&
+                                validator.validateEmail(
+                                  viewModel.email,
+                                  context,
+                                )) {
+                              // Start 5-second timeout before API call
+                              _startLoadingTimeout(context);
 
-                                    await viewModel.continueToVerify(
-                                      helpers.trimText(viewModel.email),
-                                      viewModel.isChecked,
-                                    );
-                                  }
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: constants.primary,
-                                  disabledBackgroundColor: constants.primary,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(14),
-                                  ),
-                                  elevation: 2,
-                                  shadowColor: constants.primary,
-                                ),
-                                child: Text(
+                              await viewModel.continueToVerify(
+                                helpers.trimText(viewModel.email),
+                                viewModel.isChecked,
+                              );
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: constants.primary,
+                            disabledBackgroundColor: constants.primary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            elevation: 2,
+                            shadowColor: constants.primary,
+                          ),
+                          child: Text(
                                   'Next',
                                   style: TextStyle(
                                     fontSize: constants.fsTitle,
@@ -165,12 +165,12 @@ class _EmailInputPageState extends State<EmailInputPage> {
                                     color: constants.background,
                                   ),
                                 ),
-                              ),
-                            ),
-                          ],
                         ),
                       ),
-                    ),
+                    ],
+                  ),
+                ),
+              ),
             ),
           );
         },

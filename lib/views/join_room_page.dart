@@ -179,7 +179,7 @@ class _JoinRoomState extends State<JoinRoom> {
                                         return Align(
                                           alignment: Alignment.topLeft,
                                           child: Material(
-                                            color: Colors.transparent,
+                                            color: constants.transparent,
                                             child: Container(
                                               margin: const EdgeInsets.only(
                                                 top: 6,

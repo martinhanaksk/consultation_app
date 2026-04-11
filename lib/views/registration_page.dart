@@ -2,13 +2,19 @@ import 'package:consultation_app/models/user_model.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/register_viewmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:provider/provider.dart';
 
 class RegistrationPage extends StatefulWidget {
   final String email;
-  const RegistrationPage({super.key, required this.email});
+  final bool rememberMe;
+  const RegistrationPage({
+    super.key,
+    required this.email,
+    required this.rememberMe,
+  });
 
   @override
   State<RegistrationPage> createState() => _RegistrationPageState();
@@ -42,6 +48,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
       child: Consumer<RegisterViewmodel>(
         builder: (context, viewModel, child) {
           return Scaffold(
+            appBar: AppBar(actions: [
+              ],
+            ),
             backgroundColor: constants.background,
             resizeToAvoidBottomInset: true,
             body: SafeArea(
@@ -158,7 +167,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     SizedBox(
                       width: double.infinity,
                       height: 50,
-                      child: ElevatedButton(
+                      child:viewModel.isLoading
+                            ? SpinKitPouringHourGlass(
+                                color: constants.green,
+                                size: constants.fsTitle,
+                              )
+                            :  ElevatedButton(
                         onPressed: () async {
                           FocusScope.of(context).unfocus();
                           if (validator.validateNotEmpty(
@@ -202,7 +216,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 ),
                                 visible: 0,
                               );
-                              await viewModel.registerUser(um);
+                              await viewModel.handleRegisterUser(
+                                um,
+                                widget.rememberMe,
+                              );
                             } catch (e) {
                               notify.showToast("Error while registering user.");
                             }
@@ -218,13 +235,13 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           shadowColor: constants.green,
                         ),
                         child: Text(
-                          'Register',
-                          style: TextStyle(
-                            fontSize: constants.fsBody,
-                            fontWeight: constants.fwSemiBold,
-                            color: constants.background,
-                          ),
-                        ),
+                                'Register',
+                                style: TextStyle(
+                                  fontSize: constants.fsBody,
+                                  fontWeight: constants.fwSemiBold,
+                                  color: constants.background,
+                                ),
+                              ),
                       ),
                     ),
                   ],

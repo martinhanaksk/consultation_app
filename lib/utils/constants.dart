@@ -19,7 +19,6 @@ class Constants {
   FontWeight fwRegular = FontWeight.w400;
   FontWeight fwSemiBold = FontWeight.w600;
   double oneItemHeight = 80;
-  bool testing = false;
   String url = '';
   ShapeDecoration squircleShadow({
     Color? color,
@@ -57,14 +56,10 @@ class Constants {
   static final Constants _instance = Constants._internal();
   factory Constants() => _instance;
   Constants._internal();
-  void checkIfTestingServer(isTesting) {
-    if (isTesting) {
-      testing = true;
-      url = "https://consultations-backend.onrender.com/api/";
-    } else {
-      testing = false;
+  void setServerUrl() {
+    
       url = "https://office-hours.fit.vutbr.cz/api/dev";
-    }
+    
   }
   //school server:
 

@@ -6,7 +6,7 @@ import 'package:consultation_app/setup.dart';
 import 'package:flutter/foundation.dart';
 
 class BaseConsultationsViewmodel extends ChangeNotifier {
-  bool isTeacher = false;
+  bool isOwner = false;
   bool isLoading = false;
   Map<int, bool> _addingSlotBefore = {};
   Map<int, bool> _addingSlotAfter = {};
@@ -253,7 +253,7 @@ Future<void> handleEmailSubscribe(String token, int block) async {
     return "($diff d.)";
   }
 
-  //Student functionalities
+  //Base functionalities
   Future<void> switchRoom(String newRoomId) async {
     _ownerView == 1
         ? ownerSelectedRoomId = newRoomId
@@ -299,7 +299,7 @@ Future<void> handleEmailSubscribe(String token, int block) async {
     if (!await checkConnection()) return;
 
     helpers.checkIfValidToken(token);
-    isTeacher = await resolveUserRole(token, email);
+    isOwner = await resolveUserRole(token, email);
     subscribedBlocks = await api.getMySubscriptions(token);
     final myRooms = await fetchRooms(token);
     if (myRooms.isEmpty) {

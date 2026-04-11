@@ -28,7 +28,7 @@ class CreateRoomViewmodel extends ChangeNotifier {
           notify.showToast('Room was successfully created.');
           _isLoading = false;
           notifyListeners();
-          nav.toTeacherConsultations(token: token, email: email);
+          nav.toOwnerConsultations(token: token, email: email);
         } else {
           notify.showToast('Room with provided name already exists.');
           _isLoading = false;

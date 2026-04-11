@@ -6,23 +6,16 @@ import 'package:provider/provider.dart';
 
 class VerifyOtpPageArgs {
   final String email;
-  final String token;
   final bool rememberMe;
-  VerifyOtpPageArgs({
-    required this.email,
-    required this.token,
-    required this.rememberMe,
-  });
+  VerifyOtpPageArgs({required this.email, required this.rememberMe});
 }
 
 class VerifyOtpPage extends StatefulWidget {
   final String email;
-  final String token;
   final bool rememberMe;
   const VerifyOtpPage({
     super.key,
     required this.email,
-    required this.token,
     required this.rememberMe,
   });
 
@@ -37,20 +30,6 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
   void initState() {
     super.initState();
     _viewModel = VerifyOtpViewmodel();
-
-    if (widget.token.isNotEmpty) {
-      if (widget.token.length > 1) {
-        otpcontroller.text = widget.token..replaceAll('"', '');
-      }
-
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _viewModel.connect(
-          widget.email,
-          otpcontroller.text.trim(),
-          widget.rememberMe,
-        );
-      });
-    }
   }
 
   @override
@@ -67,6 +46,9 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
       child: Consumer<VerifyOtpViewmodel>(
         builder: (context, viewModel, child) {
           return Scaffold(
+            appBar: AppBar(actions: [
+              ],
+            ),
             backgroundColor: constants.background,
             body: SafeArea(
               child: Padding(

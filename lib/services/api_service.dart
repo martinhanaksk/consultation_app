@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:consultation_app/setup.dart';
 import 'package:http/http.dart' as http;
 import 'package:consultation_app/models/user_model.dart';
@@ -51,8 +52,8 @@ class ApiService {
   }
 
   //register
-  Future<String> registerUser(UserModel um) async {
-    final Uri url = Uri.parse('${constants.url}/users/register');
+  Future<http.Response> registerUser(UserModel um) async {
+    final Uri url = Uri.parse('${constants.url}/auth/register');
 
     final response = await http.post(
       url,
@@ -68,11 +69,9 @@ class ApiService {
     final data = jsonDecode(response.body);
     if (response.statusCode == 200) {
       await prefs.saveItem('email', um.email);
-      await prefs.saveItem('token', data['token']);
-      await prefs.saveItem('role', data['role']);
-      return data['token'];
+      return response;
     } else {
-      return '';
+      return response;
     }
   }
 
@@ -175,7 +174,7 @@ class ApiService {
     return allRooms.where((room) => roomIds.contains(room.id)).toList();
   }
 
-  Future<List<RoomModel>> getMyRoomsTeacher(String token) async {
+  Future<List<RoomModel>> getMyRoomsOwner(String token) async {
     final Uri urlToGetRooms = Uri.parse('${constants.url}/room/get-my');
     final responseToGetRooms = await http.get(
       urlToGetRooms,
@@ -400,7 +399,7 @@ class ApiService {
     }
   }
 
-  //teacher methods
+  //owner methods
   Future<bool> createRoom(
     String token,
     String roomName,
@@ -548,7 +547,7 @@ class ApiService {
     }
   }
 
-  Future<bool> getIsTeacher() async {
+  Future<bool> getIsOwner() async {
     String? role = await prefs.getItem('role');
     if (role == 'teacher') {
       return true;

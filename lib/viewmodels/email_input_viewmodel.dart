@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:consultation_app/setup.dart';
 
 class EmailInputViewModel extends ChangeNotifier {
@@ -20,52 +19,24 @@ class EmailInputViewModel extends ChangeNotifier {
     notifyListeners();
     try {
       final response = await api.requestLoginOtp(email);
-      if (constants.testing) {
-        handleTestingServer(response, email, rememberMe);
-      } else {
-        handleServer(response, email, rememberMe);
-      }
+      helpers.handleServer(response, email, rememberMe);
     } catch (e) {
       notify.showToast("Please, check your internet connection.");
       resetLoading();
     }
   }
-void setLoading(bool loading) {
-  _isLoading = loading;
-  notifyListeners();
-}
+
+  void setLoading(bool loading) {
+    _isLoading = loading;
+    notifyListeners();
+  }
 
   void resetLoading() {
     _isLoading = false;
     notifyListeners();
   }
 
-  void handleTestingServer(
-    http.Response response,
-    String email,
-    bool rememberMe,
-  ) {
-    if (response.statusCode == 200) {
-      nav.toVerifyOtp(
-        // ← then navigate
-        email: email,
-        token: response.body,
-        rememberMe: rememberMe,
-      );
-    } else if (response.statusCode == 400) {
-      redirectToRegister(email);
-    }
-  }
-
-  void handleServer(http.Response response, String email, bool rememberMe) {
-    if (response.statusCode == 200) {
-      nav.toVerifyOtp(email: email, token: "", rememberMe: rememberMe);
-    } else if (response.statusCode == 400) {
-      redirectToRegister(email);
-    } else {
-      notify.showToast('Failed to send OTP. Try again.');
-    }
-  }
+ 
 
   void updateEmail(String value) {
     _email = value;
@@ -76,7 +47,5 @@ void setLoading(bool loading) {
     notifyListeners();
   }
 
-  void redirectToRegister(String email) {
-    nav.toRegister(email: email);
-  }
+  
 }

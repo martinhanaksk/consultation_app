@@ -11,7 +11,7 @@ final getIt = GetIt.instance;
 void setupDependencies() {
   getIt.registerLazySingleton<Constants>(() {
     final constants = Constants();
-    constants.checkIfTestingServer(false);
+    constants.setServerUrl();
     return constants;
   });
   getIt.registerLazySingleton<NavigationService>(() => NavigationService());

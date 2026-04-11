@@ -1,4 +1,5 @@
-import 'package:consultation_app/viewmodels/teacher_consultations_viewmodel.dart';
+
+import 'package:consultation_app/viewmodels/owner_consultations_viewmodel.dart';
 import 'package:consultation_app/views/consultations_base_page.dart';
 import 'package:consultation_app/views/custom_widgets/animated_toggle_widget.dart';
 import 'package:flutter/material.dart';
@@ -7,28 +8,28 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:consultation_app/setup.dart';
 
-class ConsultationsTeacherPage extends StatefulWidget {
+class ConsultationsOwnerPage extends StatefulWidget {
   final String token;
   final String email;
 
-  const ConsultationsTeacherPage({
+  const ConsultationsOwnerPage({
     super.key,
     required this.token,
     required this.email,
   });
 
   @override
-  State<ConsultationsTeacherPage> createState() =>
-      _ConsultationsTeacherPageState();
+  State<ConsultationsOwnerPage> createState() =>
+      _ConsultationsOwnerPageState();
 }
 
-class _ConsultationsTeacherPageState extends State<ConsultationsTeacherPage> {
-  late final TeacherConsultationsViewmodel _viewModel;
+class _ConsultationsOwnerPageState extends State<ConsultationsOwnerPage> {
+  late final OwnerConsultationsViewmodel _viewModel;
 
   @override
   void initState() {
     super.initState();
-    _viewModel = TeacherConsultationsViewmodel();
+    _viewModel = OwnerConsultationsViewmodel();
     initialize();
   }
 
@@ -40,7 +41,7 @@ class _ConsultationsTeacherPageState extends State<ConsultationsTeacherPage> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
       value: _viewModel,
-      child: Consumer<TeacherConsultationsViewmodel>(
+      child: Consumer<OwnerConsultationsViewmodel>(
         builder: (context, viewModel, child) {
           final isOwner = viewModel.ownerView == 1;
           return BaseConsultationsPage(
@@ -103,7 +104,7 @@ class _ConsultationsTeacherPageState extends State<ConsultationsTeacherPage> {
 
 class _AddSlotOnOutskirts extends StatelessWidget {
   final String token;
-  final TeacherConsultationsViewmodel viewModel;
+  final OwnerConsultationsViewmodel viewModel;
   final int blockId;
   final bool isBefore;
   final bool isEmpty;
@@ -120,7 +121,7 @@ class _AddSlotOnOutskirts extends StatelessWidget {
   Widget build(BuildContext context) {
     return isEmpty
         ? const SizedBox.shrink()
-        : Consumer<TeacherConsultationsViewmodel>(
+        : Consumer<OwnerConsultationsViewmodel>(
             builder: (context, viewModel, child) {
               final bool isLoading = isBefore
                   ? viewModel.isAddingSlotBefore(blockId)
@@ -159,7 +160,7 @@ class _AddSlotOnOutskirts extends StatelessWidget {
 
 class _AddBlockButton extends StatelessWidget {
   final String token;
-  final TeacherConsultationsViewmodel viewModel;
+  final OwnerConsultationsViewmodel viewModel;
 
   const _AddBlockButton({required this.token, required this.viewModel});
 
@@ -187,7 +188,7 @@ class _AddBlockButton extends StatelessWidget {
 // ---------------------------------------------------------------------------
 class _SettingsDropdownButton extends StatelessWidget {
   final String token;
-  final TeacherConsultationsViewmodel viewModel;
+  final OwnerConsultationsViewmodel viewModel;
 
   const _SettingsDropdownButton({required this.token, required this.viewModel});
 
@@ -266,7 +267,7 @@ class _SettingsDropdownButton extends StatelessWidget {
 
 class _DeleteRoomDialog extends StatelessWidget {
   final String token;
-  final TeacherConsultationsViewmodel viewModel;
+  final OwnerConsultationsViewmodel viewModel;
 
   const _DeleteRoomDialog({required this.token, required this.viewModel});
 
@@ -339,7 +340,7 @@ class _DeleteRoomDialog extends StatelessWidget {
 class _EditBlockButton extends StatelessWidget {
   final String token;
   final int blockId;
-  final TeacherConsultationsViewmodel viewModel;
+  final OwnerConsultationsViewmodel viewModel;
 
   const _EditBlockButton({
     required this.token,

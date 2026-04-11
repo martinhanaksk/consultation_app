@@ -51,7 +51,7 @@ class SlotWidget extends StatelessWidget {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: constants.transparent,
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) {
@@ -87,7 +87,7 @@ class SlotWidget extends StatelessWidget {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: constants.transparent,
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) {

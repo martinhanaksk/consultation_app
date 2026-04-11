@@ -1,6 +1,6 @@
 import 'package:consultation_app/viewmodels/create_room_viewmodel.dart';
 import 'package:consultation_app/views/consultations_base_page.dart';
-import 'package:consultation_app/views/consultations_teacher_page.dart';
+import 'package:consultation_app/views/consultations_owner_page.dart';
 import 'package:consultation_app/views/create_block_page.dart';
 import 'package:consultation_app/views/create_room_page.dart';
 import 'package:consultation_app/views/display_list_of_emails_page.dart';
@@ -24,8 +24,8 @@ class AppRouter {
   static const String editBlock = '/editBlock';
   static const String provideFeedback = '/provideFeedback';
   static const String changeSettings = '/changeSettings';
-  static const String consultationsStudentPage = '/consultationsUserPage';
-  static const String consultationsTeacherPage = '/consultationsTeacherPage';
+  static const String consultationsBasePage = '/consultationsBasePage';
+  static const String consultationsOwnerPage = '/consultationsOwnerPage';
   static const String displayListOfEmails = '/displayListOfEmails';
   static const String displayUsersInRoom = '/displayUsersInRoom';
 
@@ -34,33 +34,33 @@ class AppRouter {
       case register:
         final args = settings.arguments as Map<String, dynamic>;
         final email = args['email'] as String;
+         final rememberMe = args['rememberMe'] as bool;
         return MaterialPageRoute(
-          builder: (_) => RegistrationPage(email: email),
+          builder: (_) => RegistrationPage(email: email,rememberMe:rememberMe),
         );
       case login:
         return MaterialPageRoute(builder: (_) => const EmailInputPage());
-      case consultationsStudentPage:
+      case consultationsBasePage:
         final args = settings.arguments as Map<String, dynamic>;
         final token = args['token'] as String;
         final email = args['email'] as String;
         return MaterialPageRoute(
           builder: (_) => BaseConsultationsPage(token: token, email: email),
         );
-      case consultationsTeacherPage:
+      case consultationsOwnerPage:
         final args = settings.arguments as Map<String, dynamic>;
         final token = args['token'] as String;
         final email = args['email'] as String;
         return MaterialPageRoute(
-          builder: (_) => ConsultationsTeacherPage(token: token, email: email),
+          builder: (_) => ConsultationsOwnerPage(token: token, email: email),
         );
       case verifyOtp:
         final args = settings.arguments as Map<String, dynamic>;
         final email = args['email'] as String;
-        final token = args['token'] as String;
         final rememberMe = args['rememberMe'] as bool;
         return MaterialPageRoute(
           builder: (_) =>
-              VerifyOtpPage(email: email, token: token, rememberMe: rememberMe),
+              VerifyOtpPage(email: email, rememberMe: rememberMe),
         );
       case joinRoom:
         final args = settings.arguments as Map<String, dynamic>;

@@ -23,9 +23,9 @@ class VerifyOtpViewmodel extends ChangeNotifier {
     if (success) {
       helpers.resetLogoutFlag();
       if (role == 'teacher') {
-        nav.toTeacherConsultations(token: token, email: email);
+        nav.toOwnerConsultations(token: token, email: email);
       } else if (role == 'student') {
-        nav.toStudentConsultations(token: token, email: email);
+        nav.toBaseConsultations(token: token, email: email);
       }
     } else {
       notify.showToast('Please enter a valid code.');

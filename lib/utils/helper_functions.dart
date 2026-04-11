@@ -2,6 +2,7 @@ import 'package:intl/intl.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:http/http.dart' as http;
 
 class HelperFunctions {
   bool _isLoading = false;
@@ -38,8 +39,8 @@ class HelperFunctions {
   }
 
   String acceptedEmailsFormater(List<String> acceptedEmailsArray) {
-     if (acceptedEmailsArray.isEmpty) return '';
-  return acceptedEmailsArray.join(',');
+    if (acceptedEmailsArray.isEmpty) return '';
+    return acceptedEmailsArray.join(',');
   }
 
   void resetLogoutFlag() {
@@ -93,6 +94,20 @@ class HelperFunctions {
     return int.tryParse(s) != null;
   }
 
+  Future<void> handleServer(http.Response response, String email, bool rememberMe) async {
+  if (response.statusCode == 200) {
+    await nav.toVerifyOtp(email: email, rememberMe: rememberMe);
+  } else if (response.statusCode == 400) {
+    redirectToRegister(email, rememberMe);
+  } else {
+    notify.showToast('Failed to send OTP. Try again.');
+  }
+}
+
+  void redirectToRegister(String email,bool rememberMe) {
+    nav.toRegister(email: email,rememberMe:rememberMe);
+  }
+
   void checkIfInSharedPreferences() async {
     String token = await prefs.getItem('token');
     String email = await prefs.getItem('email');
@@ -102,9 +117,9 @@ class HelperFunctions {
 
       if (!isExpired) {
         if (role == 'teacher') {
-          nav.toTeacherConsultations(token: token, email: email);
+          nav.toOwnerConsultations(token: token, email: email);
         } else if (role == 'student') {
-          nav.toStudentConsultations(token: token, email: email);
+          nav.toBaseConsultations(token: token, email: email);
         }
       } else {
         await prefs.removeItem('token');
