@@ -1,6 +1,7 @@
 import 'package:consultation_app/models/user_model.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/register_viewmodel.dart';
+import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
@@ -48,9 +49,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       child: Consumer<RegisterViewmodel>(
         builder: (context, viewModel, child) {
           return Scaffold(
-            appBar: AppBar( backgroundColor: constants.background,actions: [
-              ],
-            ),
+            appBar: AppBarMenu(),
             backgroundColor: constants.background,
             resizeToAvoidBottomInset: true,
             body: SafeArea(

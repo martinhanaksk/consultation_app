@@ -62,7 +62,7 @@ class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
         appBar: AppBarMenu(
           viewModel: _viewModel,
           toggle: widget.toggle,
-          token: widget.token,
+          token: widget.token,onHomePage: true,
         ),
         drawer: SliderMenu(),
         backgroundColor: constants.background,

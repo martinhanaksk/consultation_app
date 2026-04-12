@@ -17,12 +17,33 @@ class EditBlockViewmodel extends ChangeNotifier {
     }
   }
 
+  void refetchData(String? token, String? blockId) {
+    if (token != null && blockId != null) {
+      fetchSlotsForBlock(token, blockId);
+    }
+  }
+
+  Future<void> changeSlotMeetingType(String token, int slotId) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      await api.changeConsultationType(token, slotId);
+      notify.showToast('Consultation type was successfully changed.');
+    } catch (e) {
+      notify.showToast('Error while changing consultation type.');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> deleteSlot(String token, int slotId) async {
     _isLoading = true;
     notifyListeners();
     try {
       bool b = await api.deleteSlot(token, slotId);
       if (b) {
+        slots.removeWhere((s) => s.id == slotId);
         notify.showToast('Slot was successfully deleted.');
       }
     } catch (e) {
@@ -51,6 +72,21 @@ class EditBlockViewmodel extends ChangeNotifier {
     }
   }
 
+  Future<void> displayHistoryOfSlot(
+    String token,
+    int slotId,
+    int blockId,
+  ) async {
+    try {
+      final slots = await api.getSlotsForBlock(token, blockId);
+      if (slots != null) {
+        final slot = slots.firstWhere((s) => s.id == slotId);
+        nav.toDisplaySlotHistory(history: slot.history??"");
+      }
+    } finally {
+    }
+  }
+
   String getBlockDate() {
     if (block != null) {
       return helpers.getTDateOnlySimple(block!.date);
@@ -63,7 +99,7 @@ class EditBlockViewmodel extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
-      final tmpSlots = await api.getSlotsForBlock(int.parse(blockId), token);
+      final tmpSlots = await api.getSlotsForBlock(token, int.parse(blockId));
       if (tmpSlots != null) {
         tmpSlots.sort((a, b) => a.startTime.compareTo(b.startTime));
         slots = tmpSlots;

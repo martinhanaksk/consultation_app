@@ -77,7 +77,7 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
   Future<void> addSlotBeforeBlock(String token, int blockId) async {
     setAddingSlotBefore(blockId, true);
     try {
-      final slotsForBlock = await api.getSlotsForBlock(blockId, token);
+      final slotsForBlock = await api.getSlotsForBlock(token,blockId);
       if (slotsForBlock == null || slotsForBlock.isEmpty) {
         notify.showToast("No slots found in block.");
         return;
@@ -114,7 +114,7 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
   Future<void> addSlotAfterBlock(String token, int blockId) async {
     setAddingSlotAfter(blockId, true);
     try {
-      final slotsForBlock = await api.getSlotsForBlock(blockId, token);
+      final slotsForBlock = await api.getSlotsForBlock(token,blockId);
       if (slotsForBlock == null || slotsForBlock.isEmpty) {
         notify.showToast("No slots found in block.");
         return;

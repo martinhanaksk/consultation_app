@@ -60,6 +60,7 @@ class _SliderMenuState extends State<SliderMenu> {
                                       token: viewModel.token,
                                       email: viewModel.email!,
                                     );
+                              viewModel.closeDrawer(context);
                             },
                           ),
                         ),
@@ -83,6 +84,7 @@ class _SliderMenuState extends State<SliderMenu> {
                                     token: viewModel.token,
                                     email: viewModel.email!,
                                   );
+                            viewModel.closeDrawer(context);
                           },
                         ),
                         const SizedBox(height: 20),
@@ -96,6 +98,7 @@ class _SliderMenuState extends State<SliderMenu> {
                           onTap: () {
                             helpers.checkIfValidToken(viewModel.token);
                             nav.toJoinRoom(token: viewModel.token);
+                            viewModel.closeDrawer(context);
                           },
                         ),
                         const SizedBox(height: 20),
@@ -113,6 +116,7 @@ class _SliderMenuState extends State<SliderMenu> {
                                     ),
                                     onTap: () {
                                       nav.toCreateRoom();
+                                      viewModel.closeDrawer(context);
                                     },
                                   ),
                                   SizedBox(height: 20),
@@ -177,6 +181,7 @@ class _SliderMenuState extends State<SliderMenu> {
 
                           onTap: () {
                             nav.toChangeSettings();
+                            viewModel.closeDrawer(context);
                           },
                         ),
                         const SizedBox(height: 20),
@@ -196,6 +201,7 @@ class _SliderMenuState extends State<SliderMenu> {
                             await prefs.removeItem('role');
                             // Navigate to login and clear all previous routes
                             nav.toLogin();
+                            viewModel.closeDrawer(context);
                           },
                         ),
                       ],

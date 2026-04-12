@@ -154,118 +154,115 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                   ),
                                   height: 1,
                                 ),
-                                 Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 20,
-                                      vertical: 14,
-                                    ),
-                                    child:  Row(
-                                        children: [
-                                          Icon(
-                                            Icons.visibility,
-                                            color: constants.primary,
-                                            size: constants.fsBody,
-                                          ),
-                                          const SizedBox(width: 12),
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  "Visibility",
-                                                  style: TextStyle(
-                                                    fontSize: constants.fsBody,
-                                                    fontWeight:
-                                                        constants.fwSemiBold,
-                                                    color: constants.darkGrey,
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 4),
-                                                Text(
-                                                  "Show your name to others.",
-                                                  style: TextStyle(
-                                                    fontSize: constants.fsLabel,
-                                                    color: constants.darkGrey
-                                                        .withValues(
-                                                          alpha: 0.55,
-                                                        ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          Checkbox(
-                                            value: viewModel.visibility,
-                                            activeColor: constants.primary,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(4),
-                                            ),
-                                             onChanged: (val) {
-    viewModel.setVisibility(); 
-  },
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                 
-                               
-                               Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 20,
-                                      vertical: 14,
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.email_outlined,
-                                          color: constants.primary,
-                                          size: constants.fsBody,
-                                        ),
-                                        const SizedBox(width: 12),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                "Receive Emails",
-                                                style: TextStyle(
-                                                  fontSize: constants.fsBody,
-                                                  fontWeight:
-                                                      constants.fwSemiBold,
-                                                  color: constants.darkGrey,
-                                                ),
-                                              ),
-                                              const SizedBox(height: 4),
-                                              Text(
-                                                "Get emails about changes in selected consultation blocks",
-                                                style: TextStyle(
-                                                  fontSize: constants.fsLabel,
-                                                  color: constants.darkGrey
-                                                      .withValues(alpha: 0.55),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Checkbox(
-                                          value: viewModel.receiveEmails,
-                                          activeColor: constants.primary,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              4,
-                                            ),
-                                          ),
-                                          onChanged: (val) {
-                                            viewModel.setReceiveEmail(val);
-                                          },
-                                        ),
-                                      ],
-                                    ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 14,
                                   ),
-                              
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.visibility,
+                                        color: constants.primary,
+                                        size: constants.fsBody,
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "Visibility",
+                                              style: TextStyle(
+                                                fontSize: constants.fsBody,
+                                                fontWeight:
+                                                    constants.fwSemiBold,
+                                                color: constants.darkGrey,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              "Show your name to others.",
+                                              style: TextStyle(
+                                                fontSize: constants.fsLabel,
+                                                color: constants.darkGrey
+                                                    .withValues(alpha: 0.55),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Checkbox(
+                                        value: viewModel.visibility,
+                                        activeColor: constants.primary,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
+                                        ),
+                                        onChanged: (val) {
+                                          viewModel.setVisibility();
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 14,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.email_outlined,
+                                        color: constants.primary,
+                                        size: constants.fsBody,
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "Receive Emails",
+                                              style: TextStyle(
+                                                fontSize: constants.fsBody,
+                                                fontWeight:
+                                                    constants.fwSemiBold,
+                                                color: constants.darkGrey,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              "Get emails about changes in selected consultation blocks",
+                                              style: TextStyle(
+                                                fontSize: constants.fsLabel,
+                                                color: constants.darkGrey
+                                                    .withValues(alpha: 0.55),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Checkbox(
+                                        value: viewModel.receiveEmails,
+                                        activeColor: constants.primary,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
+                                        ),
+                                        onChanged: (val) {
+                                          viewModel.setReceiveEmail(val);
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ],
                             ),
                           ),

@@ -195,7 +195,7 @@ Future<void> handleEmailSubscribe(String token, int block) async {
     List<Future<void>> futures = [];
     for (var block in newBlocks) {
       futures.add(() async {
-        final slots = await api.getSlotsForBlock(block.id, token);
+        final slots = await api.getSlotsForBlock(token,block.id );
         if (slots != null) {
           slots.sort((a, b) => a.startTime.compareTo(b.startTime));
           newSlotsInBlocks[block.id] = slots;

@@ -1,5 +1,6 @@
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/display_users_in_room_viewmodel.dart';
+import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -42,19 +43,7 @@ class _DisplayUsersInRoomPageState extends State<DisplayUsersInRoomPage> {
         builder: (context, viewModel, child) {
           return Scaffold(
             backgroundColor: constants.background,
-            appBar: AppBar(
-              backgroundColor: constants.background,
-              title: Text(widget.roomName),
-              actions: [
-                TextButton(
-                  onPressed: _initialize,
-                  child: Text(
-                    'Refresh',
-                    style: TextStyle(color: constants.primary),
-                  ),
-                ),
-              ],
-            ),
+            appBar: AppBarMenu(),
             body: SafeArea(child: _buildBody(context, viewModel)),
           );
         },

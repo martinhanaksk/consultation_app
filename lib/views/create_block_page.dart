@@ -205,7 +205,6 @@ class _CreateBlockState extends State<CreateBlock> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
       value: _viewModel,
-
       child: Consumer<CreateBlockViewmodel>(
         builder: (context, viewModel, child) {
           return Scaffold(

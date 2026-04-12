@@ -15,7 +15,11 @@ class SliderMenuViewmodel extends ChangeNotifier {
       throw Exception('Could not launch $_url');
     }
   }
-
+void closeDrawer(BuildContext context) {
+  if (Scaffold.maybeOf(context)?.isDrawerOpen == true) {
+    Scaffold.of(context).closeDrawer();
+  }
+}
   bool get isLoading => _isLoading;
   String get token => _token;
   bool? get isOwner => _isOwner;

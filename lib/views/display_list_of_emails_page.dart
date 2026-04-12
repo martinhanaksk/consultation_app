@@ -1,5 +1,6 @@
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/create_room_viewmodel.dart';
+import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:flutter/material.dart';
 
 class DisplayListOfEmailsPage extends StatefulWidget {
@@ -15,31 +16,32 @@ class _DisplayListOfEmailsPageState extends State<DisplayListOfEmailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: constants.background,
-      appBar: AppBar(
-        title: Text('Allowed email domains'),
-        backgroundColor: constants.background,
-      ),
+      appBar: AppBarMenu(),
       body: SafeArea(
         child: ListenableBuilder(
           listenable: widget.viewModel,
           builder: (context, _) {
-            return ListView.builder(
-              itemCount: widget.viewModel.acceptedEmails.length,
-              itemBuilder: (context, index) => ListTile(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(widget.viewModel.acceptedEmails[index]),
-                    IconButton(
-                      icon: Icon(Icons.delete, color: constants.red),
-                      onPressed: () =>
-                          widget.viewModel.removeFromAcceptedEmails(
-                            widget.viewModel.acceptedEmails[index],
-                          ),
+            return Column(
+              children: [Text('Allowed email domains'),
+                ListView.builder(
+                  itemCount: widget.viewModel.acceptedEmails.length,
+                  itemBuilder: (context, index) => ListTile(
+                    title: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(widget.viewModel.acceptedEmails[index]),
+                        IconButton(
+                          icon: Icon(Icons.delete, color: constants.red),
+                          onPressed: () =>
+                              widget.viewModel.removeFromAcceptedEmails(
+                                widget.viewModel.acceptedEmails[index],
+                              ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             );
           },
         ),

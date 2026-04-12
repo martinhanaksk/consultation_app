@@ -6,8 +6,15 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
   final BaseConsultationsViewmodel? viewModel;
   final String? token;
   final Widget? toggle;
+  final bool onHomePage;
 
-  AppBarMenu({super.key, this.viewModel, this.toggle, this.token});
+  AppBarMenu({
+    super.key,
+    this.viewModel,
+    this.toggle,
+    this.token,
+   this.onHomePage = false,
+  });
   @override
   Widget build(BuildContext context) {
     return AppBar(
@@ -18,27 +25,44 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
         child: Padding(
           padding: EdgeInsets.only(left: 12),
 
-          child: Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: constants.grey,
-              shape: BoxShape.circle,
-            ),
-            child: IconButton(
-              padding: EdgeInsets.zero,
-              icon: Icon(Icons.menu_rounded),
-              iconSize: constants.fsBody,
-              color: constants.darkGrey,
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
-            ),
-          ),
+          child: onHomePage
+              ? Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: constants.grey,
+                    shape: BoxShape.circle,
+                  ),
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    icon: Icon(Icons.menu_rounded),
+                    iconSize: constants.fsBody,
+                    color: constants.darkGrey,
+                    onPressed: () {
+                      Scaffold.of(context).openDrawer();
+                    },
+                  ),
+                )
+              : Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: constants.grey,
+                    shape: BoxShape.circle,
+                  ),
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    icon: Icon(Icons.arrow_back),
+                    iconSize: constants.fsBody,
+                    color: constants.darkGrey,
+                    onPressed: () {
+                      nav.pop();
+                    },
+                  ),
+                ),
         ),
-      ),  flexibleSpace: SafeArea(
-    child: Center(child: toggle),
-  ),
+      ),
+      flexibleSpace: SafeArea(child: Center(child: toggle)),
       actions: [
         Padding(
           padding: EdgeInsets.only(right: 12),

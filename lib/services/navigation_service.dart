@@ -19,15 +19,15 @@ class NavigationService {
     _navigator()?.pushReplacementNamed(AppRouter.login);
   }
 
-Future<dynamic> toVerifyOtp({
-  required String email,
-  bool rememberMe = false,
-}) {
-  return _navigator()!.pushNamed(
-    AppRouter.verifyOtp,
-    arguments: {'email': email, 'rememberMe': rememberMe},
-  );
-}
+  Future<dynamic> toVerifyOtp({
+    required String email,
+    bool rememberMe = false,
+  }) {
+    return _navigator()!.pushNamed(
+      AppRouter.verifyOtp,
+      arguments: {'email': email, 'rememberMe': rememberMe},
+    );
+  }
 
   void redirectToRegister(BuildContext context, String email) {
     Navigator.pushNamed(
@@ -37,10 +37,10 @@ Future<dynamic> toVerifyOtp({
     );
   }
 
-  void toRegister({required String email,required bool rememberMe}) {
+  void toRegister({required String email, required bool rememberMe}) {
     _navigator()?.pushNamed(
       AppRouter.register,
-      arguments: <String, dynamic>{'email': email,'rememberMe': rememberMe},
+      arguments: <String, dynamic>{'email': email, 'rememberMe': rememberMe},
     );
   }
 
@@ -68,7 +68,16 @@ Future<dynamic> toVerifyOtp({
       arguments: <String, dynamic>{'token': token},
     );
   }
-
+void toDisplaySlotHistory({
+    required String history,
+  }) {
+    _navigator()?.pushNamed(
+      AppRouter.displaySlotHistory,
+      arguments: <String, dynamic>{
+        'history': history,
+      },
+    );
+  }
   void toCreateBlock({
     required String token,
     required String roomId,
@@ -79,6 +88,21 @@ Future<dynamic> toVerifyOtp({
       arguments: <String, dynamic>{
         'token': token,
         'roomId': roomId,
+        'onSuccess': onSuccess,
+      },
+    );
+  }
+
+  void toAddSlot({
+    required String token,
+    required String blockId,
+    required VoidCallback? onSuccess,
+  }) {
+    _navigator()?.pushNamed(
+      AppRouter.addSlot,
+      arguments: <String, dynamic>{
+        'token': token,
+        'blockId': blockId,
         'onSuccess': onSuccess,
       },
     );

@@ -217,8 +217,7 @@ class ApiService {
     }
   }
 
-  //TODO http://office-hours.fit.vutbr.cz:8000/slot/get?id=1&option=True optional
-  Future<List<SlotModel>?> getSlotsForBlock(int blockId, String token) async {
+  Future<List<SlotModel>?> getSlotsForBlock(String token,int blockId) async {
     final Uri url = Uri.parse('${constants.url}/slot/get?id=$blockId');
 
     final response = await http.get(
@@ -256,8 +255,7 @@ class ApiService {
       },
     );
     if (response.statusCode != 200) {
-      //TODO
-      //throw Exception('Failed to take slot: ${response.statusCode}');
+      notify.showToast("'Failed to take slot");
     }
   }
 
@@ -324,9 +322,7 @@ class ApiService {
       },
     );
     if (response.statusCode != 200) {
-      throw Exception(
-        'Failed to change consultation type ${response.statusCode}',
-      );
+      notify.showToast("Failed to change consultation type");
     }
   }
 

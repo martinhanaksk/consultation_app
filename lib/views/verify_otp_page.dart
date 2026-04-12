@@ -1,5 +1,6 @@
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/verify_otp_viewmodel.dart';
+import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
@@ -46,9 +47,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
       child: Consumer<VerifyOtpViewmodel>(
         builder: (context, viewModel, child) {
           return Scaffold(
-            appBar: AppBar( backgroundColor: constants.background,actions: [
-              ],
-            ),
+            appBar: AppBarMenu(),
             backgroundColor: constants.background,
             body: SafeArea(
               child: Padding(
