@@ -92,7 +92,7 @@ class _JoinRoomState extends State<JoinRoom> {
                                     style: TextStyle(
                                       fontWeight: constants.fwRegular,
                                       fontSize: constants.fsLabel,
-                                      color: constants.grey,
+                                      color: constants.darkGrey.withAlpha(180),
                                     ),
                                   ),
                                 ),
@@ -102,18 +102,18 @@ class _JoinRoomState extends State<JoinRoom> {
                                       option.title,
                                   optionsBuilder:
                                       (TextEditingValue textEditingValue) {
-                                       
-                                          final rooms = viewModel.allRooms() ?? [];
-                                       if (textEditingValue.text.isEmpty) return rooms;
-                                        return rooms
-                                            .where((RoomModel room) {
-                                              return room.title
-                                                  .toLowerCase()
-                                                  .contains(
-                                                    textEditingValue.text
-                                                        .toLowerCase(),
-                                                  );
-                                            });
+                                        final rooms =
+                                            viewModel.allRooms() ?? [];
+                                        if (textEditingValue.text.isEmpty)
+                                          return rooms;
+                                        return rooms.where((RoomModel room) {
+                                          return room.title
+                                              .toLowerCase()
+                                              .contains(
+                                                textEditingValue.text
+                                                    .toLowerCase(),
+                                              );
+                                        });
                                       },
                                   onSelected: (RoomModel selection) {
                                     setState(() {

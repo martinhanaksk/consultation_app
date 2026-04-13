@@ -183,7 +183,7 @@ class _EditBlockState extends State<EditBlock> {
                 GestureDetector(
                   onTap: () {
                     Navigator.pop(context);
-                    viewModel.copyBlock(widget.token,widget.roomId);
+                    viewModel.copyBlock(widget.token, widget.roomId);
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -530,6 +530,13 @@ class _SlotRow extends StatelessWidget {
             children: [
               Text(
                 '${slot.startTime.split(":")[0]}${":"}${slot.startTime.split(":")[1]}',
+                style: TextStyle(
+                  color: constants.darkGrey,
+                  fontSize: constants.fsLabel,
+                ),
+              ),
+              Text(
+                '${slot.takenBy == null ? "" : "Taken"}',
                 style: TextStyle(
                   color: constants.darkGrey,
                   fontSize: constants.fsLabel,
