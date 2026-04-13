@@ -109,7 +109,7 @@ class _DisplayUsersInRoomPageState extends State<DisplayUsersInRoomPage> {
                   color: Theme.of(
                     context,
                   ).colorScheme.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(50),
                 ),
                 child: Text(
                   '${viewModel.users.length}',
@@ -142,11 +142,23 @@ class _DisplayUsersInRoomPageState extends State<DisplayUsersInRoomPage> {
                   ),
                   child: Row(
                     children: [
+                      CircleAvatar(
+                        backgroundColor: constants.primary.withAlpha(32),
+                        foregroundColor: Theme.of(context).colorScheme.primary,
+                        child: Text(
+                          email.isNotEmpty ? email[0].toUpperCase() : '?',
+                          style: TextStyle(
+                            color: constants.primary,
+                            fontWeight: constants.fwSemiBold,
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 8),
                       Text(
                         email,
                         style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
+                          fontSize: constants.fsLabel,
+                          fontWeight: constants.fwSemiBold,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),

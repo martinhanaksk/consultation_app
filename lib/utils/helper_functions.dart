@@ -104,6 +104,7 @@ class HelperFunctions {
   }
 }
 
+
   void redirectToRegister(String email,bool rememberMe) {
     nav.toRegister(email: email,rememberMe:rememberMe);
   }

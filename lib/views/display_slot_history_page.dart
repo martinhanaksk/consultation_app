@@ -103,7 +103,7 @@ class _DisplaySlotHistoryPageState extends State<DisplaySlotHistoryPage> {
                 ),
                 decoration: BoxDecoration(
                   color: constants.primary.withAlpha(30),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(50),
                 ),
                 child: Text(
                   '${viewModel.historyItems.length}',
@@ -142,7 +142,7 @@ class _DisplaySlotHistoryPageState extends State<DisplaySlotHistoryPage> {
                     item.user,
                     style: TextStyle(
                       fontWeight: constants.fwSemiBold,
-                      fontSize: constants.fsBody,
+                      fontSize: constants.fsLabel,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),

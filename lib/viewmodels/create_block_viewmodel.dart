@@ -216,14 +216,12 @@ class CreateBlockViewmodel extends ChangeNotifier {
         int.parse(roomId),
         dates[i],
       );
-      if (response == "") {
-        isLoading = false;
-        notifyListeners();
-        return;
-      }
+      if (response.isEmpty) {
+          notify.showToast('Failed to create block for ${dates[i]}.');
+          continue; 
+        }
       final int blockId = jsonDecode(response)['id'];
       if (slotCount != 0) {
-        final List<Map<String, dynamic>> slots = [];
         for (int j = 0; j < slotCount!; j++) {
           final Duration slotStart = _startTime! + (_duration! * j);
           final String startTimeStr = _formatTimeWithSeconds(slotStart);
