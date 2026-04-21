@@ -16,7 +16,8 @@ class VerifyOtpViewmodel extends ChangeNotifier {
       final success = await api.connect(email, otp, rememberMe);
 
       if (success) {
-        String token = await prefs.getItem('token');
+        String token = 
+      await securePrefs.getToken();
         String role = await prefs.getItem('role');
         helpers.resetLogoutFlag();
 

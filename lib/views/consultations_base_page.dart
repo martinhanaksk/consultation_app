@@ -62,7 +62,8 @@ class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
         appBar: AppBarMenu(
           viewModel: _viewModel,
           toggle: widget.toggle,
-          token: widget.token,onHomePage: true,
+          token: widget.token,
+          onHomePage: true,
         ),
         drawer: SliderMenu(),
         backgroundColor: constants.background,
@@ -256,9 +257,9 @@ class _RoomSelectorButton extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 6),
-                  Icon(
-                    Icons.keyboard_arrow_down_rounded,
-                    size: 20,
+                  svgs.icon(
+                    'arrow_down',
+                    width: constants.fsBody,
                     color:
                         (viewModel.noRoomsFound ||
                             viewModel.selectedRoomId == null)
@@ -325,7 +326,7 @@ class _ConsultationsContent extends StatelessWidget {
                   ],
                   if (viewModel.getBlocksCount() == 0)
                     Padding(
-                      padding: const EdgeInsets.only(top: 40),
+                      padding: const EdgeInsets.only(top: 20),
                       child: Center(
                         child: Text(
                           "No upcoming consultations found.",
@@ -341,7 +342,7 @@ class _ConsultationsContent extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 30),
+                        const SizedBox(height: 20),
                         ..._sortedBlocks().map(
                           (block) => _ConsultationBlockCard(
                             viewModel: viewModel,

@@ -26,7 +26,8 @@ class HelperFunctions {
     _isLoggingOut = true;
     if (token == "") {
       _hasLoggedOut = true;
-      await prefs.removeItem('token');
+
+      await securePrefs.removeToken();
       await prefs.removeItem('email');
       await prefs.removeItem('role');
       notify.showToast('You were logged out.');
@@ -94,23 +95,26 @@ class HelperFunctions {
     return int.tryParse(s) != null;
   }
 
-  Future<void> handleServer(http.Response response, String email, bool rememberMe) async {
-  if (response.statusCode == 200) {
-    await nav.toVerifyOtp(email: email, rememberMe: rememberMe);
-  } else if (response.statusCode == 400) {
-    redirectToRegister(email, rememberMe);
-  } else {
-    notify.showToast('Failed to send OTP. Try again.');
+  Future<void> handleServer(
+    http.Response response,
+    String email,
+    bool rememberMe,
+  ) async {
+    if (response.statusCode == 200) {
+      await nav.toVerifyOtp(email: email, rememberMe: rememberMe);
+    } else if (response.statusCode == 400) {
+      redirectToRegister(email, rememberMe);
+    } else {
+      notify.showToast('Failed to send OTP. Try again.');
+    }
   }
-}
 
-
-  void redirectToRegister(String email,bool rememberMe) {
-    nav.toRegister(email: email,rememberMe:rememberMe);
+  void redirectToRegister(String email, bool rememberMe) {
+    nav.toRegister(email: email, rememberMe: rememberMe);
   }
 
   void checkIfInSharedPreferences() async {
-    String token = await prefs.getItem('token');
+    String token = await securePrefs.getToken();
     String email = await prefs.getItem('email');
     String role = await prefs.getItem('role');
     if (role.isNotEmpty && token.isNotEmpty && email.isNotEmpty) {
@@ -123,7 +127,8 @@ class HelperFunctions {
           nav.toBaseConsultations(token: token, email: email);
         }
       } else {
-        await prefs.removeItem('token');
+        
+      await securePrefs.removeToken();
         await prefs.removeItem('email');
         await prefs.removeItem('role');
       }

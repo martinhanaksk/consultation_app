@@ -69,8 +69,8 @@ class SlotWidget extends StatelessWidget {
               isOnlineSelected: isOnlineSelected,
               onSubmit: () async {
                 setState(() => isSubmitting = true);
-                Navigator.pop(context);
                 onTakeSlot(controller.text.trim(), isOnlineSelected ? 1 : 0);
+                Navigator.pop(context);
               },
               onCancel: () => Navigator.pop(context),
             );
@@ -142,12 +142,26 @@ class SlotWidget extends StatelessWidget {
                           ),
                         ),
                       ),
-                      isTakingSlot
-                          ? SpinKitPouringHourGlass(
-                              color: constants.primary,
-                              size: constants.fsLabel,
-                            )
-                          : SvgPicture.asset('assets/resources/take_slot.svg'),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          if (slot.isOnline == 1)
+                            svgs.icon(
+                              'screen',
+                              width: constants.fsTitle,
+                              color: constants.darkGrey,
+                            ),
+                          SizedBox(width: 8),
+                          isTakingSlot
+                              ? SpinKitPouringHourGlass(
+                                  color: constants.primary,
+                                  size: constants.fsLabel,
+                                )
+                              : SvgPicture.asset(
+                                  'assets/resources/take_slot.svg',
+                                ),
+                        ],
+                      ),
                     ],
                   ),
                 ],
@@ -243,12 +257,10 @@ class SlotWidget extends StatelessWidget {
                               ),
                               const SizedBox(width: 8),
                               if (slot.isOnline == 1)
-                                SvgPicture.asset(
-                                  'assets/resources/screen.svg',
-                                  colorFilter: ColorFilter.mode(
-                                    constants.background,
-                                    BlendMode.srcIn,
-                                  ),
+                                svgs.icon(
+                                  'screen',
+                                  width: constants.fsTitle,
+                                  color: constants.background,
                                 ),
 
                               const SizedBox(width: 8),
@@ -709,16 +721,12 @@ class _InfoCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _InfoRow(icon: Icons.calendar_month, label: "Date", value: date),
+          _InfoRow(name: 'calendar', label: "Date", value: date),
+          const SizedBox(height: 12),
+          _InfoRow(name: 'clock', label: "Time", value: startTime),
           const SizedBox(height: 12),
           _InfoRow(
-            icon: Icons.access_time_outlined,
-            label: "Time",
-            value: startTime,
-          ),
-          const SizedBox(height: 12),
-          _InfoRow(
-            icon: Icons.hourglass_bottom_rounded,
+            name: 'hourglass',
             label: "Duration",
             value: duration.toString(),
           ),
@@ -729,11 +737,11 @@ class _InfoCard extends StatelessWidget {
 }
 
 class _InfoRow extends StatelessWidget {
-  final IconData icon;
+  final String name;
   final String label;
   final String value;
   const _InfoRow({
-    required this.icon,
+    required this.name,
     required this.label,
     required this.value,
   });
@@ -745,7 +753,12 @@ class _InfoRow extends StatelessWidget {
       children: [
         Row(
           children: [
-            Icon(icon, size: constants.fsLabel, color: constants.darkGrey),
+            svgs.icon(
+              name,
+              width: constants.fsLabel,
+              color: constants.darkGrey,
+            ),
+
             const SizedBox(width: 12),
             Text(
               label,

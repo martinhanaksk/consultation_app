@@ -146,9 +146,13 @@ class _CreateRoomState extends State<CreateRoom> {
                             ),
                           ),
                           suffixIcon: GestureDetector(
-                            child: Icon(
-                              Icons.add_circle_outline,
-                              color: constants.primary,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: svgs.icon(
+                                'add',
+                                width: constants.fsBody,
+                                color: constants.primary,
+                              ),
                             ),
                             onTap: () {
                               if (validator.validateNotEmpty(

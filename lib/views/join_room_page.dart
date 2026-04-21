@@ -104,8 +104,10 @@ class _JoinRoomState extends State<JoinRoom> {
                                       (TextEditingValue textEditingValue) {
                                         final rooms =
                                             viewModel.allRooms() ?? [];
-                                        if (textEditingValue.text.isEmpty)
+                                        if (textEditingValue.text.isEmpty) {
                                           return rooms;
+                                        }
+
                                         return rooms.where((RoomModel room) {
                                           return room.title
                                               .toLowerCase()
@@ -162,9 +164,15 @@ class _JoinRoomState extends State<JoinRoom> {
                                               ),
                                             ),
                                             hintText: 'Type to search rooms...',
-                                            prefixIcon: Icon(
-                                              Icons.search_rounded,
-                                              size: constants.fsBody,
+                                            prefixIcon: Padding(
+                                              padding: const EdgeInsets.all(
+                                                12.0,
+                                              ),
+                                              child: svgs.icon(
+                                                'search',
+                                                width: constants.fsLabel,
+                                                color: constants.grey,
+                                              ),
                                             ),
                                           ),
                                         );

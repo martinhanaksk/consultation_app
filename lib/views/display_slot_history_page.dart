@@ -136,7 +136,11 @@ class _DisplaySlotHistoryPageState extends State<DisplaySlotHistoryPage> {
                   ),
                   leading: CircleAvatar(
                     backgroundColor: constants.primary.withAlpha(30),
-                    child: Icon(Icons.history, color: constants.primary),
+                    child: svgs.icon(
+                      'history',
+                      width: constants.fsBody,
+                      color: constants.primary,
+                    ),
                   ),
                   title: Text(
                     item.user,
@@ -151,11 +155,12 @@ class _DisplaySlotHistoryPageState extends State<DisplaySlotHistoryPage> {
                           padding: const EdgeInsets.only(top: 8.0),
                           child: Row(
                             children: [
-                              Icon(
-                                Icons.calendar_today_rounded,
-                                size: constants.fsLabel,
+                              svgs.icon(
+                                'calendar',
+                                width: constants.fsLabel,
                                 color: constants.darkGrey.withAlpha(150),
                               ),
+
                               const SizedBox(width: 6),
                               Text(
                                 item.date,

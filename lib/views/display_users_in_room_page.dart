@@ -31,7 +31,8 @@ class _DisplayUsersInRoomPageState extends State<DisplayUsersInRoomPage> {
   }
 
   void _initialize() async {
-    final token = await prefs.getItem('token') ?? '';
+    final token = 
+      await securePrefs.getToken();
     await _viewModel.init(token, widget.roomId);
   }
 

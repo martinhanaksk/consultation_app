@@ -13,7 +13,7 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
     this.viewModel,
     this.toggle,
     this.token,
-   this.onHomePage = false,
+    this.onHomePage = false,
   });
   @override
   Widget build(BuildContext context) {
@@ -35,9 +35,11 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
                   ),
                   child: IconButton(
                     padding: EdgeInsets.zero,
-                    icon: Icon(Icons.menu_rounded),
-                    iconSize: constants.fsBody,
-                    color: constants.darkGrey,
+                    icon: svgs.icon(
+                      'hamburger',
+                      width: constants.fsTitle,
+                      color: constants.darkGrey,
+                    ),
                     onPressed: () {
                       Scaffold.of(context).openDrawer();
                     },
@@ -52,9 +54,11 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
                   ),
                   child: IconButton(
                     padding: EdgeInsets.zero,
-                    icon: Icon(Icons.arrow_back),
-                    iconSize: constants.fsBody,
-                    color: constants.darkGrey,
+                    icon: svgs.icon(
+                      'back',
+                      width: constants.fsTitle,
+                      color: constants.darkGrey,
+                    ),
                     onPressed: () {
                       nav.pop();
                     },
@@ -76,9 +80,11 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
               ),
               child: IconButton(
                 padding: EdgeInsets.zero,
-                icon: Icon(Icons.person_2_outlined),
-                color: constants.darkGrey,
-                iconSize: constants.fsBody,
+                icon: svgs.icon(
+                  'person',
+                  width: constants.fsBody,
+                  color: constants.darkGrey,
+                ),
                 onPressed: () {
                   nav.toChangeSettings();
                 },

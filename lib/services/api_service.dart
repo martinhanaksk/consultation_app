@@ -21,7 +21,7 @@ class ApiService {
     final data = jsonDecode(response.body);
     if (response.statusCode == 200) {
       await prefs.saveItem('email', email);
-      await prefs.saveItem('token', data['token']);
+      await securePrefs.saveToken( data['token']);
       await prefs.saveItem('role', data['role']);
       if ((await prefs.getItem('receiveEmails') == "")) {
         await prefs.saveItem('receiveEmails', false);
@@ -132,7 +132,40 @@ class ApiService {
       throw Exception('Failed to fetch users: ${response.statusCode}');
     }
   }
+Future<bool> editRoom(
+  String token,
+  int roomId,
+  String shortName,
+  String title,
+  String description,
+  List<String> acceptedEmailsArray,
+) async {
+  String convertedAcceptedEmails = helpers.acceptedEmailsFormater(
+    acceptedEmailsArray,
+  );
+  
+  final Uri url = Uri.parse(
+    '${constants.url}/room/edit?room_id=$roomId',
+  );
 
+  
+   final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        "shortname": shortName,
+        "title": title,
+        "description": description,
+        "accepted_emails":convertedAcceptedEmails,
+      }),
+    );
+  
+  if (response.statusCode != 200) {
+    return false;
+  } else {
+    return true;
+  }
+}
   Future<List<RoomModel>> getAllRooms(String token) async {
     final Uri url = Uri.parse('${constants.url}/room/get');
     final response = await http.get(
@@ -209,7 +242,9 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
-      final List<dynamic> decoded = jsonDecode(response.body);
+      final decoded = jsonDecode(response.body);
+
+    if (decoded is! List) return [];
 
       return decoded.map((json) => BlockModel.fromJson(json)).toList();
     } else {
@@ -217,7 +252,7 @@ class ApiService {
     }
   }
 
-  Future<List<SlotModel>?> getSlotsForBlock(String token,int blockId) async {
+  Future<List<SlotModel>?> getSlotsForBlock(String token, int blockId) async {
     final Uri url = Uri.parse('${constants.url}/slot/get?id=$blockId');
 
     final response = await http.get(

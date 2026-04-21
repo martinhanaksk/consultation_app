@@ -219,277 +219,288 @@ class _EditBlockState extends State<EditBlock> {
             drawer: SliderMenu(),
             backgroundColor: constants.background,
             body: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.9,
-                  child: Column(
-                    children: [
-                      Center(
-                        child: Text(
-                          'Edit block',
-                          style: TextStyle(
-                            fontSize: constants.fsHeadline,
-                            fontWeight: constants.fwSemiBold,
-                            color: constants.darkGrey,
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.9,
+                    child: Column(
+                      children: [
+                        Center(
+                          child: Text(
+                            'Edit block',
+                            style: TextStyle(
+                              fontSize: constants.fsHeadline,
+                              fontWeight: constants.fwSemiBold,
+                              color: constants.darkGrey,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 32),
-                      Column(
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 24),
-                              Center(
-                                child: Container(
-                                  clipBehavior: Clip.hardEdge,
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.9,
-                                  decoration: constants.squircleShadow(
-                                    border: Border.all(
-                                      color: constants.grey,
-                                      width: 0.2,
-                                    ),
-                                    color: constants.background,
-                                  ),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Stack(
-                                        alignment: Alignment.center,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                              20,
-                                              10,
-                                              20,
-                                              10,
-                                            ),
-                                            child: Text(
-                                              viewModel.getBlockDate(),
-                                              style: TextStyle(
-                                                color: constants.darkGrey,
-                                                fontSize: constants.fsLabel,
-                                                fontWeight:
-                                                    constants.fwSemiBold,
-                                              ),
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 12.0,
-                                            ),
-                                            child: GestureDetector(
-                                              onTap: () {
-                                                nav.toAddSlot(
-                                                  token: widget.token,
-                                                  blockId: widget.blockId,
-                                                  onSuccess: () =>
-                                                      viewModel.refetchData(
-                                                        widget.token,
-                                                        widget.blockId,
-                                                      ),
-                                                );
-                                              },
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.end,
-                                                children: [
-                                                  SvgPicture.asset(
-                                                    'assets/resources/take_slot.svg',
-                                                    color: constants.primary,
-                                                  ),
-                                                  SizedBox(width: 4),
-                                                  Text(
-                                                    "Add Slot",
-                                                    style: TextStyle(
-                                                      color: constants.primary,
-                                                      fontWeight:
-                                                          constants.fwSemiBold,
-                                                      fontSize:
-                                                          constants.fsLabel,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ],
+                        const SizedBox(height: 32),
+                        Column(
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 24),
+                                Center(
+                                  child: Container(
+                                    clipBehavior: Clip.hardEdge,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.9,
+                                    decoration: constants.squircleShadow(
+                                      border: Border.all(
+                                        color: constants.grey,
+                                        width: 0.2,
                                       ),
-
-                                      // Block header row
-                                      const Divider(height: 1),
-                                      // Slot list
-                                      viewModel.isLoading
-                                          ? Padding(
-                                              padding: EdgeInsets.all(24),
-                                              child: SpinKitPouringHourGlass(
-                                                color: constants.primary,
-                                                size: constants.fsTitle,
-                                              ),
-                                            )
-                                          : viewModel.slots.isEmpty
-                                          ? Padding(
-                                              padding: const EdgeInsets.all(24),
+                                      color: constants.background,
+                                    ),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Stack(
+                                          alignment: Alignment.center,
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                    20,
+                                                    10,
+                                                    20,
+                                                    10,
+                                                  ),
                                               child: Text(
-                                                "No slots in this block.",
+                                                viewModel.getBlockDate(),
                                                 style: TextStyle(
                                                   color: constants.darkGrey,
                                                   fontSize: constants.fsLabel,
+                                                  fontWeight:
+                                                      constants.fwSemiBold,
                                                 ),
                                               ),
-                                            )
-                                          : ListView.builder(
-                                              physics:
-                                                  const NeverScrollableScrollPhysics(),
-                                              shrinkWrap: true,
-                                              padding: EdgeInsets.zero,
-                                              itemCount: viewModel.slots.length,
-                                              itemBuilder: (context, index) {
-                                                final slot =
-                                                    viewModel.slots[index];
-                                                return _SlotRow(
-                                                  slot: slot,
-                                                  isFirst: index == 0,
-                                                  isLast:
-                                                      index ==
-                                                      viewModel.slots.length -
-                                                          1,
-                                                  onHistoryClicked: () => {
-                                                    viewModel
-                                                        .displayHistoryOfSlot(
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 12.0,
+                                                  ),
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  nav.toAddSlot(
+                                                    token: widget.token,
+                                                    blockId: widget.blockId,
+                                                    onSuccess: () =>
+                                                        viewModel.refetchData(
                                                           widget.token,
-                                                          slot.id,
-                                                          int.parse(
+                                                          widget.blockId,
+                                                        ),
+                                                  );
+                                                },
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.end,
+                                                  children: [
+                                                    svgs.icon(
+                                                      'add',
+                                                      width: constants.fsTitle,
+                                                      color: constants.primary,
+                                                    ),
+                                                    SizedBox(width: 4),
+                                                    Text(
+                                                      "Add Slot",
+                                                      style: TextStyle(
+                                                        color:
+                                                            constants.primary,
+                                                        fontWeight: constants
+                                                            .fwSemiBold,
+                                                        fontSize:
+                                                            constants.fsLabel,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+
+                                        // Block header row
+                                        const Divider(height: 1),
+                                        // Slot list
+                                        viewModel.isLoading
+                                            ? Padding(
+                                                padding: EdgeInsets.all(24),
+                                                child: SpinKitPouringHourGlass(
+                                                  color: constants.primary,
+                                                  size: constants.fsTitle,
+                                                ),
+                                              )
+                                            : viewModel.slots.isEmpty
+                                            ? Padding(
+                                                padding: const EdgeInsets.all(
+                                                  24,
+                                                ),
+                                                child: Text(
+                                                  "No slots in this block.",
+                                                  style: TextStyle(
+                                                    color: constants.darkGrey,
+                                                    fontSize: constants.fsLabel,
+                                                  ),
+                                                ),
+                                              )
+                                            : ListView.builder(
+                                                physics:
+                                                    const NeverScrollableScrollPhysics(),
+                                                shrinkWrap: true,
+                                                padding: EdgeInsets.zero,
+                                                itemCount:
+                                                    viewModel.slots.length,
+                                                itemBuilder: (context, index) {
+                                                  final slot =
+                                                      viewModel.slots[index];
+                                                  return _SlotRow(
+                                                    slot: slot,
+                                                    isFirst: index == 0,
+                                                    isLast:
+                                                        index ==
+                                                        viewModel.slots.length -
+                                                            1,
+                                                    onHistoryClicked: () => {
+                                                      viewModel
+                                                          .displayHistoryOfSlot(
+                                                            widget.token,
+                                                            slot.id,
+                                                            int.parse(
+                                                              widget.blockId,
+                                                            ),
+                                                          ),
+                                                    },
+                                                    onIsOnlineClicked: () async => {
+                                                      await viewModel
+                                                          .changeSlotMeetingType(
+                                                            widget.token,
+                                                            slot.id,
+                                                          ),
+                                                      await viewModel
+                                                          .fetchSlotsForBlock(
+                                                            widget.token,
                                                             widget.blockId,
                                                           ),
-                                                        ),
-                                                  },
-                                                  onIsOnlineClicked: () async => {
-                                                    await viewModel
-                                                        .changeSlotMeetingType(
-                                                          widget.token,
-                                                          slot.id,
-                                                        ),
-                                                    await viewModel
-                                                        .fetchSlotsForBlock(
-                                                          widget.token,
-                                                          widget.blockId,
-                                                        ),
-                                                  },
-                                                  onDelete: () => {
-                                                    viewModel.deleteSlot(
-                                                      widget.token,
-                                                      slot.id,
-                                                    ),
-                                                    viewModel
-                                                        .fetchSlotsForBlock(
-                                                          widget.token,
-                                                          widget.blockId,
-                                                        ),
-                                                  },
-                                                );
-                                              },
-                                            ),
+                                                    },
+                                                    onDelete: () => {
+                                                      viewModel.deleteSlot(
+                                                        widget.token,
+                                                        slot.id,
+                                                      ),
+                                                      viewModel
+                                                          .fetchSlotsForBlock(
+                                                            widget.token,
+                                                            widget.blockId,
+                                                          ),
+                                                    },
+                                                  );
+                                                },
+                                              ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 32),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    _showDatePickerDialog(
+                                      context,
+                                      viewModel,
+                                      widget.blockId,
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: constants.primary
+                                        .withAlpha(30),
+                                    fixedSize: const Size(140, 120),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      side: BorderSide(
+                                        color: constants.background,
+                                      ),
+                                    ),
+                                    elevation: 0,
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      svgs.icon(
+                                        'copy',
+                                        width: constants.fsHeadline,
+                                        color: constants.primary,
+                                      ),
+
+                                      const SizedBox(height: 12),
+                                      Text(
+                                        "Copy Block",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: constants.primary,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 32),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ElevatedButton(
-                                onPressed: () {
-                                  _showDatePickerDialog(
-                                    context,
-                                    viewModel,
-                                    widget.blockId,
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: constants.primary.withAlpha(
-                                    30,
-                                  ),
-                                  fixedSize: const Size(140, 120),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    side: BorderSide(
-                                      color: constants.background,
+                                const SizedBox(width: 24),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    viewModel.deleteBlock(
+                                      widget.token,
+                                      widget.blockId,
+                                    );
+                                    widget.onSuccess!();
+                                    nav.pop();
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: constants.red.withAlpha(
+                                      30,
                                     ),
-                                  ),
-                                  elevation: 0,
-                                ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.copy,
-                                      color: constants.primary,
-                                      size: 32,
-                                    ),
-                                    const SizedBox(height: 12),
-                                    Text(
-                                      "Copy Block",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: constants.primary,
-                                        fontWeight: FontWeight.w600,
+                                    fixedSize: const Size(140, 120),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      side: BorderSide(
+                                        color: constants.background,
                                       ),
                                     ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 24),
-                              ElevatedButton(
-                                onPressed: () {
-                                  viewModel.deleteBlock(
-                                    widget.token,
-                                    widget.blockId,
-                                  );
-                                  widget.onSuccess!();
-                                  nav.pop();
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: constants.red.withAlpha(30),
-                                  fixedSize: const Size(140, 120),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    side: BorderSide(
-                                      color: constants.background,
-                                    ),
+                                    elevation: 0,
                                   ),
-                                  elevation: 0,
-                                ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.delete_outline_rounded,
-                                      color: constants.red,
-                                      size: 32,
-                                    ),
-                                    const SizedBox(height: 12),
-                                    Text(
-                                      "Delete Block",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      svgs.icon(
+                                        'trash',
+                                        width: constants.fsHeadline,
                                         color: constants.red,
-                                        fontWeight: FontWeight.w600,
                                       ),
-                                    ),
-                                  ],
+                                      const SizedBox(height: 12),
+                                      Text(
+                                        "Delete Block",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: constants.red,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -525,59 +536,54 @@ class _SlotRow extends StatelessWidget {
         if (!isFirst) Divider(height: 1, color: constants.grey),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          child: Stack(
-            alignment: Alignment.centerLeft,
+
+          child: Row(
             children: [
               Text(
-                '${slot.startTime.split(":")[0]}${":"}${slot.startTime.split(":")[1]}',
+                '${slot.startTime.split(":")[0]}:${slot.startTime.split(":")[1]}',
                 style: TextStyle(
                   color: constants.darkGrey,
                   fontSize: constants.fsLabel,
                 ),
               ),
+              const SizedBox(width: 16),
+
               Text(
-                '${slot.takenBy == null ? "" : "Taken"}',
+                slot.takenBy == null ? "" : "Taken",
                 style: TextStyle(
                   color: constants.darkGrey,
                   fontSize: constants.fsLabel,
+                  fontWeight: constants.fwSemiBold,
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  GestureDetector(
-                    onTap: onHistoryClicked,
-                    child: Icon(
-                      Icons.history_outlined,
-                      color: constants.darkGrey,
-                      size: 32,
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  GestureDetector(
-                    onTap: onIsOnlineClicked,
-                    child: slot.isOnline == 0
-                        ? Icon(
-                            Icons.monitor,
-                            color: constants.primary,
-                            size: 32,
-                          )
-                        : Icon(
-                            Icons.location_pin,
-                            color: constants.primary,
-                            size: 32,
-                          ),
-                  ),
-                  SizedBox(width: 8),
-                  GestureDetector(
-                    onTap: onDelete,
-                    child: Icon(
-                      Icons.delete_outline_rounded,
-                      color: constants.red,
-                      size: 32,
-                    ),
-                  ),
-                ],
+
+              const Spacer(),
+
+              GestureDetector(
+                onTap: onHistoryClicked,
+                child: svgs.icon(
+                  'history',
+                  width: constants.fsTitle,
+                  color: constants.darkGrey,
+                ),
+              ),
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: onIsOnlineClicked,
+                child: svgs.icon(
+                  slot.isOnline == 0 ? 'screen' : 'location',
+                  width: constants.fsTitle,
+                  color: constants.primary,
+                ),
+              ),
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: onDelete,
+                child: svgs.icon(
+                  'trash',
+                  width: constants.fsTitle,
+                  color: constants.red,
+                ),
               ),
             ],
           ),

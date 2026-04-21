@@ -144,10 +144,10 @@ class _AddSlotOnOutskirts extends StatelessWidget {
                           color: constants.primary,
                           size: constants.fsHeadline,
                         )
-                      : Icon(
-                          Icons.add,
+                      : svgs.icon(
+                          'plus',
+                          width: constants.fsHeadline,
                           color: constants.darkGrey,
-                          size: constants.fsHeadline,
                         ),
                 ),
               );
@@ -177,7 +177,7 @@ class _AddBlockButton extends StatelessWidget {
               height: 40,
               padding: const EdgeInsets.all(8),
               decoration: constants.squircleShadow(color: constants.grey),
-              child: Icon(Icons.add, size: 25, color: constants.darkGrey),
+              child: svgs.icon('plus', color: constants.darkGrey),
             ),
           );
   }
@@ -195,7 +195,7 @@ class _SettingsDropdownButton extends StatelessWidget {
     return Container(
       width: 40,
       height: 40,
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(8),
       decoration: constants.squircleShadow(color: constants.grey),
       child: PopupMenuButton<dynamic>(
         position: PopupMenuPosition.under,
@@ -204,17 +204,25 @@ class _SettingsDropdownButton extends StatelessWidget {
         color: constants.background,
         elevation: 12,
         shadowColor: constants.darkGrey.withValues(alpha: 0.12),
-        child: SvgPicture.asset(
-          'assets/resources/more.svg',
-          width: 24,
-          colorFilter: ColorFilter.mode(constants.darkGrey, BlendMode.srcIn),
-        ),
+        padding: EdgeInsets.all(8),
+        child: svgs.icon('more', color: constants.darkGrey),
 
         itemBuilder: (context) => [
           PopupMenuItem<dynamic>(
             value: "see_all_users_joined",
             child: Text(
               'See all users joined',
+              style: TextStyle(
+                color: constants.darkGrey,
+                fontWeight: constants.fwSemiBold,
+                fontSize: constants.fsLabel,
+              ),
+            ),
+          ),
+          PopupMenuItem<dynamic>(
+            value: "edit_room",
+            child: Text(
+              'Edit room',
               style: TextStyle(
                 color: constants.darkGrey,
                 fontWeight: constants.fwSemiBold,
@@ -237,6 +245,15 @@ class _SettingsDropdownButton extends StatelessWidget {
         onSelected: (mode) {
           if (mode != null) {
             switch (mode) {
+              case "edit_room":
+                int? roomId = viewModel.roomIdNumber;
+                if (roomId != null) {
+                  nav.toEditRoom(
+                    token: token,
+                    roomId: roomId,
+                  );
+                }
+                break;
               case "delete_room":
                 showDialog(
                   context: context,

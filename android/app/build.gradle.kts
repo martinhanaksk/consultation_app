@@ -16,7 +16,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.mhanak.consultation_app"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     ndkVersion = "29.0.14206865"
 
     compileOptions {
@@ -30,10 +30,10 @@ android {
 
     defaultConfig {
         applicationId = "com.mhanak.consultation_app"
-        minSdk = flutter.minSdkVersion
+        minSdk = 24
         targetSdk = flutter.targetSdkVersion
-        versionCode = 15
-        versionName = "15"
+        versionCode = 16
+        versionName = "16"
     }
 
     signingConfigs {

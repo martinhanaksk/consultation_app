@@ -76,7 +76,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                               children: [
                                 // Info Rows
                                 _InfoTile(
-                                  icon: Icons.person_2_outlined,
+                                  svgName: 'person',
                                   label: "Email",
                                   value: viewModel.email,
                                 ),
@@ -89,7 +89,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                   height: 1,
                                 ),
                                 _InfoTile(
-                                  icon: Icons.badge_outlined,
+                                  svgName: 'id',
                                   label: "Name",
                                   value:
                                       '${viewModel.name} ${viewModel.surname}',
@@ -103,7 +103,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                   height: 1,
                                 ),
                                 _InfoTile(
-                                  icon: Icons.work_outline_rounded,
+                                  svgName: 'work',
                                   label: "Role",
                                   value: viewModel.role,
                                 ),
@@ -161,11 +161,17 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                   ),
                                   child: Row(
                                     children: [
-                                      Icon(
-                                        Icons.visibility,
-                                        color: constants.primary,
-                                        size: constants.fsBody,
-                                      ),
+                                      viewModel.visibility
+                                          ? svgs.icon(
+                                              'eye_open',
+                                              width: constants.fsTitle,
+                                              color: constants.primary,
+                                            )
+                                          : svgs.icon(
+                                              'eye_closed',
+                                              width: constants.fsTitle,
+                                              color: constants.primary,
+                                            ),
                                       const SizedBox(width: 12),
                                       Expanded(
                                         child: Column(
@@ -216,11 +222,12 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                   ),
                                   child: Row(
                                     children: [
-                                      Icon(
-                                        Icons.email_outlined,
+                                      svgs.icon(
+                                        'mail',
+                                        width: constants.fsTitle,
                                         color: constants.primary,
-                                        size: constants.fsBody,
                                       ),
+
                                       const SizedBox(width: 12),
                                       Expanded(
                                         child: Column(
@@ -278,12 +285,12 @@ class _ChangeSettingsState extends State<ChangeSettings> {
 }
 
 class _InfoTile extends StatelessWidget {
-  final IconData icon;
+  final String svgName;
   final String label;
   final String value;
 
   const _InfoTile({
-    required this.icon,
+    required this.svgName,
     required this.label,
     required this.value,
   });
@@ -294,7 +301,11 @@ class _InfoTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       child: Row(
         children: [
-          Icon(icon, color: constants.primary, size: constants.fsBody),
+          svgs.icon(
+            svgName,
+            width: constants.fsTitle,
+            color: constants.primary,
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(

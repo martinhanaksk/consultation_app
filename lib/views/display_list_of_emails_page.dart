@@ -22,22 +22,29 @@ class _DisplayListOfEmailsPageState extends State<DisplayListOfEmailsPage> {
           listenable: widget.viewModel,
           builder: (context, _) {
             return Column(
-              children: [Text('Allowed email domains'),
-                ListView.builder(
-                  itemCount: widget.viewModel.acceptedEmails.length,
-                  itemBuilder: (context, index) => ListTile(
-                    title: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(widget.viewModel.acceptedEmails[index]),
-                        IconButton(
-                          icon: Icon(Icons.delete, color: constants.red),
-                          onPressed: () =>
-                              widget.viewModel.removeFromAcceptedEmails(
-                                widget.viewModel.acceptedEmails[index],
-                              ),
-                        ),
-                      ],
+              children: [
+                Text('Allowed email domains'),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: widget.viewModel.acceptedEmails.length,
+                    itemBuilder: (context, index) => ListTile(
+                      title: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(widget.viewModel.acceptedEmails[index]),
+                          IconButton(
+                            icon: svgs.icon(
+                              'trash',
+                              width: constants.fsTitle,
+                              color: constants.red,
+                            ),
+                            onPressed: () =>
+                                widget.viewModel.removeFromAcceptedEmails(
+                                  widget.viewModel.acceptedEmails[index],
+                                ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

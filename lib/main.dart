@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:consultation_app/routes/app_router.dart';
+import 'package:consultation_app/services/app_router.dart';
 import 'package:overlay_kit/overlay_kit.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';

@@ -95,33 +95,33 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   //blocks
   // Inside BaseConsultationsViewmodel
 
-Future<void> handleEmailSubscribe(String token, int block) async {
-  bool receiveEmails = await prefs.getItem('receiveEmails');
-  if (receiveEmails != true) return;
+  Future<void> handleEmailSubscribe(String token, int block) async {
+    bool receiveEmails = await prefs.getItem('receiveEmails');
+    if (receiveEmails != true) return;
 
-  final isCurrentlySubscribed = subscribedBlocks.contains(block);
+    final isCurrentlySubscribed = subscribedBlocks.contains(block);
 
-  if (isCurrentlySubscribed) {
-    subscribedBlocks.remove(block);
-  } else {
-    subscribedBlocks.add(block);
-  }
-  notifyListeners(); 
-
-  try {
-    await api.subscribeToBlock(token, block);
-    subscribedBlocks = await api.getMySubscriptions(token); 
-    notifyListeners();
-  } catch (e) {
     if (isCurrentlySubscribed) {
-      subscribedBlocks.add(block);
-    } else {
       subscribedBlocks.remove(block);
+    } else {
+      subscribedBlocks.add(block);
     }
     notifyListeners();
-    notify.showToast('Failed to update subscription. Please try again.');
+
+    try {
+      await api.subscribeToBlock(token, block);
+      subscribedBlocks = await api.getMySubscriptions(token);
+      notifyListeners();
+    } catch (e) {
+      if (isCurrentlySubscribed) {
+        subscribedBlocks.add(block);
+      } else {
+        subscribedBlocks.remove(block);
+      }
+      notifyListeners();
+      notify.showToast('Failed to update subscription. Please try again.');
+    }
   }
-}
 
   Future<void> setOwnerView(int value) async {
     if (_ownerView == value) return;
@@ -184,7 +184,7 @@ Future<void> handleEmailSubscribe(String token, int block) async {
     }
 
     noRoomsFound = false;
-    
+
     List<BlockModel> newBlocks = await api.getBlocks(token, roomId);
 
     DateTime now = DateTime.now();
@@ -195,7 +195,7 @@ Future<void> handleEmailSubscribe(String token, int block) async {
     List<Future<void>> futures = [];
     for (var block in newBlocks) {
       futures.add(() async {
-        final slots = await api.getSlotsForBlock(token,block.id );
+        final slots = await api.getSlotsForBlock(token, block.id);
         if (slots != null) {
           slots.sort((a, b) => a.startTime.compareTo(b.startTime));
           newSlotsInBlocks[block.id] = slots;
@@ -268,7 +268,7 @@ Future<void> handleEmailSubscribe(String token, int block) async {
   Future<bool> validateAndSelectRoom(String? id) async {
     if (id == null) return false;
 
-    final myRooms = await fetchRooms(await prefs.getItem('token'));
+    final myRooms = await fetchRooms(await securePrefs.getToken());
     final isValidRoom = myRooms.any((room) => room.id.toString() == id);
 
     if (isValidRoom) {

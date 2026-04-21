@@ -8,6 +8,7 @@ import 'package:consultation_app/views/display_list_of_emails_page.dart';
 import 'package:consultation_app/views/display_slot_history_page.dart';
 import 'package:consultation_app/views/display_users_in_room_page.dart';
 import 'package:consultation_app/views/edit_block_page.dart';
+import 'package:consultation_app/views/edit_room_page.dart';
 import 'package:consultation_app/views/email_input_page.dart';
 import 'package:consultation_app/views/join_room_page.dart';
 import 'package:consultation_app/views/change_settings_page.dart';
@@ -25,6 +26,7 @@ class AppRouter {
   static const String createBlock = '/createBlock';
   static const String addSlot = '/addSlot';
   static const String editBlock = '/editBlock';
+  static const String editRoom = '/editRoom';
   static const String provideFeedback = '/provideFeedback';
   static const String changeSettings = '/changeSettings';
   static const String consultationsBasePage = '/consultationsBasePage';
@@ -102,6 +104,16 @@ class AppRouter {
             roomId: roomId,
             blockId: blockId,
             onSuccess: onSuccess,
+          ),
+        );
+        case editRoom:
+        final args = settings.arguments as Map<String, dynamic>;
+        final token = args['token'] as String;
+        final roomId = args['roomId'] as int;
+        return MaterialPageRoute(
+          builder: (_) => EditRoomPage(
+            token: token,
+            roomId: roomId
           ),
         );
       case displayListOfEmails:

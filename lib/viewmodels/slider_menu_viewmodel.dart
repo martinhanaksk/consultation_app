@@ -15,11 +15,13 @@ class SliderMenuViewmodel extends ChangeNotifier {
       throw Exception('Could not launch $_url');
     }
   }
-void closeDrawer(BuildContext context) {
-  if (Scaffold.maybeOf(context)?.isDrawerOpen == true) {
-    Scaffold.of(context).closeDrawer();
+
+  void closeDrawer(BuildContext context) {
+    if (Scaffold.maybeOf(context)?.isDrawerOpen == true) {
+      Scaffold.of(context).closeDrawer();
+    }
   }
-}
+
   bool get isLoading => _isLoading;
   String get token => _token;
   bool? get isOwner => _isOwner;
@@ -32,7 +34,7 @@ void closeDrawer(BuildContext context) {
     try {
       _isLoading = true;
       notifyListeners();
-      _token = await prefs.getItem('token');
+      _token = await securePrefs.getToken();
       helpers.checkIfValidToken(_token);
       _email = await prefs.getItem('email');
       if (!await helpers.handleIsInternetConnection()) {

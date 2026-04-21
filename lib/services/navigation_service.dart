@@ -1,4 +1,4 @@
-import 'package:consultation_app/routes/app_router.dart';
+import 'package:consultation_app/services/app_router.dart';
 import 'package:consultation_app/viewmodels/create_room_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
@@ -28,7 +28,15 @@ class NavigationService {
       arguments: {'email': email, 'rememberMe': rememberMe},
     );
   }
-
+Future<dynamic> toEditRoom({
+    required String token,
+    required int roomId,
+  }) {
+    return _navigator()!.pushNamed(
+      AppRouter.editRoom,
+      arguments: {'token': token, 'roomId': roomId},
+    );
+  }
   void redirectToRegister(BuildContext context, String email) {
     Navigator.pushNamed(
       context,
