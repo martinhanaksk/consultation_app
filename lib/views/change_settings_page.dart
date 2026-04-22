@@ -56,7 +56,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                             "Manage your profile and preferences",
                             style: TextStyle(
                               fontSize: constants.fsLabel,
-                              color: constants.grey,
+                              color: constants.darkGrey150,
                             ),
                           ),
                           const SizedBox(height: 28),
@@ -83,9 +83,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                 Divider(
                                   indent: 20,
                                   endIndent: 20,
-                                  color: constants.darkGrey.withValues(
-                                    alpha: 0.08,
-                                  ),
+                                  color: constants.darkGrey30,
                                   height: 1,
                                 ),
                                 _InfoTile(
@@ -97,9 +95,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                 Divider(
                                   indent: 20,
                                   endIndent: 20,
-                                  color: constants.darkGrey.withValues(
-                                    alpha: 0.08,
-                                  ),
+                                  color: constants.darkGrey30,
                                   height: 1,
                                 ),
                                 _InfoTile(
@@ -121,9 +117,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                               borderRadius: BorderRadius.circular(20),
                               boxShadow: [
                                 BoxShadow(
-                                  color: constants.darkGrey.withValues(
-                                    alpha: 0.06,
-                                  ),
+                                  color: constants.darkGrey30,
                                   blurRadius: 12,
                                   offset: const Offset(0, 4),
                                 ),
@@ -148,12 +142,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                     ),
                                   ),
                                 ),
-                                Divider(
-                                  color: constants.darkGrey.withValues(
-                                    alpha: 0.08,
-                                  ),
-                                  height: 1,
-                                ),
+                                Divider(color: constants.darkGrey30, height: 1),
                                 Container(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 20,
@@ -163,14 +152,15 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                     children: [
                                       viewModel.visibility
                                           ? svgs.icon(
-                                              'eye_open',
+                                              'eye_open',constants.primary,
                                               width: constants.fsTitle,
-                                              color: constants.primary,
+                                             
                                             )
                                           : svgs.icon(
-                                              'eye_closed',
+                                              'eye_closed',constants.primary,
                                               width: constants.fsTitle,
-                                              color: constants.primary,
+                                              
+
                                             ),
                                       const SizedBox(width: 12),
                                       Expanded(
@@ -192,8 +182,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                               "Show your name to others.",
                                               style: TextStyle(
                                                 fontSize: constants.fsLabel,
-                                                color: constants.darkGrey
-                                                    .withValues(alpha: 0.55),
+                                                color: constants.darkGrey150,fontWeight: constants.fwRegular
                                               ),
                                             ),
                                           ],
@@ -222,11 +211,17 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                   ),
                                   child: Row(
                                     children: [
-                                      svgs.icon(
-                                        'mail',
-                                        width: constants.fsTitle,
-                                        color: constants.primary,
-                                      ),
+                                      viewModel.receiveEmails
+                                          ? svgs.icon(
+                                              'bell_ringing',constants.primary,
+                                              width: constants.fsTitle,
+                                              
+                                            )
+                                          : svgs.icon(
+                                              'bell_crossed',constants.primary,
+                                              width: constants.fsTitle,
+                                            
+                                            ),
 
                                       const SizedBox(width: 12),
                                       Expanded(
@@ -248,8 +243,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                               "Get emails about changes in selected consultation blocks",
                                               style: TextStyle(
                                                 fontSize: constants.fsLabel,
-                                                color: constants.darkGrey
-                                                    .withValues(alpha: 0.55),
+                                                color: constants.darkGrey150,fontWeight: constants.fwRegular
                                               ),
                                             ),
                                           ],
@@ -265,6 +259,66 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                         ),
                                         onChanged: (val) {
                                           viewModel.setReceiveEmail(val);
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 14,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      themeSelector.isDark
+                                          ? svgs.icon(
+                                              'moon',constants.primary,
+                                              width: constants.fsTitle,
+                                              
+                                            )
+                                          : svgs.icon(
+                                              'sun',constants.primary,
+                                              width: constants.fsTitle,
+                                            
+                                            ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "Dark Mode",
+                                              style: TextStyle(
+                                                fontSize: constants.fsBody,
+                                                fontWeight:
+                                                    constants.fwSemiBold,
+                                                color: constants.darkGrey,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              "Switch to dark appearance.",
+                                              style: TextStyle(
+                                                fontSize: constants.fsLabel,
+                                                color: constants.darkGrey150,fontWeight: constants.fwRegular
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Checkbox(
+                                        value: themeSelector.isDark,
+                                        activeColor: constants.primary,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
+                                        ),
+                                        onChanged: (val) async {
+                                          viewModel.setTheme(val);
                                         },
                                       ),
                                     ],
@@ -302,9 +356,9 @@ class _InfoTile extends StatelessWidget {
       child: Row(
         children: [
           svgs.icon(
-            svgName,
+            svgName,constants.primary,
             width: constants.fsTitle,
-            color: constants.primary,
+            
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -315,7 +369,7 @@ class _InfoTile extends StatelessWidget {
                   label,
                   style: TextStyle(
                     fontSize: constants.fsLabel,
-                    color: constants.grey,
+                    color: constants.darkGrey150,fontWeight: constants.fwRegular
                   ),
                 ),
                 const SizedBox(height: 4),

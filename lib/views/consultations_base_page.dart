@@ -198,7 +198,7 @@ class _RoomSelectorButton extends StatelessWidget {
             ),
             color: constants.background,
             elevation: 12,
-            shadowColor: constants.darkGrey.withValues(alpha: 0.12),
+            shadowColor: constants.darkGrey30,
             onSelected: (String newValue) async {
               final success = await viewModel.validateAndSelectRoom(newValue);
               if (success) await viewModel.switchRoom(newValue);
@@ -252,19 +252,19 @@ class _RoomSelectorButton extends StatelessWidget {
                       color:
                           (viewModel.noRoomsFound ||
                               viewModel.selectedRoomId == null)
-                          ? constants.darkGrey.withAlpha(50)
+                          ? constants.darkGrey30
                           : constants.darkGrey,
                     ),
                   ),
                   const SizedBox(width: 6),
                   svgs.icon(
-                    'arrow_down',
-                    width: constants.fsBody,
-                    color:
-                        (viewModel.noRoomsFound ||
+                    'arrow_down',(viewModel.noRoomsFound ||
                             viewModel.selectedRoomId == null)
-                        ? constants.darkGrey.withAlpha(50)
+                        ? constants.darkGrey30
                         : constants.darkGrey,
+                    width: constants.fsBody,
+                    
+                        
                   ),
                 ],
               ),
@@ -332,6 +332,7 @@ class _ConsultationsContent extends StatelessWidget {
                           "No upcoming consultations found.",
                           textAlign: TextAlign.center,
                           style: TextStyle(
+                            color: constants.darkGrey,
                             fontWeight: constants.fwSemiBold,
                             fontSize: constants.fsTitle,
                           ),
@@ -460,20 +461,8 @@ class _ConsultationBlockCard extends StatelessWidget {
                                       viewModel.subscribedBlocks.contains(
                                         blockEntry.key,
                                       )
-                                      ? SvgPicture.asset(
-                                          'assets/resources/notifications_bell_full.svg',
-                                          colorFilter: ColorFilter.mode(
-                                            constants.darkGrey,
-                                            BlendMode.srcIn,
-                                          ),
-                                        )
-                                      : SvgPicture.asset(
-                                          'assets/resources/notifications_bell_empty.svg',
-                                          colorFilter: ColorFilter.mode(
-                                            constants.darkGrey,
-                                            BlendMode.srcIn,
-                                          ),
-                                        ),
+                                      ? svgs.icon("notifications_bell_full",constants.darkGrey)
+                                      : svgs.icon("notifications_bell_empty",constants.darkGrey)
                                 ),
                               ),
                             )

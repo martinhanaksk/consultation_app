@@ -67,7 +67,7 @@ class _JoinRoomState extends State<JoinRoom> {
                               "Join a Room",
                               style: TextStyle(
                                 fontWeight: constants.fwSemiBold,
-                                fontSize: constants.fsHeadline,
+                                fontSize: constants.fsHeadline,color: constants.darkGrey
                               ),
                             ),
                           ),
@@ -92,7 +92,7 @@ class _JoinRoomState extends State<JoinRoom> {
                                     style: TextStyle(
                                       fontWeight: constants.fwRegular,
                                       fontSize: constants.fsLabel,
-                                      color: constants.darkGrey.withAlpha(180),
+                                      color: constants.darkGrey200,
                                     ),
                                   ),
                                 ),
@@ -169,9 +169,9 @@ class _JoinRoomState extends State<JoinRoom> {
                                                 12.0,
                                               ),
                                               child: svgs.icon(
-                                                'search',
+                                                'search',constants.darkGrey150,
                                                 width: constants.fsLabel,
-                                                color: constants.grey,
+                                                 
                                               ),
                                             ),
                                           ),
@@ -198,10 +198,7 @@ class _JoinRoomState extends State<JoinRoom> {
                                                     BorderRadius.circular(16),
                                                 boxShadow: [
                                                   BoxShadow(
-                                                    color: constants.darkGrey
-                                                        .withValues(
-                                                          alpha: 0.12,
-                                                        ),
+                                                    color: constants.darkGrey30,
                                                     blurRadius: 12,
                                                     spreadRadius: 2,
                                                     offset: const Offset(0, 4),
@@ -258,7 +255,7 @@ class _JoinRoomState extends State<JoinRoom> {
                                                               title: Text(
                                                                 option.title,
                                                                 style: TextStyle(
-                                                                  fontSize: 15,
+                                                                  fontSize: constants.fsLabel,
                                                                   fontWeight:
                                                                       constants
                                                                           .fwRegular,
@@ -301,9 +298,7 @@ class _JoinRoomState extends State<JoinRoom> {
                                         borderRadius: BorderRadius.circular(14),
                                       ),
                                       elevation: 2,
-                                      shadowColor: constants.primary.withValues(
-                                        alpha: 0.4,
-                                      ),
+                                      shadowColor: constants.lightPrimary,
                                     ),
                                     child: Text(
                                       'Join room',

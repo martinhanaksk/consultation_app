@@ -10,6 +10,7 @@ import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 class EditBlockViewmodel extends ChangeNotifier {
   List<SlotModel> slots = [];
   bool _isLoading = false;
+  String roomName = "";
   bool get isLoading => _isLoading;
   BlockModel? block;
   DateRangePickerSelectionMode _selectionMode =
@@ -17,6 +18,18 @@ class EditBlockViewmodel extends ChangeNotifier {
   DateRangePickerSelectionMode get selectionMode => _selectionMode;
   dynamic _selectedDates;
   dynamic get selectedDates => _selectedDates;
+  bool _isChecked = false;
+  bool get isChecked => _isChecked;
+  Future<void> toggleIsOnline(bool? value, String token, int blockId) async {
+    _isChecked = value ?? false;
+    if (_isChecked) {
+      await api.setBlockOnline(token, blockId);
+    } else {
+      await api.setBlockOffline(token, blockId);
+    }
+    notifyListeners();
+  }
+
   void setSelectedDates(dynamic value) {
     _selectedDates = value;
     notifyListeners();
@@ -57,47 +70,50 @@ class EditBlockViewmodel extends ChangeNotifier {
     }
   }
 
-  Future<void> copyBlock(String token, String roomId) async { List<String> dates = getSelectedDatesIso();
-    
+  Future<void> copyBlock(String token, String roomId) async {
+    List<String> dates = getSelectedDatesIso();
+
     if (dates.isEmpty) {
       notify.showToast('Please select at least one date.');
       return;
     }
     _isLoading = true;
     notifyListeners();
-    try{
-    final slotCount = slots.length;
+    try {
+      final slotCount = slots.length;
 
-    for (int i = 0; i < dates.length; i++) {
-      String response = await api.createBlock(
-        token,
-        int.parse(roomId),
-        dates[i],
-      );
-       if (response.isEmpty) {
+      for (int i = 0; i < dates.length; i++) {
+        String response = await api.createBlock(
+          token,
+          int.parse(roomId),
+          dates[i],
+        );
+        if (response.isEmpty) {
           notify.showToast('Failed to create block for ${dates[i]}.');
-          continue; 
+          continue;
         }
-      final int blockId = jsonDecode(response)['id'];
-      if (slotCount != 0) {
-        for (int j = 0; j < slotCount; j++) {
-          bool success = await api.createSlot(
-            token,blockId,
-            slots[j].startTime,
-            slots[j].duration,
-            slots[j].isOnline,
-            slots[j].note ?? "",
-          );
-          if (!success) {
-            notify.showToast('Failed to create slot $j for block $blockId');
-            _isLoading = false;
-            notifyListeners();
-            return;
+        final int blockId = jsonDecode(response)['id'];
+        if (slotCount != 0) {
+          for (int j = 0; j < slotCount; j++) {
+            bool success = await api.createSlot(
+              token,
+              blockId,
+              slots[j].startTime,
+              slots[j].duration,
+              slots[j].isOnline,
+              slots[j].note ?? "",
+            );
+            if (!success) {
+              notify.showToast('Failed to create slot $j for block $blockId');
+              _isLoading = false;
+              notifyListeners();
+              return;
+            }
           }
         }
       }
-    }notify.showToast('Blocks copied successfully.');
-   } catch (e) {
+      notify.showToast('Blocks copied successfully.');
+    } catch (e) {
       notify.showToast('An unexpected error occurred while copying.');
     } finally {
       _isLoading = false;
@@ -156,6 +172,21 @@ class EditBlockViewmodel extends ChangeNotifier {
   void init(String token, String blockId, String roomId) async {
     await assignBlock(token, int.parse(blockId), int.parse(roomId));
     await fetchSlotsForBlock(token, blockId);
+    roomName = await getRoomNameById(token, int.parse(roomId));
+    if (block != null) {
+      _isChecked = block!.isOnline == 1 ? true : false;
+    }
+    notifyListeners();
+  }
+
+  Future<String> getRoomNameById(String token, int roomId) async {
+    try {
+      final rooms = await api.getAllRooms(token);
+      final room = rooms.firstWhere((r) => r.id == roomId);
+      return room.title;
+    } catch (e) {
+      return "error";
+    }
   }
 
   Future<void> assignBlock(String token, int blockId, int roomId) async {

@@ -114,7 +114,7 @@ class _AnimatedToggleState extends State<AnimatedToggle> {
                 style: TextStyle(
                   fontSize: constants.fsLabel,
                   color: widget.textColor,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: constants.fwSemiBold,
                 ),
               ),
             ),

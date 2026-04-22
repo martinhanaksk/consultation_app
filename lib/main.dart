@@ -6,10 +6,11 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 // Author: Martin Hanak
 // email: xhanakm00@stud.fit.vut.cz
-void main() {
+void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   setupDependencies();
+  await themeSelector.initialize();
   runApp(const MyApp());
 }
 
@@ -18,15 +19,27 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return OverlayKit(
-      child: MaterialApp(
-        title: 'Consultations',
-        navigatorKey: nav.navigatorKey,
-        theme: ThemeData(primaryColor: constants.primary),
-        initialRoute: AppRouter.login,
-        debugShowCheckedModeBanner: false,
-        onGenerateRoute: AppRouter.generateRoute,
-      ),
+    return ListenableBuilder(
+      listenable: themeSelector,
+      builder: (context, _) {
+        return OverlayKit(
+          child: MaterialApp(
+            title: 'Consultations',
+            navigatorKey: nav.navigatorKey,
+            theme: ThemeData(
+              primaryColor: constants.primary,
+              scaffoldBackgroundColor: constants.background,
+
+              textTheme: TextTheme(
+                bodyLarge: TextStyle(color: constants.darkGrey),
+              ),
+            ),
+            initialRoute: AppRouter.login,
+            debugShowCheckedModeBanner: false,
+            onGenerateRoute: AppRouter.generateRoute,
+          ),
+        );
+      },
     );
   }
 }

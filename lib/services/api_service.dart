@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:consultation_app/setup.dart';
 import 'package:http/http.dart' as http;
 import 'package:consultation_app/models/user_model.dart';
@@ -332,6 +331,40 @@ class ApiService {
     return false;
   }
 
+  Future<void> setBlockOffline(String token, int blockId) async {
+    final Uri url = Uri.parse(
+      '${constants.url}/block/set-offline?block_id=${blockId}',
+    );
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to set block offline ${response.statusCode}');
+    }
+  }
+
+  Future<void> setBlockOnline(String token, int blockId) async {
+    final Uri url = Uri.parse(
+      '${constants.url}/block/set-online?block_id=${blockId}',
+    );
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to set block online ${response.statusCode}');
+    }
+  }
+
   Future<void> setVisibility(String token) async {
     final Uri url = Uri.parse('${constants.url}/users/visible');
 
@@ -364,9 +397,9 @@ class ApiService {
     }
   }
 
-  Future<void> subscribeToBlock(String token, int blockid) async {
+  Future<void> subscribeToBlock(String token, int blockId) async {
     final Uri url = Uri.parse(
-      '${constants.url}/block/subscribe?block_id=$blockid',
+      '${constants.url}/block/subscribe?block_id=$blockId',
     );
 
     final response = await http.post(

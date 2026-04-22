@@ -6,7 +6,6 @@ import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class EditBlock extends StatefulWidget {
@@ -75,7 +74,7 @@ class _EditBlockState extends State<EditBlock> {
                       ),
                       color: constants.background,
                       elevation: 12,
-                      shadowColor: constants.darkGrey.withValues(alpha: 0.12),
+                      shadowColor: constants.darkGrey30,
                       child: Container(
                         padding: EdgeInsets.symmetric(
                           horizontal: 12,
@@ -235,7 +234,29 @@ class _EditBlockState extends State<EditBlock> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 32),
+                        const SizedBox(height: 8),
+                        Center(
+                          child: Text(
+                            "in",
+                            style: TextStyle(
+                              fontSize: constants.fsBody,
+                              fontWeight: constants.fwRegular,
+                              color: constants.darkGrey100
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Center(
+                          child: Text(
+                            viewModel.roomName,
+                            style: TextStyle(
+                              fontSize: constants.fsBody,
+                              fontWeight: constants.fwRegular,
+                              color: constants.darkGrey100
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 28),
                         Column(
                           children: [
                             Column(
@@ -300,9 +321,9 @@ class _EditBlockState extends State<EditBlock> {
                                                       MainAxisAlignment.end,
                                                   children: [
                                                     svgs.icon(
-                                                      'add',
+                                                      'add',constants.primary,
                                                       width: constants.fsTitle,
-                                                      color: constants.primary,
+                                                     
                                                     ),
                                                     SizedBox(width: 4),
                                                     Text(
@@ -408,6 +429,39 @@ class _EditBlockState extends State<EditBlock> {
                             ),
                             SizedBox(height: 32),
                             Row(
+                              children: [
+                                IntrinsicWidth(
+                                  child: Container(
+                                    width: 24,
+                                    height: 24,
+                                    clipBehavior: Clip.none,
+                                    decoration: constants.squircleShadow(
+                                      color: constants.background,
+                                    ),
+                                    child: Checkbox(
+                                      value: viewModel.isChecked,
+                                      onChanged: (bool? value) => {
+                                        viewModel.toggleIsOnline(
+                                          value,
+                                          widget.token,
+                                          int.parse(widget.blockId),
+                                        ),
+                                        widget.onSuccess!(),
+                                      },
+                                      side: BorderSide.none,
+                                      checkColor: constants.darkGrey,
+                                      fillColor: WidgetStateProperty.all(
+                                        constants.background,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 8),
+                                const Text('Online'),
+                              ],
+                            ),
+                            SizedBox(height: 32),
+                            Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 ElevatedButton(
@@ -419,8 +473,7 @@ class _EditBlockState extends State<EditBlock> {
                                     );
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: constants.primary
-                                        .withAlpha(30),
+                                    backgroundColor: constants.lightPrimary,
                                     fixedSize: const Size(140, 120),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
@@ -434,9 +487,9 @@ class _EditBlockState extends State<EditBlock> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       svgs.icon(
-                                        'copy',
+                                        'copy',constants.primary,
                                         width: constants.fsHeadline,
-                                        color: constants.primary,
+                                       
                                       ),
 
                                       const SizedBox(height: 12),
@@ -445,7 +498,7 @@ class _EditBlockState extends State<EditBlock> {
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           color: constants.primary,
-                                          fontWeight: FontWeight.w600,
+                                          fontWeight:constants.fwSemiBold,
                                         ),
                                       ),
                                     ],
@@ -462,9 +515,7 @@ class _EditBlockState extends State<EditBlock> {
                                     nav.pop();
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: constants.red.withAlpha(
-                                      30,
-                                    ),
+                                    backgroundColor: constants.red30,
                                     fixedSize: const Size(140, 120),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
@@ -478,9 +529,9 @@ class _EditBlockState extends State<EditBlock> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       svgs.icon(
-                                        'trash',
+                                        'trash',constants.red,
                                         width: constants.fsHeadline,
-                                        color: constants.red,
+                                     
                                       ),
                                       const SizedBox(height: 12),
                                       Text(
@@ -488,7 +539,7 @@ class _EditBlockState extends State<EditBlock> {
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           color: constants.red,
-                                          fontWeight: FontWeight.w600,
+                                          fontWeight: constants.fwSemiBold,
                                         ),
                                       ),
                                     ],
@@ -561,27 +612,27 @@ class _SlotRow extends StatelessWidget {
               GestureDetector(
                 onTap: onHistoryClicked,
                 child: svgs.icon(
-                  'history',
+                  'history',constants.darkGrey,
                   width: constants.fsTitle,
-                  color: constants.darkGrey,
+                 
                 ),
               ),
               const SizedBox(width: 8),
               GestureDetector(
                 onTap: onIsOnlineClicked,
                 child: svgs.icon(
-                  slot.isOnline == 0 ? 'screen' : 'location',
+                  slot.isOnline == 0 ? 'screen' : 'location',constants.primary,
                   width: constants.fsTitle,
-                  color: constants.primary,
+                 
                 ),
               ),
               const SizedBox(width: 8),
               GestureDetector(
                 onTap: onDelete,
                 child: svgs.icon(
-                  'trash',
+                  'trash',constants.red,
                   width: constants.fsTitle,
-                  color: constants.red,
+                 
                 ),
               ),
             ],

@@ -60,7 +60,7 @@ class _DisplaySlotHistoryPageState extends State<DisplaySlotHistoryPage> {
           children: [
             Text(
               'Failed to load history',
-              style: TextStyle(color: constants.darkGrey.withAlpha(150)),
+              style: TextStyle(color: constants.darkGrey150),
             ),
             const SizedBox(height: 12),
             TextButton(
@@ -76,7 +76,7 @@ class _DisplaySlotHistoryPageState extends State<DisplaySlotHistoryPage> {
       return Center(
         child: Text(
           'No history available',
-          style: TextStyle(color: constants.darkGrey.withAlpha(150)),
+          style: TextStyle(color: constants.darkGrey150),
         ),
       );
     }
@@ -93,7 +93,7 @@ class _DisplaySlotHistoryPageState extends State<DisplaySlotHistoryPage> {
                 'Slot History',
                 style: TextStyle(
                   fontWeight: constants.fwSemiBold,
-                  fontSize: constants.fsTitle,
+                  fontSize: constants.fsTitle,color: constants.darkGrey
                 ),
               ),
               Container(
@@ -102,7 +102,7 @@ class _DisplaySlotHistoryPageState extends State<DisplaySlotHistoryPage> {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: constants.primary.withAlpha(30),
+                  color: constants.lightPrimary,
                   borderRadius: BorderRadius.circular(50),
                 ),
                 child: Text(
@@ -135,18 +135,18 @@ class _DisplaySlotHistoryPageState extends State<DisplaySlotHistoryPage> {
                     vertical: 8,
                   ),
                   leading: CircleAvatar(
-                    backgroundColor: constants.primary.withAlpha(30),
+                    backgroundColor: constants.lightPrimary,
                     child: svgs.icon(
-                      'history',
+                      'history',constants.primary,
                       width: constants.fsBody,
-                      color: constants.primary,
+                     
                     ),
                   ),
                   title: Text(
                     item.user,
                     style: TextStyle(
                       fontWeight: constants.fwSemiBold,
-                      fontSize: constants.fsLabel,
+                      fontSize: constants.fsLabel,color: constants.darkGrey
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -156,16 +156,16 @@ class _DisplaySlotHistoryPageState extends State<DisplaySlotHistoryPage> {
                           child: Row(
                             children: [
                               svgs.icon(
-                                'calendar',
+                                'calendar', constants.darkGrey150,
                                 width: constants.fsLabel,
-                                color: constants.darkGrey.withAlpha(150),
+                               
                               ),
 
                               const SizedBox(width: 6),
                               Text(
                                 item.date,
                                 style: TextStyle(
-                                  color: constants.darkGrey.withAlpha(150),
+                                  color: constants.darkGrey150,
                                   fontSize: constants.fsLabel,
                                 ),
                               ),

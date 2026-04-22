@@ -5,6 +5,7 @@ import 'package:consultation_app/utils/app_svg.dart';
 import 'package:consultation_app/utils/constants.dart';
 import 'package:consultation_app/utils/helper_functions.dart';
 import 'package:consultation_app/utils/notify_user_utils.dart';
+import 'package:consultation_app/utils/theme_selector.dart';
 import 'package:consultation_app/utils/validator.dart';
 import 'package:get_it/get_it.dart';
 
@@ -25,9 +26,11 @@ void setupDependencies() {
   getIt.registerLazySingleton<HelperFunctions>(() => HelperFunctions());
   getIt.registerLazySingleton<Validator>(() => Validator());
   getIt.registerLazySingleton<SvgBuilder>(() => SvgBuilder());
+  getIt.registerLazySingleton<ThemeSelector>(() => ThemeSelector());
 }
 
 NavigationService get nav => getIt<NavigationService>();
+
 ApiService get api => getIt<ApiService>();
 UserPreferences get prefs => getIt<UserPreferences>();
 SecureUserStorage get securePrefs => getIt<SecureUserStorage>();
@@ -36,3 +39,4 @@ NotifyUserUtils get notify => getIt<NotifyUserUtils>();
 HelperFunctions get helpers => getIt<HelperFunctions>();
 Validator get validator => getIt<Validator>();
 SvgBuilder get svgs => getIt<SvgBuilder>();
+ThemeSelector get themeSelector => getIt<ThemeSelector>();

@@ -63,12 +63,7 @@ class _EmailInputPageState extends State<EmailInputPage> {
                     children: [
                       const SizedBox(height: 80),
                       Center(
-                        child: SvgPicture.asset(
-                          'assets/resources/logo-whole.svg',
-                          width: 232,
-                          color: constants.primary,
-                          fit: BoxFit.cover,
-                        ),
+                        child: svgs.icon("logo-whole",constants.primary,width: 232),
                       ),
                       const SizedBox(height: 56),
                       Container(

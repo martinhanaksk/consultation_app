@@ -30,9 +30,10 @@ class _SliderMenuState extends State<SliderMenu> {
         builder: (context, viewModel, child) {
           return SafeArea(
             child: Drawer(
+              backgroundColor: constants.background,
               width: 220,
               child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 50, horizontal: 20),
+                padding: EdgeInsets.symmetric(vertical: 32, horizontal: 20),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,14 +41,12 @@ class _SliderMenuState extends State<SliderMenu> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 20),
                         Center(
                           child: GestureDetector(
-                            child: SvgPicture.asset(
-                              'assets/resources/logo-whole.svg',
+                            child: svgs.icon(
+                              "logo-whole",
+                              constants.primary,
                               width: 120,
-                              color: constants.primary,
-                              fit: BoxFit.cover,
                             ),
                             onTap: () {
                               helpers.checkIfValidToken(viewModel.token);
@@ -70,7 +69,10 @@ class _SliderMenuState extends State<SliderMenu> {
                           child: Container(
                             child: Text(
                               "Home",
-                              style: TextStyle(fontSize: constants.fsBody),
+                              style: TextStyle(
+                                fontSize: constants.fsBody,
+                                color: constants.darkGrey,
+                              ),
                             ),
                           ),
                           onTap: () {
@@ -92,7 +94,10 @@ class _SliderMenuState extends State<SliderMenu> {
                           child: Container(
                             child: Text(
                               "Join Room",
-                              style: TextStyle(fontSize: constants.fsBody),
+                              style: TextStyle(
+                                fontSize: constants.fsBody,
+                                color: constants.darkGrey,
+                              ),
                             ),
                           ),
                           onTap: () {
@@ -111,6 +116,7 @@ class _SliderMenuState extends State<SliderMenu> {
                                         "Create Room",
                                         style: TextStyle(
                                           fontSize: constants.fsBody,
+                                          color: constants.darkGrey,
                                         ),
                                       ),
                                     ),
@@ -127,39 +133,56 @@ class _SliderMenuState extends State<SliderMenu> {
                         GestureDetector(
                           child: Text(
                             "Provide Feedback",
-                            style: TextStyle(fontSize: constants.fsBody),
+                            style: TextStyle(
+                              fontSize: constants.fsBody,
+                              color: constants.darkGrey,
+                            ),
                           ),
                           onTap: () {
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
+                                  backgroundColor: constants.background,
                                   title: Text(
                                     "Continue to provide feedback?",
                                     style: TextStyle(
                                       fontSize: constants.fsBody,
+                                      color: constants.darkGrey,
                                     ),
                                   ),
                                   actions: [
-                                    TextButton(
-                                      onPressed: () {
+                                    GestureDetector(
+                                      onTap: () {
                                         nav.pop();
                                       },
-                                      child: Text(
-                                        "Cancel",
-                                        style: TextStyle(
-                                          color: constants.primary,
+                                      child: Container(
+                                        padding: EdgeInsets.all(8),
+                                        decoration: constants.squircleShadow(
+                                          color: constants.background,
+                                        ),
+                                        child: Text(
+                                          "Cancel",
+                                          style: TextStyle(
+                                            color: constants.primary,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                    ElevatedButton(
-                                      onPressed: () async {
+                                    GestureDetector(
+                                      onTap: () async {
                                         viewModel.launchFeedbackWebsite();
                                       },
-                                      child: Text(
-                                        "Yes",
-                                        style: TextStyle(
-                                          color: constants.primary,
+                                      child: Container(
+                                        padding: EdgeInsets.all(8),
+                                        decoration: constants.squircleShadow(
+                                          color: constants.background,
+                                        ),
+                                        child: Text(
+                                          "Yes",
+                                          style: TextStyle(
+                                            color: constants.primary,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -176,7 +199,10 @@ class _SliderMenuState extends State<SliderMenu> {
                         GestureDetector(
                           child: Text(
                             "Settings",
-                            style: TextStyle(fontSize: constants.fsBody),
+                            style: TextStyle(
+                              fontSize: constants.fsBody,
+                              color: constants.darkGrey,
+                            ),
                           ),
 
                           onTap: () {

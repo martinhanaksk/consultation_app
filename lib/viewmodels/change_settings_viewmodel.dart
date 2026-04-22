@@ -31,6 +31,11 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setTheme(bool? val) async {
+    await themeSelector.setDarkMode(val ?? false);
+    notifyListeners();
+  }
+
   void setVisibility() async {
     final newVal = !_visibility;
     _visibility = newVal;

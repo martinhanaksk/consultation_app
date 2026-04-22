@@ -78,7 +78,7 @@ class _CreateRoomState extends State<CreateRoom> {
                           "Allowed email domains",
                           style: TextStyle(
                             fontSize: constants.fsLabel,
-                            color: constants.darkGrey.withAlpha(70),
+                            color: constants.darkGrey100,
                           ),
                         ),
                       ),
@@ -105,9 +105,9 @@ class _CreateRoomState extends State<CreateRoom> {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: svgs.icon(
-                                'add',
+                                'add',constants.primary,
                                 width: constants.fsBody,
-                                color: constants.primary,
+                                
                               ),
                             ),
                             onTap: () {

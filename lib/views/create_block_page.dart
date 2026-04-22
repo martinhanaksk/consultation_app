@@ -70,7 +70,7 @@ class _CreateBlockState extends State<CreateBlock> {
                       ),
                       color: constants.background,
                       elevation: 12,
-                      shadowColor: constants.darkGrey.withValues(alpha: 0.12),
+                      shadowColor: constants.darkGrey30,
                       child: Container(
                         padding: EdgeInsets.symmetric(
                           horizontal: 12,
@@ -242,12 +242,12 @@ class _CreateBlockState extends State<CreateBlock> {
                                 Text(
                                   'Selected: ' +
                                       viewModel.getSelectedDatesFormatted(),
-                                  style: TextStyle(fontSize: constants.fsLabel),
+                                  style: TextStyle(fontSize: constants.fsLabel,color: constants.darkGrey),
                                 ),
                                 svgs.icon(
-                                  'calendar',
+                                  'calendar',constants.darkGrey,
                                   width: constants.fsTitle,
-                                  color: constants.darkGrey,
+                                  
                                 ),
                               ],
                             ),
@@ -340,13 +340,13 @@ class _CreateBlockState extends State<CreateBlock> {
                                             : "End Time ${viewModel.getPrintableTimeFormat(TimePickerAction.endTime)}",
 
                                         style: TextStyle(
-                                          fontSize: constants.fsBody,
+                                          fontSize: constants.fsBody,color: constants.darkGrey
                                         ),
                                       ),
                                       svgs.icon(
-                                        'clock',
+                                        'clock',constants.darkGrey,
                                         width: constants.fsTitle,
-                                        color: constants.darkGrey,
+                                       
                                       ),
                                     ],
                                   ),
@@ -541,7 +541,7 @@ class _DurationPickerState extends State<_DurationPicker> {
           (i) => Center(
             child: Text(
               '${i * 5} min',
-              style: TextStyle(fontSize: constants.fsBody),
+              style: TextStyle(fontSize: constants.fsBody,color: constants.darkGrey),
             ),
           ),
         ),

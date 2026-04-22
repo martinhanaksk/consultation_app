@@ -107,9 +107,7 @@ class _DisplayUsersInRoomPageState extends State<DisplayUsersInRoomPage> {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.primary.withValues(alpha: 0.1),
+                  color: constants.lightPrimary,
                   borderRadius: BorderRadius.circular(50),
                 ),
                 child: Text(
@@ -144,7 +142,7 @@ class _DisplayUsersInRoomPageState extends State<DisplayUsersInRoomPage> {
                   child: Row(
                     children: [
                       CircleAvatar(
-                        backgroundColor: constants.primary.withAlpha(32),
+                        backgroundColor: constants.lightPrimary,
                         foregroundColor: Theme.of(context).colorScheme.primary,
                         child: Text(
                           email.isNotEmpty ? email[0].toUpperCase() : '?',
@@ -159,7 +157,7 @@ class _DisplayUsersInRoomPageState extends State<DisplayUsersInRoomPage> {
                         email,
                         style: TextStyle(
                           fontSize: constants.fsLabel,
-                          fontWeight: constants.fwSemiBold,
+                          fontWeight: constants.fwSemiBold,color: constants.darkGrey
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),

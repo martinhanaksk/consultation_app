@@ -99,7 +99,7 @@ class _EditRoomPageState extends State<EditRoomPage> {
                                 "Allowed email domains",
                                 style: TextStyle(
                                   fontSize: constants.fsLabel,
-                                  color: constants.darkGrey.withAlpha(70),
+                                  color: constants.darkGrey150,
                                 ),
                               ),
                             ),
@@ -126,9 +126,9 @@ class _EditRoomPageState extends State<EditRoomPage> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: svgs.icon(
-                                      'add',
+                                      'add',constants.primary,
                                       width: constants.fsBody,
-                                      color: constants.primary,
+                                      
                                     ),
                                   ),
                                   onTap: () {
@@ -234,7 +234,7 @@ class _EditRoomPageState extends State<EditRoomPage> {
           border: const OutlineInputBorder(borderSide: BorderSide.none),
           hintText: hintText,
           hintStyle: TextStyle(
-            color: Colors.grey.shade400,
+            color: constants.grey,
             fontSize: constants.fsBody,
           ),
           contentPadding: const EdgeInsets.symmetric(

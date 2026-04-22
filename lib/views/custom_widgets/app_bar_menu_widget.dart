@@ -36,9 +36,8 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
                   child: IconButton(
                     padding: EdgeInsets.zero,
                     icon: svgs.icon(
-                      'hamburger',
-                      width: constants.fsTitle,
-                      color: constants.darkGrey,
+                      'hamburger',constants.darkGrey,
+                      width: constants.fsTitle
                     ),
                     onPressed: () {
                       Scaffold.of(context).openDrawer();
@@ -55,9 +54,9 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
                   child: IconButton(
                     padding: EdgeInsets.zero,
                     icon: svgs.icon(
-                      'back',
+                      'back',constants.darkGrey,
                       width: constants.fsTitle,
-                      color: constants.darkGrey,
+                      
                     ),
                     onPressed: () {
                       nav.pop();
@@ -81,9 +80,9 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
               child: IconButton(
                 padding: EdgeInsets.zero,
                 icon: svgs.icon(
-                  'person',
+                  'person',constants.darkGrey,
                   width: constants.fsBody,
-                  color: constants.darkGrey,
+                  
                 ),
                 onPressed: () {
                   nav.toChangeSettings();

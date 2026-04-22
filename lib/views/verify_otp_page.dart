@@ -70,7 +70,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                         style: TextStyle(
                           fontSize: constants.fsLabel,
                           fontWeight: constants.fwRegular,
-                          color: constants.grey,
+                          color: constants.darkGrey150,
                         ),
                       ),
                     ),

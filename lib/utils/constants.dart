@@ -4,11 +4,15 @@ import 'package:figma_squircle/figma_squircle.dart';
 class Constants {
   Color background = Color(0xfff9f9f9);
   Color grey = Color(0xFFD0D0D0);
+  Color darkGrey30 = Color(0xff191c1f).withAlpha(30);
+  Color darkGrey100 = Color(0xff191c1f).withAlpha(100);
+  Color darkGrey150 = Color(0xff191c1f).withAlpha(150);
+  Color darkGrey200 = Color(0xff191c1f).withAlpha(200);
   Color darkGrey = Color(0xff191c1f);
   Color textUnavailableGrey = Color(0xFFfdc6c1);
-  Color onyxBlack = Color(0xFF0a0a0a);
   Color green = Color(0xff15803d);
   Color red = Color(0xffB71C1C);
+  Color red30 = Color(0xffB71C1C).withAlpha(30);
   Color primary = Color(0xFF1A56BE);
   Color lightPrimary = Color(0xff8dc6ff);
   Color transparent = Colors.transparent;
@@ -28,9 +32,9 @@ class Constants {
     double cornerSmoothing = 0.6,
   }) {
     return ShapeDecoration(
-      shadows: const [
+      shadows: [
         BoxShadow(
-          color: Color(0xFFD9D9D9),
+          color: background,
           offset: Offset(0, 0),
           blurRadius: 9,
           spreadRadius: 0,

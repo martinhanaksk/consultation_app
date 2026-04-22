@@ -148,8 +148,8 @@ class SlotWidget extends StatelessWidget {
                           if (slot.isOnline == 1)
                             svgs.icon(
                               'screen',
+                              constants.darkGrey,
                               width: constants.fsTitle,
-                              color: constants.darkGrey,
                             ),
                           SizedBox(width: 8),
                           isTakingSlot
@@ -157,9 +157,7 @@ class SlotWidget extends StatelessWidget {
                                   color: constants.primary,
                                   size: constants.fsLabel,
                                 )
-                              : SvgPicture.asset(
-                                  'assets/resources/take_slot.svg',
-                                ),
+                              : svgs.icon("add", constants.darkGrey),
                         ],
                       ),
                     ],
@@ -259,8 +257,8 @@ class SlotWidget extends StatelessWidget {
                               if (slot.isOnline == 1)
                                 svgs.icon(
                                   'screen',
+                                  constants.background,
                                   width: constants.fsTitle,
-                                  color: constants.background,
                                 ),
 
                               const SizedBox(width: 8),
@@ -273,14 +271,7 @@ class SlotWidget extends StatelessWidget {
                                         color: constants.background,
                                         size: constants.fsBody,
                                       )
-                                    : SvgPicture.asset(
-                                        'assets/resources/cross.svg',
-                                        colorFilter: ColorFilter.mode(
-                                          constants.background,
-
-                                          BlendMode.srcIn,
-                                        ),
-                                      ),
+                                    : svgs.icon("cross", constants.background),
                               ),
                             ],
                           ),
@@ -372,12 +363,9 @@ class SlotWidget extends StatelessWidget {
                               ),
                               const SizedBox(width: 8),
                               if (slot.isOnline == 1)
-                                SvgPicture.asset(
-                                  'assets/resources/screen.svg',
-                                  colorFilter: ColorFilter.mode(
-                                    constants.textUnavailableGrey,
-                                    BlendMode.srcIn,
-                                  ),
+                                svgs.icon(
+                                  "screen",
+                                  constants.textUnavailableGrey,
                                 ),
                             ],
                           ),
@@ -502,9 +490,9 @@ class _ConsultationTypeToggle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const Text(
+         Text(
           "Change Consultation type",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: constants.fsLabel, fontWeight: constants.fwSemiBold),
         ),
         const SizedBox(height: 20),
 
@@ -518,7 +506,7 @@ class _ConsultationTypeToggle extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: isOnlineSelected
                       ? constants.background
-                      : constants.darkGrey.withAlpha(200),
+                      : constants.darkGrey200,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -528,21 +516,19 @@ class _ConsultationTypeToggle extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    SvgPicture.asset(
-                      'assets/resources/location.svg',
-                      colorFilter: ColorFilter.mode(
-                        isOnlineSelected
-                            ? constants.grey
-                            : constants.background,
-                        BlendMode.srcIn,
-                      ),
+                    svgs.icon(
+                      "location",
+                      isOnlineSelected
+                          ? constants.darkGrey150
+                          : constants.background,
                     ),
+
                     const SizedBox(height: 6),
                     Text(
                       "In-Person",
                       style: TextStyle(
                         color: isOnlineSelected
-                            ? constants.grey
+                            ? constants.darkGrey150
                             : constants.background,
                       ),
                     ),
@@ -558,7 +544,7 @@ class _ConsultationTypeToggle extends StatelessWidget {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: isOnlineSelected
-                      ? constants.darkGrey.withAlpha(200)
+                      ? constants.darkGrey200
                       : constants.background,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
@@ -569,14 +555,11 @@ class _ConsultationTypeToggle extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    SvgPicture.asset(
-                      'assets/resources/screen.svg',
-                      colorFilter: ColorFilter.mode(
-                        isOnlineSelected
-                            ? constants.background
-                            : constants.grey,
-                        BlendMode.srcIn,
-                      ),
+                    svgs.icon(
+                      "screen",
+                      isOnlineSelected
+                          ? constants.background
+                          : constants.darkGrey150,
                     ),
                     const SizedBox(height: 6),
                     Text(
@@ -584,7 +567,7 @@ class _ConsultationTypeToggle extends StatelessWidget {
                       style: TextStyle(
                         color: isOnlineSelected
                             ? constants.background
-                            : constants.grey,
+                            : constants.darkGrey150,
                       ),
                     ),
                   ],
@@ -641,9 +624,13 @@ class __NoteBottomSheetState extends State<_NoteBottomSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               "Add a visit purpose",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                fontSize: constants.fsLabel,
+                fontWeight: constants.fwSemiBold,
+                color: constants.darkGrey,
+              ),
             ),
             const SizedBox(height: 16),
             _InfoCard(
@@ -753,11 +740,7 @@ class _InfoRow extends StatelessWidget {
       children: [
         Row(
           children: [
-            svgs.icon(
-              name,
-              width: constants.fsLabel,
-              color: constants.darkGrey,
-            ),
+            svgs.icon(name, constants.darkGrey, width: constants.fsLabel),
 
             const SizedBox(width: 12),
             Text(

@@ -22,7 +22,13 @@ class _DisplayListOfEmailsPageState extends State<DisplayListOfEmailsPage> {
           builder: (context, _) {
             return Column(
               children: [
-                Text('Allowed email domains'),
+                Text(
+                  "Allowed email domains",
+                  style: TextStyle(
+                    fontSize: constants.fsLabel,
+                    color: constants.darkGrey150,
+                  ),
+                ),
                 Expanded(
                   child: ListView.builder(
                     itemCount: widget.viewModel.acceptedEmails.length,
@@ -33,9 +39,9 @@ class _DisplayListOfEmailsPageState extends State<DisplayListOfEmailsPage> {
                           Text(widget.viewModel.acceptedEmails[index]),
                           IconButton(
                             icon: svgs.icon(
-                              'trash',
+                              'trash',constants.red,
                               width: constants.fsTitle,
-                              color: constants.red,
+                              
                             ),
                             onPressed: () =>
                                 widget.viewModel.removeFromAcceptedEmails(

@@ -3,10 +3,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class SvgBuilder {
   Widget icon(
-    String name, {
+    String name,
+    Color color, {
     double? width,
     double? height,
-    Color? color,
     BoxFit fit = BoxFit.contain,
   }) {
     return SizedBox(
@@ -17,9 +17,7 @@ class SvgBuilder {
         width: width,
         height: height ?? width,
         fit: fit,
-        colorFilter: color != null
-            ? ColorFilter.mode(color, BlendMode.srcIn)
-            : null,
+        colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
       ),
     );
   }

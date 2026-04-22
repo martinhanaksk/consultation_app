@@ -16,11 +16,8 @@ class UserPreferences {
 
   Future<dynamic> getItem(String key) async {
     final prefs = await SharedPreferences.getInstance();
-    if (!prefs.containsKey(key)) return "";
 
-    dynamic value = prefs.get(key);
-
-    return value ?? '';
+    return prefs.get(key);
   }
 
   Future<bool> containsItem(String key) async {

@@ -146,8 +146,8 @@ class _AddSlotOnOutskirts extends StatelessWidget {
                         )
                       : svgs.icon(
                           'plus',
+                          constants.darkGrey,
                           width: constants.fsHeadline,
-                          color: constants.darkGrey,
                         ),
                 ),
               );
@@ -177,7 +177,7 @@ class _AddBlockButton extends StatelessWidget {
               height: 40,
               padding: const EdgeInsets.all(8),
               decoration: constants.squircleShadow(color: constants.grey),
-              child: svgs.icon('plus', color: constants.darkGrey),
+              child: svgs.icon('plus', constants.darkGrey),
             ),
           );
   }
@@ -203,9 +203,9 @@ class _SettingsDropdownButton extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         color: constants.background,
         elevation: 12,
-        shadowColor: constants.darkGrey.withValues(alpha: 0.12),
+        shadowColor: constants.darkGrey30,
         padding: EdgeInsets.all(8),
-        child: svgs.icon('more', color: constants.darkGrey),
+        child: svgs.icon('more', constants.darkGrey),
 
         itemBuilder: (context) => [
           PopupMenuItem<dynamic>(
@@ -248,10 +248,7 @@ class _SettingsDropdownButton extends StatelessWidget {
               case "edit_room":
                 int? roomId = viewModel.roomIdNumber;
                 if (roomId != null) {
-                  await nav.toEditRoom(
-                    token: token,
-                    roomId: roomId,
-                  );
+                  await nav.toEditRoom(token: token, roomId: roomId);
                 }
                 break;
               case "delete_room":
@@ -372,11 +369,7 @@ class _EditBlockButton extends StatelessWidget {
         blockId: blockId.toString(),
         onSuccess: () => viewModel.loadRoom(token),
       ),
-      child: SvgPicture.asset(
-        'assets/resources/edit.svg',
-        height: 24,
-        colorFilter: ColorFilter.mode(constants.darkGrey, BlendMode.srcIn),
-      ),
+      child: svgs.icon("edit", constants.darkGrey, width: constants.fsTitle),
     );
   }
 }
