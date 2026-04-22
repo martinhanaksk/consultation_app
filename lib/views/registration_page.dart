@@ -70,7 +70,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    TextField(
+                    TextField(style: TextStyle(color: constants.darkGrey),
                       controller: emailController,
                       scrollPadding: EdgeInsets.only(bottom: 1000),
                       decoration: InputDecoration(
@@ -93,7 +93,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    TextField(
+                    TextField(style: TextStyle(color: constants.darkGrey),
                       controller: nameController,
                       scrollPadding: EdgeInsets.only(bottom: 1000),
                       decoration: InputDecoration(
@@ -116,7 +116,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    TextField(
+                    TextField(style: TextStyle(color: constants.darkGrey),
                       controller: surnameController,
                       scrollPadding: EdgeInsets.only(bottom: 1000),
                       decoration: InputDecoration(
@@ -139,7 +139,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    TextField(
+                    TextField(style: TextStyle(color: constants.darkGrey),
                       controller: visitReasonController,
                       scrollPadding: EdgeInsets.only(bottom: 1000),
                       decoration: InputDecoration(

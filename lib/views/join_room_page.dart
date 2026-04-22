@@ -130,7 +130,7 @@ class _JoinRoomState extends State<JoinRoom> {
                                         FocusNode focusNode,
                                         VoidCallback onFieldSubmitted,
                                       ) {
-                                        return TextField(
+                                        return TextField(style: TextStyle(color: constants.darkGrey),
                                           scrollPadding: EdgeInsets.only(
                                             bottom:
                                                 MediaQuery.of(

@@ -104,7 +104,7 @@ class _EditRoomPageState extends State<EditRoomPage> {
                               ),
                             ),
                             const SizedBox(height: 4),
-                            TextField(
+                            TextField(style: TextStyle(color: constants.darkGrey),
                               controller: viewModel.acceptedEmailController,
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(
@@ -227,7 +227,7 @@ class _EditRoomPageState extends State<EditRoomPage> {
     return Container(
       clipBehavior: Clip.none,
       decoration: constants.squircleShadow(color: constants.background),
-      child: TextField(
+      child: TextField(style: TextStyle(color: constants.darkGrey),
         controller: controller,
         maxLines: maxLines,
         decoration: InputDecoration(

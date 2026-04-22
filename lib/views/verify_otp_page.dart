@@ -80,7 +80,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                       decoration: constants.squircleShadow(
                         color: constants.background,
                       ),
-                      child: TextField(
+                      child: TextField(style: TextStyle(color: constants.darkGrey),
                         scrollPadding: EdgeInsets.only(bottom: 1000),
                         controller: otpcontroller,
                         keyboardType: TextInputType.number,

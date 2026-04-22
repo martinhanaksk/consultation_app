@@ -113,6 +113,7 @@ class _AddSlotState extends State<AddSlot> {
                             color: constants.background,
                           ),
                           child: TextField(
+                            style: TextStyle(color: constants.darkGrey),
                             scrollPadding: const EdgeInsets.only(bottom: 1000),
                             controller: viewModel.noteController,
                             decoration: const InputDecoration(
@@ -243,7 +244,7 @@ class _StartTimePickerState extends State<_StartTimePicker> {
           textTheme: CupertinoTextThemeData(
             dateTimePickerTextStyle: TextStyle(
               color: constants.darkGrey,
-              fontSize: constants.fsTitle, 
+              fontSize: constants.fsTitle,
             ),
           ),
         ),
@@ -305,7 +306,10 @@ class _DurationPickerState extends State<_DurationPicker> {
           (i) => Center(
             child: Text(
               '${i * 5} min',
-              style: TextStyle(fontSize: constants.fsBody,color: constants.darkGrey),
+              style: TextStyle(
+                fontSize: constants.fsBody,
+                color: constants.darkGrey,
+              ),
             ),
           ),
         ),

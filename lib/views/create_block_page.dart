@@ -350,7 +350,7 @@ class _CreateBlockState extends State<CreateBlock> {
                                 decoration: constants.squircleShadow(
                                   color: constants.background,
                                 ),
-                                child: TextField(
+                                child: TextField(style: TextStyle(color: constants.darkGrey),
                                   scrollPadding: EdgeInsets.only(bottom: 1000),
                                   controller: viewModel.slotNumberController,
                                   keyboardType: TextInputType.number,
@@ -410,7 +410,7 @@ class _CreateBlockState extends State<CreateBlock> {
                           decoration: constants.squircleShadow(
                             color: constants.background,
                           ),
-                          child: TextField(
+                          child: TextField(style: TextStyle(color: constants.darkGrey),
                             scrollPadding: EdgeInsets.only(bottom: 1000),
                             controller: viewModel.noteController,
                             decoration: InputDecoration(

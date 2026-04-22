@@ -26,14 +26,7 @@ class MyApp extends StatelessWidget {
           child: MaterialApp(
             title: 'Consultations',
             navigatorKey: nav.navigatorKey,
-            theme: ThemeData(
-              primaryColor: constants.primary,
-              scaffoldBackgroundColor: constants.background,
-
-              textTheme: TextTheme(
-                bodyLarge: TextStyle(color: constants.darkGrey),
-              ),
-            ),
+            theme: ThemeData(primaryColor: constants.primary),
             initialRoute: AppRouter.login,
             debugShowCheckedModeBanner: false,
             onGenerateRoute: AppRouter.generateRoute,

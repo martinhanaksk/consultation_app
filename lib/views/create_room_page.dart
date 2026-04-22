@@ -83,7 +83,7 @@ class _CreateRoomState extends State<CreateRoom> {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      TextField(
+                      TextField(  style: TextStyle(color: constants.darkGrey),
                         controller: acceptedEmailController,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
@@ -221,7 +221,7 @@ class _CreateRoomState extends State<CreateRoom> {
     return Container(
       clipBehavior: Clip.none,
       decoration: constants.squircleShadow(color: constants.background),
-      child: TextField(
+      child: TextField(style: TextStyle(color: constants.darkGrey),
         controller: controller,
         maxLines: maxLines,
         decoration: InputDecoration(

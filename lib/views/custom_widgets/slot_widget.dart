@@ -778,7 +778,7 @@ class _NoteTextField extends StatelessWidget {
           cornerSmoothing: 0.6,
         ),
       ),
-      child: TextField(
+      child: TextField(style: TextStyle(color: constants.darkGrey),
         controller: controller,
         autofocus: true,
         maxLines: 1,

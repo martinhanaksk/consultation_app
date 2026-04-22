@@ -75,7 +75,7 @@ class _EmailInputPageState extends State<EmailInputPage> {
                             cornerSmoothing: 0.6,
                           ),
                         ),
-                        child: TextField(
+                        child: TextField(  style: TextStyle(color: constants.darkGrey),
                           scrollPadding: EdgeInsets.only(bottom: 1000),
                           onChanged: viewModel.updateEmail,
                           decoration: InputDecoration(
