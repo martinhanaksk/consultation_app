@@ -135,6 +135,50 @@ class _CreateBlockState extends State<CreateBlock> {
                       fontSize: constants.fsBody,
                     ),
                   ),
+                  monthCellStyle: DateRangePickerMonthCellStyle(
+                    textStyle: TextStyle(
+                      color: constants.darkGrey,
+                      fontSize: constants.fsLabel,
+                    ),
+                    todayTextStyle: TextStyle(
+                      color: constants.primary,
+                      fontWeight: constants.fwSemiBold,
+                    ),
+                    trailingDatesTextStyle: TextStyle(
+                      color: constants.darkGrey.withValues(alpha: 0.3),
+                    ),
+                    leadingDatesTextStyle: TextStyle(
+                      color: constants.darkGrey30,
+                    ),
+                  ),
+                  yearCellStyle: DateRangePickerYearCellStyle(
+                    textStyle: TextStyle(
+                      color:
+                          constants.darkGrey,
+                      fontSize: constants.fsLabel,
+                    ),
+                    todayTextStyle: TextStyle(
+                      color:
+                          constants.primary,
+                      fontWeight: constants.fwSemiBold,
+                    ),
+                    leadingDatesTextStyle: TextStyle(
+                      color: constants.darkGrey30,
+                    ),
+                    disabledDatesTextStyle: TextStyle(
+                      color: constants.darkGrey30,
+                    ),
+                  ),
+                  selectionTextStyle: TextStyle(
+                    color: constants.background,
+                    fontWeight: constants.fwRegular,
+                    fontSize: constants.fsLabel,
+                  ),
+                  rangeTextStyle: TextStyle(
+                    color: constants.background,
+                    fontWeight: constants.fwRegular,
+                    fontSize: constants.fsLabel,
+                  ),
                   backgroundColor: constants.background,
                   selectionColor: constants.primary,
                   rangeSelectionColor: constants.lightPrimary,
@@ -242,12 +286,15 @@ class _CreateBlockState extends State<CreateBlock> {
                                 Text(
                                   'Selected: ' +
                                       viewModel.getSelectedDatesFormatted(),
-                                  style: TextStyle(fontSize: constants.fsLabel,color: constants.darkGrey),
+                                  style: TextStyle(
+                                    fontSize: constants.fsLabel,
+                                    color: constants.darkGrey,
+                                  ),
                                 ),
                                 svgs.icon(
-                                  'calendar',constants.darkGrey,
+                                  'calendar',
+                                  constants.darkGrey,
                                   width: constants.fsTitle,
-                                  
                                 ),
                               ],
                             ),
@@ -340,13 +387,14 @@ class _CreateBlockState extends State<CreateBlock> {
                                             : "End Time ${viewModel.getPrintableTimeFormat(TimePickerAction.endTime)}",
 
                                         style: TextStyle(
-                                          fontSize: constants.fsBody,color: constants.darkGrey
+                                          fontSize: constants.fsBody,
+                                          color: constants.darkGrey,
                                         ),
                                       ),
                                       svgs.icon(
-                                        'clock',constants.darkGrey,
+                                        'clock',
+                                        constants.darkGrey,
                                         width: constants.fsTitle,
-                                       
                                       ),
                                     ],
                                   ),
@@ -485,18 +533,28 @@ class _StartTimePickerState extends State<_StartTimePicker> {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 150,
-      child: CupertinoDatePicker(
-        backgroundColor: constants.background,
-        mode: CupertinoDatePickerMode.time,
-        use24hFormat: true,
-        initialDateTime: _current,
-        minuteInterval: 5,
-        onDateTimeChanged: (dt) {
-          _current = dt;
-          widget.viewModel.setStartTime(
-            Duration(hours: dt.hour, minutes: dt.minute),
-          );
-        },
+      child: CupertinoTheme(
+        data: CupertinoThemeData(
+          textTheme: CupertinoTextThemeData(
+            dateTimePickerTextStyle: TextStyle(
+              color: constants.darkGrey,
+              fontSize: constants.fsTitle,
+            ),
+          ),
+        ),
+        child: CupertinoDatePicker(
+          backgroundColor: constants.background,
+          mode: CupertinoDatePickerMode.time,
+          use24hFormat: true,
+          initialDateTime: _current,
+          minuteInterval: 5,
+          onDateTimeChanged: (dt) {
+            _current = dt;
+            widget.viewModel.setStartTime(
+              Duration(hours: dt.hour, minutes: dt.minute),
+            );
+          },
+        ),
       ),
     );
   }
@@ -541,7 +599,10 @@ class _DurationPickerState extends State<_DurationPicker> {
           (i) => Center(
             child: Text(
               '${i * 5} min',
-              style: TextStyle(fontSize: constants.fsBody,color: constants.darkGrey),
+              style: TextStyle(
+                fontSize: constants.fsBody,
+                color: constants.darkGrey,
+              ),
             ),
           ),
         ),

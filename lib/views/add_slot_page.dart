@@ -238,18 +238,28 @@ class _StartTimePickerState extends State<_StartTimePicker> {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 150,
-      child: CupertinoDatePicker(
-        backgroundColor: constants.background,
-        mode: CupertinoDatePickerMode.time,
-        use24hFormat: true,
-        initialDateTime: _current,
-        minuteInterval: 5,
-        onDateTimeChanged: (dt) {
-          _current = dt;
-          widget.viewModel.setStartTime(
-            Duration(hours: dt.hour, minutes: dt.minute),
-          );
-        },
+      child: CupertinoTheme(
+        data: CupertinoThemeData(
+          textTheme: CupertinoTextThemeData(
+            dateTimePickerTextStyle: TextStyle(
+              color: constants.darkGrey,
+              fontSize: constants.fsTitle, 
+            ),
+          ),
+        ),
+        child: CupertinoDatePicker(
+          backgroundColor: constants.background,
+          mode: CupertinoDatePickerMode.time,
+          use24hFormat: true,
+          initialDateTime: _current,
+          minuteInterval: 5,
+          onDateTimeChanged: (dt) {
+            _current = dt;
+            widget.viewModel.setStartTime(
+              Duration(hours: dt.hour, minutes: dt.minute),
+            );
+          },
+        ),
       ),
     );
   }
@@ -295,7 +305,7 @@ class _DurationPickerState extends State<_DurationPicker> {
           (i) => Center(
             child: Text(
               '${i * 5} min',
-              style: TextStyle(fontSize: constants.fsBody),
+              style: TextStyle(fontSize: constants.fsBody,color: constants.darkGrey),
             ),
           ),
         ),

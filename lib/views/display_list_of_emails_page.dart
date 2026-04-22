@@ -36,12 +36,15 @@ class _DisplayListOfEmailsPageState extends State<DisplayListOfEmailsPage> {
                       title: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(widget.viewModel.acceptedEmails[index]),
+                          Text(
+                            widget.viewModel.acceptedEmails[index],
+                            style: TextStyle(color: constants.darkGrey),
+                          ),
                           IconButton(
                             icon: svgs.icon(
-                              'trash',constants.red,
+                              'trash',
+                              constants.red,
                               width: constants.fsTitle,
-                              
                             ),
                             onPressed: () =>
                                 widget.viewModel.removeFromAcceptedEmails(

@@ -53,10 +53,10 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
     _hasBeenInitialized = true;
     _email = await prefs.getItem("email");
     _token = await prefs.getItem("token");
-
+      _receiveEmails = (await prefs.getItem('receiveEmails')) ?? true;
     await loadVisibility();
     UserModel um = await api.getUserByEmail(token, email);
-    setReceiveEmail((await prefs.getItem('receiveEmails')) ?? true);
+
     _name = um.name;
     _surname = um.surname;
     _role = um.role;

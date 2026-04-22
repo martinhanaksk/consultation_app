@@ -44,7 +44,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                         children: [
                           // Header
                           Text(
-                            "Account Settings",
+                            "Settings",
                             style: TextStyle(
                               fontSize: constants.fsHeadline,
                               fontWeight: constants.fwSemiBold,
@@ -53,7 +53,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            "Manage your profile and preferences",
+                            "View your profile and manage preferences",
                             style: TextStyle(
                               fontSize: constants.fsLabel,
                               color: constants.darkGrey150,
