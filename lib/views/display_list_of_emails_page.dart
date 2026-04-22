@@ -1,10 +1,9 @@
 import 'package:consultation_app/setup.dart';
-import 'package:consultation_app/viewmodels/create_room_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:flutter/material.dart';
 
 class DisplayListOfEmailsPage extends StatefulWidget {
-  final CreateRoomViewmodel viewModel;
+  final dynamic viewModel;
   const DisplayListOfEmailsPage({super.key, required this.viewModel});
   @override
   State<DisplayListOfEmailsPage> createState() =>

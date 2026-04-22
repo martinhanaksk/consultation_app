@@ -148,7 +148,7 @@ void toDisplaySlotHistory({
     );
   }
 
-  void toDisplayListOfEmails({required CreateRoomViewmodel viewModel}) {
+  void toDisplayListOfEmails({required dynamic viewModel}) {
     _navigator()?.pushNamed(
       AppRouter.displayListOfEmails,
       arguments: <String, dynamic>{'viewModel': viewModel},
@@ -167,7 +167,7 @@ void toDisplaySlotHistory({
     _navigator()?.pushNamed(AppRouter.createRoom);
   }
 
-  void pop() {
-    _navigator()?.pop();
+  void pop<T extends Object?>([T? result]) {
+    _navigator()?.pop(result);
   }
 }

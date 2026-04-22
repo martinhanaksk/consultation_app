@@ -51,79 +51,35 @@ class _CreateRoomState extends State<CreateRoom> {
                         ),
                       ),
                       const SizedBox(height: 16),
-
-                      TextField(
+                      _inputBox(
                         controller: titleController,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: constants.grey),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: constants.grey),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: constants.primary,
-                              width: 1.5,
-                            ),
-                          ),
-                          hintText: 'Title',
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: roomNameController,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: constants.grey),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: constants.grey),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: constants.primary,
-                              width: 1.5,
-                            ),
-                          ),
-                          hintText: 'Room name',
-                        ),
+                        hintText: 'Title',
+                        maxLines: 1,
                       ),
 
                       const SizedBox(height: 16),
-                      TextField(
-                        controller: descriptionController,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: constants.grey),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: constants.grey),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: constants.primary,
-                              width: 1.5,
-                            ),
-                          ),
-                          hintText: 'Description',
-                        ),
+                      _inputBox(
+                        controller: roomNameController,
+                        hintText: 'Room name',
+                        maxLines: 1,
                       ),
+
                       const SizedBox(height: 16),
-                      Text(
-                        "Allowed email domains",
-                        style: TextStyle(
-                          fontSize: constants.fsLabel,
-                          color: constants.darkGrey.withAlpha(70),
+                      _inputBox(
+                        controller: descriptionController,
+                        hintText: 'Description',
+                        maxLines: 3,
+                      ),
+
+                      const SizedBox(height: 16),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8),
+                        child: Text(
+                          "Allowed email domains",
+                          style: TextStyle(
+                            fontSize: constants.fsLabel,
+                            color: constants.darkGrey.withAlpha(70),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -253,6 +209,36 @@ class _CreateRoomState extends State<CreateRoom> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _inputBox({
+    required TextEditingController controller,
+    required String hintText,
+    int maxLines = 1,
+  }) {
+    return Container(
+      clipBehavior: Clip.none,
+      decoration: constants.squircleShadow(color: constants.background),
+      child: TextField(
+        controller: controller,
+        maxLines: maxLines,
+        decoration: InputDecoration(
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: constants.grey),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: constants.grey),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: constants.primary, width: 1.5),
+          ),
+          hintText: hintText,
+        ),
       ),
     );
   }

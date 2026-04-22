@@ -242,13 +242,13 @@ class _SettingsDropdownButton extends StatelessWidget {
             ),
           ),
         ],
-        onSelected: (mode) {
+        onSelected: (mode) async {
           if (mode != null) {
             switch (mode) {
               case "edit_room":
                 int? roomId = viewModel.roomIdNumber;
                 if (roomId != null) {
-                  nav.toEditRoom(
+                  await nav.toEditRoom(
                     token: token,
                     roomId: roomId,
                   );

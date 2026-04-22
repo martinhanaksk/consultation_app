@@ -118,7 +118,7 @@ class AppRouter {
         );
       case displayListOfEmails:
         final args = settings.arguments as Map<String, dynamic>;
-        final viewModel = args['viewModel'] as CreateRoomViewmodel;
+        final viewModel = args['viewModel'] as dynamic;
         return MaterialPageRoute(
           builder: (_) => DisplayListOfEmailsPage(viewModel: viewModel),
         );
