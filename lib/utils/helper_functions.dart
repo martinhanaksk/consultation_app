@@ -114,10 +114,13 @@ class HelperFunctions {
   }
 
   void checkIfInSharedPreferences() async {
-    String token = await securePrefs.getToken();
-    String email = await prefs.getItem('email');
-    String role = await prefs.getItem('role');
-    if (role.isNotEmpty && token.isNotEmpty && email.isNotEmpty) {
+   String? token = await securePrefs.getToken();
+    String? email = await prefs.getItem('email');
+    String? role = await prefs.getItem('role');
+     if (role != null && role.isNotEmpty && 
+        token != null && token.isNotEmpty && 
+        email != null && email.isNotEmpty) {
+      
       bool isExpired = JwtDecoder.isExpired(token);
 
       if (!isExpired) {
@@ -127,11 +130,11 @@ class HelperFunctions {
           nav.toBaseConsultations(token: token, email: email);
         }
       } else {
-        
-      await securePrefs.removeToken();
+        await securePrefs.removeToken();
         await prefs.removeItem('email');
         await prefs.removeItem('role');
       }
     }
+  
   }
 }

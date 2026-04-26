@@ -258,13 +258,11 @@ class _RoomSelectorButton extends StatelessWidget {
                   ),
                   const SizedBox(width: 6),
                   svgs.icon(
-                    'arrow_down',(viewModel.noRoomsFound ||
-                            viewModel.selectedRoomId == null)
+                    'arrow_down',
+                    (viewModel.noRoomsFound || viewModel.selectedRoomId == null)
                         ? constants.darkGrey30
                         : constants.darkGrey,
                     width: constants.fsBody,
-                    
-                        
                   ),
                 ],
               ),
@@ -406,7 +404,7 @@ class _ConsultationBlockCard extends StatelessWidget {
             clipBehavior: Clip.hardEdge,
             width: MediaQuery.of(context).size.width * 0.9,
             decoration: constants.squircleShadow(
-              border: Border.all(color: constants.grey, width: 0.2),
+              hasBorder: true,
               color: constants.background,
             ),
             child: Column(
@@ -461,8 +459,14 @@ class _ConsultationBlockCard extends StatelessWidget {
                                       viewModel.subscribedBlocks.contains(
                                         blockEntry.key,
                                       )
-                                      ? svgs.icon("notifications_bell_full",constants.darkGrey)
-                                      : svgs.icon("notifications_bell_empty",constants.darkGrey)
+                                      ? svgs.icon(
+                                          "notifications_bell_full",
+                                          constants.darkGrey,
+                                        )
+                                      : svgs.icon(
+                                          "notifications_bell_empty",
+                                          constants.darkGrey,
+                                        ),
                                 ),
                               ),
                             )
@@ -488,6 +492,7 @@ class _ConsultationBlockCard extends StatelessWidget {
                         return RepaintBoundary(
                           child: SlotWidget(
                             userEmail: email,
+                            visitReason: vm.visitReason,
                             slot: slots[index],
                             token: token,
                             roomId: vm.selectedRoomId!,

@@ -25,35 +25,54 @@ class _DisplayListOfEmailsPageState extends State<DisplayListOfEmailsPage> {
                 Text(
                   "Allowed email domains",
                   style: TextStyle(
-                    fontSize: constants.fsLabel,
+                    fontSize: constants.fsBody,
                     color: constants.darkGrey150,
                   ),
                 ),
                 Expanded(
                   child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     itemCount: widget.viewModel.acceptedEmails.length,
-                    itemBuilder: (context, index) => ListTile(
-                      title: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            widget.viewModel.acceptedEmails[index],
-                            style: TextStyle(color: constants.darkGrey),
+                    itemBuilder: (context, index) {
+                      final emailDomain =
+                          widget.viewModel.acceptedEmails[index];
+
+                      return Container(
+                        decoration: constants.squircleShadow(
+                          color: constants.lightPrimary,
+                        ),
+
+                        margin: const EdgeInsets.symmetric(vertical: 6.0),
+
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 2.0,
                           ),
-                          IconButton(
-                            icon: svgs.icon(
-                              'trash',
-                              constants.red,
-                              width: constants.fsTitle,
+                          title: Text(
+                            emailDomain,
+                            style: TextStyle(
+                              color: constants.darkGrey,
+                              fontWeight: constants.fwSemiBold,
                             ),
-                            onPressed: () =>
-                                widget.viewModel.removeFromAcceptedEmails(
-                                  widget.viewModel.acceptedEmails[index],
-                                ),
                           ),
-                        ],
-                      ),
-                    ),
+                          // 4. Moved the delete button to 'trailing' and gave it a better touch target
+                          trailing: InkWell(
+                            borderRadius: BorderRadius.circular(20),
+                            onTap: () => widget.viewModel
+                                .removeFromAcceptedEmails(emailDomain),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: svgs.icon(
+                                'trash',
+                                constants.red,
+                                width: constants.fsTitle,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],

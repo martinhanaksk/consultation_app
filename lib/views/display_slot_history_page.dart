@@ -93,7 +93,8 @@ class _DisplaySlotHistoryPageState extends State<DisplaySlotHistoryPage> {
                 'Slot History',
                 style: TextStyle(
                   fontWeight: constants.fwSemiBold,
-                  fontSize: constants.fsTitle,color: constants.darkGrey
+                  fontSize: constants.fsTitle,
+                  color: constants.darkGrey,
                 ),
               ),
               Container(
@@ -101,9 +102,9 @@ class _DisplaySlotHistoryPageState extends State<DisplaySlotHistoryPage> {
                   horizontal: 12,
                   vertical: 4,
                 ),
-                decoration: BoxDecoration(
-                  color: constants.lightPrimary,
-                  borderRadius: BorderRadius.circular(50),
+                decoration: constants.squircleShadow(
+                  color: constants.background,
+                  hasBorder: true,
                 ),
                 child: Text(
                   '${viewModel.historyItems.length}',
@@ -137,16 +138,17 @@ class _DisplaySlotHistoryPageState extends State<DisplaySlotHistoryPage> {
                   leading: CircleAvatar(
                     backgroundColor: constants.lightPrimary,
                     child: svgs.icon(
-                      'history',constants.primary,
+                      'history',
+                      constants.primary,
                       width: constants.fsBody,
-                     
                     ),
                   ),
                   title: Text(
                     item.user,
                     style: TextStyle(
                       fontWeight: constants.fwSemiBold,
-                      fontSize: constants.fsLabel,color: constants.darkGrey
+                      fontSize: constants.fsLabel,
+                      color: constants.darkGrey,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -156,9 +158,9 @@ class _DisplaySlotHistoryPageState extends State<DisplaySlotHistoryPage> {
                           child: Row(
                             children: [
                               svgs.icon(
-                                'calendar', constants.darkGrey150,
+                                'calendar',
+                                constants.darkGrey150,
                                 width: constants.fsLabel,
-                               
                               ),
 
                               const SizedBox(width: 6),

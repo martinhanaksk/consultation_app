@@ -27,16 +27,16 @@ class Constants {
   ShapeDecoration squircleShadow({
     Color? color,
     SmoothBorderRadius? borderRadius,
-    BoxBorder? border,
+    bool hasBorder = true,
     Gradient? gradient,
     double cornerSmoothing = 0.6,
   }) {
     return ShapeDecoration(
       shadows: [
         BoxShadow(
-          color: background,
-          offset: Offset(0, 0),
-          blurRadius: 9,
+          color: darkGrey30,
+          offset: const Offset(0, 4),
+          blurRadius: 12,
           spreadRadius: 0,
         ),
       ],
@@ -49,9 +49,11 @@ class Constants {
               cornerRadius: 16,
               cornerSmoothing: cornerSmoothing,
             ),
-        side: border is Border
-            ? (border)
-                  .top // fallback: use top side for uniform borders
+        side: hasBorder
+            ? BorderSide(
+                color: grey, // subtle 1px border, adapts to both themes
+                width: 1,
+              )
             : BorderSide.none,
       ),
     );

@@ -115,6 +115,47 @@ class ApiService {
   // ==========================================
   // 2. USERS & VISIBILITY
   // ==========================================
+  Future<void> updateUserData(
+    String token,
+    String name,
+    String surname,
+    String visitReason,
+    bool visible,
+    int notificationHoursBefore,
+  ) async {
+    final Uri url = Uri.parse('${constants.url}/users/data');
+
+    final response = await http.post(
+      url,
+      headers: _headers(token),
+      body: jsonEncode({
+        "name": name,
+        "surname": surname,
+        "visit_reason": visitReason,
+        "visible": visible,
+        "notification": notificationHoursBefore,
+      }),
+    );
+
+    _checkUnauthorized(response);
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update user data: ${response.statusCode}');
+    }
+  }
+
+  Future<Map<String, dynamic>> getUserData(String token, String email) async {
+    final Uri url = Uri.parse('${constants.url}/users/data?email=$email');
+    final response = await http.get(url, headers: _headers(token));
+
+    _checkUnauthorized(response);
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as Map<String, dynamic>;
+    } else {
+      throw Exception('Failed to fetch user data: ${response.statusCode}');
+    }
+  }
 
   Future<List<UserModel>> getUsers(String token) async {
     final Uri url = Uri.parse('${constants.url}/users');
@@ -156,7 +197,7 @@ class ApiService {
     final response = await http.post(url, headers: _headers(token));
 
     _checkUnauthorized(response);
-
+    print(response.body);
     return response.statusCode == 200;
   }
 

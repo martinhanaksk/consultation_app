@@ -269,10 +269,7 @@ class _EditBlockState extends State<EditBlock> {
                                     width:
                                         MediaQuery.of(context).size.width * 0.9,
                                     decoration: constants.squircleShadow(
-                                      border: Border.all(
-                                        color: constants.grey,
-                                        width: 0.2,
-                                      ),
+                                      hasBorder: true,
                                       color: constants.background,
                                     ),
                                     child: Column(

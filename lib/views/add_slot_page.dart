@@ -111,6 +111,7 @@ class _AddSlotState extends State<AddSlot> {
                           clipBehavior: Clip.none,
                           decoration: constants.squircleShadow(
                             color: constants.background,
+                            hasBorder: true,
                           ),
                           child: TextField(
                             style: TextStyle(color: constants.darkGrey),
@@ -135,7 +136,7 @@ class _AddSlotState extends State<AddSlot> {
                                 height: 24,
                                 clipBehavior: Clip.none,
                                 decoration: constants.squircleShadow(
-                                  color: constants.background,
+                                  color: constants.background,hasBorder: true
                                 ),
                                 child: Checkbox(
                                   value: viewModel.isOnline,
@@ -166,11 +167,26 @@ class _AddSlotState extends State<AddSlot> {
                                 width: double.infinity,
                                 height: 48,
                                 child: ElevatedButton(
-                                  onPressed: () => viewModel.addSlot(
-                                    widget.token,
-                                    widget.blockId,
-                                    widget.onSuccess,
-                                  ),
+                                  onPressed: () {
+                                    if (viewModel.duration == null ||
+                                        viewModel.duration!.inMinutes == 0) {
+                                      notify.showToast(
+                                        'Duration must be greater than 0 minutes',
+                                      );
+                                      return;
+                                    }
+                                    if (viewModel.startTime == null) {
+                                      notify.showToast(
+                                        'Please select a start time',
+                                      );
+                                      return;
+                                    }
+                                    viewModel.addSlot(
+                                      widget.token,
+                                      widget.blockId,
+                                      widget.onSuccess,
+                                    );
+                                  },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: constants.primary,
                                     disabledBackgroundColor: constants.primary,
@@ -230,9 +246,11 @@ class _StartTimePickerState extends State<_StartTimePicker> {
           )
         : DateTime(2000, 1, 1, now.hour, rounded);
 
+   WidgetsBinding.instance.addPostFrameCallback((_) {
     widget.viewModel.setStartTime(
       Duration(hours: _current.hour, minutes: _current.minute),
     );
+  });
   }
 
   @override
@@ -280,8 +298,10 @@ class _DurationPickerState extends State<_DurationPicker> {
   @override
   void initState() {
     super.initState();
-    _scrollController = FixedExtentScrollController(initialItem: 3);
+    _scrollController = FixedExtentScrollController(initialItem: 2);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
     widget.viewModel.setDuration(const Duration(minutes: 15));
+  });
   }
 
   @override
@@ -299,13 +319,13 @@ class _DurationPickerState extends State<_DurationPicker> {
         itemExtent: 40,
         scrollController: _scrollController,
         onSelectedItemChanged: (index) {
-          widget.viewModel.setDuration(Duration(minutes: index * 5));
+          widget.viewModel.setDuration(Duration(minutes: (index + 1) * 5));
         },
         children: List.generate(
           24,
           (i) => Center(
             child: Text(
-              '${i * 5} min',
+               '${(i + 1) * 5} min',
               style: TextStyle(
                 fontSize: constants.fsBody,
                 color: constants.darkGrey,

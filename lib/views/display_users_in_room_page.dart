@@ -31,8 +31,7 @@ class _DisplayUsersInRoomPageState extends State<DisplayUsersInRoomPage> {
   }
 
   void _initialize() async {
-    final token = 
-      await securePrefs.getToken();
+    final token = await securePrefs.getToken();
     await _viewModel.init(token, widget.roomId);
   }
 
@@ -106,9 +105,9 @@ class _DisplayUsersInRoomPageState extends State<DisplayUsersInRoomPage> {
                   horizontal: 12,
                   vertical: 4,
                 ),
-                decoration: BoxDecoration(
-                  color: constants.lightPrimary,
-                  borderRadius: BorderRadius.circular(50),
+                decoration: constants.squircleShadow(
+                  color: constants.background,
+                  hasBorder: true,
                 ),
                 child: Text(
                   '${viewModel.users.length}',
@@ -157,7 +156,8 @@ class _DisplayUsersInRoomPageState extends State<DisplayUsersInRoomPage> {
                         email,
                         style: TextStyle(
                           fontSize: constants.fsLabel,
-                          fontWeight: constants.fwSemiBold,color: constants.darkGrey
+                          fontWeight: constants.fwSemiBold,
+                          color: constants.darkGrey,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),

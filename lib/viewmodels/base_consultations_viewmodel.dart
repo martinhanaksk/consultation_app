@@ -23,7 +23,8 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   List<BlockModel> blocks = [];
   String? ownerSelectedRoomId;
   String? visitorSelectedRoomId;
-
+  String _visitReason = "";
+  String get visitReason => _visitReason;
   int _ownerView = 1;
   int get ownerView => _ownerView;
   String? selectedRoomId;
@@ -58,7 +59,8 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
       rethrow;
     } finally {
       _takingSlot.remove(slotId);
-      loadRoom(token);
+      notifyListeners();
+      await loadRoom(token);
     }
   }
 
@@ -176,7 +178,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     final subscriptions = await api.getMySubscriptions(token);
     final newUsers = await api.getUsers(token);
     final newRooms = await fetchRooms(token);
-
+    _visitReason = await prefs.getItem('visitReason');
     if (newRooms.isEmpty) {
       noRoomsFound = true;
       notifyListeners();
@@ -301,6 +303,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
 
     helpers.checkIfValidToken(token);
     isOwner = await resolveUserRole(token, email);
+    _visitReason = await prefs.getItem('visitReason');
     subscribedBlocks = await api.getMySubscriptions(token);
     final myRooms = await fetchRooms(token);
     if (myRooms.isEmpty) {

@@ -67,7 +67,8 @@ class _JoinRoomState extends State<JoinRoom> {
                               "Join a Room",
                               style: TextStyle(
                                 fontWeight: constants.fwSemiBold,
-                                fontSize: constants.fsHeadline,color: constants.darkGrey
+                                fontSize: constants.fsHeadline,
+                                color: constants.darkGrey,
                               ),
                             ),
                           ),
@@ -130,7 +131,10 @@ class _JoinRoomState extends State<JoinRoom> {
                                         FocusNode focusNode,
                                         VoidCallback onFieldSubmitted,
                                       ) {
-                                        return TextField(style: TextStyle(color: constants.darkGrey),
+                                        return TextField(
+                                          style: TextStyle(
+                                            color: constants.darkGrey,
+                                          ),
                                           scrollPadding: EdgeInsets.only(
                                             bottom:
                                                 MediaQuery.of(
@@ -169,9 +173,9 @@ class _JoinRoomState extends State<JoinRoom> {
                                                 12.0,
                                               ),
                                               child: svgs.icon(
-                                                'search',constants.darkGrey150,
+                                                'search',
+                                                constants.darkGrey150,
                                                 width: constants.fsLabel,
-                                                 
                                               ),
                                             ),
                                           ),
@@ -192,19 +196,11 @@ class _JoinRoomState extends State<JoinRoom> {
                                               margin: const EdgeInsets.only(
                                                 top: 6,
                                               ),
-                                              decoration: BoxDecoration(
-                                                color: constants.background,
-                                                borderRadius:
-                                                    BorderRadius.circular(16),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: constants.darkGrey30,
-                                                    blurRadius: 12,
-                                                    spreadRadius: 2,
-                                                    offset: const Offset(0, 4),
+                                              decoration: constants
+                                                  .squircleShadow(
+                                                    color: constants.background,
+                                                    hasBorder: true,
                                                   ),
-                                                ],
-                                              ),
                                               constraints: const BoxConstraints(
                                                 maxHeight: 200,
                                               ),
@@ -215,58 +211,51 @@ class _JoinRoomState extends State<JoinRoom> {
                                                   padding: EdgeInsets.zero,
                                                   shrinkWrap: true,
                                                   itemCount: options.length,
-                                                  itemBuilder:
-                                                      (
-                                                        BuildContext context,
-                                                        int index,
-                                                      ) {
-                                                        final RoomModel option =
-                                                            options.elementAt(
-                                                              index,
-                                                            );
-                                                        final bool isSelected =
-                                                            option.id
-                                                                .toString() ==
-                                                            selectedRoomId;
+                                                  itemBuilder: (BuildContext context, int index) {
+                                                    final RoomModel option =
+                                                        options.elementAt(
+                                                          index,
+                                                        );
+                                                    final bool isSelected =
+                                                        option.id.toString() ==
+                                                        selectedRoomId;
 
-                                                        if (viewModel
-                                                            .isInJoinedRooms(
-                                                              option,
-                                                            )) {
-                                                          return const SizedBox.shrink();
-                                                        }
+                                                    if (viewModel
+                                                        .isInJoinedRooms(
+                                                          option,
+                                                        )) {
+                                                      return const SizedBox.shrink();
+                                                    }
 
-                                                        return InkWell(
-                                                          onTap: () =>
-                                                              onSelected(
-                                                                option,
-                                                              ),
-                                                          child: Padding(
-                                                            padding:
-                                                                const EdgeInsets.symmetric(
-                                                                  horizontal:
-                                                                      20,
-                                                                  vertical: 4,
-                                                                ),
-                                                            child: ListTile(
-                                                              contentPadding:
-                                                                  EdgeInsets
-                                                                      .zero,
-                                                              title: Text(
-                                                                option.title,
-                                                                style: TextStyle(
-                                                                  fontSize: constants.fsLabel,
-                                                                  fontWeight:
-                                                                      constants
-                                                                          .fwRegular,
-                                                                  color: constants
-                                                                      .darkGrey,
-                                                                ),
-                                                              ),
+                                                    return InkWell(
+                                                      onTap: () =>
+                                                          onSelected(option),
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets.symmetric(
+                                                              horizontal: 20,
+                                                              vertical: 4,
+                                                            ),
+                                                        child: ListTile(
+                                                          contentPadding:
+                                                              EdgeInsets.zero,
+                                                          title: Text(
+                                                            option.title,
+                                                            style: TextStyle(
+                                                              fontSize:
+                                                                  constants
+                                                                      .fsLabel,
+                                                              fontWeight:
+                                                                  constants
+                                                                      .fwRegular,
+                                                              color: constants
+                                                                  .darkGrey,
                                                             ),
                                                           ),
-                                                        );
-                                                      },
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
                                                 ),
                                               ),
                                             ),

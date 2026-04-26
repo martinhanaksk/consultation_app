@@ -16,9 +16,16 @@ class VerifyOtpViewmodel extends ChangeNotifier {
       final success = await api.connect(email, otp, rememberMe);
 
       if (success) {
-        String token = 
-      await securePrefs.getToken();
+        String token = await securePrefs.getToken();
         String role = await prefs.getItem('role');
+        final data = await api.getUserData(token, email);
+      
+        await prefs.saveItem('visibility', data['visible'] == 1);
+        await prefs.saveItem('visitReason', data['visit_reason'] ?? "");
+        await prefs.saveItem(
+          'notifyHoursBefore',
+          (data['notification'] as int?) ?? 0,
+        );
         helpers.resetLogoutFlag();
 
         if (role == 'teacher') {

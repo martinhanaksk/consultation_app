@@ -63,7 +63,11 @@ class _EmailInputPageState extends State<EmailInputPage> {
                     children: [
                       const SizedBox(height: 80),
                       Center(
-                        child: svgs.icon("logo-whole",constants.primary,width: 232),
+                        child: svgs.icon(
+                          "logo-whole",
+                          constants.primary,
+                          width: 232,
+                        ),
                       ),
                       const SizedBox(height: 56),
                       Container(
@@ -75,7 +79,8 @@ class _EmailInputPageState extends State<EmailInputPage> {
                             cornerSmoothing: 0.6,
                           ),
                         ),
-                        child: TextField(  style: TextStyle(color: constants.darkGrey),
+                        child: TextField(
+                          style: TextStyle(color: constants.darkGrey),
                           scrollPadding: EdgeInsets.only(bottom: 1000),
                           onChanged: viewModel.updateEmail,
                           decoration: InputDecoration(
@@ -112,8 +117,14 @@ class _EmailInputPageState extends State<EmailInputPage> {
                               ),
                             ),
                           ),
-                          SizedBox(width: 8),
-                          const Text('Remember me'),
+                          SizedBox(width: 12),
+                          Text(
+                            'Remember me',
+                            style: TextStyle(
+                              color: constants.darkGrey,
+                              fontSize: constants.fsLabel,
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 24),
@@ -121,38 +132,38 @@ class _EmailInputPageState extends State<EmailInputPage> {
                         width: double.infinity,
                         height: 48,
                         child: viewModel.isLoading
-                              ? Center(
-                                  child: SpinKitPouringHourGlass(
-                                    color: constants.primary,
-                                    size: constants.fsTitle,
-                                  ),
-                                )
-                              : ElevatedButton(
-                          onPressed: () async {
-                            if (!viewModel.isLoading &&
-                                validator.validateEmail(
-                                  viewModel.email,
-                                  context,
-                                )) {
-                              // Start 5-second timeout before API call
-                              _startLoadingTimeout(context);
+                            ? Center(
+                                child: SpinKitPouringHourGlass(
+                                  color: constants.primary,
+                                  size: constants.fsTitle,
+                                ),
+                              )
+                            : ElevatedButton(
+                                onPressed: () async {
+                                  if (!viewModel.isLoading &&
+                                      validator.validateEmail(
+                                        viewModel.email,
+                                        context,
+                                      )) {
+                                    // Start 5-second timeout before API call
+                                    _startLoadingTimeout(context);
 
-                              await viewModel.continueToVerify(
-                                helpers.trimText(viewModel.email),
-                                viewModel.isChecked,
-                              );
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: constants.primary,
-                            disabledBackgroundColor: constants.primary,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            elevation: 2,
-                            shadowColor: constants.primary,
-                          ),
-                          child: Text(
+                                    await viewModel.continueToVerify(
+                                      helpers.trimText(viewModel.email),
+                                      viewModel.isChecked,
+                                    );
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: constants.primary,
+                                  disabledBackgroundColor: constants.primary,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                  elevation: 2,
+                                  shadowColor: constants.primary,
+                                ),
+                                child: Text(
                                   'Next',
                                   style: TextStyle(
                                     fontSize: constants.fsTitle,
@@ -160,7 +171,7 @@ class _EmailInputPageState extends State<EmailInputPage> {
                                     color: constants.background,
                                   ),
                                 ),
-                        ),
+                              ),
                       ),
                     ],
                   ),

@@ -54,9 +54,8 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
                   child: IconButton(
                     padding: EdgeInsets.zero,
                     icon: svgs.icon(
-                      'back',constants.darkGrey,
+                      'arrow_left',constants.darkGrey,
                       width: constants.fsTitle,
-                      
                     ),
                     onPressed: () {
                       nav.pop();

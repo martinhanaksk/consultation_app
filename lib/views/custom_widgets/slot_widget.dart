@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:consultation_app/models/slot_model.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 
 class SlotWidget extends StatelessWidget {
   final String userEmail;
+  final String visitReason;
   final SlotModel slot;
   final String token;
   final String roomId;
@@ -24,6 +24,7 @@ class SlotWidget extends StatelessWidget {
   const SlotWidget({
     super.key,
     required this.userEmail,
+    required this.visitReason,
     required this.slot,
     required this.token,
     required this.roomId,
@@ -45,7 +46,6 @@ class SlotWidget extends StatelessWidget {
     int duration,
     String date,
   ) async {
-    final controller = TextEditingController();
     bool isSubmitting = false;
     bool isOnlineSelected = false;
     await showModalBottomSheet(
@@ -56,7 +56,7 @@ class SlotWidget extends StatelessWidget {
         return StatefulBuilder(
           builder: (context, setState) {
             return _NoteBottomSheet(
-              controller: controller,
+              visitReason: visitReason,
               startTime: startTime,
               duration: duration,
               date: date,
@@ -67,9 +67,9 @@ class SlotWidget extends StatelessWidget {
                 });
               },
               isOnlineSelected: isOnlineSelected,
-              onSubmit: () async {
+              onSubmit: (String submittedText) async {
                 setState(() => isSubmitting = true);
-                onTakeSlot(controller.text.trim(), isOnlineSelected ? 1 : 0);
+                onTakeSlot(submittedText.trim(), isOnlineSelected ? 1 : 0);
                 Navigator.pop(context);
               },
               onCancel: () => Navigator.pop(context),
@@ -108,22 +108,19 @@ class SlotWidget extends StatelessWidget {
       children: [
         //free slot
         if (slot.takenBy == null || treatAsFree)
-          GestureDetector(
+          InkWell(
+            onTap: isTakingSlot
+                ? null
+                : () => _showTakeSlotDialog(
+                    context,
+                    slot.startTime,
+                    slot.duration,
+                    date,
+                  ),
             child: Container(
               padding: EdgeInsets.fromLTRB(0, 12, 12, 12),
               width: MediaQuery.of(context).size.width * 0.95,
-              decoration: BoxDecoration(
-                borderRadius: isLast
-                    ? BorderRadius.only(
-                        topLeft: Radius.circular(0.0),
-                        topRight: Radius.circular(0.0),
-                        bottomLeft: Radius.circular(20.0),
-                        bottomRight: Radius.circular(20.0),
-                      )
-                    : BorderRadius.circular(0),
-                color: constants.background,
-                border: Border.all(color: constants.grey, width: 0.2),
-              ),
+
               child: Column(
                 children: [
                   Row(
@@ -165,15 +162,6 @@ class SlotWidget extends StatelessWidget {
                 ],
               ),
             ),
-
-            onTap: isTakingSlot
-                ? null
-                : () => _showTakeSlotDialog(
-                    context,
-                    slot.startTime,
-                    slot.duration,
-                    date,
-                  ),
           ),
         if (slot.takenBy != null && !treatAsFree)
           //my slot
@@ -284,17 +272,9 @@ class SlotWidget extends StatelessWidget {
               : Container(
                   padding: EdgeInsets.fromLTRB(0, 12, 12, 12),
                   width: MediaQuery.of(context).size.width * 0.95,
-                  decoration: BoxDecoration(
-                    borderRadius: isLast
-                        ? BorderRadius.only(
-                            topLeft: Radius.circular(0.0),
-                            topRight: Radius.circular(0.0),
-                            bottomLeft: Radius.circular(20.0),
-                            bottomRight: Radius.circular(20.0),
-                          )
-                        : BorderRadius.circular(0),
-                    color: constants.red,
-                    border: Border.all(color: constants.grey, width: 0.2),
+                  decoration: constants.squircleShadow(
+                    color: constants.background,
+                    hasBorder: false,
                   ),
                   child: InkWell(
                     onTap: () {
@@ -410,9 +390,9 @@ class _ConsultationTypeSelectionState
         bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
       child: Container(
-        decoration: BoxDecoration(
+        decoration: constants.squircleShadow(
           color: constants.background,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          hasBorder: false,
         ),
         padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
         child: Column(
@@ -490,9 +470,12 @@ class _ConsultationTypeToggle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-         Text(
+        Text(
           "Change Consultation type",
-          style: TextStyle(fontSize: constants.fsLabel, fontWeight: constants.fwSemiBold),
+          style: TextStyle(
+            fontSize: constants.fsLabel,
+            fontWeight: constants.fwSemiBold,
+          ),
         ),
         const SizedBox(height: 20),
 
@@ -582,18 +565,18 @@ class _ConsultationTypeToggle extends StatelessWidget {
 }
 
 class _NoteBottomSheet extends StatefulWidget {
-  final TextEditingController controller;
+  final String visitReason;
   final String startTime;
   final int duration;
   final bool isOnlineSelected;
   final ValueChanged<bool> onChanged;
   final String date;
-  final VoidCallback onSubmit;
+  final ValueChanged<String> onSubmit;
   final VoidCallback onCancel;
   final bool isSubmitting;
 
   const _NoteBottomSheet({
-    required this.controller,
+    required this.visitReason,
     required this.startTime,
     required this.duration,
     required this.onChanged,
@@ -608,6 +591,26 @@ class _NoteBottomSheet extends StatefulWidget {
 }
 
 class __NoteBottomSheetState extends State<_NoteBottomSheet> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.visitReason);
+
+    if (_controller.text.isNotEmpty) {
+      _controller.selection = TextSelection.fromPosition(
+        TextPosition(offset: _controller.text.length),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose(); // Prevent memory leaks
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -615,21 +618,23 @@ class __NoteBottomSheetState extends State<_NoteBottomSheet> {
         bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
       child: Container(
-        decoration: BoxDecoration(
+        decoration: constants.squircleShadow(
           color: constants.background,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          hasBorder: false,
         ),
         padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Add a visit purpose",
-              style: TextStyle(
-                fontSize: constants.fsLabel,
-                fontWeight: constants.fwSemiBold,
-                color: constants.darkGrey,
+            Center(
+              child: Text(
+                'Make Reservation',
+                style: TextStyle(
+                  fontSize: constants.fsTitle,
+                  fontWeight: constants.fwSemiBold,
+                  color: constants.darkGrey,
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -639,7 +644,7 @@ class __NoteBottomSheetState extends State<_NoteBottomSheet> {
               date: widget.date,
             ),
             const SizedBox(height: 12),
-            _NoteTextField(controller: widget.controller),
+            _NoteTextField(controller: _controller),
             const SizedBox(height: 16),
             _ConsultationTypeToggle(
               isOnlineSelected: widget.isOnlineSelected,
@@ -659,7 +664,9 @@ class __NoteBottomSheetState extends State<_NoteBottomSheet> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: widget.isSubmitting ? null : widget.onSubmit,
+                    onPressed: widget.isSubmitting
+                        ? null
+                        : () => widget.onSubmit(_controller.text),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: constants.primary,
                       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -778,7 +785,8 @@ class _NoteTextField extends StatelessWidget {
           cornerSmoothing: 0.6,
         ),
       ),
-      child: TextField(style: TextStyle(color: constants.darkGrey),
+      child: TextField(
+        style: TextStyle(color: constants.darkGrey),
         controller: controller,
         autofocus: true,
         maxLines: 1,
