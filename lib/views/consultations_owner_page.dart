@@ -3,7 +3,6 @@ import 'package:consultation_app/views/consultations_base_page.dart';
 import 'package:consultation_app/views/custom_widgets/animated_toggle_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:consultation_app/setup.dart';
 
@@ -71,6 +70,17 @@ class _ConsultationsOwnerPageState extends State<ConsultationsOwnerPage> {
                     token: widget.token,
                     blockId: blockId,
                     viewModel: viewModel,
+                  )
+                : null,
+            showHistoryOption: isOwner
+                ? (slotId, blockId, color) => _ShowHistoryButton(
+                    token: widget.token,
+                    onHistoryClicked: () => viewModel.displayHistoryOfSlot(
+                      widget.token,
+                      slotId,
+                      blockId,
+                    ),
+                    color: color,
                   )
                 : null,
             addSlotBefore: isOwner
@@ -348,6 +358,25 @@ class _DeleteRoomDialog extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
+class _ShowHistoryButton extends StatelessWidget {
+  final String token;
+  final VoidCallback onHistoryClicked;
+  final Color color;
+
+  const _ShowHistoryButton({
+    required this.token,
+    required this.onHistoryClicked,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onHistoryClicked,
+      child: svgs.icon('history', color, width: constants.fsTitle),
+    );
+  }
+}
 
 class _EditBlockButton extends StatelessWidget {
   final String token;

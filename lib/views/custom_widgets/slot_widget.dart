@@ -10,8 +10,13 @@ class SlotWidget extends StatelessWidget {
   final SlotModel slot;
   final String token;
   final String roomId;
+  final int blockId;
   final int isOwnerView;
+  final Widget? Function(int slotId, int blockId, Color color)?
+  showHistoryOption;
+
   final void Function(String note, int isOnline) onTakeSlot;
+
   final VoidCallback onReleaseSlot;
   final VoidCallback onChangeConsultationType;
   final BuildContext context;
@@ -28,6 +33,8 @@ class SlotWidget extends StatelessWidget {
     required this.slot,
     required this.token,
     required this.roomId,
+    required this.blockId,
+    required this.showHistoryOption,
     required this.isOwnerView,
     required this.onTakeSlot,
     required this.isOptimisticallyReleased,
@@ -142,6 +149,13 @@ class SlotWidget extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
+                          if (showHistoryOption != null)
+                            showHistoryOption!(
+                                  slot.id,
+                                  blockId,
+                                  constants.darkGrey,
+                                ) ??
+                                const SizedBox.shrink(),
                           if (slot.isOnline == 1)
                             svgs.icon(
                               'screen',
@@ -242,6 +256,14 @@ class SlotWidget extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(width: 8),
+                              if (showHistoryOption != null)
+                                showHistoryOption!(
+                                      slot.id,
+                                      blockId,
+                                      constants.background,
+                                    ) ??
+                                    const SizedBox.shrink(),
+                              if (slot.isOnline == 1) const SizedBox(width: 8),
                               if (slot.isOnline == 1)
                                 svgs.icon(
                                   'screen',
@@ -272,9 +294,17 @@ class SlotWidget extends StatelessWidget {
               : Container(
                   padding: EdgeInsets.fromLTRB(0, 12, 12, 12),
                   width: MediaQuery.of(context).size.width * 0.95,
-                  decoration: constants.squircleShadow(
-                    color: constants.background,
-                    hasBorder: false,
+                  decoration: BoxDecoration(
+                    borderRadius: isLast
+                        ? BorderRadius.only(
+                            topLeft: Radius.circular(0.0),
+                            topRight: Radius.circular(0.0),
+                            bottomLeft: Radius.circular(20.0),
+                            bottomRight: Radius.circular(20.0),
+                          )
+                        : BorderRadius.circular(0),
+                    color: constants.red,
+                    border: Border.all(color: constants.grey, width: 0.2),
                   ),
                   child: InkWell(
                     onTap: () {
@@ -342,11 +372,16 @@ class SlotWidget extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(width: 8),
+                              if (showHistoryOption != null)
+                                showHistoryOption!(
+                                      slot.id,
+                                      blockId,
+                                      constants.background,
+                                    ) ??
+                                    const SizedBox.shrink(),
+                              if (slot.isOnline == 1) const SizedBox(width: 8),
                               if (slot.isOnline == 1)
-                                svgs.icon(
-                                  "screen",
-                                  constants.textUnavailableGrey,
-                                ),
+                                svgs.icon("screen", constants.background),
                             ],
                           ),
                         ),

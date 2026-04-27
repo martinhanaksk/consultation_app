@@ -382,16 +382,7 @@ class _EditBlockState extends State<EditBlock> {
                                                         index ==
                                                         viewModel.slots.length -
                                                             1,
-                                                    onHistoryClicked: () => {
-                                                      viewModel
-                                                          .displayHistoryOfSlot(
-                                                            widget.token,
-                                                            slot.id,
-                                                            int.parse(
-                                                              widget.blockId,
-                                                            ),
-                                                          ),
-                                                    },
+                                                    
                                                     onIsOnlineClicked: () async => {
                                                       await viewModel
                                                           .changeSlotMeetingType(
@@ -564,7 +555,6 @@ class _SlotRow extends StatelessWidget {
   final bool isFirst;
   final bool isLast;
   final VoidCallback onIsOnlineClicked;
-  final VoidCallback onHistoryClicked;
   final VoidCallback onDelete;
 
   const _SlotRow({
@@ -572,7 +562,6 @@ class _SlotRow extends StatelessWidget {
     required this.isFirst,
     required this.isLast,
     required this.onIsOnlineClicked,
-    required this.onHistoryClicked,
     required this.onDelete,
   });
 
@@ -606,15 +595,6 @@ class _SlotRow extends StatelessWidget {
 
               const Spacer(),
 
-              GestureDetector(
-                onTap: onHistoryClicked,
-                child: svgs.icon(
-                  'history',constants.darkGrey,
-                  width: constants.fsTitle,
-                 
-                ),
-              ),
-              const SizedBox(width: 8),
               GestureDetector(
                 onTap: onIsOnlineClicked,
                 child: svgs.icon(

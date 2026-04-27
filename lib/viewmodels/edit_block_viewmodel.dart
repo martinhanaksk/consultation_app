@@ -202,19 +202,7 @@ class EditBlockViewmodel extends ChangeNotifier {
     }
   }
 
-  Future<void> displayHistoryOfSlot(
-    String token,
-    int slotId,
-    int blockId,
-  ) async {
-    try {
-      final slots = await api.getSlotsForBlock(token, blockId);
-      if (slots != null) {
-        final slot = slots.firstWhere((s) => s.id == slotId);
-        nav.toDisplaySlotHistory(history: slot.history ?? "");
-      }
-    } finally {}
-  }
+  
 
   String getBlockDate() {
     if (block != null) {

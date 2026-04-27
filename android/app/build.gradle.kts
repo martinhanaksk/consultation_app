@@ -32,8 +32,8 @@ android {
         applicationId = "com.mhanak.consultation_app"
         minSdk = 24
         targetSdk = flutter.targetSdkVersion
-        versionCode = 16
-        versionName = "16"
+        versionCode = 17
+        versionName = "17"
     }
 
     signingConfigs {

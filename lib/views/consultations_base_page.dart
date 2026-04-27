@@ -18,6 +18,8 @@ class BaseConsultationsPage extends StatefulWidget {
   final Widget? deleteButton;
   final BaseConsultationsViewmodel? viewModel;
   final Widget Function(int blockId)? editBlockButton;
+  final Widget? Function(int slotId, int blockId, Color color)?
+  showHistoryOption;
   final Widget? Function(int blockId, bool isEmpty)? addSlotBefore;
   final Widget? Function(int blockId, bool isEmpty)? addSlotAfter;
 
@@ -30,6 +32,7 @@ class BaseConsultationsPage extends StatefulWidget {
     this.addButton,
     this.deleteButton,
     this.editBlockButton,
+    this.showHistoryOption,
     this.addSlotBefore,
     this.addSlotAfter,
   });
@@ -106,6 +109,7 @@ class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
                                     email: widget.email,
                                     toggle: widget.toggle,
                                     addButton: widget.addButton,
+                                    showHistoryOption: widget.showHistoryOption,
                                     deleteButton: widget.deleteButton,
                                     editBlockButton: widget.editBlockButton,
                                     addSlotBefore: widget.addSlotBefore,
@@ -283,6 +287,8 @@ class _ConsultationsContent extends StatelessWidget {
   final Widget? toggle;
   final Widget? addButton;
   final Widget? deleteButton;
+  final Widget? Function(int slotId, int blockId, Color color)?
+  showHistoryOption;
   final Widget? Function(int blockId, bool isEmpty)? addSlotBefore;
   final Widget? Function(int blockId, bool isEmpty)? addSlotAfter;
   final Widget Function(int blockId)? editBlockButton;
@@ -294,6 +300,7 @@ class _ConsultationsContent extends StatelessWidget {
     this.toggle,
     this.addButton,
     this.deleteButton,
+    this.showHistoryOption,
     this.editBlockButton,
     this.addSlotBefore,
     this.addSlotAfter,
@@ -348,6 +355,7 @@ class _ConsultationsContent extends StatelessWidget {
                             blockEntry: block,
                             token: token,
                             email: email,
+                            showHistoryOption: showHistoryOption,
                             editBlockButton: editBlockButton,
                             addSlotBefore: addSlotBefore,
                             addSlotAfter: addSlotAfter,
@@ -379,6 +387,8 @@ class _ConsultationBlockCard extends StatelessWidget {
   final String token;
   final String email;
   final Widget Function(int blockId)? editBlockButton;
+  final Widget? Function(int slotId, int blockId, Color color)?
+  showHistoryOption;
   final Widget? Function(int blockId, bool isEmpty)? addSlotBefore;
   final Widget? Function(int blockId, bool isEmpty)? addSlotAfter;
 
@@ -388,6 +398,7 @@ class _ConsultationBlockCard extends StatelessWidget {
     required this.token,
     required this.email,
     this.editBlockButton,
+    this.showHistoryOption,
     this.addSlotBefore,
     this.addSlotAfter,
   });
@@ -493,9 +504,11 @@ class _ConsultationBlockCard extends StatelessWidget {
                           child: SlotWidget(
                             userEmail: email,
                             visitReason: vm.visitReason,
+                            showHistoryOption: showHistoryOption,
                             slot: slots[index],
                             token: token,
                             roomId: vm.selectedRoomId!,
+                            blockId: blockEntry.key,
                             isOwnerView: vm.ownerView,
                             onChangeConsultationType: () =>
                                 vm.onChangeConsultationType(token, slot.id),
