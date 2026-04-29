@@ -7,6 +7,8 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
   final String? token;
   final Widget? toggle;
   final bool onHomePage;
+  final bool onVerificationPage;
+  final bool onSettingsPage;
 
   AppBarMenu({
     super.key,
@@ -14,6 +16,8 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
     this.toggle,
     this.token,
     this.onHomePage = false,
+    this.onVerificationPage = false,
+    this.onSettingsPage = false,
   });
   @override
   Widget build(BuildContext context) {
@@ -36,8 +40,9 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
                   child: IconButton(
                     padding: EdgeInsets.zero,
                     icon: svgs.icon(
-                      'hamburger',constants.darkGrey,
-                      width: constants.fsTitle
+                      'hamburger',
+                      constants.darkGrey,
+                      width: constants.fsTitle,
                     ),
                     onPressed: () {
                       Scaffold.of(context).openDrawer();
@@ -54,7 +59,8 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
                   child: IconButton(
                     padding: EdgeInsets.zero,
                     icon: svgs.icon(
-                      'arrow_left',constants.darkGrey,
+                      'arrow_left',
+                      constants.darkGrey,
                       width: constants.fsTitle,
                     ),
                     onPressed: () {
@@ -66,30 +72,32 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
       ),
       flexibleSpace: SafeArea(child: Center(child: toggle)),
       actions: [
-        Padding(
-          padding: EdgeInsets.only(right: 12),
-          child: SizedBox(
-            width: 48,
-            height: 48,
-            child: Container(
-              decoration: BoxDecoration(
-                color: constants.grey,
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                padding: EdgeInsets.zero,
-                icon: svgs.icon(
-                  'settings',constants.darkGrey,
-                  width: constants.fsBody,
-                  
+        onSettingsPage || onVerificationPage
+            ? SizedBox.shrink()
+            : Padding(
+                padding: EdgeInsets.only(right: 12),
+                child: SizedBox(
+                  width: 48,
+                  height: 48,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: constants.grey,
+                      shape: BoxShape.circle,
+                    ),
+                    child: IconButton(
+                      padding: EdgeInsets.zero,
+                      icon: svgs.icon(
+                        'settings',
+                        constants.darkGrey,
+                        width: constants.fsBody,
+                      ),
+                      onPressed: () {
+                        nav.toChangeSettings();
+                      },
+                    ),
+                  ),
                 ),
-                onPressed: () {
-                  nav.toChangeSettings();
-                },
               ),
-            ),
-          ),
-        ),
       ],
     );
   }

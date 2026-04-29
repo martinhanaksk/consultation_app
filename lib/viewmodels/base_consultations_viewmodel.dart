@@ -67,6 +67,10 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   // Move releaseSlot logic here
   Future<void> releaseSlot(String token, int slotId) async {
     _optimisticallyReleased[slotId] = true;
+    if (selectedRoom != Null) {
+      //selectedRoom!.cancellationNoticeHours;
+    }
+
     notifyListeners();
     try {
       await api.releaseSlot(token, slotId);
@@ -98,8 +102,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   // Inside BaseConsultationsViewmodel
 
   Future<void> handleEmailSubscribe(String token, int block) async {
-    bool receiveEmails = await prefs.getItem('receiveEmails');
-    if (receiveEmails != true) return;
+   
 
     final isCurrentlySubscribed = subscribedBlocks.contains(block);
 
@@ -186,12 +189,8 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     }
 
     noRoomsFound = false;
-
-    List<BlockModel> newBlocks = await api.getBlocks(token, roomId);
-
-    DateTime now = DateTime.now();
-    newBlocks.removeWhere((b) => !b.date.isAfter(now));
-    newBlocks.sort((a, b) => a.date.compareTo(b.date));
+    String now = DateTime.now().toString().substring(0, 10);
+    List<BlockModel> newBlocks = await api.getBlocks(token, roomId, now);
 
     Map<int, List<SlotModel>?> newSlotsInBlocks = {};
     List<Future<void>> futures = [];
@@ -241,7 +240,14 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     }
     return "";
   }
-
+String blockDate(int blockId) {
+    for (var tmpBlock in blocks) {
+      if (tmpBlock.id == blockId) {
+        return "${DateTime.parse(tmpBlock.date.toString())}";
+      }
+    }
+    return "";
+  }
   String daysRemainingLabel(DateTime date) {
     final now = DateTime.now();
 
@@ -264,7 +270,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     selectedRoomId = _ownerView == 1
         ? ownerSelectedRoomId
         : visitorSelectedRoomId;
-    await loadRoom(await prefs.getItem("token"));
+    await loadRoom(await securePrefs.getToken());
   }
 
   Future<bool> validateAndSelectRoom(String? id) async {
@@ -294,13 +300,22 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     return false;
   }
 
+  RoomModel? get selectedRoom {
+    if (rooms == null || rooms!.isEmpty || selectedRoomId == null) return null;
+    try {
+      return rooms!.firstWhere((r) => r.id.toString() == selectedRoomId);
+    } catch (_) {
+      return null;
+    }
+  }
+
   // base_consultations_viewmodel.dart
   Future<void> init(String token, String email) async {
     await setOwnerView(0);
     isLoading = true;
     notifyListeners();
     if (!await checkConnection()) return;
-
+    final room = selectedRoom;
     helpers.checkIfValidToken(token);
     isOwner = await resolveUserRole(token, email);
     _visitReason = await prefs.getItem('visitReason');

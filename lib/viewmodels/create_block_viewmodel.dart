@@ -183,7 +183,8 @@ class CreateBlockViewmodel extends ChangeNotifier {
       return 'Please enter a valid number of slots';
     }
 
-    if (_endTime == null && slots!=0) return 'End time is invalid (exceeds 24h)';
+    if (_endTime == null && slots != 0)
+      return 'End time is invalid (exceeds 24h)';
 
     return null;
   }
@@ -216,10 +217,13 @@ class CreateBlockViewmodel extends ChangeNotifier {
         int.parse(roomId),
         dates[i],
       );
+
       if (response.isEmpty) {
-          notify.showToast('Failed to create block for ${dates[i]}.');
-          continue; 
-        }
+        notify.showToast('Failed to create block for ${dates[i]}. It might already exist.');
+        continue;
+      } else {
+        notify.showToast('Blocks created successfully.');
+      }
       final int blockId = jsonDecode(response)['id'];
       if (slotCount != 0) {
         for (int j = 0; j < slotCount!; j++) {
@@ -238,11 +242,11 @@ class CreateBlockViewmodel extends ChangeNotifier {
             isLoading = false;
             notifyListeners();
             return;
-          }
+          } 
         }
       }
     }
-    notify.showToast('Blocks created successfully.');
+
     isLoading = false;
     notifyListeners();
     onSuccess?.call();

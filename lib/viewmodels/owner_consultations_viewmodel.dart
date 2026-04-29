@@ -178,7 +178,7 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
     } else {
       return "";
     }
-    if (newStart.isNegative || newStart.inHours > 24) return null;
+    if (newStart.isNegative || newStart.inHours > 23) return null;
 
     return '${newStart.inHours.toString().padLeft(2, '0')}:'
         '${(newStart.inMinutes % 60).toString().padLeft(2, '0')}:'

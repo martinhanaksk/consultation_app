@@ -222,9 +222,7 @@ class _SliderMenuState extends State<SliderMenu> {
                           ),
 
                           onTap: () async {
-                            await securePrefs.removeToken();
-                            await prefs.removeItem('email');
-                            await prefs.removeItem('role');
+                            
                             // Navigate to login and clear all previous routes
                             nav.toLogin();
                             viewModel.closeDrawer(context);

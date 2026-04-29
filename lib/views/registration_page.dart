@@ -214,6 +214,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                   visitReasonController.text.trim(),
                                 ),
                                 visible: 0,
+                                notification: 0
                               );
                               await viewModel.handleRegisterUser(
                                 um,

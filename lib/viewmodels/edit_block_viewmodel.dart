@@ -193,6 +193,7 @@ class EditBlockViewmodel extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
+      String now = DateTime.now().toString().substring(0, 10);
       final blocks = await api.getBlocks(token, roomId);
       block = blocks.firstWhere((b) => b.id == blockId);
     } catch (e) {
@@ -201,8 +202,6 @@ class EditBlockViewmodel extends ChangeNotifier {
       notifyListeners();
     }
   }
-
-  
 
   String getBlockDate() {
     if (block != null) {

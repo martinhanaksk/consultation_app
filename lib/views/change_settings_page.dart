@@ -25,7 +25,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
       child: Consumer<ChangeSettingsViewmodel>(
         builder: (context, viewModel, child) {
           return Scaffold(
-            appBar: AppBarMenu(),
+            appBar: AppBarMenu(onSettingsPage: true),
             drawer: SliderMenu(),
             backgroundColor: constants.background,
             body: SafeArea(
@@ -151,19 +151,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                 ),
 
                                 // Receive Emails
-                                _CheckboxTile(
-                                  svgName: viewModel.receiveEmails
-                                      ? 'bell_ringing'
-                                      : 'bell_crossed',
-                                  title: "Receive Emails",
-                                  subtitle:
-                                      "Get emails about changes in selected consultation blocks",
-                                  value: viewModel.receiveEmails,
-                                  onChanged: viewModel.setReceiveEmail,
-                                ),
-
-                                // Notify hours before
-                                if (viewModel.receiveEmails)
+                               
                                   _NotifyHoursTile(viewModel: viewModel),
 
                                 // Theme
@@ -760,8 +748,8 @@ class _NotifyHoursTileState extends State<_NotifyHoursTile> {
 
   void _onChanged(String val) {
     final parsed = int.tryParse(val);
-    if (parsed == null || parsed < 1 || parsed > 48) {
-      setState(() => _error = "1–48");
+    if (parsed == null || parsed < 0 || parsed > 1000) {
+      setState(() => _error = "0–1000");
     } else {
       setState(() => _error = null);
       widget.viewModel.updateNotifyHoursBefore(parsed);

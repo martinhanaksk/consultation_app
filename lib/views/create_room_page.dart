@@ -19,10 +19,6 @@ class _CreateRoomState extends State<CreateRoom> {
     super.initState();
   }
 
-  final TextEditingController roomNameController = TextEditingController();
-  final TextEditingController titleController = TextEditingController();
-  final TextEditingController descriptionController = TextEditingController();
-  final TextEditingController acceptedEmailController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -52,23 +48,31 @@ class _CreateRoomState extends State<CreateRoom> {
                       ),
                       const SizedBox(height: 16),
                       _inputBox(
-                        controller: titleController,
+                        controller: viewModel.titleController,
                         hintText: 'Title',
                         maxLines: 1,
                       ),
 
                       const SizedBox(height: 16),
                       _inputBox(
-                        controller: roomNameController,
+                        controller: viewModel.roomNameController,
                         hintText: 'Room name',
                         maxLines: 1,
                       ),
 
                       const SizedBox(height: 16),
                       _inputBox(
-                        controller: descriptionController,
+                        controller: viewModel.descriptionController,
                         hintText: 'Description',
                         maxLines: 3,
+                      ),
+
+                      const SizedBox(height: 16),
+                      _inputBox(
+                        controller: viewModel.cancellationHoursController,
+                        hintText: 'Cancel deadline (hrs)',
+                        maxLines: 1,
+                        keyboardType: TextInputType.number,
                       ),
 
                       const SizedBox(height: 16),
@@ -83,8 +87,9 @@ class _CreateRoomState extends State<CreateRoom> {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      TextField(  style: TextStyle(color: constants.darkGrey),
-                        controller: acceptedEmailController,
+                      TextField(
+                        style: TextStyle(color: constants.darkGrey),
+                        controller: viewModel.acceptedEmailController,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -105,22 +110,23 @@ class _CreateRoomState extends State<CreateRoom> {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: svgs.icon(
-                                'add',constants.primary,
+                                'add',
+                                constants.primary,
                                 width: constants.fsBody,
-                                
                               ),
                             ),
                             onTap: () {
                               if (validator.validateNotEmpty(
-                                acceptedEmailController.text.trim(),
+                                viewModel.acceptedEmailController.text.trim(),
                                 context,
                               )) {
                                 viewModel.addToAcceptedEmails(
                                   helpers.trimText(
-                                    acceptedEmailController.text.trim(),
+                                    viewModel.acceptedEmailController.text
+                                        .trim(),
                                   ),
                                 );
-                                acceptedEmailController.clear();
+                                viewModel.acceptedEmailController.clear();
                               }
                             },
                           ),
@@ -159,26 +165,45 @@ class _CreateRoomState extends State<CreateRoom> {
                                 onPressed: () async {
                                   FocusScope.of(context).unfocus();
                                   if (validator.validateNotEmpty(
-                                        roomNameController.text.trim(),
+                                        viewModel.roomNameController.text
+                                            .trim(),
                                         context,
                                       ) &&
                                       validator.validateNotEmpty(
-                                        titleController.text.trim(),
+                                        viewModel.titleController.text.trim(),
                                         context,
                                       ) &&
                                       validator.validateNotEmpty(
-                                        descriptionController.text.trim(),
+                                        viewModel.descriptionController.text
+                                            .trim(),
+                                        context,
+                                      ) &&
+                                      validator.validateNotEmpty(
+                                        viewModel
+                                            .cancellationHoursController
+                                            .text
+                                            .trim(),
                                         context,
                                       )) {
                                     viewModel.createRoom(
                                       helpers.trimText(
-                                        roomNameController.text.trim(),
+                                        viewModel.roomNameController.text
+                                            .trim(),
                                       ),
                                       helpers.trimText(
-                                        titleController.text.trim(),
+                                        viewModel.titleController.text.trim(),
                                       ),
                                       helpers.trimText(
-                                        descriptionController.text.trim(),
+                                        viewModel.descriptionController.text
+                                            .trim(),
+                                      ),
+                                      int.parse(
+                                        helpers.trimText(
+                                          viewModel
+                                              .cancellationHoursController
+                                              .text
+                                              .trim(),
+                                        ),
                                       ),
                                     );
                                   }
@@ -217,13 +242,16 @@ class _CreateRoomState extends State<CreateRoom> {
     required TextEditingController controller,
     required String hintText,
     int maxLines = 1,
+    TextInputType keyboardType = TextInputType.text,
   }) {
     return Container(
       clipBehavior: Clip.none,
       decoration: constants.squircleShadow(color: constants.background),
-      child: TextField(style: TextStyle(color: constants.darkGrey),
+      child: TextField(
+        style: TextStyle(color: constants.darkGrey),
         controller: controller,
         maxLines: maxLines,
+        keyboardType: keyboardType,
         decoration: InputDecoration(
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),

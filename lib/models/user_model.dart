@@ -5,6 +5,7 @@ class UserModel {
   final String role;
   final String visitReason;
   final int visible;
+  final int notification;
   UserModel({
     required this.email,
     required this.name,
@@ -12,6 +13,7 @@ class UserModel {
     required this.role,
     required this.visitReason,
     required this.visible,
+    required this.notification,
   });
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
     email: json['email'],
@@ -20,5 +22,6 @@ class UserModel {
     role: json['role'],
     visitReason: json['visit_reason'],
     visible: json['visible'],
+    notification: json['notification'],
   );
 }

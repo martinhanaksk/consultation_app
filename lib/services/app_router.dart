@@ -1,3 +1,4 @@
+import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/create_room_viewmodel.dart';
 import 'package:consultation_app/views/consultations_base_page.dart';
 import 'package:consultation_app/views/consultations_owner_page.dart';
@@ -106,15 +107,12 @@ class AppRouter {
             onSuccess: onSuccess,
           ),
         );
-        case editRoom:
+      case editRoom:
         final args = settings.arguments as Map<String, dynamic>;
         final token = args['token'] as String;
         final roomId = args['roomId'] as int;
         return MaterialPageRoute(
-          builder: (_) => EditRoomPage(
-            token: token,
-            roomId: roomId
-          ),
+          builder: (_) => EditRoomPage(token: token, roomId: roomId),
         );
       case displayListOfEmails:
         final args = settings.arguments as Map<String, dynamic>;
@@ -144,8 +142,18 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => ChangeSettings());
       default:
         return MaterialPageRoute(
-          builder: (_) =>
-              const Scaffold(body: Center(child: Text('Page not found'))),
+          builder: (_) => Scaffold(
+            backgroundColor: constants.background,
+            body: Center(
+              child: Text(
+                'Page not found',
+                style: TextStyle(
+                  color: constants.darkGrey,
+                  fontSize: constants.fsTitle,
+                ),
+              ),
+            ),
+          ),
         );
     }
   }

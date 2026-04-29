@@ -15,6 +15,14 @@ class NavigationService {
 
   //Auth
   void toLogin() async {
+    await securePrefs.removeToken();
+    await prefs.removeItem('email');
+    await prefs.removeItem('role');
+    await prefs.removeItem('notifyHoursBefore');
+    await prefs.removeItem('visitReason');
+    await prefs.removeItem('surname');
+    await prefs.removeItem('name');
+    await prefs.removeItem('visibility');
     _navigator()?.popUntil((route) => route.isFirst);
     _navigator()?.pushReplacementNamed(AppRouter.login);
   }
@@ -28,15 +36,14 @@ class NavigationService {
       arguments: {'email': email, 'rememberMe': rememberMe},
     );
   }
-Future<dynamic> toEditRoom({
-    required String token,
-    required int roomId,
-  }) {
+
+  Future<dynamic> toEditRoom({required String token, required int roomId}) {
     return _navigator()!.pushNamed(
       AppRouter.editRoom,
       arguments: {'token': token, 'roomId': roomId},
     );
   }
+
   void redirectToRegister(BuildContext context, String email) {
     Navigator.pushNamed(
       context,
@@ -76,16 +83,14 @@ Future<dynamic> toEditRoom({
       arguments: <String, dynamic>{'token': token},
     );
   }
-void toDisplaySlotHistory({
-    required String history,
-  }) {
+
+  void toDisplaySlotHistory({required String history}) {
     _navigator()?.pushNamed(
       AppRouter.displaySlotHistory,
-      arguments: <String, dynamic>{
-        'history': history,
-      },
+      arguments: <String, dynamic>{'history': history},
     );
   }
+
   void toCreateBlock({
     required String token,
     required String roomId,

@@ -10,13 +10,12 @@ class SlotWidget extends StatelessWidget {
   final SlotModel slot;
   final String token;
   final String roomId;
+  final int cancellationNoticeHours;
   final int blockId;
   final int isOwnerView;
   final Widget? Function(int slotId, int blockId, Color color)?
   showHistoryOption;
-
   final void Function(String note, int isOnline) onTakeSlot;
-
   final VoidCallback onReleaseSlot;
   final VoidCallback onChangeConsultationType;
   final BuildContext context;
@@ -33,6 +32,7 @@ class SlotWidget extends StatelessWidget {
     required this.slot,
     required this.token,
     required this.roomId,
+    required this.cancellationNoticeHours,
     required this.blockId,
     required this.showHistoryOption,
     required this.isOwnerView,
@@ -275,6 +275,80 @@ class SlotWidget extends StatelessWidget {
                               GestureDetector(
                                 onTap: () async {
                                   onReleaseSlot();
+                                  String combinedStr =
+                                      '$date ${slot.startTime}';
+                                  DateTime finalSlotStartTime = DateTime.parse(
+                                    combinedStr,
+                                  );
+                                  final timeDifference = finalSlotStartTime
+                                      .difference(DateTime.now());
+                                  if (timeDifference.inHours <
+                                      cancellationNoticeHours) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          backgroundColor: constants.background,
+                                          title: RichText(textAlign: TextAlign.center,
+                                            text: TextSpan(
+                                              style: TextStyle(
+                                                fontSize: constants.fsBody,
+                                                color: constants.darkGrey,
+                                                height: 1.4,
+                                              ),
+                                              children: [
+                                                TextSpan(
+                                                  text: 'Warning!\n\n',
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        constants.fsHeadline,
+                                                    fontWeight: constants
+                                                        .fwSemiBold, // Or FontWeight.bold
+                                                    color: constants
+                                                        .primary, // Optional: make it your app's primary color
+                                                  ),
+                                                ),
+
+                                                const TextSpan(
+                                                  text:
+                                                      'You are canceling this consultation very close to its start time.\n\n'
+                                                      'Next time, please try to cancel at least ',
+                                                ),
+                                                TextSpan(
+                                                  text:
+                                                      cancellationNoticeHours ==
+                                                          1
+                                                      ? '$cancellationNoticeHours hour'
+                                                      : '$cancellationNoticeHours hours',
+                                                  style: TextStyle(
+                                                    fontWeight: constants
+                                                        .fwSemiBold, // Or FontWeight.bold
+                                                    color: constants
+                                                        .primary, // Optional: make it your app's primary color
+                                                  ),
+                                                ),
+                                                const TextSpan(
+                                                  text: ' in advance.',
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () => nav.pop(),
+                                              child: Text(
+                                                'OK',
+                                                style: TextStyle(
+                                                  fontSize: constants.fsBody,
+                                                  color: constants.primary,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  }
                                 },
                                 child: isOptimisticallyReleased
                                     ? SpinKitPouringHourGlass(
@@ -676,7 +750,7 @@ class __NoteBottomSheetState extends State<_NoteBottomSheet> {
             _InfoCard(
               startTime: widget.startTime,
               duration: widget.duration,
-              date: widget.date,
+              date: widget.date.replaceAll("-", "."),
             ),
             const SizedBox(height: 12),
             _NoteTextField(controller: _controller),

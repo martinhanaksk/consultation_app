@@ -47,7 +47,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
       child: Consumer<VerifyOtpViewmodel>(
         builder: (context, viewModel, child) {
           return Scaffold(
-            appBar: AppBarMenu(),
+            appBar: AppBarMenu(onVerificationPage:true),
             backgroundColor: constants.background,
             body: SafeArea(
               child: Padding(

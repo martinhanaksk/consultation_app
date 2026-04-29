@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
 
 class CreateRoomViewmodel extends ChangeNotifier {
+  final TextEditingController roomNameController = TextEditingController();
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+  final TextEditingController acceptedEmailController = TextEditingController();
+  final TextEditingController cancellationHoursController =
+      TextEditingController();
   List<String> acceptedEmails = [];
 
   bool _isLoading = false;
@@ -10,10 +16,11 @@ class CreateRoomViewmodel extends ChangeNotifier {
     String shortName,
     String title,
     String description,
+    int cancellationHours,
   ) async {
     _isLoading = true;
     notifyListeners();
-    String token = await prefs.getItem("token");
+    String token = await securePrefs.getToken();
     String email = await prefs.getItem("email");
     try {
       if (acceptedEmails.isNotEmpty) {
@@ -21,7 +28,7 @@ class CreateRoomViewmodel extends ChangeNotifier {
           token,
           shortName,
           title,
-          description,
+          description, cancellationHours,
           acceptedEmails,
         );
         if (b) {

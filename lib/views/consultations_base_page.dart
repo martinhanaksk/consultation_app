@@ -239,16 +239,9 @@ class _RoomSelectorButton extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    viewModel.rooms
-                            ?.cast<RoomModel?>()
-                            .firstWhere(
-                              (r) =>
-                                  r!.id.toString() ==
-                                  viewModel.safeSelectedRoomId,
-                              orElse: () => null,
-                            )
-                            ?.title ??
-                        "Select a Room",
+                    viewModel.selectedRoom == null
+                        ? "Loading..."
+                        : viewModel.selectedRoom!.title,
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: constants.fwSemiBold,
@@ -256,7 +249,7 @@ class _RoomSelectorButton extends StatelessWidget {
                       color:
                           (viewModel.noRoomsFound ||
                               viewModel.selectedRoomId == null)
-                          ? constants.darkGrey30
+                          ? constants.primary
                           : constants.darkGrey,
                     ),
                   ),
@@ -440,15 +433,7 @@ class _ConsultationBlockCard extends StatelessWidget {
                                 width: 20,
                                 child: GestureDetector(
                                   onTap: () async {
-                                    bool canRecieveEmails =
-                                        await prefs.getItem('receiveEmails') ==
-                                        true;
-                                    if (!canRecieveEmails) {
-                                      notify.showToast(
-                                        "Turn on email recieving in the settings",
-                                      );
-                                      return;
-                                    }
+                                   
                                     viewModel.handleEmailSubscribe(
                                       token,
                                       blockEntry.key,
@@ -508,6 +493,12 @@ class _ConsultationBlockCard extends StatelessWidget {
                             slot: slots[index],
                             token: token,
                             roomId: vm.selectedRoomId!,
+                            cancellationNoticeHours:
+                                viewModel.selectedRoom == null
+                                ? 0
+                                : viewModel
+                                      .selectedRoom!
+                                      .cancellationNoticeHours,
                             blockId: blockEntry.key,
                             isOwnerView: vm.ownerView,
                             onChangeConsultationType: () =>
@@ -521,7 +512,7 @@ class _ConsultationBlockCard extends StatelessWidget {
                                 .isOptimisticallyReleased(slot.id),
                             isFirst: index == 0,
                             isLast: index == slots.length - 1,
-                            date: vm.blockDateLabel(blockEntry.key),
+                            date: vm.blockDate(blockEntry.key).substring(0, 10),
                           ),
                         );
                       },

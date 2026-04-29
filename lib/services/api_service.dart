@@ -43,9 +43,7 @@ class ApiService {
       await prefs.saveItem('email', email);
       await securePrefs.saveToken(data['token']);
       await prefs.saveItem('role', data['role']);
-      if ((await prefs.getItem('receiveEmails') == "")) {
-        await prefs.saveItem('receiveEmails', false);
-      }
+     
       bool visibilityResponse = await getVisibility(data['token'], email);
       await prefs.saveItem('visibility', visibilityResponse);
 
@@ -136,7 +134,7 @@ class ApiService {
         "notification": notificationHoursBefore,
       }),
     );
-
+    print(token);
     _checkUnauthorized(response);
 
     if (response.statusCode != 200) {
@@ -197,7 +195,7 @@ class ApiService {
     final response = await http.post(url, headers: _headers(token));
 
     _checkUnauthorized(response);
-    print(response.body);
+
     return response.statusCode == 200;
   }
 
@@ -301,6 +299,7 @@ class ApiService {
     String roomName,
     String title,
     String description,
+    int cancellationHours,
     List<String> acceptedEmailsArray,
   ) async {
     String convertedAcceptedEmails = helpers.acceptedEmailsFormater(
@@ -316,6 +315,7 @@ class ApiService {
         "title": title,
         "description": description,
         "accepted_emails": convertedAcceptedEmails,
+        "cancellation_notice_hours": cancellationHours,
       }),
     );
 
@@ -329,6 +329,7 @@ class ApiService {
     String shortName,
     String title,
     String description,
+    int cancellationHours,
     List<String> acceptedEmailsArray,
   ) async {
     String convertedAcceptedEmails = helpers.acceptedEmailsFormater(
@@ -344,6 +345,7 @@ class ApiService {
         "title": title,
         "description": description,
         "accepted_emails": convertedAcceptedEmails,
+        "cancellation_notice_hours": cancellationHours,
       }),
     );
 
@@ -381,8 +383,9 @@ class ApiService {
   // 4. BLOCKS & SUBSCRIPTIONS
   // ==========================================
 
-  Future<List<BlockModel>> getBlocks(String token, int roomId) async {
-    final Uri url = Uri.parse('${constants.url}/block/get?room_id=$roomId');
+  Future<List<BlockModel>> getBlocks(String token, int roomId, [String? now]) async {
+    final String query = now != null ? '&start=$now' : '';
+    final Uri url = Uri.parse('${constants.url}/block/get?room_id=$roomId$query');
     final response = await http.get(url, headers: _headers(token));
 
     _checkUnauthorized(response);
@@ -407,7 +410,6 @@ class ApiService {
     _checkUnauthorized(response);
 
     if (response.statusCode != 200) {
-      notify.showToast("Failed to create block");
       return "";
     } else {
       return response.body;

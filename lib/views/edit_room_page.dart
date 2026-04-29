@@ -92,6 +92,13 @@ class _EditRoomPageState extends State<EditRoomPage> {
                               maxLines: 3,
                             ),
                             const SizedBox(height: 20),
+                            _inputBox(
+                              controller: viewModel.cancellationHoursController,
+                              hintText: 'Cancel deadline (hrs)',
+                              maxLines: 1,
+                              keyboardType: TextInputType.number,
+                            ),
+                            const SizedBox(height: 20),
 
                             Padding(
                               padding: const EdgeInsets.only(left: 8),
@@ -104,7 +111,8 @@ class _EditRoomPageState extends State<EditRoomPage> {
                               ),
                             ),
                             const SizedBox(height: 4),
-                            TextField(style: TextStyle(color: constants.darkGrey),
+                            TextField(
+                              style: TextStyle(color: constants.darkGrey),
                               controller: viewModel.acceptedEmailController,
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(
@@ -126,9 +134,9 @@ class _EditRoomPageState extends State<EditRoomPage> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: svgs.icon(
-                                      'add',constants.primary,
+                                      'add',
+                                      constants.primary,
                                       width: constants.fsBody,
-                                      
                                     ),
                                   ),
                                   onTap: () {
@@ -223,13 +231,16 @@ class _EditRoomPageState extends State<EditRoomPage> {
     required TextEditingController controller,
     required String hintText,
     int maxLines = 1,
+    TextInputType keyboardType = TextInputType.text,
   }) {
     return Container(
       clipBehavior: Clip.none,
       decoration: constants.squircleShadow(color: constants.background),
-      child: TextField(style: TextStyle(color: constants.darkGrey),
+      child: TextField(
+        style: TextStyle(color: constants.darkGrey),
         controller: controller,
         maxLines: maxLines,
+        keyboardType: TextInputType.number,
         decoration: InputDecoration(
           border: const OutlineInputBorder(borderSide: BorderSide.none),
           hintText: hintText,

@@ -9,11 +9,9 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
   String _token = "";
   String _role = "";
   String _visitReason = "";
-  bool _receiveEmails = true;
   bool _visibility = true;
   int _notifyHoursBefore = 0;
 
-  bool get receiveEmails => _receiveEmails;
   bool get visibility => _visibility;
   String get role => _role;
   String get name => _name;
@@ -28,11 +26,7 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
 
   // -- Setters --
 
-  void setReceiveEmail(bool? val) {
-    _receiveEmails = val ?? false;
-    prefs.saveItem('receiveEmails', _receiveEmails);
-    notifyListeners();
-  }
+ 
 
   void setTheme(bool? val) async {
     await themeSelector.setDarkMode(val ?? false);
@@ -132,14 +126,13 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
     } catch (e) {
       _notifyHoursBefore = old;
       notifyListeners();
-    }
+    } 
   }
 
   Future<void> initialize() async {
     _hasBeenInitialized = true;
     _email = await prefs.getItem("email");
-    _token = await prefs.getItem("token");
-    _receiveEmails = (await prefs.getItem('receiveEmails')) ?? true;
+    _token = await securePrefs.getToken();
 
     final data = await api.getUserData(_token, _email);
 

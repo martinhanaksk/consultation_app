@@ -7,6 +7,8 @@ class EditRoomViewmodel extends ChangeNotifier {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController acceptedEmailController = TextEditingController();
+  final TextEditingController cancellationHoursController =
+      TextEditingController();
 
   List<String> acceptedEmails = [];
 
@@ -28,6 +30,8 @@ class EditRoomViewmodel extends ChangeNotifier {
       shortNameController.text = room!.shortName;
       titleController.text = room!.title;
       descriptionController.text = room!.description;
+      cancellationHoursController.text = room!.cancellationNoticeHours
+          .toString();
 
       acceptedEmails = room!.acceptedEmails
           .split(',')
@@ -82,6 +86,7 @@ class EditRoomViewmodel extends ChangeNotifier {
     if (shortNameController.text.isEmpty ||
         titleController.text.isEmpty ||
         descriptionController.text.isEmpty ||
+        cancellationHoursController.text.isEmpty ||
         acceptedEmails.isEmpty) {
       errorMessage = 'Please fill out all required fields.';
       notifyListeners();
@@ -96,6 +101,7 @@ class EditRoomViewmodel extends ChangeNotifier {
         shortNameController.text.trim(),
         titleController.text.trim(),
         descriptionController.text.trim(),
+        int.parse(cancellationHoursController.text.trim()),
         acceptedEmails,
       );
 

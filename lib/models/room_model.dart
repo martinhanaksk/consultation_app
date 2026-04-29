@@ -4,7 +4,7 @@ class RoomModel {
   final String shortName;
   final String title;
   final String description;
-  final String acceptedEmails;
+  final String acceptedEmails;final int cancellationNoticeHours;
 
   RoomModel({
     required this.id,
@@ -12,7 +12,7 @@ class RoomModel {
     required this.shortName,
     required this.title,
     required this.description,
-    required this.acceptedEmails,
+    required this.acceptedEmails, required this.cancellationNoticeHours,
   });
 
   factory RoomModel.fromJson(Map<String, dynamic> json) => RoomModel(
@@ -21,7 +21,7 @@ class RoomModel {
         shortName: json['short_name'],
         title: json['title'],
         description: json['description'],
-        acceptedEmails: json['accepted_emails'],
+        acceptedEmails: json['accepted_emails'],  cancellationNoticeHours: json['cancellation_notice_hours'],
       );
 
   Map<String, dynamic> toJson() => {
@@ -30,6 +30,6 @@ class RoomModel {
         "short_name": shortName,
         "title": title,
         "description": description,
-        "accepted_emails": acceptedEmails,
+        "accepted_emails": acceptedEmails, "cancellation_notice_hours": cancellationNoticeHours,
       };
 }
