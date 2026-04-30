@@ -6,14 +6,14 @@ class ThemeSelector extends ChangeNotifier {
   bool get isDark => _isDark;
 
   Future<void> initialize() async {
-    _isDark = await prefs.getItem('darkMode') ?? false;
+    _isDark = sm.isDarkModeOn;
     _applyTheme();
     notifyListeners();
   }
 
   Future<void> setDarkMode(bool value) async {
     _isDark = value;
-    await prefs.saveItem('darkMode', value);
+    sm.updateIsDarkModeOn(value);
     _applyTheme();
     notifyListeners();
     final context = nav.navigatorKey.currentContext;

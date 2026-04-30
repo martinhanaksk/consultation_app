@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class CreateBlockViewmodel extends ChangeNotifier {
-  // --- Date Picker ---
   bool isLoading = false;
   bool _isChecked = false;
   bool get isChecked => _isChecked;
@@ -19,9 +18,7 @@ class CreateBlockViewmodel extends ChangeNotifier {
   dynamic get selectedDates => _selectedDates;
   static final DateFormat _fmt = DateFormat('MMM d');
   static final DateFormat _fmtYear = DateFormat('MMM d, y');
-  //Slot number
   final TextEditingController slotNumberController = TextEditingController();
-  // --- Note ---
   final TextEditingController noteController = TextEditingController();
   void toggleisOnline(bool? value) {
     _isChecked = value ?? false;
@@ -196,7 +193,7 @@ class CreateBlockViewmodel extends ChangeNotifier {
     return '$hours:$minutes:$seconds';
   }
 
-  void createBlock(String token, String roomId, VoidCallback? onSuccess) async {
+  void createBlock(String roomId, VoidCallback? onSuccess) async {
     isLoading = true;
     notifyListeners();
     final slotCount = int.tryParse(slotNumberController.text.trim());
@@ -213,7 +210,6 @@ class CreateBlockViewmodel extends ChangeNotifier {
     final int isOnline = isChecked ? 1 : 0;
     for (int i = 0; i < dates.length; i++) {
       String response = await api.createBlock(
-        token,
         int.parse(roomId),
         dates[i],
       );
@@ -230,7 +226,6 @@ class CreateBlockViewmodel extends ChangeNotifier {
           final Duration slotStart = _startTime! + (_duration! * j);
           final String startTimeStr = _formatTimeWithSeconds(slotStart);
           bool success = await api.createSlot(
-            token,
             blockId,
             startTimeStr,
             _duration!.inMinutes,

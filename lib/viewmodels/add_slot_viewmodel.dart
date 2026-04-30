@@ -44,7 +44,6 @@ class AddSlotViewmodel extends ChangeNotifier {
   }
 
   void addSlot(
-    String token,
     String blockId,
     VoidCallback? onSuccess,
   ) async {
@@ -65,7 +64,6 @@ class AddSlotViewmodel extends ChangeNotifier {
     final String note = noteController.text.trim();
 
     final bool success = await api.createSlot(
-      token,
       int.parse(blockId),
       startTimeStr,
       durationMinutes,

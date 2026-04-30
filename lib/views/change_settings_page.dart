@@ -41,7 +41,6 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Header
                           Text(
                             "Settings",
                             style: TextStyle(
@@ -59,8 +58,6 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                             ),
                           ),
                           const SizedBox(height: 28),
-
-                          // ── Profile Card ──────────────────────────────────
                           Container(
                             width: double.infinity,
                             decoration: constants.squircleShadow(
@@ -76,7 +73,6 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                   value: viewModel.email,
                                 ),
                                 _divider(),
-                                // Editable name row
                                 _EditableTile(
                                   svgName: 'id',
                                   label: "Name",
@@ -85,9 +81,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                   onEdit: () =>
                                       _showNameDialog(context, viewModel),
                                 ),
-
                                 _divider(),
-                                // Editable visit reason
                                 _EditableTile(
                                   svgName: 'pencil',
                                   label: "Visit Reason",
@@ -110,8 +104,6 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                           ),
 
                           const SizedBox(height: 20),
-
-                          // ── Preferences Card ──────────────────────────────
                           Container(
                             width: double.infinity,
                             decoration: constants.squircleShadow(
@@ -138,8 +130,6 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                   ),
                                 ),
                                 Divider(color: constants.darkGrey30, height: 1),
-
-                                // Visibility
                                 _CheckboxTile(
                                   svgName: viewModel.visibility
                                       ? 'eye_open'
@@ -149,12 +139,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                   value: viewModel.visibility,
                                   onChanged: (_) => viewModel.setVisibility(),
                                 ),
-
-                                // Receive Emails
-                               
                                   _NotifyHoursTile(viewModel: viewModel),
-
-                                // Theme
                                 _CheckboxTile(
                                   svgName: themeSelector.isDark
                                       ? 'moon'
@@ -220,17 +205,12 @@ class _ChangeSettingsState extends State<ChangeSettings> {
       ),
     );
   }
-
-  // ── Helpers ──────────────────────────────────────────────────────────────
-
   Widget _divider() => Divider(
     indent: 20,
     endIndent: 20,
     color: constants.darkGrey30,
     height: 1,
   );
-
-  // Name edit dialog
   Future<void> _showNameDialog(
     BuildContext context,
     ChangeSettingsViewmodel vm,
@@ -287,8 +267,6 @@ class _ChangeSettingsState extends State<ChangeSettings> {
       ),
     );
   }
-
-  // Visit reason dialog
   Future<void> _showVisitReasonDialog(
     BuildContext context,
     ChangeSettingsViewmodel vm,
@@ -477,8 +455,6 @@ class _ChangeSettingsState extends State<ChangeSettings> {
     );
   }
 }
-
-// ── Reusable widgets ──────────────────────────────────────────────────────────
 class _ActionTile extends StatelessWidget {
   final String svgName;
   final String title;
@@ -539,8 +515,6 @@ class _ActionTile extends StatelessWidget {
     );
   }
 }
-
-/// Static info row (non-editable)
 class _InfoTile extends StatelessWidget {
   final String svgName;
   final String label;
@@ -591,8 +565,6 @@ class _InfoTile extends StatelessWidget {
     );
   }
 }
-
-/// Editable info row — shows a pencil icon button on the right
 class _EditableTile extends StatelessWidget {
   final String svgName;
   final String label;
@@ -646,7 +618,7 @@ class _EditableTile extends StatelessWidget {
               'edit',
               constants.primary,
               width: constants.fsBody,
-            ), // use your edit/pencil svg
+            ),
             tooltip: "Edit",
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
@@ -656,8 +628,6 @@ class _EditableTile extends StatelessWidget {
     );
   }
 }
-
-/// Checkbox preference row
 class _CheckboxTile extends StatelessWidget {
   final String svgName;
   final String title;
@@ -718,8 +688,6 @@ class _CheckboxTile extends StatelessWidget {
     );
   }
 }
-
-/// Notification hours-before picker row (dropdown)
 class _NotifyHoursTile extends StatefulWidget {
   final ChangeSettingsViewmodel viewModel;
   const _NotifyHoursTile({required this.viewModel});
@@ -738,6 +706,15 @@ class _NotifyHoursTileState extends State<_NotifyHoursTile> {
     _ctrl = TextEditingController(
       text: widget.viewModel.notifyHoursBefore.toString(),
     );
+  }
+
+  @override
+  void didUpdateWidget( _NotifyHoursTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final newValue = widget.viewModel.notifyHoursBefore.toString();
+    if (_ctrl.text != newValue) {
+      _ctrl.text = newValue;
+    }
   }
 
   @override

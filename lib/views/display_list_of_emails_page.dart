@@ -56,7 +56,6 @@ class _DisplayListOfEmailsPageState extends State<DisplayListOfEmailsPage> {
                               fontWeight: constants.fwSemiBold,
                             ),
                           ),
-                          // 4. Moved the delete button to 'trailing' and gave it a better touch target
                           trailing: InkWell(
                             borderRadius: BorderRadius.circular(20),
                             onTap: () => widget.viewModel

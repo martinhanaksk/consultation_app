@@ -11,6 +11,7 @@ void main() async {
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   setupDependencies();
   await themeSelector.initialize();
+  await sm.load();
   runApp(const MyApp());
 }
 
@@ -24,8 +25,8 @@ class MyApp extends StatelessWidget {
       builder: (context, _) {
         return OverlayKit(
           child: MaterialApp(
-            title: 'Consultations',
             navigatorKey: nav.navigatorKey,
+            title: 'Consultations',
             theme: ThemeData(primaryColor: constants.primary),
             initialRoute: AppRouter.login,
             debugShowCheckedModeBanner: false,

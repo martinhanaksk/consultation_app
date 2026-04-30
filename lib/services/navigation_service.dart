@@ -1,10 +1,18 @@
 import 'package:consultation_app/services/app_router.dart';
-import 'package:consultation_app/viewmodels/create_room_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
 
 class NavigationService {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+  final List<String> _routeHistory = [];
+
+  String? get previousRoute =>
+      _routeHistory.length >= 2 ? _routeHistory[_routeHistory.length - 2] : null;
+
+  String? get currentRoute =>
+      _routeHistory.isNotEmpty ? _routeHistory.last : null;
+
   NavigatorState? _navigator() {
     return navigatorKey.currentState;
   }
@@ -13,16 +21,31 @@ class NavigationService {
     return _navigator()?.context;
   }
 
-  //Auth
+  Future<dynamic> _pushNamed(String routeName, {Object? arguments}) {
+    _routeHistory.add(routeName);
+    return _navigator()!.pushNamed(routeName, arguments: arguments);
+  }
+
+  Future<dynamic> _pushReplacementNamed(String routeName, {Object? arguments}) {
+    if (_routeHistory.isNotEmpty) _routeHistory.removeLast();
+    _routeHistory.add(routeName);
+    return _navigator()!.pushReplacementNamed(routeName, arguments: arguments);
+  }
+
+  Future<dynamic> _pushNamedAndRemoveUntil(String routeName, {Object? arguments}) {
+    _routeHistory.clear();
+    _routeHistory.add(routeName);
+    return _navigator()!.pushNamedAndRemoveUntil(
+      routeName,
+      (route) => false,
+      arguments: arguments,
+    );
+  }
+
   void toLogin() async {
-    await securePrefs.removeToken();
-    await prefs.removeItem('email');
-    await prefs.removeItem('role');
-    await prefs.removeItem('notifyHoursBefore');
-    await prefs.removeItem('visitReason');
-    await prefs.removeItem('surname');
-    await prefs.removeItem('name');
-    await prefs.removeItem('visibility');
+    sm.clear();
+    _routeHistory.clear();
+    _routeHistory.add(AppRouter.login);
     _navigator()?.popUntil((route) => route.isFirst);
     _navigator()?.pushReplacementNamed(AppRouter.login);
   }
@@ -31,20 +54,21 @@ class NavigationService {
     required String email,
     bool rememberMe = false,
   }) {
-    return _navigator()!.pushNamed(
+    return _pushNamed(
       AppRouter.verifyOtp,
       arguments: {'email': email, 'rememberMe': rememberMe},
     );
   }
 
-  Future<dynamic> toEditRoom({required String token, required int roomId}) {
-    return _navigator()!.pushNamed(
+  Future<dynamic> toEditRoom({required int roomId}) {
+    return _pushNamed(
       AppRouter.editRoom,
-      arguments: {'token': token, 'roomId': roomId},
+      arguments: {'roomId': roomId},
     );
   }
 
   void redirectToRegister(BuildContext context, String email) {
+    _routeHistory.add(AppRouter.register);
     Navigator.pushNamed(
       context,
       AppRouter.register,
@@ -53,53 +77,44 @@ class NavigationService {
   }
 
   void toRegister({required String email, required bool rememberMe}) {
-    _navigator()?.pushNamed(
+    _pushNamed(
       AppRouter.register,
       arguments: <String, dynamic>{'email': email, 'rememberMe': rememberMe},
     );
   }
 
-  //App
-
-  void toOwnerConsultations({required String token, required String email}) {
-    _navigator()?.pushNamedAndRemoveUntil(
-      AppRouter.consultationsOwnerPage,
-      (route) => false,
-      arguments: <String, dynamic>{'token': token, 'email': email},
-    );
+  void toOwnerConsultations() {
+      _routeHistory.clear();
+  _routeHistory.add(AppRouter.consultationsOwnerPage);
+  _navigator()?.popUntil((route) => route.isFirst);
+  _navigator()?.pushReplacementNamed(AppRouter.consultationsOwnerPage);
   }
 
-  void toBaseConsultations({required String token, required String email}) {
-    _navigator()?.pushNamedAndRemoveUntil(
-      AppRouter.consultationsBasePage,
-      (route) => false,
-      arguments: <String, dynamic>{'token': token, 'email': email},
-    );
+  void toBaseConsultations() {
+    _routeHistory.clear();
+  _routeHistory.add(AppRouter.consultationsBasePage);
+  _navigator()?.popUntil((route) => route.isFirst);
+  _navigator()?.pushReplacementNamed(AppRouter.consultationsBasePage);
   }
 
-  void toJoinRoom({required String token}) {
-    _navigator()?.pushNamed(
-      AppRouter.joinRoom,
-      arguments: <String, dynamic>{'token': token},
-    );
+  void toJoinRoom() {
+    _pushNamed(AppRouter.joinRoom, arguments: <String, dynamic>{});
   }
 
   void toDisplaySlotHistory({required String history}) {
-    _navigator()?.pushNamed(
+    _pushNamed(
       AppRouter.displaySlotHistory,
       arguments: <String, dynamic>{'history': history},
     );
   }
 
   void toCreateBlock({
-    required String token,
     required String roomId,
     required VoidCallback? onSuccess,
   }) {
-    _navigator()?.pushNamed(
+    _pushNamed(
       AppRouter.createBlock,
       arguments: <String, dynamic>{
-        'token': token,
         'roomId': roomId,
         'onSuccess': onSuccess,
       },
@@ -107,14 +122,12 @@ class NavigationService {
   }
 
   void toAddSlot({
-    required String token,
     required String blockId,
     required VoidCallback? onSuccess,
   }) {
-    _navigator()?.pushNamed(
+    _pushNamed(
       AppRouter.addSlot,
       arguments: <String, dynamic>{
-        'token': token,
         'blockId': blockId,
         'onSuccess': onSuccess,
       },
@@ -122,15 +135,13 @@ class NavigationService {
   }
 
   void toEditBlock({
-    required String token,
     required String roomId,
     required String blockId,
     required VoidCallback? onSuccess,
   }) {
-    _navigator()?.pushNamed(
+    _pushNamed(
       AppRouter.editBlock,
       arguments: <String, dynamic>{
-        'token': token,
         'roomId': roomId,
         'blockId': blockId,
         'onSuccess': onSuccess,
@@ -139,14 +150,12 @@ class NavigationService {
   }
 
   void toDisplayUsersInRoom({
-    required String token,
     required int roomId,
     required String roomName,
   }) {
-    _navigator()?.pushNamed(
+    _pushNamed(
       AppRouter.displayUsersInRoom,
       arguments: <String, dynamic>{
-        'token': token,
         'roomId': roomId,
         'roomName': roomName,
       },
@@ -154,25 +163,20 @@ class NavigationService {
   }
 
   void toDisplayListOfEmails({required dynamic viewModel}) {
-    _navigator()?.pushNamed(
+    _pushNamed(
       AppRouter.displayListOfEmails,
       arguments: <String, dynamic>{'viewModel': viewModel},
     );
   }
 
-  void toChangeSettings() {
-    _navigator()?.pushNamed(AppRouter.changeSettings);
-  }
+  void toChangeSettings() => _pushNamed(AppRouter.changeSettings);
 
-  void toProvideFeedback() {
-    _navigator()?.pushNamed(AppRouter.provideFeedback);
-  }
+  void toProvideFeedback() => _pushNamed(AppRouter.provideFeedback);
 
-  void toCreateRoom() {
-    _navigator()?.pushNamed(AppRouter.createRoom);
-  }
+  void toCreateRoom() => _pushNamed(AppRouter.createRoom);
 
   void pop<T extends Object?>([T? result]) {
+    if (_routeHistory.isNotEmpty) _routeHistory.removeLast();
     _navigator()?.pop(result);
   }
 }

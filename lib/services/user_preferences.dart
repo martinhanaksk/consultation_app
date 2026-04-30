@@ -2,32 +2,44 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class UserPreferences {
+   final Future<SharedPreferences> _prefsFuture = SharedPreferences.getInstance();
   Future<void> saveItem(String key, dynamic value) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs =await _prefsFuture;
 
     if (value is String) {
       await prefs.setString(key, value);
     } else if (value is bool) {
       await prefs.setBool(key, value);
+    }else if (value is int) {
+      await prefs.setInt(key, value);
     } else {
       await prefs.setString(key, value.toString());
     }
   }
 
-  Future<dynamic> getItem(String key) async {
-    final prefs = await SharedPreferences.getInstance();
+   Future<String> getString(String key) async {
+    final prefs = await _prefsFuture;
+    return prefs.getString(key)??"";
+  }
 
-    return prefs.get(key);
+  Future<bool> getBool(String key) async {
+    final prefs = await _prefsFuture;
+    return prefs.getBool(key)??true;
+  }
+
+  Future<int> getInt(String key) async {
+    final prefs = await _prefsFuture;
+    return prefs.getInt(key)??0;
   }
 
   Future<bool> containsItem(String key) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefsFuture;
     if (prefs.containsKey(key)) return true;
     return false;
   }
 
   Future<void> removeItem(String key) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefsFuture;
     await prefs.remove(key);
   }
 }

@@ -51,7 +51,7 @@ class Constants {
             ),
         side: hasBorder
             ? BorderSide(
-                color: grey, // subtle 1px border, adapts to both themes
+                color: grey,
                 width: 1,
               )
             : BorderSide.none,
@@ -65,7 +65,4 @@ class Constants {
   void setServerUrl() {
     url = "https://office-hours.fit.vutbr.cz/api/dev";
   }
-  //school server:
-
-  //testing url:
 }

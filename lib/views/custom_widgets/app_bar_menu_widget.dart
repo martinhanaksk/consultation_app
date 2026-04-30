@@ -4,7 +4,6 @@ import 'package:consultation_app/setup.dart';
 
 class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
   final BaseConsultationsViewmodel? viewModel;
-  final String? token;
   final Widget? toggle;
   final bool onHomePage;
   final bool onVerificationPage;
@@ -14,7 +13,6 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
     super.key,
     this.viewModel,
     this.toggle,
-    this.token,
     this.onHomePage = false,
     this.onVerificationPage = false,
     this.onSettingsPage = false,
@@ -64,7 +62,14 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
                       width: constants.fsTitle,
                     ),
                     onPressed: () {
-                      nav.pop();
+                      if (nav.previousRoute == "/consultationsOwnerPage") {
+                        nav.toOwnerConsultations();
+                      } else if (nav.previousRoute ==
+                          "/consultationsBasePage") {
+                        nav.toBaseConsultations();
+                      } else {
+                        nav.pop();
+                      }
                     },
                   ),
                 ),

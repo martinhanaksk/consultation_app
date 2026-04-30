@@ -7,14 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:consultation_app/setup.dart';
 
 class ConsultationsOwnerPage extends StatefulWidget {
-  final String token;
-  final String email;
-
-  const ConsultationsOwnerPage({
-    super.key,
-    required this.token,
-    required this.email,
-  });
+  const ConsultationsOwnerPage({super.key});
 
   @override
   State<ConsultationsOwnerPage> createState() => _ConsultationsOwnerPageState();
@@ -31,7 +24,7 @@ class _ConsultationsOwnerPageState extends State<ConsultationsOwnerPage> {
   }
 
   void initialize() async {
-    await _viewModel.init(widget.token, widget.email);
+    await _viewModel.init();
   }
 
   @override
@@ -42,50 +35,34 @@ class _ConsultationsOwnerPageState extends State<ConsultationsOwnerPage> {
         builder: (context, viewModel, child) {
           final isOwner = viewModel.ownerView == 1;
           return BaseConsultationsPage(
-            token: widget.token,
-            email: widget.email,
             viewModel: viewModel,
             toggle: AnimatedToggle(
               isOwner: isOwner,
               values: const ['Owner', 'Visitor'],
-              onToggleCallback: (value) =>
-                  viewModel.toggleView(widget.token, value),
+              onToggleCallback: (value) => viewModel.toggleView(value),
               width: 150,
               height: 32,
               buttonColor: constants.primary,
               backgroundColor: constants.grey,
               textColor: constants.background,
             ),
-            addButton: isOwner
-                ? _AddBlockButton(token: widget.token, viewModel: viewModel)
-                : null,
+            addButton: isOwner ? _AddBlockButton(viewModel: viewModel) : null,
             deleteButton: isOwner
-                ? _SettingsDropdownButton(
-                    token: widget.token,
-                    viewModel: viewModel,
-                  )
+                ? _SettingsDropdownButton(viewModel: viewModel)
                 : null,
             editBlockButton: isOwner
-                ? (blockId) => _EditBlockButton(
-                    token: widget.token,
-                    blockId: blockId,
-                    viewModel: viewModel,
-                  )
+                ? (blockId) =>
+                      _EditBlockButton(blockId: blockId, viewModel: viewModel)
                 : null,
             showHistoryOption: isOwner
                 ? (slotId, blockId, color) => _ShowHistoryButton(
-                    token: widget.token,
-                    onHistoryClicked: () => viewModel.displayHistoryOfSlot(
-                      widget.token,
-                      slotId,
-                      blockId,
-                    ),
+                    onHistoryClicked: () =>
+                        viewModel.displayHistoryOfSlot(slotId, blockId),
                     color: color,
                   )
                 : null,
             addSlotBefore: isOwner
                 ? (blockId, isEmpty) => _AddSlotOnOutskirts(
-                    token: widget.token,
                     viewModel: viewModel,
                     blockId: blockId,
                     isBefore: true,
@@ -94,7 +71,6 @@ class _ConsultationsOwnerPageState extends State<ConsultationsOwnerPage> {
                 : null,
             addSlotAfter: isOwner
                 ? (blockId, isEmpty) => _AddSlotOnOutskirts(
-                    token: widget.token,
                     viewModel: viewModel,
                     blockId: blockId,
                     isBefore: false,
@@ -108,17 +84,13 @@ class _ConsultationsOwnerPageState extends State<ConsultationsOwnerPage> {
   }
 }
 
-// ---------------------------------------------------------------------------
-
 class _AddSlotOnOutskirts extends StatelessWidget {
-  final String token;
   final OwnerConsultationsViewmodel viewModel;
   final int blockId;
   final bool isBefore;
   final bool isEmpty;
 
   const _AddSlotOnOutskirts({
-    required this.token,
     required this.viewModel,
     required this.blockId,
     required this.isBefore,
@@ -140,11 +112,11 @@ class _AddSlotOnOutskirts extends StatelessWidget {
                     ? null
                     : () async {
                         if (isBefore) {
-                          await viewModel.addSlotBeforeBlock(token, blockId);
-                          await viewModel.loadRoom(token);
+                          await viewModel.addSlotBeforeBlock(blockId);
+                          await viewModel.loadRoom();
                         } else {
-                          await viewModel.addSlotAfterBlock(token, blockId);
-                          await viewModel.loadRoom(token);
+                          await viewModel.addSlotAfterBlock(blockId);
+                          await viewModel.loadRoom();
                         }
                       },
                 child: Padding(
@@ -167,10 +139,9 @@ class _AddSlotOnOutskirts extends StatelessWidget {
 }
 
 class _AddBlockButton extends StatelessWidget {
-  final String token;
   final OwnerConsultationsViewmodel viewModel;
 
-  const _AddBlockButton({required this.token, required this.viewModel});
+  const _AddBlockButton({required this.viewModel});
 
   @override
   Widget build(BuildContext context) {
@@ -178,9 +149,8 @@ class _AddBlockButton extends StatelessWidget {
         ? const SizedBox.shrink()
         : GestureDetector(
             onTap: () => nav.toCreateBlock(
-              token: token,
               roomId: viewModel.safeSelectedRoomId!,
-              onSuccess: () => viewModel.loadRoom(token),
+              onSuccess: () => viewModel.loadRoom(),
             ),
             child: Container(
               width: 40,
@@ -193,12 +163,10 @@ class _AddBlockButton extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
 class _SettingsDropdownButton extends StatelessWidget {
-  final String token;
   final OwnerConsultationsViewmodel viewModel;
 
-  const _SettingsDropdownButton({required this.token, required this.viewModel});
+  const _SettingsDropdownButton({required this.viewModel});
 
   @override
   Widget build(BuildContext context) {
@@ -258,25 +226,20 @@ class _SettingsDropdownButton extends StatelessWidget {
               case "edit_room":
                 int? roomId = viewModel.roomIdNumber;
                 if (roomId != null) {
-                  await nav.toEditRoom(token: token, roomId: roomId);
+                  await nav.toEditRoom(roomId: roomId);
                 }
                 break;
               case "delete_room":
                 showDialog(
                   context: context,
-                  builder: (_) =>
-                      _DeleteRoomDialog(token: token, viewModel: viewModel),
+                  builder: (_) => _DeleteRoomDialog(viewModel: viewModel),
                 );
                 break;
               case "see_all_users_joined":
                 int? roomId = viewModel.roomIdNumber;
                 String roomName = viewModel.getRoomNameById() ?? "";
                 if (roomId != null) {
-                  nav.toDisplayUsersInRoom(
-                    token: token,
-                    roomId: roomId,
-                    roomName: roomName,
-                  );
+                  nav.toDisplayUsersInRoom(roomId: roomId, roomName: roomName);
                 }
                 break;
             }
@@ -288,10 +251,9 @@ class _SettingsDropdownButton extends StatelessWidget {
 }
 
 class _DeleteRoomDialog extends StatelessWidget {
-  final String token;
   final OwnerConsultationsViewmodel viewModel;
 
-  const _DeleteRoomDialog({required this.token, required this.viewModel});
+  const _DeleteRoomDialog({required this.viewModel});
 
   @override
   Widget build(BuildContext context) {
@@ -299,6 +261,7 @@ class _DeleteRoomDialog extends StatelessWidget {
       listenable: viewModel,
       builder: (context, _) {
         return AlertDialog(
+          backgroundColor: constants.background,
           title: RichText(
             text: TextSpan(
               children: [
@@ -336,16 +299,22 @@ class _DeleteRoomDialog extends StatelessWidget {
                         onPressed: () => nav.pop(),
                         child: Text(
                           "Cancel",
-                          style: TextStyle(color: constants.primary),
+                          style: TextStyle(color: constants.darkGrey),
                         ),
                       ),
-                      ElevatedButton(
-                        onPressed: () async {
-                          await viewModel.deleteRoom(token);
+                      GestureDetector(
+                        onTap: () async {
+                          await viewModel.deleteRoom();
                         },
-                        child: Text(
-                          "Delete",
-                          style: TextStyle(color: constants.primary),
+                        child: Container(
+                          padding: EdgeInsets.all(8),
+                          decoration: constants.squircleShadow(
+                            color: constants.primary,
+                          ),
+                          child: Text(
+                            "Delete",
+                            style: TextStyle(color: constants.background),
+                          ),
                         ),
                       ),
                     ],
@@ -357,14 +326,11 @@ class _DeleteRoomDialog extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
 class _ShowHistoryButton extends StatelessWidget {
-  final String token;
   final VoidCallback onHistoryClicked;
   final Color color;
 
   const _ShowHistoryButton({
-    required this.token,
     required this.onHistoryClicked,
     required this.color,
   });
@@ -379,24 +345,18 @@ class _ShowHistoryButton extends StatelessWidget {
 }
 
 class _EditBlockButton extends StatelessWidget {
-  final String token;
   final int blockId;
   final OwnerConsultationsViewmodel viewModel;
 
-  const _EditBlockButton({
-    required this.token,
-    required this.blockId,
-    required this.viewModel,
-  });
+  const _EditBlockButton({required this.blockId, required this.viewModel});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => nav.toEditBlock(
-        token: token,
         roomId: viewModel.safeSelectedRoomId!,
         blockId: blockId.toString(),
-        onSuccess: () => viewModel.loadRoom(token),
+        onSuccess: () => viewModel.loadRoom(),
       ),
       child: svgs.icon("edit", constants.darkGrey, width: constants.fsTitle),
     );

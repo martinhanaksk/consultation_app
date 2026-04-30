@@ -5,13 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class DisplayUsersInRoomPage extends StatefulWidget {
-  final String token;
   final int roomId;
   final String roomName;
 
   const DisplayUsersInRoomPage({
     super.key,
-    required this.token,
     required this.roomId,
     required this.roomName,
   });
@@ -31,8 +29,7 @@ class _DisplayUsersInRoomPageState extends State<DisplayUsersInRoomPage> {
   }
 
   void _initialize() async {
-    final token = await securePrefs.getToken();
-    await _viewModel.init(token, widget.roomId);
+    await _viewModel.init(widget.roomId);
   }
 
   @override

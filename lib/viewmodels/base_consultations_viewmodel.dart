@@ -15,7 +15,6 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   bool isAddingSlotAfter(int blockId) => _addingSlotAfter[blockId] ?? false;
   bool blocksFiltered = false;
   bool noRoomsFound = false;
-  //base atributes
   List<int> subscribedBlocks = [];
   List<UserModel>? users = [];
   List<RoomModel>? rooms = [];
@@ -28,31 +27,18 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   int _ownerView = 1;
   int get ownerView => _ownerView;
   String? selectedRoomId;
-
-  //Slot
-
   Map<int, bool> _slotLoading = {};
-
   bool isSlotLoading(int slotId) => _slotLoading[slotId] ?? false;
-
   Map<int, bool> _optimisticallyReleased = {};
-
   bool isOptimisticallyReleased(int slotId) =>
       _optimisticallyReleased[slotId] ?? false;
   Map<int, bool> _takingSlot = {};
-
   bool isTakingSlot(int slotId) => _takingSlot[slotId] ?? false;
-  // Move takeSlot logic here
-  Future<void> takeSlot(
-    String token,
-    int slotId,
-    String note,
-    int isOnline,
-  ) async {
+  Future<void> takeSlot(int slotId, String note, int isOnline) async {
     _takingSlot[slotId] = true;
     notifyListeners();
     try {
-      await api.takeSlot(token, slotId, note, isOnline);
+      await api.takeSlot(slotId, note, isOnline);
     } catch (e) {
       _takingSlot[slotId] = false;
       notify.showToast('manipulated');
@@ -60,50 +46,42 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     } finally {
       _takingSlot.remove(slotId);
       notifyListeners();
-      await loadRoom(token);
+      await loadRoom();
     }
   }
 
-  // Move releaseSlot logic here
-  Future<void> releaseSlot(String token, int slotId) async {
+  Future<void> releaseSlot(int slotId) async {
     _optimisticallyReleased[slotId] = true;
-    if (selectedRoom != Null) {
-      //selectedRoom!.cancellationNoticeHours;
-    }
 
     notifyListeners();
     try {
-      await api.releaseSlot(token, slotId);
+      await api.releaseSlot(slotId);
     } catch (e) {
       _optimisticallyReleased[slotId] = false;
       notify.showToast('Failed to release slot.');
       rethrow;
     } finally {
       _optimisticallyReleased.remove(slotId);
-      loadRoom(token);
+      loadRoom();
     }
   }
 
-  Future<void> onChangeConsultationType(String token, int slotId) async {
+  Future<void> onChangeConsultationType(int slotId) async {
     isLoading = true;
     notifyListeners();
     try {
-      await api.changeConsultationType(token, slotId);
+      await api.changeConsultationType(slotId);
     } catch (e) {
       notify.showToast('Slot cannot be manipulated.');
       rethrow;
     } finally {
       isLoading = false;
       notifyListeners();
-      loadRoom(token);
+      loadRoom();
     }
   }
-  //blocks
-  // Inside BaseConsultationsViewmodel
 
-  Future<void> handleEmailSubscribe(String token, int block) async {
-   
-
+  Future<void> handleEmailSubscribe(int block) async {
     final isCurrentlySubscribed = subscribedBlocks.contains(block);
 
     if (isCurrentlySubscribed) {
@@ -114,8 +92,8 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await api.subscribeToBlock(token, block);
-      subscribedBlocks = await api.getMySubscriptions(token);
+      await api.subscribeToBlock(block);
+      subscribedBlocks = await api.getMySubscriptions();
       notifyListeners();
     } catch (e) {
       if (isCurrentlySubscribed) {
@@ -153,7 +131,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<RoomModel>> fetchRooms(String token) => api.getJoinedRooms(token);
+  Future<List<RoomModel>> fetchRooms() => api.getJoinedRooms();
   int? get roomIdNumber => ownerView == 0
       ? visitorSelectedRoomId == null
             ? null
@@ -169,19 +147,20 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     return 0;
   }
 
-  Future<void> loadRoom(String token) async {
-    helpers.checkIfValidToken(token);
+  Future<void> loadRoom() async {
+    sm.checkIfValidToken();
     if (roomIdNumber != null) {
-      await refreshRoomData(token, roomIdNumber!);
+      await refreshRoomData(roomIdNumber!);
     }
   }
 
-  Future<void> refreshRoomData(String token, int roomId) async {
+  Future<void> refreshRoomData(int roomId) async {
+    isLoading = true; notifyListeners();
     if (!await checkConnection()) return;
-    final subscriptions = await api.getMySubscriptions(token);
-    final newUsers = await api.getUsers(token);
-    final newRooms = await fetchRooms(token);
-    _visitReason = await prefs.getItem('visitReason');
+    final subscriptions = await api.getMySubscriptions();
+    final newUsers = await api.getUsers();
+    final newRooms = await fetchRooms();
+    _visitReason = sm.visitReason;
     if (newRooms.isEmpty) {
       noRoomsFound = true;
       notifyListeners();
@@ -190,13 +169,13 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
 
     noRoomsFound = false;
     String now = DateTime.now().toString().substring(0, 10);
-    List<BlockModel> newBlocks = await api.getBlocks(token, roomId, now);
+    List<BlockModel> newBlocks = await api.getBlocks(roomId, now);
 
     Map<int, List<SlotModel>?> newSlotsInBlocks = {};
     List<Future<void>> futures = [];
     for (var block in newBlocks) {
       futures.add(() async {
-        final slots = await api.getSlotsForBlock(token, block.id);
+        final slots = await api.getSlotsForBlock(block.id);
         if (slots != null) {
           slots.sort((a, b) => a.startTime.compareTo(b.startTime));
           newSlotsInBlocks[block.id] = slots;
@@ -211,7 +190,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     rooms = newRooms;
     blocks = newBlocks;
     slotsInBlocks = newSlotsInBlocks;
-    blocksFiltered = true;
+    blocksFiltered = true; isLoading = false;
     notifyListeners();
   }
 
@@ -240,7 +219,8 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     }
     return "";
   }
-String blockDate(int blockId) {
+
+  String blockDate(int blockId) {
     for (var tmpBlock in blocks) {
       if (tmpBlock.id == blockId) {
         return "${DateTime.parse(tmpBlock.date.toString())}";
@@ -248,6 +228,7 @@ String blockDate(int blockId) {
     }
     return "";
   }
+
   String daysRemainingLabel(DateTime date) {
     final now = DateTime.now();
 
@@ -262,7 +243,6 @@ String blockDate(int blockId) {
     return "($diff d.)";
   }
 
-  //Base functionalities
   Future<void> switchRoom(String newRoomId) async {
     _ownerView == 1
         ? ownerSelectedRoomId = newRoomId
@@ -270,13 +250,13 @@ String blockDate(int blockId) {
     selectedRoomId = _ownerView == 1
         ? ownerSelectedRoomId
         : visitorSelectedRoomId;
-    await loadRoom(await securePrefs.getToken());
+    await loadRoom();
   }
 
   Future<bool> validateAndSelectRoom(String? id) async {
     if (id == null) return false;
 
-    final myRooms = await fetchRooms(await securePrefs.getToken());
+    final myRooms = await fetchRooms();
     final isValidRoom = myRooms.any((room) => room.id.toString() == id);
 
     if (isValidRoom) {
@@ -309,18 +289,18 @@ String blockDate(int blockId) {
     }
   }
 
-  // base_consultations_viewmodel.dart
-  Future<void> init(String token, String email) async {
+  Future<void> init() async {
+    String email = sm.email;
     await setOwnerView(0);
     isLoading = true;
     notifyListeners();
     if (!await checkConnection()) return;
     final room = selectedRoom;
-    helpers.checkIfValidToken(token);
-    isOwner = await resolveUserRole(token, email);
-    _visitReason = await prefs.getItem('visitReason');
-    subscribedBlocks = await api.getMySubscriptions(token);
-    final myRooms = await fetchRooms(token);
+    sm.checkIfValidToken();
+    isOwner = await resolveUserRole(email);
+    _visitReason = sm.visitReason;
+    subscribedBlocks = await api.getMySubscriptions();
+    final myRooms = await fetchRooms();
     if (myRooms.isEmpty) {
       noRoomsFound = true;
       isLoading = false;
@@ -330,14 +310,14 @@ String blockDate(int blockId) {
 
     visitorSelectedRoomId = myRooms[0].id.toString();
     selectedRoomId = visitorSelectedRoomId;
-    await refreshRoomData(token, myRooms[0].id);
+    await refreshRoomData(myRooms[0].id);
     isLoading = false;
     notifyListeners();
   }
 
-  Future<bool> resolveUserRole(String token, String email) async {
+  Future<bool> resolveUserRole(String email) async {
     try {
-      return await api.getRole(token, email) == "teacher";
+      return await api.getRole() == "teacher";
     } catch (_) {
       notify.showToast('Error while acquiring role.');
       return false;

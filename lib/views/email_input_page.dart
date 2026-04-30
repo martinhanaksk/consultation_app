@@ -22,7 +22,7 @@ class _EmailInputPageState extends State<EmailInputPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       FlutterNativeSplash.remove();
-      helpers.checkIfInSharedPreferences();
+      sm.checkIfInSharedPreferences();
     });
   }
 
@@ -146,7 +146,6 @@ class _EmailInputPageState extends State<EmailInputPage> {
                                           viewModel.email,
                                           context,
                                         )) {
-                                      // Start 5-second timeout before API call
                                       _startLoadingTimeout(context);
 
                                       await viewModel.continueToVerify(

@@ -20,12 +20,9 @@ class CreateRoomViewmodel extends ChangeNotifier {
   ) async {
     _isLoading = true;
     notifyListeners();
-    String token = await securePrefs.getToken();
-    String email = await prefs.getItem("email");
     try {
       if (acceptedEmails.isNotEmpty) {
         bool b = await api.createRoom(
-          token,
           shortName,
           title,
           description, cancellationHours,
@@ -35,7 +32,7 @@ class CreateRoomViewmodel extends ChangeNotifier {
           notify.showToast('Room was successfully created.');
           _isLoading = false;
           notifyListeners();
-          nav.toOwnerConsultations(token: token, email: email);
+          nav.toOwnerConsultations();
         } else {
           notify.showToast('Room with provided name already exists.');
           _isLoading = false;

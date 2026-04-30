@@ -9,8 +9,7 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 
 class JoinRoom extends StatefulWidget {
-  final String token;
-  const JoinRoom({super.key, required this.token});
+  const JoinRoom({super.key});
 
   @override
   State<JoinRoom> createState() => _JoinRoomState();
@@ -26,8 +25,8 @@ class _JoinRoomState extends State<JoinRoom> {
   void initState() {
     super.initState();
     _viewModel = JoinRoomViewmodel();
-    _viewModel.fetchAllRooms(widget.token);
-    _viewModel.fetchJoinedRooms(widget.token);
+    _viewModel.fetchAllRooms();
+    _viewModel.fetchJoinedRooms();
   }
 
   @override
@@ -272,7 +271,6 @@ class _JoinRoomState extends State<JoinRoom> {
                                       FocusScope.of(context).unfocus();
                                       if (selectedId != null) {
                                         await viewModel.joinRoom(
-                                          widget.token,
                                           selectedId!,
                                         );
                                       } else {

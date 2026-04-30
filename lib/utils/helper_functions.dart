@@ -1,14 +1,12 @@
 import 'package:intl/intl.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:consultation_app/setup.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:http/http.dart' as http;
 
 class HelperFunctions {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
-  bool _hasLoggedOut = false;
-  bool _isLoggingOut = false;
+  
   Future<bool> handleIsInternetConnection() async {
     final List<ConnectivityResult> connectivityResult = await Connectivity()
         .checkConnectivity();
@@ -20,32 +18,11 @@ class HelperFunctions {
     return true;
   }
 
-  Future<void> checkIfValidToken(String token) async {
-    if (_isLoggingOut) return;
-
-    _isLoggingOut = true;
-    if (token == "") {
-      _hasLoggedOut = true;
-
-      await securePrefs.removeToken();
-      await prefs.removeItem('email');
-      await prefs.removeItem('role');
-      notify.showToast('You were logged out.');
-      // Navigate to login and clear all previous routes
-      nav.toLogin();
-    }
-    Future.delayed(Duration(seconds: 2), () {
-      _isLoggingOut = false;
-    });
-  }
+  
 
   String acceptedEmailsFormater(List<String> acceptedEmailsArray) {
     if (acceptedEmailsArray.isEmpty) return '';
     return acceptedEmailsArray.join(',');
-  }
-
-  void resetLogoutFlag() {
-    _hasLoggedOut = false;
   }
 
   String dateTimeToString(DateTime dateTime) {
@@ -72,8 +49,8 @@ class HelperFunctions {
   }
 
   String getTDateOnlySimple(DateTime dateTime) {
-    String weekday = DateFormat('EE').format(dateTime); // Thu
-    String dayMonth = DateFormat('d.M').format(dateTime); // 4.10
+    String weekday = DateFormat('EE').format(dateTime);
+    String dayMonth = DateFormat('d.M').format(dateTime);
     return "$weekday $dayMonth";
   }
 
@@ -113,28 +90,5 @@ class HelperFunctions {
     nav.toRegister(email: email, rememberMe: rememberMe);
   }
 
-  void checkIfInSharedPreferences() async {
-   String? token = await securePrefs.getToken();
-    String? email = await prefs.getItem('email');
-    String? role = await prefs.getItem('role');
-     if (role != null && role.isNotEmpty && 
-        token != null && token.isNotEmpty && 
-        email != null && email.isNotEmpty) {
-      
-      bool isExpired = JwtDecoder.isExpired(token);
-
-      if (!isExpired) {
-        if (role == 'teacher') {
-          nav.toOwnerConsultations(token: token, email: email);
-        } else if (role == 'student') {
-          nav.toBaseConsultations(token: token, email: email);
-        }
-      } else {
-        await securePrefs.removeToken();
-        await prefs.removeItem('email');
-        await prefs.removeItem('role');
-      }
-    }
   
-  }
 }

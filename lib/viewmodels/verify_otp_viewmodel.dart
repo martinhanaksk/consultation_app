@@ -16,22 +16,10 @@ class VerifyOtpViewmodel extends ChangeNotifier {
       final success = await api.connect(email, otp, rememberMe);
 
       if (success) {
-        String token = await securePrefs.getToken();
-        String role = await prefs.getItem('role');
-        final data = await api.getUserData(token, email);
-      
-        await prefs.saveItem('visibility', data['visible'] == 1);
-        await prefs.saveItem('visitReason', data['visit_reason'] ?? "");
-        await prefs.saveItem(
-          'notifyHoursBefore',
-          (data['notification'] as int?) ?? 0,
-        );
-        helpers.resetLogoutFlag();
-
-        if (role == 'teacher') {
-          nav.toOwnerConsultations(token: token, email: email);
-        } else if (role == 'student') {
-          nav.toBaseConsultations(token: token, email: email);
+        if (sm.role == 'teacher') {
+          nav.toOwnerConsultations();
+        } else if (sm.role == 'student') {
+          nav.toBaseConsultations();
         }
       } else {
         _isLoading = false;
@@ -41,7 +29,7 @@ class VerifyOtpViewmodel extends ChangeNotifier {
     } catch (e) {
       _isLoading = false;
       notifyListeners();
-      notify.showToast('Connection failed. Please try again.');
+      notify.showToast('Connection failed. Please try again.'+e.toString());
     }
   }
 }

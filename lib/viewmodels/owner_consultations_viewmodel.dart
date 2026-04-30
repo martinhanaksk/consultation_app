@@ -8,15 +8,15 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
   List<RoomModel> _ownerRooms = [];
   List<RoomModel> _visitorRooms = [];
   @override
-  Future<List<RoomModel>> fetchRooms(String token) async {
+  Future<List<RoomModel>> fetchRooms() async {
     return ownerView == 0 ? _visitorRooms : _ownerRooms;
   }
 
-  Future<void> deleteRoom(String token) async {
+  Future<void> deleteRoom() async {
     isLoading = true;
     notifyListeners();
     try {
-      bool b = await api.deleteRoom(token, int.parse(safeSelectedRoomId!));
+      bool b = await api.deleteRoom(int.parse(safeSelectedRoomId!));
       if (b) {
         nav.pop();
         notify.showToast('Room was successfully deleted.');
@@ -28,19 +28,16 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
       isLoading = false;
       notifyListeners();
       nav.toOwnerConsultations(
-        token: token,
-        email: await prefs.getItem("email"),
       );
     }
   }
 
   Future<void> displayHistoryOfSlot(
-    String token,
     int slotId,
     int blockId,
   ) async {
     try {
-      final slots = await api.getSlotsForBlock(token, blockId);
+      final slots = await api.getSlotsForBlock( blockId);
       if (slots != null) {
         final slot = slots.firstWhere((s) => s.id == slotId);
         nav.toDisplaySlotHistory(history: slot.history ?? "");
@@ -48,18 +45,17 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
     } finally {}
   }
 
-  // owner_consultations_viewmodel.dart
   @override
-  Future<void> init(String token, String email) async {
+  Future<void> init() async {
     isLoading = true;
     notifyListeners();
     if (!await checkConnection()) return;
 
-    helpers.checkIfValidToken(token);
-    isOwner = await resolveUserRole(token, email);
+    sm.checkIfValidToken();
+    isOwner = await resolveUserRole(sm.email);
 
-    _visitorRooms = await api.getJoinedRooms(token);
-    _ownerRooms = await api.getMyRoomsOwner(token);
+    _visitorRooms = await api.getJoinedRooms();
+    _ownerRooms = await api.getMyRoomsOwner();
 
     if (_visitorRooms.isEmpty && _ownerRooms.isEmpty) {
       noRoomsFound = true;
@@ -79,19 +75,17 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
         : visitorSelectedRoomId;
 
     if (selectedRoomId != null) {
-      await refreshRoomData(token, int.parse(selectedRoomId!));
+      await refreshRoomData(int.parse(selectedRoomId!));
     }
 
     isLoading = false;
     notifyListeners();
   }
 
-  // In OwnerConsultationsViewmodel
-
-  Future<void> addSlotBeforeBlock(String token, int blockId) async {
+  Future<void> addSlotBeforeBlock(int blockId) async {
     setAddingSlotBefore(blockId, true);
     try {
-      final slotsForBlock = await api.getSlotsForBlock(token,blockId);
+      final slotsForBlock = await api.getSlotsForBlock(blockId);
       if (slotsForBlock == null || slotsForBlock.isEmpty) {
         notify.showToast("No slots found in block.");
         return;
@@ -106,7 +100,7 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
         return;
       }
       final slotCreated = await api.createSlot(
-        token,
+        
         blockId,
         newStartTime,
         slotsForBlock[0].duration,
@@ -117,7 +111,7 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
         notify.showToast("Could not create new slot.");
         return;
       }
-      await loadRoom(token);
+      await loadRoom();
     } catch (e) {
       notify.showToast("Error adding slot.");
     } finally {
@@ -125,10 +119,10 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
     }
   }
 
-  Future<void> addSlotAfterBlock(String token, int blockId) async {
+  Future<void> addSlotAfterBlock(int blockId) async {
     setAddingSlotAfter(blockId, true);
     try {
-      final slotsForBlock = await api.getSlotsForBlock(token,blockId);
+      final slotsForBlock = await api.getSlotsForBlock(blockId);
       if (slotsForBlock == null || slotsForBlock.isEmpty) {
         notify.showToast("No slots found in block.");
         return;
@@ -144,7 +138,7 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
         return;
       }
       final slotCreated = await api.createSlot(
-        token,
+        
         blockId,
         newStartTime,
         lastSlot.duration,
@@ -155,7 +149,7 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
         notify.showToast("Could not create new slot.");
         return;
       }
-      await loadRoom(token);
+      await loadRoom();
     } catch (e) {
       notify.showToast("Error adding slot.");
     } finally {
@@ -195,7 +189,7 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
         ?.title;
   }
 
-  void toggleView(String token, int value) async {
+  void toggleView(int value) async {
     await setOwnerView(value);
 
     rooms = value == 1 ? _ownerRooms : _visitorRooms;
@@ -225,7 +219,7 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
 
     isLoading = true;
     notifyListeners();
-    await loadRoom(token);
+    await loadRoom();
     isLoading = false;
     notifyListeners();
   }

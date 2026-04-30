@@ -10,13 +10,13 @@ class DisplayUsersInRoomViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get hasError => _hasError;
 
-  Future<void> init(String token, int roomId) async {
+  Future<void> init( int roomId) async {
     _isLoading = true;  
     _hasError = false;
     notifyListeners();
 
     try {
-      _users = await api.getConnectedUsersInRoom(token, roomId);
+      _users = await api.getConnectedUsersInRoom( roomId);
       _hasError = false;
     } catch (e) {
       _hasError = true;

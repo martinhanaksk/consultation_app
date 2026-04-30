@@ -1,4 +1,3 @@
-// change_settings_viewmodel.dart
 import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
 
@@ -6,7 +5,6 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
   String _name = "";
   String _surname = "";
   String _email = "";
-  String _token = "";
   String _role = "";
   String _visitReason = "";
   bool _visibility = true;
@@ -16,17 +14,12 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
   String get role => _role;
   String get name => _name;
   String get surname => _surname;
-  String get token => _token;
   String get email => _email;
   String get visitReason => _visitReason;
   int get notifyHoursBefore => _notifyHoursBefore;
 
   bool _hasBeenInitialized = false;
   bool get hasBeenInitialized => _hasBeenInitialized;
-
-  // -- Setters --
-
- 
 
   void setTheme(bool? val) async {
     await themeSelector.setDarkMode(val ?? false);
@@ -39,14 +32,14 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
     notifyListeners();
     try {
       await api.updateUserData(
-        token,
         _name,
         _surname,
         _visitReason,
         newVal,
         _notifyHoursBefore,
       );
-      await prefs.saveItem('visibility', newVal);
+      sm.updateVisibility(newVal);
+      notify.showToast('Visibility updated');
     } catch (e) {
       _visibility = !newVal;
       notifyListeners();
@@ -54,8 +47,8 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
   }
 
   Future<void> loadVisibility() async {
-    _visibility = await api.getVisibility(token, email);
-    await prefs.saveItem('visibility', _visibility);
+    _visibility = await api.getVisibility(email);
+    sm.updateVisibility(_visibility);
     notifyListeners();
   }
 
@@ -67,15 +60,14 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
     notifyListeners();
     try {
       await api.updateUserData(
-        token,
         newName,
         newSurname,
         _visitReason,
         _visibility,
         _notifyHoursBefore,
       );
-      await prefs.saveItem('name', newName);
-      await prefs.saveItem('surname', newSurname);
+      sm.updateFullName(newName, newSurname);
+      notify.showToast('Name updated');
     } catch (e) {
       _name = oldName;
       _surname = oldSurname;
@@ -90,14 +82,14 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
     notifyListeners();
     try {
       await api.updateUserData(
-        token,
         _name,
         _surname,
         reason,
         _visibility,
         _notifyHoursBefore,
       );
-      await prefs.saveItem('visitReason', reason);
+      sm.updateVisitReason(reason);
+      notify.showToast('Visit reason updated');
     } catch (e) {
       _visitReason = old;
       notifyListeners();
@@ -106,7 +98,7 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
   }
 
   Future<bool> createTeacher(String email, String name, String surname) async {
-    return await api.createTeacher(_token, email, name, surname);
+    return await api.createTeacher(email, name, surname);
   }
 
   Future<void> updateNotifyHoursBefore(int hours) async {
@@ -115,26 +107,26 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
     notifyListeners();
     try {
       await api.updateUserData(
-        token,
         _name,
         _surname,
         _visitReason,
         _visibility,
         hours,
       );
-      await prefs.saveItem('notifyHoursBefore', hours);
+      sm.updateNotifyHoursBefore(hours);
+      notify.showToast('Notification hours updated');
     } catch (e) {
       _notifyHoursBefore = old;
       notifyListeners();
-    } 
+      notify.showToast('Failed to update notification hours');
+    }
   }
 
   Future<void> initialize() async {
     _hasBeenInitialized = true;
-    _email = await prefs.getItem("email");
-    _token = await securePrefs.getToken();
+    _email = sm.email;
 
-    final data = await api.getUserData(_token, _email);
+    final data = await api.getUserData(sm.token, _email);
 
     _name = data['name'] ?? "";
     _surname = data['surname'] ?? "";
@@ -143,9 +135,16 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
     _visibility = (data['visible'] == 1 || data['visible'] == true);
     _notifyHoursBefore = (data['notification'] as int?) ?? 0;
 
-    await prefs.saveItem('visibility', _visibility);
-    await prefs.saveItem('visitReason', _visitReason);
-    await prefs.saveItem('notifyHoursBefore', _notifyHoursBefore);
+    sm.saveSession(
+      sm.token,
+      _email,
+      _role,
+      _visibility,
+      _visitReason,
+      _notifyHoursBefore,
+      _name,
+      _surname,
+    );
 
     notifyListeners();
   }

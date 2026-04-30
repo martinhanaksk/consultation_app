@@ -9,12 +9,10 @@ import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:flutter/cupertino.dart';
 
 class CreateBlock extends StatefulWidget {
-  final String token;
   final String roomId;
   final VoidCallback? onSuccess;
   const CreateBlock({
     super.key,
-    required this.token,
     required this.roomId,
     required this.onSuccess,
   });
@@ -461,7 +459,6 @@ class _CreateBlockState extends State<CreateBlock> {
                                 child: ElevatedButton(
                                   onPressed: () => {
                                     viewModel.createBlock(
-                                      widget.token,
                                       widget.roomId,
                                       widget.onSuccess,
                                     ),

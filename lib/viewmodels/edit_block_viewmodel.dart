@@ -20,12 +20,12 @@ class EditBlockViewmodel extends ChangeNotifier {
   dynamic get selectedDates => _selectedDates;
   bool _isChecked = false;
   bool get isChecked => _isChecked;
-  Future<void> toggleIsOnline(bool? value, String token, int blockId) async {
+  Future<void> toggleIsOnline(bool? value, int blockId) async {
     _isChecked = value ?? false;
     if (_isChecked) {
-      await api.setBlockOnline(token, blockId);
+      await api.setBlockOnline(blockId);
     } else {
-      await api.setBlockOffline(token, blockId);
+      await api.setBlockOffline(blockId);
     }
     notifyListeners();
   }
@@ -70,7 +70,7 @@ class EditBlockViewmodel extends ChangeNotifier {
     }
   }
 
-  Future<void> copyBlock(String token, String roomId) async {
+  Future<void> copyBlock(String roomId) async {
     List<String> dates = getSelectedDatesIso();
 
     if (dates.isEmpty) {
@@ -84,7 +84,7 @@ class EditBlockViewmodel extends ChangeNotifier {
 
       for (int i = 0; i < dates.length; i++) {
         String response = await api.createBlock(
-          token,
+         
           int.parse(roomId),
           dates[i],
         );
@@ -96,7 +96,7 @@ class EditBlockViewmodel extends ChangeNotifier {
         if (slotCount != 0) {
           for (int j = 0; j < slotCount; j++) {
             bool success = await api.createSlot(
-              token,
+             
               blockId,
               slots[j].startTime,
               slots[j].duration,
@@ -123,8 +123,8 @@ class EditBlockViewmodel extends ChangeNotifier {
     nav.pop();
   }
 
-  Future<void> deleteBlock(String token, String blockId) async {
-    bool deleted = await api.deleteBlock(token, int.parse(blockId));
+  Future<void> deleteBlock(String blockId) async {
+    bool deleted = await api.deleteBlock(int.parse(blockId));
     if (deleted) {
       notify.showToast("Block was deleted successfully.");
     } else {
@@ -132,17 +132,17 @@ class EditBlockViewmodel extends ChangeNotifier {
     }
   }
 
-  void refetchData(String? token, String? blockId) {
-    if (token != null && blockId != null) {
-      fetchSlotsForBlock(token, blockId);
+  void refetchData( String? blockId) {
+    if (blockId != null) {
+      fetchSlotsForBlock(blockId);
     }
   }
 
-  Future<void> changeSlotMeetingType(String token, int slotId) async {
+  Future<void> changeSlotMeetingType(int slotId) async {
     _isLoading = true;
     notifyListeners();
     try {
-      await api.changeConsultationType(token, slotId);
+      await api.changeConsultationType(slotId);
       notify.showToast('Consultation type was successfully changed.');
     } catch (e) {
       notify.showToast('Error while changing consultation type.');
@@ -152,11 +152,11 @@ class EditBlockViewmodel extends ChangeNotifier {
     }
   }
 
-  Future<void> deleteSlot(String token, int slotId) async {
+  Future<void> deleteSlot(int slotId) async {
     _isLoading = true;
     notifyListeners();
     try {
-      bool b = await api.deleteSlot(token, slotId);
+      bool b = await api.deleteSlot(slotId);
       if (b) {
         slots.removeWhere((s) => s.id == slotId);
         notify.showToast('Slot was successfully deleted.');
@@ -169,19 +169,19 @@ class EditBlockViewmodel extends ChangeNotifier {
     }
   }
 
-  void init(String token, String blockId, String roomId) async {
-    await assignBlock(token, int.parse(blockId), int.parse(roomId));
-    await fetchSlotsForBlock(token, blockId);
-    roomName = await getRoomNameById(token, int.parse(roomId));
+  void init(String blockId, String roomId) async {
+    await assignBlock(int.parse(blockId), int.parse(roomId));
+    await fetchSlotsForBlock(blockId);
+    roomName = await getRoomNameById( int.parse(roomId));
     if (block != null) {
       _isChecked = block!.isOnline == 1 ? true : false;
     }
     notifyListeners();
   }
 
-  Future<String> getRoomNameById(String token, int roomId) async {
+  Future<String> getRoomNameById( int roomId) async {
     try {
-      final rooms = await api.getAllRooms(token);
+      final rooms = await api.getAllRooms();
       final room = rooms.firstWhere((r) => r.id == roomId);
       return room.title;
     } catch (e) {
@@ -189,12 +189,12 @@ class EditBlockViewmodel extends ChangeNotifier {
     }
   }
 
-  Future<void> assignBlock(String token, int blockId, int roomId) async {
+  Future<void> assignBlock(int blockId, int roomId) async {
     _isLoading = true;
     notifyListeners();
     try {
       String now = DateTime.now().toString().substring(0, 10);
-      final blocks = await api.getBlocks(token, roomId);
+      final blocks = await api.getBlocks( roomId);
       block = blocks.firstWhere((b) => b.id == blockId);
     } catch (e) {
     } finally {
@@ -211,11 +211,11 @@ class EditBlockViewmodel extends ChangeNotifier {
     }
   }
 
-  Future<void> fetchSlotsForBlock(String token, String blockId) async {
+  Future<void> fetchSlotsForBlock(String blockId) async {
     _isLoading = true;
     notifyListeners();
     try {
-      final tmpSlots = await api.getSlotsForBlock(token, int.parse(blockId));
+      final tmpSlots = await api.getSlotsForBlock(int.parse(blockId));
       if (tmpSlots != null) {
         tmpSlots.sort((a, b) => a.startTime.compareTo(b.startTime));
         slots = tmpSlots;

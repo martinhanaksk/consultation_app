@@ -9,13 +9,11 @@ import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class EditBlock extends StatefulWidget {
-  final String token;
   final String roomId;
   final String blockId;
   final VoidCallback? onSuccess;
   const EditBlock({
     super.key,
-    required this.token,
     required this.roomId,
     required this.blockId,
     required this.onSuccess,
@@ -31,7 +29,7 @@ class _EditBlockState extends State<EditBlock> {
   void initState() {
     super.initState();
     _viewModel = EditBlockViewmodel();
-    _viewModel.init(widget.token, widget.blockId, widget.roomId);
+    _viewModel.init(widget.blockId, widget.roomId);
   }
 
   @override
@@ -181,7 +179,7 @@ class _EditBlockState extends State<EditBlock> {
                 GestureDetector(
                   onTap: () {
                     Navigator.pop(context);
-                    viewModel.copyBlock(widget.token, widget.roomId);
+                    viewModel.copyBlock(widget.roomId);
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -241,7 +239,7 @@ class _EditBlockState extends State<EditBlock> {
                             style: TextStyle(
                               fontSize: constants.fsBody,
                               fontWeight: constants.fwRegular,
-                              color: constants.darkGrey100
+                              color: constants.darkGrey100,
                             ),
                           ),
                         ),
@@ -252,7 +250,7 @@ class _EditBlockState extends State<EditBlock> {
                             style: TextStyle(
                               fontSize: constants.fsBody,
                               fontWeight: constants.fwRegular,
-                              color: constants.darkGrey100
+                              color: constants.darkGrey100,
                             ),
                           ),
                         ),
@@ -304,11 +302,9 @@ class _EditBlockState extends State<EditBlock> {
                                               child: GestureDetector(
                                                 onTap: () {
                                                   nav.toAddSlot(
-                                                    token: widget.token,
                                                     blockId: widget.blockId,
                                                     onSuccess: () =>
                                                         viewModel.refetchData(
-                                                          widget.token,
                                                           widget.blockId,
                                                         ),
                                                   );
@@ -318,9 +314,9 @@ class _EditBlockState extends State<EditBlock> {
                                                       MainAxisAlignment.end,
                                                   children: [
                                                     svgs.icon(
-                                                      'add',constants.primary,
+                                                      'add',
+                                                      constants.primary,
                                                       width: constants.fsTitle,
-                                                     
                                                     ),
                                                     SizedBox(width: 4),
                                                     Text(
@@ -340,10 +336,7 @@ class _EditBlockState extends State<EditBlock> {
                                             ),
                                           ],
                                         ),
-
-                                        // Block header row
                                         const Divider(height: 1),
-                                        // Slot list
                                         viewModel.isLoading
                                             ? Padding(
                                                 padding: EdgeInsets.all(24),
@@ -382,27 +375,23 @@ class _EditBlockState extends State<EditBlock> {
                                                         index ==
                                                         viewModel.slots.length -
                                                             1,
-                                                    
+
                                                     onIsOnlineClicked: () async => {
                                                       await viewModel
                                                           .changeSlotMeetingType(
-                                                            widget.token,
                                                             slot.id,
                                                           ),
                                                       await viewModel
                                                           .fetchSlotsForBlock(
-                                                            widget.token,
                                                             widget.blockId,
                                                           ),
                                                     },
                                                     onDelete: () => {
                                                       viewModel.deleteSlot(
-                                                        widget.token,
                                                         slot.id,
                                                       ),
                                                       viewModel
                                                           .fetchSlotsForBlock(
-                                                            widget.token,
                                                             widget.blockId,
                                                           ),
                                                     },
@@ -431,7 +420,6 @@ class _EditBlockState extends State<EditBlock> {
                                       onChanged: (bool? value) => {
                                         viewModel.toggleIsOnline(
                                           value,
-                                          widget.token,
                                           int.parse(widget.blockId),
                                         ),
                                         widget.onSuccess!(),
@@ -445,7 +433,13 @@ class _EditBlockState extends State<EditBlock> {
                                   ),
                                 ),
                                 SizedBox(width: 8),
-                                const Text('Online'),
+                                Text(
+                                  'Online',
+                                  style: TextStyle(
+                                    color: constants.darkGrey,
+                                    fontSize: constants.fsLabel,
+                                  ),
+                                ),
                               ],
                             ),
                             SizedBox(height: 32),
@@ -475,9 +469,9 @@ class _EditBlockState extends State<EditBlock> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       svgs.icon(
-                                        'copy',constants.primary,
+                                        'copy',
+                                        constants.primary,
                                         width: constants.fsHeadline,
-                                       
                                       ),
 
                                       const SizedBox(height: 12),
@@ -486,7 +480,7 @@ class _EditBlockState extends State<EditBlock> {
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           color: constants.primary,
-                                          fontWeight:constants.fwSemiBold,
+                                          fontWeight: constants.fwSemiBold,
                                         ),
                                       ),
                                     ],
@@ -495,10 +489,7 @@ class _EditBlockState extends State<EditBlock> {
                                 const SizedBox(width: 24),
                                 ElevatedButton(
                                   onPressed: () {
-                                    viewModel.deleteBlock(
-                                      widget.token,
-                                      widget.blockId,
-                                    );
+                                    viewModel.deleteBlock(widget.blockId);
                                     widget.onSuccess!();
                                     nav.pop();
                                   },
@@ -517,9 +508,9 @@ class _EditBlockState extends State<EditBlock> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       svgs.icon(
-                                        'trash',constants.red,
+                                        'trash',
+                                        constants.red,
                                         width: constants.fsHeadline,
-                                     
                                       ),
                                       const SizedBox(height: 12),
                                       Text(
@@ -598,18 +589,18 @@ class _SlotRow extends StatelessWidget {
               GestureDetector(
                 onTap: onIsOnlineClicked,
                 child: svgs.icon(
-                  slot.isOnline == 0 ? 'screen' : 'location',constants.primary,
+                  slot.isOnline == 0 ? 'screen' : 'location',
+                  constants.primary,
                   width: constants.fsTitle,
-                 
                 ),
               ),
               const SizedBox(width: 8),
               GestureDetector(
                 onTap: onDelete,
                 child: svgs.icon(
-                  'trash',constants.red,
+                  'trash',
+                  constants.red,
                   width: constants.fsTitle,
-                 
                 ),
               ),
             ],

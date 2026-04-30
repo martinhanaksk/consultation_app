@@ -6,10 +6,9 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
 class EditRoomPage extends StatefulWidget {
-  final String token;
   final int roomId;
 
-  const EditRoomPage({super.key, required this.token, required this.roomId});
+  const EditRoomPage({super.key, required this.roomId});
 
   @override
   State<EditRoomPage> createState() => _EditRoomPageState();
@@ -22,7 +21,7 @@ class _EditRoomPageState extends State<EditRoomPage> {
   void initState() {
     super.initState();
     _viewModel = EditRoomViewmodel();
-    _viewModel.loadData(widget.token, widget.roomId);
+    _viewModel.loadData(widget.roomId);
   }
 
   @override
@@ -70,22 +69,16 @@ class _EditRoomPageState extends State<EditRoomPage> {
                               ),
                             ),
                             const SizedBox(height: 28),
-
-                            // Short Name Input
                             _inputBox(
                               controller: viewModel.shortNameController,
                               hintText: 'Short Name (e.g. TestRm)',
                             ),
                             const SizedBox(height: 20),
-
-                            // Room Title Input
                             _inputBox(
                               controller: viewModel.titleController,
                               hintText: 'Room Title (e.g. Main test room)',
                             ),
                             const SizedBox(height: 20),
-
-                            // Description Input
                             _inputBox(
                               controller: viewModel.descriptionController,
                               hintText: 'Description',
@@ -191,7 +184,6 @@ class _EditRoomPageState extends State<EditRoomPage> {
                                     child: ElevatedButton(
                                       onPressed: () async => {
                                         await viewModel.handleSave(
-                                          widget.token,
                                         ),
                                       },
                                       style: ElevatedButton.styleFrom(

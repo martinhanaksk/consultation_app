@@ -1,5 +1,4 @@
 import 'package:consultation_app/setup.dart';
-import 'package:consultation_app/viewmodels/create_room_viewmodel.dart';
 import 'package:consultation_app/views/consultations_base_page.dart';
 import 'package:consultation_app/views/consultations_owner_page.dart';
 import 'package:consultation_app/views/create_block_page.dart';
@@ -49,18 +48,12 @@ class AppRouter {
       case login:
         return MaterialPageRoute(builder: (_) => const EmailInputPage());
       case consultationsBasePage:
-        final args = settings.arguments as Map<String, dynamic>;
-        final token = args['token'] as String;
-        final email = args['email'] as String;
         return MaterialPageRoute(
-          builder: (_) => BaseConsultationsPage(token: token, email: email),
+          builder: (_) => BaseConsultationsPage(),
         );
       case consultationsOwnerPage:
-        final args = settings.arguments as Map<String, dynamic>;
-        final token = args['token'] as String;
-        final email = args['email'] as String;
         return MaterialPageRoute(
-          builder: (_) => ConsultationsOwnerPage(token: token, email: email),
+          builder: (_) => ConsultationsOwnerPage(),
         );
       case verifyOtp:
         final args = settings.arguments as Map<String, dynamic>;
@@ -70,38 +63,32 @@ class AppRouter {
           builder: (_) => VerifyOtpPage(email: email, rememberMe: rememberMe),
         );
       case joinRoom:
-        final args = settings.arguments as Map<String, dynamic>;
-        final token = args['token'] as String;
-        return MaterialPageRoute(builder: (_) => JoinRoom(token: token));
+        return MaterialPageRoute(builder: (_) => JoinRoom());
       case createRoom:
         return MaterialPageRoute(builder: (_) => CreateRoom());
       case createBlock:
         final args = settings.arguments as Map<String, dynamic>;
-        final token = args['token'] as String;
         final roomId = args['roomId'] as String;
         final onSuccess = args['onSuccess'] as VoidCallback?;
         return MaterialPageRoute(
           builder: (_) =>
-              CreateBlock(token: token, roomId: roomId, onSuccess: onSuccess),
+              CreateBlock( roomId: roomId, onSuccess: onSuccess),
         );
       case addSlot:
         final args = settings.arguments as Map<String, dynamic>;
-        final token = args['token'] as String;
         final blockId = args['blockId'] as String;
         final onSuccess = args['onSuccess'] as VoidCallback?;
         return MaterialPageRoute(
           builder: (_) =>
-              AddSlot(token: token, blockId: blockId, onSuccess: onSuccess),
+              AddSlot(blockId: blockId, onSuccess: onSuccess),
         );
       case editBlock:
         final args = settings.arguments as Map<String, dynamic>;
-        final token = args['token'] as String;
         final roomId = args['roomId'] as String;
         final blockId = args['blockId'] as String;
         final onSuccess = args['onSuccess'] as VoidCallback?;
         return MaterialPageRoute(
           builder: (_) => EditBlock(
-            token: token,
             roomId: roomId,
             blockId: blockId,
             onSuccess: onSuccess,
@@ -109,10 +96,9 @@ class AppRouter {
         );
       case editRoom:
         final args = settings.arguments as Map<String, dynamic>;
-        final token = args['token'] as String;
         final roomId = args['roomId'] as int;
         return MaterialPageRoute(
-          builder: (_) => EditRoomPage(token: token, roomId: roomId),
+          builder: (_) => EditRoomPage(roomId: roomId),
         );
       case displayListOfEmails:
         final args = settings.arguments as Map<String, dynamic>;
@@ -123,11 +109,9 @@ class AppRouter {
       case displayUsersInRoom:
         final args = settings.arguments as Map<String, dynamic>;
         final roomId = args['roomId'] as int;
-        final token = args['token'] as String;
         final roomName = args['roomName'] as String;
         return MaterialPageRoute(
           builder: (_) => DisplayUsersInRoomPage(
-            token: token,
             roomId: roomId,
             roomName: roomName,
           ),

@@ -49,15 +49,13 @@ class _SliderMenuState extends State<SliderMenu> {
                               width: 120,
                             ),
                             onTap: () {
-                              helpers.checkIfValidToken(viewModel.token);
+                              sm.checkIfValidToken();
                               viewModel.isOwner!
                                   ? nav.toOwnerConsultations(
-                                      token: viewModel.token,
-                                      email: viewModel.email!,
+                                     
                                     )
                                   : nav.toBaseConsultations(
-                                      token: viewModel.token,
-                                      email: viewModel.email!,
+                                    
                                     );
                               viewModel.closeDrawer(context);
                             },
@@ -76,15 +74,11 @@ class _SliderMenuState extends State<SliderMenu> {
                             ),
                           ),
                           onTap: () {
-                            helpers.checkIfValidToken(viewModel.token);
+                            sm.checkIfValidToken();
                             viewModel.isOwner!
                                 ? nav.toOwnerConsultations(
-                                    token: viewModel.token,
-                                    email: viewModel.email!,
                                   )
                                 : nav.toBaseConsultations(
-                                    token: viewModel.token,
-                                    email: viewModel.email!,
                                   );
                             viewModel.closeDrawer(context);
                           },
@@ -101,8 +95,8 @@ class _SliderMenuState extends State<SliderMenu> {
                             ),
                           ),
                           onTap: () {
-                            helpers.checkIfValidToken(viewModel.token);
-                            nav.toJoinRoom(token: viewModel.token);
+                            sm.checkIfValidToken();
+                            nav.toJoinRoom();
                             viewModel.closeDrawer(context);
                           },
                         ),
@@ -220,10 +214,7 @@ class _SliderMenuState extends State<SliderMenu> {
                               fontWeight: constants.fwSemiBold,
                             ),
                           ),
-
                           onTap: () async {
-                            
-                            // Navigate to login and clear all previous routes
                             nav.toLogin();
                             viewModel.closeDrawer(context);
                           },

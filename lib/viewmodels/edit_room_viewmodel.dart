@@ -21,10 +21,10 @@ class EditRoomViewmodel extends ChangeNotifier {
   RoomModel? room;
   String? errorMessage;
 
-  Future<void> loadData(String token, int roomId) async {
+  Future<void> loadData(int roomId) async {
     _setLoading(true);
     try {
-      List<RoomModel> allRooms = await api.getAllRooms(token);
+      List<RoomModel> allRooms = await api.getAllRooms();
       room = allRooms.firstWhere((r) => r.id == roomId);
 
       shortNameController.text = room!.shortName;
@@ -65,14 +65,14 @@ class EditRoomViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> handleSave(String token) async {
+  Future<void> handleSave() async {
     clearError();
-    bool success = await submitChanges(token);
+    bool success = await submitChanges();
 
     if (success) {
       notify.showToast("Room updated successfully");
-      String email = await prefs.getItem('email');
-      nav.toOwnerConsultations(token: token, email: email);
+      String email = sm.email;
+      nav.toOwnerConsultations();
     } else if (errorMessage != null) {
       notify.showToast(errorMessage!);
     } else {
@@ -80,7 +80,7 @@ class EditRoomViewmodel extends ChangeNotifier {
     }
   }
 
-  Future<bool> submitChanges(String token) async {
+  Future<bool> submitChanges() async {
     if (room == null) return false;
 
     if (shortNameController.text.isEmpty ||
@@ -96,7 +96,7 @@ class EditRoomViewmodel extends ChangeNotifier {
     _setSaving(true);
     try {
       bool success = await api.editRoom(
-        token,
+        
         room!.id,
         shortNameController.text.trim(),
         titleController.text.trim(),

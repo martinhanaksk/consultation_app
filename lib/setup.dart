@@ -1,5 +1,6 @@
 import 'package:consultation_app/services/api_service.dart';
 import 'package:consultation_app/services/navigation_service.dart';
+import 'package:consultation_app/services/session_manager.dart';
 import 'package:consultation_app/services/user_preferences.dart';
 import 'package:consultation_app/utils/app_svg.dart';
 import 'package:consultation_app/utils/constants.dart';
@@ -8,7 +9,6 @@ import 'package:consultation_app/utils/notify_user_utils.dart';
 import 'package:consultation_app/utils/theme_selector.dart';
 import 'package:consultation_app/utils/validator.dart';
 import 'package:get_it/get_it.dart';
-
 
 final getIt = GetIt.instance;
 void setupDependencies() {
@@ -20,13 +20,14 @@ void setupDependencies() {
   getIt.registerLazySingleton<NavigationService>(() => NavigationService());
   getIt.registerLazySingleton<ApiService>(() => ApiService());
   getIt.registerLazySingleton<UserPreferences>(() => UserPreferences());
-  
+
   getIt.registerLazySingleton<SecureUserStorage>(() => SecureUserStorage());
   getIt.registerLazySingleton<NotifyUserUtils>(() => NotifyUserUtils());
   getIt.registerLazySingleton<HelperFunctions>(() => HelperFunctions());
   getIt.registerLazySingleton<Validator>(() => Validator());
   getIt.registerLazySingleton<SvgBuilder>(() => SvgBuilder());
   getIt.registerLazySingleton<ThemeSelector>(() => ThemeSelector());
+  getIt.registerLazySingleton<SessionManager>(() => SessionManager());
 }
 
 NavigationService get nav => getIt<NavigationService>();
@@ -40,3 +41,4 @@ HelperFunctions get helpers => getIt<HelperFunctions>();
 Validator get validator => getIt<Validator>();
 SvgBuilder get svgs => getIt<SvgBuilder>();
 ThemeSelector get themeSelector => getIt<ThemeSelector>();
+SessionManager get sm => getIt<SessionManager>();

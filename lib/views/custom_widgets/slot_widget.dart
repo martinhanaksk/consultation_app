@@ -5,10 +5,8 @@ import 'package:consultation_app/setup.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 
 class SlotWidget extends StatelessWidget {
-  final String userEmail;
   final String visitReason;
   final SlotModel slot;
-  final String token;
   final String roomId;
   final int cancellationNoticeHours;
   final int blockId;
@@ -27,10 +25,8 @@ class SlotWidget extends StatelessWidget {
 
   const SlotWidget({
     super.key,
-    required this.userEmail,
     required this.visitReason,
     required this.slot,
-    required this.token,
     required this.roomId,
     required this.cancellationNoticeHours,
     required this.blockId,
@@ -89,6 +85,7 @@ class SlotWidget extends StatelessWidget {
 
   Future<void> _showChangeConsultationTypeDialog(
     BuildContext context,
+    String name,
     int isOnline,
   ) async {
     await showModalBottomSheet(
@@ -100,6 +97,7 @@ class SlotWidget extends StatelessWidget {
           builder: (context, setState) {
             return _ConsultationTypeSelection(
               isOnline: isOnline,
+              name: name,
               onChangeConsultationType: onChangeConsultationType,
             );
           },
@@ -113,7 +111,7 @@ class SlotWidget extends StatelessWidget {
     final bool treatAsFree = isOptimisticallyReleased;
     return Column(
       children: [
-        //free slot
+        // Free slot
         if (slot.takenBy == null || treatAsFree)
           InkWell(
             onTap: isTakingSlot
@@ -178,8 +176,8 @@ class SlotWidget extends StatelessWidget {
             ),
           ),
         if (slot.takenBy != null && !treatAsFree)
-          //my slot
-          slot.takenBy == userEmail
+          // My slot
+          slot.takenBy == sm.email
               ? Container(
                   padding: EdgeInsets.fromLTRB(0, 12, 12, 12),
                   width: MediaQuery.of(context).size.width * 0.95,
@@ -197,7 +195,11 @@ class SlotWidget extends StatelessWidget {
                   ),
                   child: InkWell(
                     onTap: () {
-                      _showChangeConsultationTypeDialog(context, slot.isOnline);
+                      _showChangeConsultationTypeDialog(
+                        context,
+                        slot.takenByName ?? "",
+                        slot.isOnline,
+                      );
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -289,7 +291,8 @@ class SlotWidget extends StatelessWidget {
                                       builder: (BuildContext context) {
                                         return AlertDialog(
                                           backgroundColor: constants.background,
-                                          title: RichText(textAlign: TextAlign.center,
+                                          title: RichText(
+                                            textAlign: TextAlign.center,
                                             text: TextSpan(
                                               style: TextStyle(
                                                 fontSize: constants.fsBody,
@@ -302,10 +305,9 @@ class SlotWidget extends StatelessWidget {
                                                   style: TextStyle(
                                                     fontSize:
                                                         constants.fsHeadline,
-                                                    fontWeight: constants
-                                                        .fwSemiBold, // Or FontWeight.bold
-                                                    color: constants
-                                                        .primary, // Optional: make it your app's primary color
+                                                    fontWeight:
+                                                        constants.fwSemiBold,
+                                                    color: constants.primary,
                                                   ),
                                                 ),
 
@@ -321,10 +323,9 @@ class SlotWidget extends StatelessWidget {
                                                       ? '$cancellationNoticeHours hour'
                                                       : '$cancellationNoticeHours hours',
                                                   style: TextStyle(
-                                                    fontWeight: constants
-                                                        .fwSemiBold, // Or FontWeight.bold
-                                                    color: constants
-                                                        .primary, // Optional: make it your app's primary color
+                                                    fontWeight:
+                                                        constants.fwSemiBold,
+                                                    color: constants.primary,
                                                   ),
                                                 ),
                                                 const TextSpan(
@@ -364,7 +365,7 @@ class SlotWidget extends StatelessWidget {
                     ),
                   ),
                 )
-              //someone's slot
+              // Someone's slot
               : Container(
                   padding: EdgeInsets.fromLTRB(0, 12, 12, 12),
                   width: MediaQuery.of(context).size.width * 0.95,
@@ -385,6 +386,7 @@ class SlotWidget extends StatelessWidget {
                       if (isOwnerView == 1) {
                         _showChangeConsultationTypeDialog(
                           context,
+                          slot.takenBy ?? "",
                           slot.isOnline,
                         );
                       }
@@ -471,9 +473,11 @@ class SlotWidget extends StatelessWidget {
 class _ConsultationTypeSelection extends StatefulWidget {
   final VoidCallback onChangeConsultationType;
   final int isOnline;
+  final String name;
   const _ConsultationTypeSelection({
     required this.onChangeConsultationType,
     required this.isOnline,
+    required this.name,
   });
 
   @override
@@ -510,6 +514,7 @@ class _ConsultationTypeSelectionState
           children: [
             _ConsultationTypeToggle(
               isOnlineSelected: isOnlineSelected,
+              name: widget.name,
               onChanged: (bool newValue) {
                 setState(() {
                   isOnlineSelected = newValue;
@@ -569,9 +574,11 @@ class _ConsultationTypeSelectionState
 
 class _ConsultationTypeToggle extends StatelessWidget {
   final bool isOnlineSelected;
+  final String name;
   final ValueChanged<bool> onChanged;
   const _ConsultationTypeToggle({
     required this.isOnlineSelected,
+    required this.name,
     required this.onChanged,
   });
 
@@ -582,12 +589,35 @@ class _ConsultationTypeToggle extends StatelessWidget {
         Text(
           "Change Consultation type",
           style: TextStyle(
-            fontSize: constants.fsLabel,
+            fontSize: constants.fsTitle,
             fontWeight: constants.fwSemiBold,
+            color: constants.darkGrey,
           ),
         ),
-        const SizedBox(height: 20),
-
+        name != "" ? const SizedBox(height: 20) : SizedBox.shrink(),
+        name != ""
+            ? RichText(
+                text: TextSpan(
+                  text: 'Reserved by: ',
+                  children: [
+                    TextSpan(
+                      text: name,
+                      style: TextStyle(
+                        fontSize: constants.fsBody,
+                        fontWeight: constants.fwSemiBold,
+                        color: constants.primary,
+                      ),
+                    ),
+                  ],
+                  style: TextStyle(
+                    fontSize: constants.fsBody,
+                    fontWeight: constants.fwRegular,
+                    color: constants.darkGrey,
+                  ),
+                ),
+              )
+            : SizedBox.shrink(),
+        const SizedBox(height: 28),
         Row(
           children: [
             Expanded(
@@ -716,7 +746,7 @@ class __NoteBottomSheetState extends State<_NoteBottomSheet> {
 
   @override
   void dispose() {
-    _controller.dispose(); // Prevent memory leaks
+    _controller.dispose();
     super.dispose();
   }
 
@@ -740,7 +770,7 @@ class __NoteBottomSheetState extends State<_NoteBottomSheet> {
               child: Text(
                 'Make Reservation',
                 style: TextStyle(
-                  fontSize: constants.fsTitle,
+                  fontSize: constants.fsHeadline,
                   fontWeight: constants.fwSemiBold,
                   color: constants.darkGrey,
                 ),
@@ -757,6 +787,7 @@ class __NoteBottomSheetState extends State<_NoteBottomSheet> {
             const SizedBox(height: 16),
             _ConsultationTypeToggle(
               isOnlineSelected: widget.isOnlineSelected,
+              name: "",
               onChanged: widget.onChanged,
             ),
             Row(
@@ -799,7 +830,6 @@ class __NoteBottomSheetState extends State<_NoteBottomSheet> {
   }
 }
 
-// Helper widgets (extracted for const-correctness)
 class _InfoCard extends StatelessWidget {
   final String startTime;
   final int duration;

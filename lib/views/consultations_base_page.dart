@@ -11,8 +11,6 @@ import 'package:sticky_headers/sticky_headers.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class BaseConsultationsPage extends StatefulWidget {
-  final String token;
-  final String email;
   final Widget? toggle;
   final Widget? addButton;
   final Widget? deleteButton;
@@ -25,8 +23,6 @@ class BaseConsultationsPage extends StatefulWidget {
 
   const BaseConsultationsPage({
     super.key,
-    required this.token,
-    required this.email,
     this.viewModel,
     this.toggle,
     this.addButton,
@@ -54,7 +50,7 @@ class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
   }
 
   void initialize() async {
-    await _viewModel.init(widget.token, widget.email);
+    await _viewModel.init();
   }
 
   @override
@@ -65,7 +61,6 @@ class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
         appBar: AppBarMenu(
           viewModel: _viewModel,
           toggle: widget.toggle,
-          token: widget.token,
           onHomePage: true,
         ),
         drawer: SliderMenu(),
@@ -78,7 +73,7 @@ class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
                   constraints: const BoxConstraints(maxWidth: 600),
                   child: RefreshIndicator(
                     color: constants.primary,
-                    onRefresh: () => viewModel.loadRoom(widget.token),
+                    onRefresh: () => viewModel.loadRoom(),
                     child: ScrollConfiguration(
                       behavior: ScrollConfiguration.of(context).copyWith(
                         physics: const BouncingScrollPhysics(
@@ -105,8 +100,6 @@ class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
                                   )
                                 : _ConsultationsContent(
                                     viewModel: viewModel,
-                                    token: widget.token,
-                                    email: widget.email,
                                     toggle: widget.toggle,
                                     addButton: widget.addButton,
                                     showHistoryOption: widget.showHistoryOption,
@@ -130,12 +123,9 @@ class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
   }
 }
 
-// ---------------------------------------------------------------------------
-
 class _NoRoomsFound extends StatelessWidget {
-  final String token;
   final BaseConsultationsViewmodel viewModel;
-  const _NoRoomsFound({required this.token, required this.viewModel});
+  const _NoRoomsFound({required this.viewModel});
 
   @override
   Widget build(BuildContext context) {
@@ -149,7 +139,7 @@ class _NoRoomsFound extends StatelessWidget {
               const SizedBox(height: 80),
               viewModel.ownerView == 0
                   ? GestureDetector(
-                      onTap: () => nav.toJoinRoom(token: token),
+                      onTap: () => nav.toJoinRoom(),
                       child: Text(
                         "Try joining room to get started.",
                         textAlign: TextAlign.center,
@@ -178,8 +168,6 @@ class _NoRoomsFound extends StatelessWidget {
     );
   }
 }
-
-// ---------------------------------------------------------------------------
 
 class _RoomSelectorButton extends StatelessWidget {
   final BaseConsultationsViewmodel viewModel;
@@ -239,8 +227,11 @@ class _RoomSelectorButton extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    viewModel.selectedRoom == null
+                    viewModel.isLoading
                         ? "Loading..."
+                        : (viewModel.noRoomsFound ||
+                              viewModel.selectedRoomId == null)
+                        ? "No rooms created"
                         : viewModel.selectedRoom!.title,
                     style: TextStyle(
                       fontSize: 15,
@@ -249,6 +240,8 @@ class _RoomSelectorButton extends StatelessWidget {
                       color:
                           (viewModel.noRoomsFound ||
                               viewModel.selectedRoomId == null)
+                          ? constants.darkGrey100
+                          : viewModel.isLoading
                           ? constants.primary
                           : constants.darkGrey,
                     ),
@@ -256,9 +249,12 @@ class _RoomSelectorButton extends StatelessWidget {
                   const SizedBox(width: 6),
                   svgs.icon(
                     'arrow_down',
-                    (viewModel.noRoomsFound || viewModel.selectedRoomId == null)
-                        ? constants.darkGrey30
-                        : constants.darkGrey,
+                     (viewModel.noRoomsFound ||
+                              viewModel.selectedRoomId == null)
+                          ? constants.darkGrey100
+                          : viewModel.isLoading
+                          ? constants.primary
+                          : constants.darkGrey,
                     width: constants.fsBody,
                   ),
                 ],
@@ -271,12 +267,8 @@ class _RoomSelectorButton extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-
 class _ConsultationsContent extends StatelessWidget {
   final BaseConsultationsViewmodel viewModel;
-  final String token;
-  final String email;
   final Widget? toggle;
   final Widget? addButton;
   final Widget? deleteButton;
@@ -288,8 +280,6 @@ class _ConsultationsContent extends StatelessWidget {
 
   const _ConsultationsContent({
     required this.viewModel,
-    required this.token,
-    required this.email,
     this.toggle,
     this.addButton,
     this.deleteButton,
@@ -306,7 +296,7 @@ class _ConsultationsContent extends StatelessWidget {
         const SizedBox(height: 30),
 
         (viewModel.noRoomsFound || viewModel.selectedRoomId == null)
-            ? _NoRoomsFound(token: token, viewModel: viewModel)
+            ? _NoRoomsFound(viewModel: viewModel)
             : Column(
                 children: [
                   if (addButton != null || deleteButton != null) ...[
@@ -346,8 +336,6 @@ class _ConsultationsContent extends StatelessWidget {
                           (block) => _ConsultationBlockCard(
                             viewModel: viewModel,
                             blockEntry: block,
-                            token: token,
-                            email: email,
                             showHistoryOption: showHistoryOption,
                             editBlockButton: editBlockButton,
                             addSlotBefore: addSlotBefore,
@@ -372,13 +360,9 @@ class _ConsultationsContent extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-
 class _ConsultationBlockCard extends StatelessWidget {
   final BaseConsultationsViewmodel viewModel;
   final MapEntry<int, List?> blockEntry;
-  final String token;
-  final String email;
   final Widget Function(int blockId)? editBlockButton;
   final Widget? Function(int slotId, int blockId, Color color)?
   showHistoryOption;
@@ -388,8 +372,6 @@ class _ConsultationBlockCard extends StatelessWidget {
   const _ConsultationBlockCard({
     required this.viewModel,
     required this.blockEntry,
-    required this.token,
-    required this.email,
     this.editBlockButton,
     this.showHistoryOption,
     this.addSlotBefore,
@@ -433,9 +415,7 @@ class _ConsultationBlockCard extends StatelessWidget {
                                 width: 20,
                                 child: GestureDetector(
                                   onTap: () async {
-                                   
                                     viewModel.handleEmailSubscribe(
-                                      token,
                                       blockEntry.key,
                                     );
 
@@ -487,11 +467,9 @@ class _ConsultationBlockCard extends StatelessWidget {
                       builder: (context, vm, _) {
                         return RepaintBoundary(
                           child: SlotWidget(
-                            userEmail: email,
                             visitReason: vm.visitReason,
                             showHistoryOption: showHistoryOption,
                             slot: slots[index],
-                            token: token,
                             roomId: vm.selectedRoomId!,
                             cancellationNoticeHours:
                                 viewModel.selectedRoom == null
@@ -502,10 +480,10 @@ class _ConsultationBlockCard extends StatelessWidget {
                             blockId: blockEntry.key,
                             isOwnerView: vm.ownerView,
                             onChangeConsultationType: () =>
-                                vm.onChangeConsultationType(token, slot.id),
+                                vm.onChangeConsultationType(slot.id),
                             onTakeSlot: (note, isOnline) =>
-                                vm.takeSlot(token, slot.id, note, isOnline),
-                            onReleaseSlot: () => vm.releaseSlot(token, slot.id),
+                                vm.takeSlot(slot.id, note, isOnline),
+                            onReleaseSlot: () => vm.releaseSlot(slot.id),
                             context: context,
                             isTakingSlot: vm.isTakingSlot(slot.id),
                             isOptimisticallyReleased: vm

@@ -8,13 +8,11 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
 class AddSlot extends StatefulWidget {
-  final String token;
   final String blockId;
   final VoidCallback? onSuccess;
 
   const AddSlot({
     super.key,
-    required this.token,
     required this.blockId,
     required this.onSuccess,
   });
@@ -64,8 +62,6 @@ class _AddSlotState extends State<AddSlot> {
                           ),
                         ),
                         const SizedBox(height: 20),
-
-                        // Start Time
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -105,8 +101,6 @@ class _AddSlotState extends State<AddSlot> {
                           ],
                         ),
                         const SizedBox(height: 20),
-
-                        // Note
                         Container(
                           clipBehavior: Clip.none,
                           decoration: constants.squircleShadow(
@@ -126,8 +120,6 @@ class _AddSlotState extends State<AddSlot> {
                           ),
                         ),
                         const SizedBox(height: 20),
-
-                        // Online checkbox
                         Row(
                           children: [
                             IntrinsicWidth(
@@ -154,8 +146,6 @@ class _AddSlotState extends State<AddSlot> {
                           ],
                         ),
                         const SizedBox(height: 20),
-
-                        // Submit button
                         viewModel.isLoading
                             ? Center(
                                 child: SpinKitPouringHourGlass(
@@ -182,7 +172,6 @@ class _AddSlotState extends State<AddSlot> {
                                       return;
                                     }
                                     viewModel.addSlot(
-                                      widget.token,
                                       widget.blockId,
                                       widget.onSuccess,
                                     );

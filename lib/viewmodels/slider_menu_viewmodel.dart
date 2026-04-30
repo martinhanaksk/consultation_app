@@ -34,9 +34,9 @@ class SliderMenuViewmodel extends ChangeNotifier {
     try {
       _isLoading = true;
       notifyListeners();
-      _token = await securePrefs.getToken();
-      helpers.checkIfValidToken(_token);
-      _email = await prefs.getItem('email');
+      _token = sm.token;
+      sm.checkIfValidToken();
+      _email = sm.email;
       if (!await helpers.handleIsInternetConnection()) {
         notify.showToast('Please connect to internet.');
         _isOwner = false;

@@ -11,24 +11,20 @@ class JoinRoomViewmodel extends ChangeNotifier {
     return _allRooms;
   }
 
-  Future<void> joinRoom(String token, int id) async {
+  Future<void> joinRoom( int id) async {
     try {
       if (_isLoading) return;
       _isLoading = true;
       notifyListeners();
-      await api.joinRoomById(token, id);
+      await api.joinRoomById( id);
       _isLoading = false;
       notifyListeners();
       notify.showToast('Room joined.');
-      if (await prefs.getItem("role") == "teacher") {
+      if (sm.role == "teacher") {
         nav.toOwnerConsultations(
-          token: token,
-          email: await prefs.getItem("email"),
         );
       } else {
         nav.toBaseConsultations(
-          token: token,
-          email: await prefs.getItem("email"),
         );
       }
     } catch (e) {
@@ -49,13 +45,13 @@ class JoinRoomViewmodel extends ChangeNotifier {
     }
   }
 
-  Future<void> fetchAllRooms(String token) async {
-    _allRooms = await api.getAllRooms(token);
+  Future<void> fetchAllRooms() async {
+    _allRooms = await api.getAllRooms();
     notifyListeners();
   }
 
-  Future<void> fetchJoinedRooms(String token) async {
-    _joinedRooms = await api.getJoinedRooms(token);
+  Future<void> fetchJoinedRooms() async {
+    _joinedRooms = await api.getJoinedRooms();
     notifyListeners();
   }
 }
