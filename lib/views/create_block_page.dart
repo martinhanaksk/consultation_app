@@ -1,6 +1,7 @@
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/create_block_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
+import 'package:consultation_app/views/custom_widgets/custom_checkbox_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flutter/material.dart';
@@ -419,29 +420,11 @@ class _CreateBlockState extends State<CreateBlock> {
                         SizedBox(height: 20),
                         Row(
                           children: [
-                            IntrinsicWidth(
-                              child: Container(
-                                width: 28,
-                                height: 28,
-                                clipBehavior: Clip.none,
-                                decoration: constants.squircleShadow(
-                                  color: constants.background,
-                                  borderRadius: SmoothBorderRadius(
-                                    cornerRadius: 6,
-                                    cornerSmoothing: 0.6,
-                                  ),
-                                ),
-                                child: Checkbox(
-                                  value: viewModel.isChecked,
-                                  onChanged: viewModel.toggleisOnline,
-                                  side: BorderSide.none,
-                                  checkColor: constants.darkGrey,
-                                  fillColor: WidgetStateProperty.all(
-                                    constants.background,
-                                  ),
-                                ),
-                              ),
+                            CustomCheckbox(
+                              value: viewModel.isChecked,
+                              onChanged: viewModel.toggleIsOnline,
                             ),
+
                             SizedBox(width: 8),
                             Text(
                               'Online',

@@ -1,4 +1,5 @@
 import 'package:consultation_app/viewmodels/email_input_viewmodel.dart';
+import 'package:consultation_app/views/custom_widgets/custom_checkbox_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:consultation_app/setup.dart';
@@ -95,29 +96,11 @@ class _EmailInputPageState extends State<EmailInputPage> {
                         const SizedBox(height: 24),
                         Row(
                           children: [
-                            IntrinsicWidth(
-                              child: Container(
-                                width: 28,
-                                height: 28,
-                                clipBehavior: Clip.none,
-                                decoration: constants.squircleShadow(
-                                  color: constants.background,
-                                  borderRadius: SmoothBorderRadius(
-                                    cornerRadius: 6,
-                                    cornerSmoothing: 0.6,
-                                  ),
-                                ),
-                                child: Checkbox(
-                                  value: viewModel.isChecked,
-                                  onChanged: viewModel.toggleRememberMe,
-                                  side: BorderSide.none,
-                                  checkColor: constants.darkGrey,
-                                  fillColor: WidgetStateProperty.all(
-                                    constants.background,
-                                  ),
-                                ),
-                              ),
+                            CustomCheckbox(
+                              value: viewModel.isChecked,
+                              onChanged: viewModel.toggleRememberMe,
                             ),
+
                             SizedBox(width: 12),
                             Text(
                               'Remember me',

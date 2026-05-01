@@ -154,6 +154,7 @@ class SlotWidget extends StatelessWidget {
                                   constants.darkGrey,
                                 ) ??
                                 const SizedBox.shrink(),
+                          if (slot.isOnline == 1) const SizedBox(width: 8),
                           if (slot.isOnline == 1)
                             svgs.icon(
                               'screen',

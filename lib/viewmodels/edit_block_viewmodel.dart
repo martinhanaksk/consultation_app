@@ -11,6 +11,8 @@ class EditBlockViewmodel extends ChangeNotifier {
   List<SlotModel> slots = [];
   bool _isLoading = false;
   String roomName = "";
+  String _roomId = "";
+  String get roomId => _roomId;
   bool get isLoading => _isLoading;
   BlockModel? block;
   DateRangePickerSelectionMode _selectionMode =
@@ -21,12 +23,24 @@ class EditBlockViewmodel extends ChangeNotifier {
   bool _isChecked = false;
   bool get isChecked => _isChecked;
   Future<void> toggleIsOnline(bool? value, int blockId) async {
+    final bool previousState = _isChecked;
     _isChecked = value ?? false;
-    if (_isChecked) {
-      await api.setBlockOnline(blockId);
-    } else {
-      await api.setBlockOffline(blockId);
+    notifyListeners();
+    try {
+      if (_isChecked) {
+        await api.setBlockOnline(blockId);
+      } else {
+        await api.setBlockOffline(blockId);
+      }
+      notify.showToast(
+        "Block changed to " + (value == true ? "online" : "offline"),
+      );
+    } catch (e) {
+      _isChecked = previousState;
+      notifyListeners();
+      notify.showToast("Add slots first");
     }
+    refreshEditBlock(blockId.toString());
     notifyListeners();
   }
 
@@ -83,11 +97,7 @@ class EditBlockViewmodel extends ChangeNotifier {
       final slotCount = slots.length;
 
       for (int i = 0; i < dates.length; i++) {
-        String response = await api.createBlock(
-         
-          int.parse(roomId),
-          dates[i],
-        );
+        String response = await api.createBlock(int.parse(roomId), dates[i]);
         if (response.isEmpty) {
           notify.showToast('Failed to create block for ${dates[i]}');
           continue;
@@ -96,7 +106,6 @@ class EditBlockViewmodel extends ChangeNotifier {
         if (slotCount != 0) {
           for (int j = 0; j < slotCount; j++) {
             bool success = await api.createSlot(
-             
               blockId,
               slots[j].startTime,
               slots[j].duration,
@@ -124,62 +133,107 @@ class EditBlockViewmodel extends ChangeNotifier {
   }
 
   Future<void> deleteBlock(String blockId) async {
-    bool deleted = await api.deleteBlock(int.parse(blockId));
-    if (deleted) {
-      notify.showToast("Block was deleted successfully");
-    } else {
-      notify.showToast("Block could not be deleted");
+    final BlockModel? previousBlock = block;
+    final List<SlotModel> previousSlots = List.from(slots);
+
+    block = null;
+    slots.clear();
+    notifyListeners();
+
+    try {
+      bool deleted = await api.deleteBlock(int.parse(blockId));
+      if (deleted) {
+        notify.showToast("Block was deleted successfully");
+      } else {
+        block = previousBlock;
+        slots = previousSlots;
+        notifyListeners();
+        notify.showToast("Block could not be deleted");
+      }
+    } catch (e) {
+      block = previousBlock;
+      slots = previousSlots;
+      notifyListeners();
+      notify.showToast("Error while deleting block");
     }
   }
 
-  void refetchData( String? blockId) {
+  void refetchData(String? blockId) {
     if (blockId != null) {
       fetchSlotsForBlock(blockId);
     }
   }
 
   Future<void> changeSlotMeetingType(int slotId) async {
-    _isLoading = true;
+    final index = slots.indexWhere((s) => s.id == slotId);
+    if (index == -1) return;
+
+    final original = slots[index];
+    slots[index] = SlotModel(
+      id: original.id,
+      blockId: original.blockId,
+      roomId: original.roomId,
+      startTime: original.startTime,
+      duration: original.duration,
+      isOnline: original.isOnline == 0 ? 1 : 0,
+      valid: original.valid,
+      note: original.note,
+      takenBy: original.takenBy,
+      takenByName: original.takenByName,
+      takenByReason: original.takenByReason,
+      history: original.history,
+    );
     notifyListeners();
+
     try {
       await api.changeConsultationType(slotId);
       notify.showToast('Consultation type was successfully changed');
     } catch (e) {
-      notify.showToast('Error while changing consultation type');
-    } finally {
-      _isLoading = false;
+      slots[index] = original;
       notifyListeners();
+      notify.showToast('Error while changing consultation type');
     }
   }
 
   Future<void> deleteSlot(int slotId) async {
-    _isLoading = true;
+    final removedSlot = slots.firstWhere((s) => s.id == slotId);
+    final removedIndex = slots.indexOf(removedSlot);
+    slots.removeWhere((s) => s.id == slotId);
     notifyListeners();
+
     try {
       bool b = await api.deleteSlot(slotId);
-      if (b) {
-        slots.removeWhere((s) => s.id == slotId);
-        notify.showToast('Slot was successfully deleted');
+      if (!b) {
+        slots.insert(removedIndex, removedSlot);
+        notifyListeners();
+        notify.showToast('Error while deleting slot');
       }
     } catch (e) {
-      notify.showToast('Error while deleting slot');
-    } finally {
-      _isLoading = false;
+      slots.insert(removedIndex, removedSlot);
       notifyListeners();
+      notify.showToast('Error while deleting slot');
     }
   }
 
-  void init(String blockId, String roomId) async {
-    await assignBlock(int.parse(blockId), int.parse(roomId));
+  void refreshEditBlock(String blockId) async {
+    _isLoading = true;
+    notifyListeners();
+    await assignBlock(int.parse(blockId), int.parse(_roomId));
     await fetchSlotsForBlock(blockId);
-    roomName = await getRoomNameById( int.parse(roomId));
+    roomName = await getRoomNameById(int.parse(_roomId));
     if (block != null) {
       _isChecked = block!.isOnline == 1 ? true : false;
     }
+    _isLoading = false;
     notifyListeners();
   }
 
-  Future<String> getRoomNameById( int roomId) async {
+  void init(String blockId, String roomId) async {
+    _roomId = roomId;
+    refreshEditBlock(blockId);
+  }
+
+  Future<String> getRoomNameById(int roomId) async {
     try {
       final rooms = await api.getAllRooms();
       final room = rooms.firstWhere((r) => r.id == roomId);
@@ -194,7 +248,7 @@ class EditBlockViewmodel extends ChangeNotifier {
     notifyListeners();
     try {
       String now = DateTime.now().toString().substring(0, 10);
-      final blocks = await api.getBlocks( roomId);
+      final blocks = await api.getBlocks(roomId);
       block = blocks.firstWhere((b) => b.id == blockId);
     } catch (e) {
     } finally {

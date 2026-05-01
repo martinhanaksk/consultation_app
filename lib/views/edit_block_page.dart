@@ -2,8 +2,8 @@ import 'package:consultation_app/models/slot_model.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/edit_block_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
+import 'package:consultation_app/views/custom_widgets/custom_checkbox_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
-import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
@@ -377,25 +377,14 @@ class _EditBlockState extends State<EditBlock> {
                                                         viewModel.slots.length -
                                                             1,
 
-                                                    onIsOnlineClicked: () async => {
-                                                      await viewModel
-                                                          .changeSlotMeetingType(
-                                                            slot.id,
-                                                          ),
-                                                      await viewModel
-                                                          .fetchSlotsForBlock(
-                                                            widget.blockId,
-                                                          ),
-                                                    },
-                                                    onDelete: () => {
-                                                      viewModel.deleteSlot(
-                                                        slot.id,
-                                                      ),
-                                                      viewModel
-                                                          .fetchSlotsForBlock(
-                                                            widget.blockId,
-                                                          ),
-                                                    },
+                                                    onIsOnlineClicked: () =>
+                                                        viewModel
+                                                            .changeSlotMeetingType(
+                                                              slot.id,
+                                                            ),
+
+                                                    onDelete: () => viewModel
+                                                        .deleteSlot(slot.id),
                                                   );
                                                 },
                                               ),
@@ -408,35 +397,17 @@ class _EditBlockState extends State<EditBlock> {
                             SizedBox(height: 32),
                             Row(
                               children: [
-                                IntrinsicWidth(
-                                  child: Container(
-                                    width: 28,
-                                    height: 28,
-                                    clipBehavior: Clip.none,
-                                    decoration: constants.squircleShadow(
-                                      color: constants.background,
-                                      borderRadius: SmoothBorderRadius(
-                                        cornerRadius: 6,
-                                        cornerSmoothing: 0.6,
-                                      ),
+                                CustomCheckbox(
+                                  value: viewModel.isChecked,
+                                  onChanged: (bool? value) => {
+                                    viewModel.toggleIsOnline(
+                                      value,
+                                      int.parse(widget.blockId),
                                     ),
-                                    child: Checkbox(
-                                      value: viewModel.isChecked,
-                                      onChanged: (bool? value) => {
-                                        viewModel.toggleIsOnline(
-                                          value,
-                                          int.parse(widget.blockId),
-                                        ),
-                                        widget.onSuccess!(),
-                                      },
-                                      side: BorderSide.none,
-                                      checkColor: constants.darkGrey,
-                                      fillColor: WidgetStateProperty.all(
-                                        constants.background,
-                                      ),
-                                    ),
-                                  ),
+                                    widget.onSuccess!(),
+                                  },
                                 ),
+
                                 SizedBox(width: 8),
                                 Text(
                                   'Online',
@@ -594,7 +565,7 @@ class _SlotRow extends StatelessWidget {
               GestureDetector(
                 onTap: onIsOnlineClicked,
                 child: svgs.icon(
-                  slot.isOnline == 0 ? 'screen' : 'location',
+                  slot.isOnline == 0 ? 'location' : 'screen',
                   constants.primary,
                   width: constants.fsTitle,
                 ),

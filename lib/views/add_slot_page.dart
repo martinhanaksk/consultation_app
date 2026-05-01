@@ -1,7 +1,9 @@
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/add_slot_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
+import 'package:consultation_app/views/custom_widgets/custom_checkbox_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
+import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -11,11 +13,7 @@ class AddSlot extends StatefulWidget {
   final String blockId;
   final VoidCallback? onSuccess;
 
-  const AddSlot({
-    super.key,
-    required this.blockId,
-    required this.onSuccess,
-  });
+  const AddSlot({super.key, required this.blockId, required this.onSuccess});
 
   @override
   State<AddSlot> createState() => _AddSlotState();
@@ -122,27 +120,19 @@ class _AddSlotState extends State<AddSlot> {
                         const SizedBox(height: 20),
                         Row(
                           children: [
-                            IntrinsicWidth(
-                              child: Container(
-                                width: 24,
-                                height: 24,
-                                clipBehavior: Clip.none,
-                                decoration: constants.squircleShadow(
-                                  color: constants.background,hasBorder: true
-                                ),
-                                child: Checkbox(
-                                  value: viewModel.isOnline,
-                                  onChanged: viewModel.toggleIsOnline,
-                                  side: BorderSide.none,
-                                  checkColor: constants.darkGrey,
-                                  fillColor: WidgetStateProperty.all(
-                                    constants.background,
-                                  ),
-                                ),
+                             CustomCheckbox(
+                              value: viewModel.isOnline,
+                              onChanged: viewModel.toggleIsOnline,
+                            ),
+
+                            const SizedBox(width: 8),
+                            Text(
+                              'Online',
+                              style: TextStyle(
+                                color: constants.darkGrey,
+                                fontSize: constants.fsBody,
                               ),
                             ),
-                            const SizedBox(width: 8),
-                            const Text('Online'),
                           ],
                         ),
                         const SizedBox(height: 20),
@@ -235,11 +225,11 @@ class _StartTimePickerState extends State<_StartTimePicker> {
           )
         : DateTime(2000, 1, 1, now.hour, rounded);
 
-   WidgetsBinding.instance.addPostFrameCallback((_) {
-    widget.viewModel.setStartTime(
-      Duration(hours: _current.hour, minutes: _current.minute),
-    );
-  });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.viewModel.setStartTime(
+        Duration(hours: _current.hour, minutes: _current.minute),
+      );
+    });
   }
 
   @override
@@ -288,9 +278,9 @@ class _DurationPickerState extends State<_DurationPicker> {
   void initState() {
     super.initState();
     _scrollController = FixedExtentScrollController(initialItem: 2);
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-    widget.viewModel.setDuration(const Duration(minutes: 15));
-  });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.viewModel.setDuration(const Duration(minutes: 15));
+    });
   }
 
   @override
@@ -314,7 +304,7 @@ class _DurationPickerState extends State<_DurationPicker> {
           24,
           (i) => Center(
             child: Text(
-               '${(i + 1) * 5} min',
+              '${(i + 1) * 5} min',
               style: TextStyle(
                 fontSize: constants.fsBody,
                 color: constants.darkGrey,

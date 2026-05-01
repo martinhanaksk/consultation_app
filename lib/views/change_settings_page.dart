@@ -1,6 +1,7 @@
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/change_settings_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
+import 'package:consultation_app/views/custom_widgets/custom_checkbox_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -428,8 +429,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                         } else {
                           setDialogState(() {
                             loading = false;
-                            errorMsg =
-                                "Failed. User may already be registered";
+                            errorMsg = "Failed. User may already be registered";
                           });
                         }
                       }
@@ -677,14 +677,11 @@ class _CheckboxTile extends StatelessWidget {
               ],
             ),
           ),
-          Checkbox(
-            value: value,
-            activeColor: constants.primary,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(4),
-            ),
-            onChanged: onChanged,
-          ),
+            CustomCheckbox(
+                              value: value,
+                              onChanged: onChanged,
+                            ),
+          
         ],
       ),
     );

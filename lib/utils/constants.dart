@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 
 class Constants {
+  Color white = Color(0xffffffff);
+  Color checkboxColor = Color(0xFF2A4E7A);
   Color background = Color(0xfff9f9f9);
   Color grey = Color(0xFFD0D0D0);
   Color darkGrey30 = Color(0xff191c1f).withAlpha(30);
@@ -49,12 +51,7 @@ class Constants {
               cornerRadius: 16,
               cornerSmoothing: cornerSmoothing,
             ),
-        side: hasBorder
-            ? BorderSide(
-                color: grey,
-                width: 1,
-              )
-            : BorderSide.none,
+        side: hasBorder ? BorderSide(color: grey, width: 1) : BorderSide.none,
       ),
     );
   }

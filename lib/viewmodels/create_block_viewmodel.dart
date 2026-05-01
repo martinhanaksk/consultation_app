@@ -20,7 +20,7 @@ class CreateBlockViewmodel extends ChangeNotifier {
   static final DateFormat _fmtYear = DateFormat('MMM d, y');
   final TextEditingController slotNumberController = TextEditingController();
   final TextEditingController noteController = TextEditingController();
-  void toggleisOnline(bool? value) {
+  void toggleIsOnline(bool? value) {
     _isChecked = value ?? false;
     notifyListeners();
   }
