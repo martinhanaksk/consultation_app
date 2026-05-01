@@ -2,6 +2,7 @@ import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/create_block_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
+import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
@@ -11,11 +12,7 @@ import 'package:flutter/cupertino.dart';
 class CreateBlock extends StatefulWidget {
   final String roomId;
   final VoidCallback? onSuccess;
-  const CreateBlock({
-    super.key,
-    required this.roomId,
-    required this.onSuccess,
-  });
+  const CreateBlock({super.key, required this.roomId, required this.onSuccess});
 
   @override
   State<CreateBlock> createState() => _CreateBlockState();
@@ -151,13 +148,11 @@ class _CreateBlockState extends State<CreateBlock> {
                   ),
                   yearCellStyle: DateRangePickerYearCellStyle(
                     textStyle: TextStyle(
-                      color:
-                          constants.darkGrey,
+                      color: constants.darkGrey,
                       fontSize: constants.fsLabel,
                     ),
                     todayTextStyle: TextStyle(
-                      color:
-                          constants.primary,
+                      color: constants.primary,
                       fontWeight: constants.fwSemiBold,
                     ),
                     leadingDatesTextStyle: TextStyle(
@@ -348,7 +343,8 @@ class _CreateBlockState extends State<CreateBlock> {
                                 decoration: constants.squircleShadow(
                                   color: constants.background,
                                 ),
-                                child: TextField(style: TextStyle(color: constants.darkGrey),
+                                child: TextField(
+                                  style: TextStyle(color: constants.darkGrey),
                                   scrollPadding: EdgeInsets.only(bottom: 1000),
                                   controller: viewModel.slotNumberController,
                                   keyboardType: TextInputType.number,
@@ -408,7 +404,8 @@ class _CreateBlockState extends State<CreateBlock> {
                           decoration: constants.squircleShadow(
                             color: constants.background,
                           ),
-                          child: TextField(style: TextStyle(color: constants.darkGrey),
+                          child: TextField(
+                            style: TextStyle(color: constants.darkGrey),
                             scrollPadding: EdgeInsets.only(bottom: 1000),
                             controller: viewModel.noteController,
                             decoration: InputDecoration(
@@ -424,11 +421,15 @@ class _CreateBlockState extends State<CreateBlock> {
                           children: [
                             IntrinsicWidth(
                               child: Container(
-                                width: 24,
-                                height: 24,
+                                width: 28,
+                                height: 28,
                                 clipBehavior: Clip.none,
                                 decoration: constants.squircleShadow(
                                   color: constants.background,
+                                  borderRadius: SmoothBorderRadius(
+                                    cornerRadius: 6,
+                                    cornerSmoothing: 0.6,
+                                  ),
                                 ),
                                 child: Checkbox(
                                   value: viewModel.isChecked,
@@ -442,7 +443,13 @@ class _CreateBlockState extends State<CreateBlock> {
                               ),
                             ),
                             SizedBox(width: 8),
-                            const Text('Online'),
+                            Text(
+                              'Online',
+                              style: TextStyle(
+                                color: constants.darkGrey,
+                                fontSize: constants.fsBody,
+                              ),
+                            ),
                           ],
                         ),
                         SizedBox(height: 20),

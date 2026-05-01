@@ -97,8 +97,8 @@ class _EmailInputPageState extends State<EmailInputPage> {
                           children: [
                             IntrinsicWidth(
                               child: Container(
-                                width: 24,
-                                height: 24,
+                                width: 28,
+                                height: 28,
                                 clipBehavior: Clip.none,
                                 decoration: constants.squircleShadow(
                                   color: constants.background,
@@ -123,7 +123,7 @@ class _EmailInputPageState extends State<EmailInputPage> {
                               'Remember me',
                               style: TextStyle(
                                 color: constants.darkGrey,
-                                fontSize: constants.fsLabel,
+                                fontSize: constants.fsBody,
                               ),
                             ),
                           ],

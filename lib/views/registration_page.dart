@@ -219,7 +219,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 widget.rememberMe,
                               );
                             } catch (e) {
-                              notify.showToast("Error while registering user.");
+                              notify.showToast("Error while registering user");
                             }
                           }
                         },

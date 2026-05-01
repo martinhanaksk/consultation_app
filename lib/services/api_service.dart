@@ -7,7 +7,6 @@ import 'package:consultation_app/models/block_model.dart';
 import 'package:consultation_app/models/slot_model.dart';
 
 class ApiService {
-  
   // Helper endpoints
 
   Map<String, String> _headers(String token) {
@@ -20,7 +19,7 @@ class ApiService {
   void _checkUnauthorized(http.Response response) {
     if (response.statusCode == 401) {
       nav.toLogin();
-      notify.showToast('Token has expired. Please log in again.');
+      notify.showToast('You were logged out');
     }
   }
 
@@ -39,7 +38,7 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final userDataFetched = await api.getUserData(data['token'], email);
-      sm.saveSession(
+      await sm.saveSession(
         data['token'],
         email,
         userDataFetched['role'],
@@ -286,8 +285,13 @@ class ApiService {
     final response = await http.post(url, headers: _headers(sm.token));
 
     _checkUnauthorized(response);
-
-    if (response.statusCode != 200) {
+    print(response.statusCode);
+    print(response.body);
+    if (response.statusCode == 403) {
+      throw Exception('You cannot join this room');
+    } else if (response.statusCode == 200) {
+      notify.showToast('Room joined');
+    } else {
       throw Exception('Failed to join room: ${response.statusCode}');
     }
   }
@@ -375,7 +379,7 @@ class ApiService {
     }
   }
 
- // Block and subscription endpoints
+  // Block and subscription endpoints
 
   Future<List<BlockModel>> getBlocks(int roomId, [String? now]) async {
     final String query = now != null ? '&start=$now' : '';
@@ -528,7 +532,7 @@ class ApiService {
     _checkUnauthorized(response);
 
     if (response.statusCode != 200) {
-      notify.showToast("'Failed to take slot");
+      notify.showToast("Failed to take slot");
     }
   }
 

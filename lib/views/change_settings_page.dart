@@ -29,7 +29,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
             drawer: SliderMenu(),
             backgroundColor: constants.background,
             body: SafeArea(
-              child: viewModel.email == ""
+              child: viewModel.isLoading
                   ? Center(
                       child: SpinKitPouringHourGlass(
                         color: constants.primary,
@@ -139,7 +139,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                   value: viewModel.visibility,
                                   onChanged: (_) => viewModel.setVisibility(),
                                 ),
-                                  _NotifyHoursTile(viewModel: viewModel),
+                                _NotifyHoursTile(viewModel: viewModel),
                                 _CheckboxTile(
                                   svgName: themeSelector.isDark
                                       ? 'moon'
@@ -205,6 +205,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
       ),
     );
   }
+
   Widget _divider() => Divider(
     indent: 20,
     endIndent: 20,
@@ -267,6 +268,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
       ),
     );
   }
+
   Future<void> _showVisitReasonDialog(
     BuildContext context,
     ChangeSettingsViewmodel vm,
@@ -422,12 +424,12 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                       if (ctx.mounted) {
                         if (success) {
                           Navigator.pop(ctx);
-                          notify.showToast("Teacher created successfully.");
+                          notify.showToast("Teacher created successfully");
                         } else {
                           setDialogState(() {
                             loading = false;
                             errorMsg =
-                                "Failed. User may already be registered.";
+                                "Failed. User may already be registered";
                           });
                         }
                       }
@@ -455,6 +457,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
     );
   }
 }
+
 class _ActionTile extends StatelessWidget {
   final String svgName;
   final String title;
@@ -515,6 +518,7 @@ class _ActionTile extends StatelessWidget {
     );
   }
 }
+
 class _InfoTile extends StatelessWidget {
   final String svgName;
   final String label;
@@ -565,6 +569,7 @@ class _InfoTile extends StatelessWidget {
     );
   }
 }
+
 class _EditableTile extends StatelessWidget {
   final String svgName;
   final String label;
@@ -614,11 +619,7 @@ class _EditableTile extends StatelessWidget {
           ),
           IconButton(
             onPressed: onEdit,
-            icon: svgs.icon(
-              'edit',
-              constants.primary,
-              width: constants.fsBody,
-            ),
+            icon: svgs.icon('edit', constants.primary, width: constants.fsBody),
             tooltip: "Edit",
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
@@ -628,6 +629,7 @@ class _EditableTile extends StatelessWidget {
     );
   }
 }
+
 class _CheckboxTile extends StatelessWidget {
   final String svgName;
   final String title;
@@ -688,6 +690,7 @@ class _CheckboxTile extends StatelessWidget {
     );
   }
 }
+
 class _NotifyHoursTile extends StatefulWidget {
   final ChangeSettingsViewmodel viewModel;
   const _NotifyHoursTile({required this.viewModel});
@@ -709,7 +712,7 @@ class _NotifyHoursTileState extends State<_NotifyHoursTile> {
   }
 
   @override
-  void didUpdateWidget( _NotifyHoursTile oldWidget) {
+  void didUpdateWidget(_NotifyHoursTile oldWidget) {
     super.didUpdateWidget(oldWidget);
     final newValue = widget.viewModel.notifyHoursBefore.toString();
     if (_ctrl.text != newValue) {

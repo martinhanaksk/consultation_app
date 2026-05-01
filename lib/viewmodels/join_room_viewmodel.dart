@@ -7,29 +7,56 @@ class JoinRoomViewmodel extends ChangeNotifier {
   List<RoomModel>? _joinedRooms = [];
   bool _isLoading = false;
   bool get isLoading => _isLoading;
+  bool _isLoadingRooms = false;
+  bool get isLoadingRooms => _isLoadingRooms;
+  String? _selectedRoomId;
+  String? get selectedRoomId => _selectedRoomId;
+  int? _selectedId;
+  int? get selectedId => _selectedId;
+  final TextEditingController idController = TextEditingController();
   List<RoomModel>? allRooms() {
     return _allRooms;
   }
 
-  Future<void> joinRoom( int id) async {
+  @override
+  void dispose() {
+    idController.dispose();
+    super.dispose();
+  }
+
+  void clearSelection() {
+    _selectedRoomId = null;
+    _selectedId = null;
+    notifyListeners();
+  }
+
+  List<RoomModel>? joinedRooms() {
+    return _joinedRooms;
+  }
+
+  void setSelectedIds(RoomModel room) {
+    _selectedRoomId = room.id.toString();
+    _selectedId = room.id;
+    notifyListeners();
+  }
+
+  Future<void> joinRoom(int id) async {
     try {
       if (_isLoading) return;
       _isLoading = true;
       notifyListeners();
-      await api.joinRoomById( id);
+      await api.joinRoomById(id);
       _isLoading = false;
       notifyListeners();
-      notify.showToast('Room joined.');
       if (sm.role == "teacher") {
-        nav.toOwnerConsultations(
-        );
+        nav.toOwnerConsultations();
       } else {
-        nav.toBaseConsultations(
-        );
+        nav.toBaseConsultations();
       }
     } catch (e) {
-      notify.showToast('Unable to join the room.');
-    }
+      notify.showToast('You cannot join this room');_isLoading = false;
+      notifyListeners();
+    } 
   }
 
   bool isInJoinedRooms(RoomModel option) {
@@ -43,6 +70,15 @@ class JoinRoomViewmodel extends ChangeNotifier {
     } else {
       return false;
     }
+  }
+
+  void init() async {
+    _isLoadingRooms = true;
+    notifyListeners();
+    await fetchAllRooms();
+    await fetchJoinedRooms();
+    _isLoadingRooms = false;
+    notifyListeners();
   }
 
   Future<void> fetchAllRooms() async {

@@ -58,7 +58,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
       await api.releaseSlot(slotId);
     } catch (e) {
       _optimisticallyReleased[slotId] = false;
-      notify.showToast('Failed to release slot.');
+      notify.showToast('Failed to release slot');
       rethrow;
     } finally {
       _optimisticallyReleased.remove(slotId);
@@ -72,7 +72,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     try {
       await api.changeConsultationType(slotId);
     } catch (e) {
-      notify.showToast('Slot cannot be manipulated.');
+      notify.showToast('Slot cannot be manipulated');
       rethrow;
     } finally {
       isLoading = false;
@@ -102,7 +102,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
         subscribedBlocks.remove(block);
       }
       notifyListeners();
-      notify.showToast('Failed to update subscription. Please try again.');
+      notify.showToast('Failed to update subscription, please try again later');
     }
   }
 
@@ -269,14 +269,14 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
       notifyListeners();
       return true;
     } else {
-      notify.showToast('Invalid room or access denied.');
+      notify.showToast('Invalid room or access denied');
       return false;
     }
   }
 
   Future<bool> checkConnection() async {
     if (await helpers.handleIsInternetConnection()) return true;
-    notify.showToast('Please connect to internet.');
+    notify.showToast('Please connect to internet');
     return false;
   }
 
@@ -319,7 +319,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     try {
       return await api.getRole() == "teacher";
     } catch (_) {
-      notify.showToast('Error while acquiring role.');
+      notify.showToast('Error while acquiring role');
       return false;
     }
   }

@@ -11,11 +11,11 @@ class VerifyOtpViewmodel extends ChangeNotifier {
     if (_isLoading) return;
     _isLoading = true;
     notifyListeners();
-
     try {
       final success = await api.connect(email, otp, rememberMe);
 
       if (success) {
+        await sm.load();
         if (sm.role == 'teacher') {
           nav.toOwnerConsultations();
         } else if (sm.role == 'student') {
@@ -24,12 +24,12 @@ class VerifyOtpViewmodel extends ChangeNotifier {
       } else {
         _isLoading = false;
         notifyListeners();
-        notify.showToast('Please enter a valid code.');
+        notify.showToast('Please enter a valid code');
       }
     } catch (e) {
       _isLoading = false;
       notifyListeners();
-      notify.showToast('Connection failed. Please try again.'+e.toString());
+      notify.showToast('Connection failed, lease try again later');
     }
   }
 }

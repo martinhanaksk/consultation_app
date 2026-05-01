@@ -72,13 +72,13 @@ class AddSlotViewmodel extends ChangeNotifier {
     );
 
     if (!success) {
-      notify.showToast('Failed to create slot.');
+      notify.showToast('Failed to create slot');
       isLoading = false;
       notifyListeners();
       return;
     }
 
-    notify.showToast('Slot created successfully.');
+    notify.showToast('Slot created successfully');
     isLoading = false;
     notifyListeners();
     onSuccess?.call();

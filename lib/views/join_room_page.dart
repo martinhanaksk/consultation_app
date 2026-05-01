@@ -4,6 +4,7 @@ import 'package:consultation_app/viewmodels/join_room_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:figma_squircle/figma_squircle.dart';
@@ -16,24 +17,12 @@ class JoinRoom extends StatefulWidget {
 }
 
 class _JoinRoomState extends State<JoinRoom> {
-  String? selectedRoomId;
-  int? selectedId;
-  final TextEditingController idController = TextEditingController();
-
   late final JoinRoomViewmodel _viewModel;
   @override
   void initState() {
     super.initState();
     _viewModel = JoinRoomViewmodel();
-    _viewModel.fetchAllRooms();
-    _viewModel.fetchJoinedRooms();
-  }
-
-  @override
-  void dispose() {
-    idController.dispose();
-    _viewModel.dispose();
-    super.dispose();
+    _viewModel.init();
   }
 
   final dropDownKey = GlobalKey<DropdownSearchState>();
@@ -117,11 +106,8 @@ class _JoinRoomState extends State<JoinRoom> {
                                               );
                                         });
                                       },
-                                  onSelected: (RoomModel selection) {
-                                    setState(() {
-                                      selectedRoomId = selection.id.toString();
-                                      selectedId = selection.id;
-                                    });
+                                  onSelected: (RoomModel room) {
+                                    viewModel.setSelectedIds(room);
                                   },
                                   fieldViewBuilder:
                                       (
@@ -131,9 +117,29 @@ class _JoinRoomState extends State<JoinRoom> {
                                         VoidCallback onFieldSubmitted,
                                       ) {
                                         return TextField(
+                                          cursorColor: constants.primary,
                                           style: TextStyle(
                                             color: constants.darkGrey,
                                           ),
+                                          onChanged: (value) {
+                                            final rooms =
+                                                viewModel.allRooms() ?? [];
+                                            final match = rooms
+                                                .cast<RoomModel?>()
+                                                .firstWhere(
+                                                  (room) =>
+                                                      room!.title
+                                                          .toLowerCase() ==
+                                                      value.toLowerCase(),
+                                                  orElse: () => null,
+                                                );
+
+                                            if (match != null) {
+                                              viewModel.setSelectedIds(match);
+                                            } else {
+                                              viewModel.clearSelection();
+                                            }
+                                          },
                                           scrollPadding: EdgeInsets.only(
                                             bottom:
                                                 MediaQuery.of(
@@ -217,7 +223,8 @@ class _JoinRoomState extends State<JoinRoom> {
                                                         );
                                                     final bool isSelected =
                                                         option.id.toString() ==
-                                                        selectedRoomId;
+                                                        viewModel
+                                                            .selectedRoomId;
 
                                                     if (viewModel
                                                         .isInJoinedRooms(
@@ -269,9 +276,9 @@ class _JoinRoomState extends State<JoinRoom> {
                                   child: ElevatedButton(
                                     onPressed: () async {
                                       FocusScope.of(context).unfocus();
-                                      if (selectedId != null) {
+                                      if (viewModel.selectedId != null) {
                                         await viewModel.joinRoom(
-                                          selectedId!,
+                                          viewModel.selectedId!,
                                         );
                                       } else {
                                         notify.showToast('Select room to join');
@@ -300,6 +307,84 @@ class _JoinRoomState extends State<JoinRoom> {
                               ],
                             ),
                           ),
+                          const SizedBox(height: 28),
+
+                          Center(
+                            child: Text(
+                              "Rooms joined",
+                              style: TextStyle(
+                                fontWeight: constants.fwSemiBold,
+                                fontSize: constants.fsBody,
+                                color: constants.darkGrey,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          viewModel.isLoadingRooms
+                              ? Center(
+                                  child: SpinKitPouringHourGlass(
+                                    color: constants.primary,
+                                    size: constants.fsHeadline,
+                                  ),
+                                )
+                              : viewModel.joinedRooms() == null ||
+                                    viewModel.joinedRooms()!.isEmpty
+                              ? Center(
+                                  child: Text(
+                                    "You haven't joined any rooms yet.",
+                                    style: TextStyle(
+                                      fontSize: constants.fsLabel,
+                                      color: constants.darkGrey200,
+                                    ),
+                                  ),
+                                )
+                              : ListView.separated(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: viewModel.joinedRooms()!.length,
+                                  separatorBuilder: (_, __) =>
+                                      const SizedBox(height: 10),
+                                  itemBuilder: (context, index) {
+                                    final room = viewModel
+                                        .joinedRooms()![index];
+                                    return Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 20,
+                                        vertical: 16,
+                                      ),
+                                      decoration: constants.squircleShadow(
+                                        color: constants.background,
+                                        borderRadius: SmoothBorderRadius(
+                                          cornerRadius: 16,
+                                          cornerSmoothing: 0.6,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          svgs.icon(
+                                            'student',
+                                            constants.primary,
+                                            width: constants.fsBody,
+                                          ),
+                                          const SizedBox(width: 12),
+                                          Expanded(
+                                            child: Text(
+                                              room.title,
+                                              style: TextStyle(
+                                                fontSize: constants.fsLabel,
+                                                fontWeight:
+                                                    constants.fwSemiBold,
+                                                color: constants.darkGrey,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+
+                          const SizedBox(height: 24),
                         ],
                       ),
                     ),

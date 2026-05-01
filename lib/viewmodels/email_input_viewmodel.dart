@@ -21,7 +21,7 @@ class EmailInputViewModel extends ChangeNotifier {
       final response = await api.requestLoginOtp(email);
       helpers.handleServer(response, email, rememberMe);
     } catch (e) {
-      notify.showToast("Please, check your internet connection.");
+      notify.showToast("Please, check your internet connection");
       resetLoading();
     }
   }

@@ -215,10 +215,10 @@ class CreateBlockViewmodel extends ChangeNotifier {
       );
 
       if (response.isEmpty) {
-        notify.showToast('Failed to create block for ${dates[i]}. It might already exist.');
+        notify.showToast('Failed to create block for ${dates[i]}. It might already exist');
         continue;
       } else {
-        notify.showToast('Blocks created successfully.');
+        notify.showToast('Blocks created successfully');
       }
       final int blockId = jsonDecode(response)['id'];
       if (slotCount != 0) {

@@ -19,11 +19,11 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
       bool b = await api.deleteRoom(int.parse(safeSelectedRoomId!));
       if (b) {
         nav.pop();
-        notify.showToast('Room was successfully deleted.');
+        notify.showToast('Room was successfully deleted');
       }
     } catch (e) {
       nav.pop();
-      notify.showToast('Error while deleting room.');
+      notify.showToast('Error while deleting room');
     } finally {
       isLoading = false;
       notifyListeners();
@@ -87,7 +87,7 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
     try {
       final slotsForBlock = await api.getSlotsForBlock(blockId);
       if (slotsForBlock == null || slotsForBlock.isEmpty) {
-        notify.showToast("No slots found in block.");
+        notify.showToast("No slots found in block");
         return;
       }
       final newStartTime = calculateMarginTimes(
@@ -96,7 +96,7 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
         slotsForBlock[0].duration,
       );
       if (newStartTime == null) {
-        notify.showToast("Cannot add a slot before 00:00.");
+        notify.showToast("Cannot add a slot before 00:00");
         return;
       }
       final slotCreated = await api.createSlot(
@@ -108,12 +108,12 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
         slotsForBlock[0].note ?? " ",
       );
       if (!slotCreated) {
-        notify.showToast("Could not create new slot.");
+        notify.showToast("Could not create new slot");
         return;
       }
       await loadRoom();
     } catch (e) {
-      notify.showToast("Error adding slot.");
+      notify.showToast("Error adding slot");
     } finally {
       setAddingSlotBefore(blockId, false);
     }
@@ -124,7 +124,7 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
     try {
       final slotsForBlock = await api.getSlotsForBlock(blockId);
       if (slotsForBlock == null || slotsForBlock.isEmpty) {
-        notify.showToast("No slots found in block.");
+        notify.showToast("No slots found in block");
         return;
       }
       final lastSlot = slotsForBlock.last;
@@ -134,7 +134,7 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
         lastSlot.duration,
       );
       if (newStartTime == null) {
-        notify.showToast("Cannot add a slot after 24:00.");
+        notify.showToast("Cannot add a slot after 24:00");
         return;
       }
       final slotCreated = await api.createSlot(
@@ -146,12 +146,12 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
         lastSlot.note ?? " ",
       );
       if (!slotCreated) {
-        notify.showToast("Could not create new slot.");
+        notify.showToast("Could not create new slot");
         return;
       }
       await loadRoom();
     } catch (e) {
-      notify.showToast("Error adding slot.");
+      notify.showToast("Error adding slot");
     } finally {
       setAddingSlotAfter(blockId, false);
     }

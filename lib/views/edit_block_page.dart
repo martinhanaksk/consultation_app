@@ -3,6 +3,7 @@ import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/edit_block_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
+import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
@@ -409,11 +410,15 @@ class _EditBlockState extends State<EditBlock> {
                               children: [
                                 IntrinsicWidth(
                                   child: Container(
-                                    width: 24,
-                                    height: 24,
+                                    width: 28,
+                                    height: 28,
                                     clipBehavior: Clip.none,
                                     decoration: constants.squircleShadow(
                                       color: constants.background,
+                                      borderRadius: SmoothBorderRadius(
+                                        cornerRadius: 6,
+                                        cornerSmoothing: 0.6,
+                                      ),
                                     ),
                                     child: Checkbox(
                                       value: viewModel.isChecked,
@@ -437,7 +442,7 @@ class _EditBlockState extends State<EditBlock> {
                                   'Online',
                                   style: TextStyle(
                                     color: constants.darkGrey,
-                                    fontSize: constants.fsLabel,
+                                    fontSize: constants.fsBody,
                                   ),
                                 ),
                               ],

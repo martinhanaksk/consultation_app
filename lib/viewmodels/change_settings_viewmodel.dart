@@ -9,7 +9,8 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
   String _visitReason = "";
   bool _visibility = true;
   int _notifyHoursBefore = 0;
-
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
   bool get visibility => _visibility;
   String get role => _role;
   String get name => _name;
@@ -123,6 +124,9 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
   }
 
   Future<void> initialize() async {
+    if (isLoading) return;
+    _isLoading = true;
+    notifyListeners();
     _hasBeenInitialized = true;
     _email = sm.email;
 
@@ -135,7 +139,7 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
     _visibility = (data['visible'] == 1 || data['visible'] == true);
     _notifyHoursBefore = (data['notification'] as int?) ?? 0;
 
-    sm.saveSession(
+    await sm.saveSession(
       sm.token,
       _email,
       _role,
@@ -145,7 +149,7 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
       _name,
       _surname,
     );
-
+    _isLoading = false;
     notifyListeners();
   }
 }

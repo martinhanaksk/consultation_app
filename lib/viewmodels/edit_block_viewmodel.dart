@@ -74,7 +74,7 @@ class EditBlockViewmodel extends ChangeNotifier {
     List<String> dates = getSelectedDatesIso();
 
     if (dates.isEmpty) {
-      notify.showToast('Please select at least one date.');
+      notify.showToast('Please select at least one date');
       return;
     }
     _isLoading = true;
@@ -89,7 +89,7 @@ class EditBlockViewmodel extends ChangeNotifier {
           dates[i],
         );
         if (response.isEmpty) {
-          notify.showToast('Failed to create block for ${dates[i]}.');
+          notify.showToast('Failed to create block for ${dates[i]}');
           continue;
         }
         final int blockId = jsonDecode(response)['id'];
@@ -112,9 +112,9 @@ class EditBlockViewmodel extends ChangeNotifier {
           }
         }
       }
-      notify.showToast('Blocks copied successfully.');
+      notify.showToast('Blocks copied successfully');
     } catch (e) {
-      notify.showToast('An unexpected error occurred while copying.');
+      notify.showToast('An unexpected error occurred while copying');
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -126,9 +126,9 @@ class EditBlockViewmodel extends ChangeNotifier {
   Future<void> deleteBlock(String blockId) async {
     bool deleted = await api.deleteBlock(int.parse(blockId));
     if (deleted) {
-      notify.showToast("Block was deleted successfully.");
+      notify.showToast("Block was deleted successfully");
     } else {
-      notify.showToast("Block could not be deleted.");
+      notify.showToast("Block could not be deleted");
     }
   }
 
@@ -143,9 +143,9 @@ class EditBlockViewmodel extends ChangeNotifier {
     notifyListeners();
     try {
       await api.changeConsultationType(slotId);
-      notify.showToast('Consultation type was successfully changed.');
+      notify.showToast('Consultation type was successfully changed');
     } catch (e) {
-      notify.showToast('Error while changing consultation type.');
+      notify.showToast('Error while changing consultation type');
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -159,10 +159,10 @@ class EditBlockViewmodel extends ChangeNotifier {
       bool b = await api.deleteSlot(slotId);
       if (b) {
         slots.removeWhere((s) => s.id == slotId);
-        notify.showToast('Slot was successfully deleted.');
+        notify.showToast('Slot was successfully deleted');
       }
     } catch (e) {
-      notify.showToast('Error while deleting slot.');
+      notify.showToast('Error while deleting slot');
     } finally {
       _isLoading = false;
       notifyListeners();
