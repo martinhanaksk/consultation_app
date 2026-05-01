@@ -421,11 +421,11 @@ class _ConsultationBlockCard extends StatelessWidget {
                                       blockEntry.key,
                                     )) {
                                       notify.showToast(
-                                        "Notifications disabled for selected slot",
+                                        "Notifications enabled for selected slot",
                                       );
                                     } else {
                                       notify.showToast(
-                                        "Notifications enabled for selected slot",
+                                        "Notifications disabled for selected slot",
                                       );
                                     }
                                   },

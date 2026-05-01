@@ -9,7 +9,7 @@ class SlotModel {
   final String? takenByReason;
   final String? history;
   final String? note;
-  final int isOnline;
+  final int isOnline;final int isOnlineTeacher;
   final int roomId;
 
   SlotModel({
@@ -23,7 +23,7 @@ class SlotModel {
     this.takenByReason,
     this.history,
     this.note,
-    required this.isOnline,
+    required this.isOnline, required this.isOnlineTeacher,
     required this.roomId,
   });
 
@@ -38,7 +38,7 @@ class SlotModel {
     takenByReason: json['taken_by_reason'],
     history: json['history'],
     note: json['note'],
-    isOnline: json['is_online'],
+    isOnline: json['is_online'],isOnlineTeacher: json['teacher_is_online'],
     roomId: json['room_id'],
   );
 
@@ -53,7 +53,7 @@ class SlotModel {
     "taken_by_reason": takenByReason,
     "history": history,
     "note": note,
-    "is_online": isOnline,
+    "is_online": isOnline,"teacher_is_online": isOnlineTeacher,
     "room_id": roomId,
   };
 }

@@ -556,9 +556,9 @@ class ApiService {
     return response.statusCode == 200;
   }
 
-  Future<void> changeConsultationType(int slot_id) async {
+  Future<void> changeConsultationType(int slotId) async {
     final Uri url = Uri.parse(
-      '${constants.url}/slot/change-consultation-type?slot_id=$slot_id',
+      '${constants.url}/slot/change-consultation-type?slot_id=$slotId',
     );
     final response = await http.post(url, headers: _headers(sm.token));
 

@@ -176,6 +176,7 @@ class EditBlockViewmodel extends ChangeNotifier {
       startTime: original.startTime,
       duration: original.duration,
       isOnline: original.isOnline == 0 ? 1 : 0,
+       isOnlineTeacher: original.isOnlineTeacher,
       valid: original.valid,
       note: original.note,
       takenBy: original.takenBy,

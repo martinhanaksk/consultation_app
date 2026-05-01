@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:consultation_app/setup.dart'; // Ensure constants are imported
+import 'package:consultation_app/setup.dart';
 
 class CustomCheckbox extends StatelessWidget {
   final bool value;
