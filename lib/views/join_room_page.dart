@@ -2,6 +2,7 @@ import 'package:consultation_app/models/room_model.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/join_room_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
+import 'package:consultation_app/views/custom_widgets/custom_text_field_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -116,11 +117,7 @@ class _JoinRoomState extends State<JoinRoom> {
                                         FocusNode focusNode,
                                         VoidCallback onFieldSubmitted,
                                       ) {
-                                        return TextField(
-                                          cursorColor: constants.primary,
-                                          style: TextStyle(
-                                            color: constants.darkGrey,
-                                          ),
+                                        return CustomInputTextField(
                                           onChanged: (value) {
                                             final rooms =
                                                 viewModel.allRooms() ?? [];
@@ -139,49 +136,16 @@ class _JoinRoomState extends State<JoinRoom> {
                                             } else {
                                               viewModel.clearSelection();
                                             }
-                                          },
-                                          scrollPadding: EdgeInsets.only(
-                                            bottom:
-                                                MediaQuery.of(
-                                                  context,
-                                                ).viewInsets.bottom +
-                                                20,
-                                          ),
+                                          },focusNode: focusNode,
                                           controller: roomController,
-                                          focusNode: focusNode,
-                                          decoration: InputDecoration(
-                                            border: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                              borderSide: BorderSide(
-                                                color: constants.grey,
-                                              ),
-                                            ),
-                                            enabledBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                              borderSide: BorderSide(
-                                                color: constants.grey,
-                                              ),
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                              borderSide: BorderSide(
-                                                color: constants.primary,
-                                                width: 1.5,
-                                              ),
-                                            ),
-                                            hintText: 'Type to search rooms...',
-                                            prefixIcon: Padding(
-                                              padding: const EdgeInsets.all(
-                                                12.0,
-                                              ),
-                                              child: svgs.icon(
-                                                'search',
-                                                constants.darkGrey150,
-                                                width: constants.fsLabel,
-                                              ),
+                                          maxLength: 50,
+                                          hintText: 'Type to search rooms...',
+                                          prefixIcon: Padding(
+                                            padding: const EdgeInsets.all(12.0),
+                                            child: svgs.icon(
+                                              'search',
+                                              constants.darkGrey150,
+                                              width: constants.fsLabel,
                                             ),
                                           ),
                                         );

@@ -1,5 +1,6 @@
 import 'package:consultation_app/viewmodels/email_input_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/custom_checkbox_widget.dart';
+import 'package:consultation_app/views/custom_widgets/custom_text_field_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:consultation_app/setup.dart';
@@ -16,33 +17,12 @@ class EmailInputPage extends StatefulWidget {
 }
 
 class _EmailInputPageState extends State<EmailInputPage> {
-  Timer? _loadingTimer;
-
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       FlutterNativeSplash.remove();
       sm.checkIfInSharedPreferences();
-    });
-  }
-
-  @override
-  void dispose() {
-    _loadingTimer?.cancel();
-    super.dispose();
-  }
-
-  void _startLoadingTimeout(BuildContext context) {
-    _loadingTimer?.cancel();
-    _loadingTimer = Timer(const Duration(seconds: 5), () {
-      if (mounted) {
-        final viewModel = Provider.of<EmailInputViewModel>(
-          context,
-          listen: false,
-        );
-        viewModel.setLoading(false);
-      }
     });
   }
 
@@ -72,28 +52,14 @@ class _EmailInputPageState extends State<EmailInputPage> {
                           ),
                         ),
                         const SizedBox(height: 56),
-                        Container(
-                          clipBehavior: Clip.none,
-                          decoration: constants.squircleShadow(
-                            color: constants.background,
-                            borderRadius: SmoothBorderRadius(
-                              cornerRadius: 12,
-                              cornerSmoothing: 0.6,
-                            ),
-                          ),
-                          child: TextField(
-                            style: TextStyle(color: constants.darkGrey),
-                            scrollPadding: EdgeInsets.only(bottom: 1000),
-                            onChanged: viewModel.updateEmail,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                              ),
-                              hintText: 'Email',
-                            ),
-                          ),
+                        CustomInputTextField(
+                          hintText: 'Email',
+                          controller: viewModel.emailController,
+                          isEmail: true,
+                          maxLength: 50,
                         ),
-                        const SizedBox(height: 24),
+
+                        const SizedBox(height: 12),
                         Row(
                           children: [
                             CustomCheckbox(
@@ -101,7 +67,7 @@ class _EmailInputPageState extends State<EmailInputPage> {
                               onChanged: viewModel.toggleRememberMe,
                             ),
 
-                            SizedBox(width: 12),
+                            SizedBox(width: 4),
                             Text(
                               'Remember me',
                               style: TextStyle(
@@ -111,7 +77,7 @@ class _EmailInputPageState extends State<EmailInputPage> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 12),
                         SizedBox(
                           width: double.infinity,
                           height: 48,
@@ -124,17 +90,15 @@ class _EmailInputPageState extends State<EmailInputPage> {
                                 )
                               : ElevatedButton(
                                   onPressed: () async {
+                                    FocusScope.of(context).unfocus();
                                     if (!viewModel.isLoading &&
                                         validator.validateEmail(
                                           viewModel.email,
                                           context,
                                         )) {
-                                      _startLoadingTimeout(context);
+                                      viewModel.startLoadingTimeout();
 
-                                      await viewModel.continueToVerify(
-                                        helpers.trimText(viewModel.email),
-                                        viewModel.isChecked,
-                                      );
+                                      await viewModel.continueToVerify(context);
                                     }
                                   },
                                   style: ElevatedButton.styleFrom(

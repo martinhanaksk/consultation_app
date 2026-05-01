@@ -51,12 +51,8 @@ class _SliderMenuState extends State<SliderMenu> {
                             onTap: () {
                               sm.checkIfValidToken();
                               viewModel.isOwner!
-                                  ? nav.toOwnerConsultations(
-                                     
-                                    )
-                                  : nav.toBaseConsultations(
-                                    
-                                    );
+                                  ? nav.toOwnerConsultations()
+                                  : nav.toBaseConsultations();
                               viewModel.closeDrawer(context);
                             },
                           ),
@@ -76,10 +72,8 @@ class _SliderMenuState extends State<SliderMenu> {
                           onTap: () {
                             sm.checkIfValidToken();
                             viewModel.isOwner!
-                                ? nav.toOwnerConsultations(
-                                  )
-                                : nav.toBaseConsultations(
-                                  );
+                                ? nav.toOwnerConsultations()
+                                : nav.toBaseConsultations();
                             viewModel.closeDrawer(context);
                           },
                         ),
@@ -146,38 +140,52 @@ class _SliderMenuState extends State<SliderMenu> {
                                     ),
                                   ),
                                   actions: [
-                                    GestureDetector(
-                                      onTap: () {
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        FocusScope.of(context).unfocus();
                                         nav.pop();
                                       },
-                                      child: Container(
-                                        padding: EdgeInsets.all(8),
-                                        decoration: constants.squircleShadow(
-                                          color: constants.background,
-                                        ),
-                                        child: Text(
-                                          "Cancel",
-                                          style: TextStyle(
-                                            color: constants.primary,
-                                          ),
+                                      child: Text(
+                                        "Cancel",
+                                        style: TextStyle(
+                                          color: constants.primary,
                                         ),
                                       ),
-                                    ),
-                                    GestureDetector(
-                                      onTap: () async {
-                                        viewModel.launchFeedbackWebsite();
-                                      },
-                                      child: Container(
-                                        padding: EdgeInsets.all(8),
-                                        decoration: constants.squircleShadow(
-                                          color: constants.background,
-                                        ),
-                                        child: Text(
-                                          "Yes",
-                                          style: TextStyle(
-                                            color: constants.primary,
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: constants.background,
+                                        disabledBackgroundColor:
+                                            constants.background,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            14,
                                           ),
                                         ),
+                                        elevation: 2,
+                                        shadowColor: constants.background,
+                                      ),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        FocusScope.of(context).unfocus();
+                                        viewModel.launchFeedbackWebsite();
+                                      },
+                                      child: Text(
+                                        "Yes",
+                                        style: TextStyle(
+                                          color: constants.background,
+                                        ),
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: constants.primary,
+                                        disabledBackgroundColor:
+                                            constants.primary,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            14,
+                                          ),
+                                        ),
+                                        elevation: 2,
+                                        shadowColor: constants.primary,
                                       ),
                                     ),
                                   ],

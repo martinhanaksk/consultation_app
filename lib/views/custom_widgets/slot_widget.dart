@@ -1,3 +1,4 @@
+import 'package:consultation_app/views/custom_widgets/custom_text_field_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:consultation_app/models/slot_model.dart';
@@ -43,41 +44,30 @@ class SlotWidget extends StatelessWidget {
     required this.date,
   });
 
+  // FIX 1: Removed StatefulBuilder wrapper — isOnlineSelected now lives inside
+  // _NoteBottomSheet's own state, so toggling it no longer rebuilds the outer
+  // sheet (including the TextField) on every tap.
   Future<void> _showTakeSlotDialog(
     BuildContext context,
     String startTime,
     int duration,
     String date,
   ) async {
-    bool isSubmitting = false;
-    bool isOnlineSelected = false;
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      // FIX 4: useSafeArea prevents a full layout recalculation on every
+      // keyboard show/hide frame.
+      useSafeArea: true,
       backgroundColor: constants.transparent,
       builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return _NoteBottomSheet(
-              visitReason: visitReason,
-              startTime: startTime,
-              duration: duration,
-              date: date,
-              isSubmitting: isSubmitting,
-              onChanged: (bool newValue) {
-                setState(() {
-                  isOnlineSelected = newValue;
-                });
-              },
-              isOnlineSelected: isOnlineSelected,
-              onSubmit: (String submittedText) async {
-                setState(() => isSubmitting = true);
-                onTakeSlot(submittedText.trim(), isOnlineSelected ? 1 : 0);
-                Navigator.pop(context);
-              },
-              onCancel: () => Navigator.pop(context),
-            );
-          },
+        return _NoteBottomSheet(
+          visitReason: visitReason,
+          startTime: startTime,
+          duration: duration,
+          date: date,
+          onTakeSlot: onTakeSlot,
+          onCancel: () => Navigator.pop(context),
         );
       },
     );
@@ -91,16 +81,14 @@ class SlotWidget extends StatelessWidget {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      // FIX 4: same here
+      useSafeArea: true,
       backgroundColor: constants.transparent,
       builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return _ConsultationTypeSelection(
-              isOnline: isOnline,
-              name: name,
-              onChangeConsultationType: onChangeConsultationType,
-            );
-          },
+        return _ConsultationTypeSelection(
+          isOnline: isOnline,
+          name: name,
+          onChangeConsultationType: onChangeConsultationType,
         );
       },
     );
@@ -183,14 +171,7 @@ class SlotWidget extends StatelessWidget {
                   padding: EdgeInsets.fromLTRB(0, 12, 12, 12),
                   width: MediaQuery.of(context).size.width * 0.95,
                   decoration: BoxDecoration(
-                    borderRadius: isLast
-                        ? BorderRadius.only(
-                            topLeft: Radius.circular(0.0),
-                            topRight: Radius.circular(0.0),
-                            bottomLeft: Radius.circular(20.0),
-                            bottomRight: Radius.circular(20.0),
-                          )
-                        : BorderRadius.circular(0),
+                    borderRadius: BorderRadius.circular(0),
                     color: constants.primary,
                     border: Border.all(color: constants.grey, width: 0.2),
                   ),
@@ -371,14 +352,7 @@ class SlotWidget extends StatelessWidget {
                   padding: EdgeInsets.fromLTRB(0, 12, 12, 12),
                   width: MediaQuery.of(context).size.width * 0.95,
                   decoration: BoxDecoration(
-                    borderRadius: isLast
-                        ? BorderRadius.only(
-                            topLeft: Radius.circular(0.0),
-                            topRight: Radius.circular(0.0),
-                            bottomLeft: Radius.circular(20.0),
-                            bottomRight: Radius.circular(20.0),
-                          )
-                        : BorderRadius.circular(0),
+                    borderRadius: BorderRadius.circular(0),
                     color: constants.red,
                     border: Border.all(color: constants.grey, width: 0.2),
                   ),
@@ -499,10 +473,9 @@ class _ConsultationTypeSelectionState
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-      ),
+    // FIX 2: _KeyboardPadding isolates the viewInsets rebuild to a tiny leaf
+    // widget, so the rest of the sheet doesn't repaint on every keyboard frame.
+    return _KeyboardPadding(
       child: Container(
         decoration: constants.squircleShadow(
           color: constants.background,
@@ -704,34 +677,34 @@ class _ConsultationTypeToggle extends StatelessWidget {
   }
 }
 
+// FIX 1 + 2: _NoteBottomSheet now owns isOnlineSelected and isSubmitting
+// internally. The StatefulBuilder wrapper in _showTakeSlotDialog is gone, so
+// toggling the consultation type no longer forces a rebuild of the TextField.
 class _NoteBottomSheet extends StatefulWidget {
   final String visitReason;
   final String startTime;
   final int duration;
-  final bool isOnlineSelected;
-  final ValueChanged<bool> onChanged;
   final String date;
-  final ValueChanged<String> onSubmit;
+  final void Function(String note, int isOnline) onTakeSlot;
   final VoidCallback onCancel;
-  final bool isSubmitting;
 
   const _NoteBottomSheet({
     required this.visitReason,
     required this.startTime,
     required this.duration,
-    required this.onChanged,
     required this.date,
-    required this.isOnlineSelected,
-    required this.onSubmit,
+    required this.onTakeSlot,
     required this.onCancel,
-    required this.isSubmitting,
   });
+
   @override
   State<_NoteBottomSheet> createState() => __NoteBottomSheetState();
 }
 
 class __NoteBottomSheetState extends State<_NoteBottomSheet> {
   late final TextEditingController _controller;
+  bool _isOnlineSelected = false;
+  bool _isSubmitting = false;
 
   @override
   void initState() {
@@ -753,10 +726,10 @@ class __NoteBottomSheetState extends State<_NoteBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-      ),
+    // FIX 2: _KeyboardPadding isolates viewInsets.bottom reads to a tiny
+    // leaf widget — the heavy sheet content is never rebuilt during keyboard
+    // animation.
+    return _KeyboardPadding(
       child: Container(
         decoration: constants.squircleShadow(
           color: constants.background,
@@ -784,12 +757,20 @@ class __NoteBottomSheetState extends State<_NoteBottomSheet> {
               date: widget.date.replaceAll("-", "."),
             ),
             const SizedBox(height: 12),
-            _NoteTextField(controller: _controller),
+            CustomInputTextField(
+              controller: _controller,
+              hintText: "Type in visit purpose...",
+              filled: true,
+            ),
             const SizedBox(height: 16),
             _ConsultationTypeToggle(
-              isOnlineSelected: widget.isOnlineSelected,
+              isOnlineSelected: _isOnlineSelected,
               name: "",
-              onChanged: widget.onChanged,
+              onChanged: (bool newValue) {
+                setState(() {
+                  _isOnlineSelected = newValue;
+                });
+              },
             ),
             Row(
               children: [
@@ -805,9 +786,17 @@ class __NoteBottomSheetState extends State<_NoteBottomSheet> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: widget.isSubmitting
+                    onPressed: _isSubmitting
                         ? null
-                        : () => widget.onSubmit(_controller.text),
+                        : () {
+                            FocusScope.of(context).unfocus();
+                            setState(() => _isSubmitting = true);
+                            widget.onTakeSlot(
+                              _controller.text.trim(),
+                              _isOnlineSelected ? 1 : 0,
+                            );
+                            Navigator.pop(context);
+                          },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: constants.primary,
                       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -831,10 +820,36 @@ class __NoteBottomSheetState extends State<_NoteBottomSheet> {
   }
 }
 
+// FIX 2: Tiny widget that reads viewInsets.bottom and wraps its child in
+// Padding. Because it's a separate widget, only this node is rebuilt on every
+// keyboard animation frame — the heavy sheet tree above it is untouched.
+class _KeyboardPadding extends StatelessWidget {
+  final Widget child;
+  const _KeyboardPadding({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: child,
+    );
+  }
+}
+
 class _InfoCard extends StatelessWidget {
   final String startTime;
   final int duration;
   final String date;
+
+  // FIX 3: Cache the border radius so figma_squircle doesn't recompute the
+  // smooth path on every build call.
+  static final _borderRadius = SmoothBorderRadius(
+    cornerRadius: 20,
+    cornerSmoothing: 0.6,
+  );
+
   const _InfoCard({
     required this.startTime,
     required this.duration,
@@ -848,10 +863,7 @@ class _InfoCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: constants.squircleShadow(
         color: constants.background,
-        borderRadius: SmoothBorderRadius(
-          cornerRadius: 20,
-          cornerSmoothing: 0.6,
-        ),
+        borderRadius: _borderRadius,
       ),
       child: Column(
         children: [
@@ -907,43 +919,6 @@ class _InfoRow extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _NoteTextField extends StatelessWidget {
-  final TextEditingController controller;
-  const _NoteTextField({required this.controller});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: constants.squircleShadow(
-        color: constants.background,
-        borderRadius: SmoothBorderRadius(
-          cornerRadius: 12,
-          cornerSmoothing: 0.6,
-        ),
-      ),
-      child: TextField(
-        style: TextStyle(color: constants.darkGrey),
-        controller: controller,
-        autofocus: true,
-        maxLines: 1,
-        decoration: InputDecoration(
-          hintText: "Type in visit purpose...",
-          filled: true,
-          fillColor: constants.background,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide.none,
-          ),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 12,
-          ),
-        ),
-      ),
     );
   }
 }

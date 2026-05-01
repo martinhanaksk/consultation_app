@@ -236,7 +236,6 @@ class _RoomSelectorButton extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: constants.fwSemiBold,
-
                       color:
                           (viewModel.noRoomsFound ||
                               viewModel.selectedRoomId == null)
@@ -249,12 +248,11 @@ class _RoomSelectorButton extends StatelessWidget {
                   const SizedBox(width: 6),
                   svgs.icon(
                     'arrow_down',
-                     (viewModel.noRoomsFound ||
-                              viewModel.selectedRoomId == null)
-                          ? constants.darkGrey100
-                          : viewModel.isLoading
-                          ? constants.primary
-                          : constants.darkGrey,
+                    (viewModel.noRoomsFound || viewModel.selectedRoomId == null)
+                        ? constants.darkGrey100
+                        : viewModel.isLoading
+                        ? constants.primary
+                        : constants.darkGrey,
                     width: constants.fsBody,
                   ),
                 ],
@@ -463,14 +461,18 @@ class _ConsultationBlockCard extends StatelessWidget {
                   itemCount: slots.length,
                   itemBuilder: (context, index) {
                     final slot = slots[index];
-                    return Consumer<BaseConsultationsViewmodel>(
-                      builder: (context, vm, _) {
+                    return Selector<BaseConsultationsViewmodel, (bool, bool)>(
+                      selector: (context, vm) => (
+                        vm.isTakingSlot(slot.id),
+                        vm.isOptimisticallyReleased(slot.id),
+                      ),
+                      builder: (context, slotState, _) {
                         return RepaintBoundary(
                           child: SlotWidget(
-                            visitReason: vm.visitReason,
+                            visitReason: viewModel.visitReason,
                             showHistoryOption: showHistoryOption,
-                            slot: slots[index],
-                            roomId: vm.selectedRoomId!,
+                            slot: slot,
+                            roomId: viewModel.selectedRoomId!,
                             cancellationNoticeHours:
                                 viewModel.selectedRoom == null
                                 ? 0
@@ -478,19 +480,20 @@ class _ConsultationBlockCard extends StatelessWidget {
                                       .selectedRoom!
                                       .cancellationNoticeHours,
                             blockId: blockEntry.key,
-                            isOwnerView: vm.ownerView,
+                            isOwnerView: viewModel.ownerView,
                             onChangeConsultationType: () =>
-                                vm.onChangeConsultationType(slot.id),
+                                viewModel.onChangeConsultationType(slot.id),
                             onTakeSlot: (note, isOnline) =>
-                                vm.takeSlot(slot.id, note, isOnline),
-                            onReleaseSlot: () => vm.releaseSlot(slot.id),
+                                viewModel.takeSlot(slot.id, note, isOnline),
+                            onReleaseSlot: () => viewModel.releaseSlot(slot.id),
                             context: context,
-                            isTakingSlot: vm.isTakingSlot(slot.id),
-                            isOptimisticallyReleased: vm
-                                .isOptimisticallyReleased(slot.id),
+                            isTakingSlot: slotState.$1,
+                            isOptimisticallyReleased: slotState.$2,
                             isFirst: index == 0,
                             isLast: index == slots.length - 1,
-                            date: vm.blockDate(blockEntry.key).substring(0, 10),
+                            date: viewModel
+                                .blockDate(blockEntry.key)
+                                .substring(0, 10),
                           ),
                         );
                       },

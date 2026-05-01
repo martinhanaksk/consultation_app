@@ -2,6 +2,7 @@ import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/add_slot_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/custom_checkbox_widget.dart';
+import 'package:consultation_app/views/custom_widgets/custom_text_field_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flutter/material.dart';
@@ -105,22 +106,16 @@ class _AddSlotState extends State<AddSlot> {
                             color: constants.background,
                             hasBorder: true,
                           ),
-                          child: TextField(
-                            style: TextStyle(color: constants.darkGrey),
-                            scrollPadding: const EdgeInsets.only(bottom: 1000),
+                          child: CustomInputTextField(
                             controller: viewModel.noteController,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                              ),
-                              hintText: 'Note',
-                            ),
+                            hintText: 'Note',
+                            maxLength: 50,
                           ),
                         ),
                         const SizedBox(height: 20),
                         Row(
                           children: [
-                             CustomCheckbox(
+                            CustomCheckbox(
                               value: viewModel.isOnline,
                               onChanged: viewModel.toggleIsOnline,
                             ),
@@ -147,7 +142,7 @@ class _AddSlotState extends State<AddSlot> {
                                 width: double.infinity,
                                 height: 48,
                                 child: ElevatedButton(
-                                  onPressed: () {
+                                  onPressed: () { FocusScope.of(context).unfocus();
                                     if (viewModel.duration == null ||
                                         viewModel.duration!.inMinutes == 0) {
                                       notify.showToast(

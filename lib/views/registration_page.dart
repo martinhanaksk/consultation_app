@@ -2,6 +2,7 @@ import 'package:consultation_app/models/user_model.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/register_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
+import 'package:consultation_app/views/custom_widgets/custom_text_field_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
@@ -47,7 +48,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       child: Consumer<RegisterViewmodel>(
         builder: (context, viewModel, child) {
           return Scaffold(
-            appBar: AppBarMenu(),
+            appBar: AppBarMenu(onRegistrationPage: true),
             backgroundColor: constants.background,
             resizeToAvoidBottomInset: true,
             body: SafeArea(
@@ -68,171 +69,109 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    TextField(style: TextStyle(color: constants.darkGrey),
+                    CustomInputTextField(
                       controller: emailController,
-                      scrollPadding: EdgeInsets.only(bottom: 1000),
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: constants.grey),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: constants.grey),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: constants.primary,
-                            width: 1.5,
-                          ),
-                        ),
-                        hintText: 'Email',
-                      ),
+                      hintText: 'Email',
+                      isEmail: true,
+                      maxLength: 50,
                     ),
+
                     const SizedBox(height: 16),
-                    TextField(style: TextStyle(color: constants.darkGrey),
+                    CustomInputTextField(
                       controller: nameController,
-                      scrollPadding: EdgeInsets.only(bottom: 1000),
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: constants.grey),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: constants.grey),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: constants.primary,
-                            width: 1.5,
-                          ),
-                        ),
-                        hintText: 'Name',
-                      ),
+                      hintText: 'Name',
+                      maxLength: 50,
                     ),
+
                     const SizedBox(height: 16),
-                    TextField(style: TextStyle(color: constants.darkGrey),
+                    CustomInputTextField(
                       controller: surnameController,
-                      scrollPadding: EdgeInsets.only(bottom: 1000),
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: constants.grey),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: constants.grey),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: constants.primary,
-                            width: 1.5,
-                          ),
-                        ),
-                        hintText: 'Surname',
-                      ),
+                      hintText: 'Surname',
+                      maxLength: 50,
                     ),
+
                     const SizedBox(height: 16),
-                    TextField(style: TextStyle(color: constants.darkGrey),
+                    CustomInputTextField(
                       controller: visitReasonController,
-                      scrollPadding: EdgeInsets.only(bottom: 1000),
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: constants.grey),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: constants.grey),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: constants.primary,
-                            width: 1.5,
-                          ),
-                        ),
-                        hintText: 'Visit reason',
-                      ),
+                      hintText: 'Visit reason',
+                      maxLength: 50,
                     ),
 
                     const SizedBox(height: 16),
                     SizedBox(
                       width: double.infinity,
                       height: 50,
-                      child:viewModel.isLoading
-                            ? SpinKitPouringHourGlass(
-                                color: constants.green,
-                                size: constants.fsTitle,
-                              )
-                            :  ElevatedButton(
-                        onPressed: () async {
-                          FocusScope.of(context).unfocus();
-                          if (validator.validateNotEmpty(
-                                emailController.text.trim(),
+                      child: viewModel.isLoading
+                          ? SpinKitPouringHourGlass(
+                              color: constants.green,
+                              size: constants.fsTitle,
+                            )
+                          : ElevatedButton(
+                              onPressed: () async {
+                                FocusScope.of(context).unfocus();
+                                if (validator.validateNotEmpty(
+                                      emailController.text.trim(),
 
-                                context,
-                              ) &&
-                              validator.validateNotEmpty(
-                                nameController.text.trim(),
+                                      context,
+                                    ) &&
+                                    validator.validateNotEmpty(
+                                      nameController.text.trim(),
 
-                                context,
-                              ) &&
-                              validator.validateNotEmpty(
-                                surnameController.text.trim(),
+                                      context,
+                                    ) &&
+                                    validator.validateNotEmpty(
+                                      surnameController.text.trim(),
 
-                                context,
-                              ) &&
-                              validator.validateNotEmpty(
-                                visitReasonController.text.trim(),
+                                      context,
+                                    ) &&
+                                    validator.validateNotEmpty(
+                                      visitReasonController.text.trim(),
 
-                                context,
-                              ) &&
-                              validator.validateEmail(
-                                emailController.text.trim(),
-                                context,
-                              )) {
-                            try {
-                              UserModel um = UserModel(
-                                email: helpers.trimText(
-                                  emailController.text.trim(),
+                                      context,
+                                    ) &&
+                                    validator.validateEmail(
+                                      emailController.text.trim(),
+                                      context,
+                                    )) {
+                                  try {
+                                    UserModel um = UserModel(
+                                      email: helpers.trimText(
+                                        emailController.text.trim(),
+                                      ),
+                                      name: helpers.trimText(
+                                        nameController.text.trim(),
+                                      ),
+                                      surname: helpers.trimText(
+                                        surnameController.text.trim(),
+                                      ),
+                                      role: '',
+                                      visitReason: helpers.trimText(
+                                        visitReasonController.text.trim(),
+                                      ),
+                                      visible: 0,
+                                      notification: 0,
+                                    );
+                                    await viewModel.handleRegisterUser(
+                                      um,
+                                      widget.rememberMe,
+                                    );
+                                  } catch (e) {
+                                    notify.showToast(
+                                      "Error while registering user",
+                                    );
+                                  }
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: constants.green,
+                                disabledBackgroundColor: constants.green,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14),
                                 ),
-                                name: helpers.trimText(
-                                  nameController.text.trim(),
-                                ),
-                                surname: helpers.trimText(
-                                  surnameController.text.trim(),
-                                ),
-                                role: '',
-                                visitReason: helpers.trimText(
-                                  visitReasonController.text.trim(),
-                                ),
-                                visible: 0,
-                                notification: 0
-                              );
-                              await viewModel.handleRegisterUser(
-                                um,
-                                widget.rememberMe,
-                              );
-                            } catch (e) {
-                              notify.showToast("Error while registering user");
-                            }
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: constants.green,
-                          disabledBackgroundColor: constants.green,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          elevation: 2,
-                          shadowColor: constants.green,
-                        ),
-                        child: Text(
+                                elevation: 2,
+                                shadowColor: constants.green,
+                              ),
+                              child: Text(
                                 'Register',
                                 style: TextStyle(
                                   fontSize: constants.fsBody,
@@ -240,7 +179,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                   color: constants.background,
                                 ),
                               ),
-                      ),
+                            ),
                     ),
                   ],
                 ),

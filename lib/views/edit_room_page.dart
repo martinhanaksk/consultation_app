@@ -1,7 +1,9 @@
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/edit_room_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
+import 'package:consultation_app/views/custom_widgets/custom_text_field_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
@@ -69,28 +71,32 @@ class _EditRoomPageState extends State<EditRoomPage> {
                               ),
                             ),
                             const SizedBox(height: 28),
-                            _inputBox(
+                            CustomInputTextField(
                               controller: viewModel.shortNameController,
                               hintText: 'Short Name (e.g. TestRm)',
                             ),
+
                             const SizedBox(height: 20),
-                            _inputBox(
+                            CustomInputTextField(
                               controller: viewModel.titleController,
                               hintText: 'Room Title (e.g. Main test room)',
                             ),
+
                             const SizedBox(height: 20),
-                            _inputBox(
+                            CustomInputTextField(
                               controller: viewModel.descriptionController,
                               hintText: 'Description',
                               maxLines: 3,
                             ),
                             const SizedBox(height: 20),
-                            _inputBox(
+                            CustomInputTextField(
                               controller: viewModel.cancellationHoursController,
                               hintText: 'Cancel deadline (hrs)',
                               maxLines: 1,
+                              maxLength: 4,
                               keyboardType: TextInputType.number,
                             ),
+
                             const SizedBox(height: 20),
 
                             Padding(
@@ -105,9 +111,16 @@ class _EditRoomPageState extends State<EditRoomPage> {
                             ),
                             const SizedBox(height: 4),
                             TextField(
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(r"[a-zA-Z0-9@._\-+]"),
+                                ),
+                              ],
+                              maxLength: 50,
                               style: TextStyle(color: constants.darkGrey),
                               controller: viewModel.acceptedEmailController,
                               decoration: InputDecoration(
+                                counterText: "",
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: BorderSide(color: constants.grey),
@@ -182,9 +195,8 @@ class _EditRoomPageState extends State<EditRoomPage> {
                                     width: double.infinity,
                                     height: 48,
                                     child: ElevatedButton(
-                                      onPressed: () async => {
-                                        await viewModel.handleSave(
-                                        ),
+                                      onPressed: () async => {FocusScope.of(context).unfocus(),
+                                        await viewModel.handleSave(),
                                       },
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: constants.primary,
@@ -215,36 +227,6 @@ class _EditRoomPageState extends State<EditRoomPage> {
             ),
           );
         },
-      ),
-    );
-  }
-
-  Widget _inputBox({
-    required TextEditingController controller,
-    required String hintText,
-    int maxLines = 1,
-    TextInputType keyboardType = TextInputType.text,
-  }) {
-    return Container(
-      clipBehavior: Clip.none,
-      decoration: constants.squircleShadow(color: constants.background),
-      child: TextField(
-        style: TextStyle(color: constants.darkGrey),
-        controller: controller,
-        maxLines: maxLines,
-        keyboardType: TextInputType.number,
-        decoration: InputDecoration(
-          border: const OutlineInputBorder(borderSide: BorderSide.none),
-          hintText: hintText,
-          hintStyle: TextStyle(
-            color: constants.grey,
-            fontSize: constants.fsBody,
-          ),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 16,
-          ),
-        ),
       ),
     );
   }

@@ -2,8 +2,8 @@ import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/create_block_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/custom_checkbox_widget.dart';
+import 'package:consultation_app/views/custom_widgets/custom_text_field_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
-import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
@@ -344,18 +344,11 @@ class _CreateBlockState extends State<CreateBlock> {
                                 decoration: constants.squircleShadow(
                                   color: constants.background,
                                 ),
-                                child: TextField(
-                                  style: TextStyle(color: constants.darkGrey),
-                                  scrollPadding: EdgeInsets.only(bottom: 1000),
+                                child: CustomInputTextField(
                                   controller: viewModel.slotNumberController,
+                                  hintText: 'Slots',
                                   keyboardType: TextInputType.number,
-                                  decoration: InputDecoration(
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide.none,
-                                    ),
-
-                                    hintText: 'Slots',
-                                  ),
+                                  maxLength: 3,
                                 ),
                               ),
                             ),
@@ -405,16 +398,10 @@ class _CreateBlockState extends State<CreateBlock> {
                           decoration: constants.squircleShadow(
                             color: constants.background,
                           ),
-                          child: TextField(
-                            style: TextStyle(color: constants.darkGrey),
-                            scrollPadding: EdgeInsets.only(bottom: 1000),
+                          child: CustomInputTextField(
                             controller: viewModel.noteController,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                              ),
-                              hintText: 'Note',
-                            ),
+                            hintText: 'Note',
+                            maxLength: 50,
                           ),
                         ),
                         SizedBox(height: 20),
@@ -447,7 +434,7 @@ class _CreateBlockState extends State<CreateBlock> {
                                 width: double.infinity,
                                 height: 48,
                                 child: ElevatedButton(
-                                  onPressed: () => {
+                                  onPressed: () => {FocusScope.of(context).unfocus(),
                                     viewModel.createBlock(
                                       widget.roomId,
                                       widget.onSuccess,

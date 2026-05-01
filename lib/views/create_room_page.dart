@@ -1,10 +1,12 @@
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/create_room_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
+import 'package:consultation_app/views/custom_widgets/custom_text_field_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
 
 class CreateRoom extends StatefulWidget {
   const CreateRoom({super.key});
@@ -47,32 +49,28 @@ class _CreateRoomState extends State<CreateRoom> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      _inputBox(
+                      CustomInputTextField(
                         controller: viewModel.titleController,
                         hintText: 'Title',
-                        maxLines: 1,
                       ),
 
                       const SizedBox(height: 16),
-                      _inputBox(
+                      CustomInputTextField(
                         controller: viewModel.roomNameController,
                         hintText: 'Room name',
-                        maxLines: 1,
                       ),
 
                       const SizedBox(height: 16),
-                      _inputBox(
+                      CustomInputTextField(
                         controller: viewModel.descriptionController,
                         hintText: 'Description',
-                        maxLines: 3,
                       ),
 
                       const SizedBox(height: 16),
-                      _inputBox(
+                      CustomInputTextField(
                         controller: viewModel.cancellationHoursController,
-                        hintText: 'Cancel deadline (hrs)',
-                        maxLines: 1,
-                        keyboardType: TextInputType.number,
+                        hintText: 'Cancel deadline in hours',
+                        keyboardType: TextInputType.number,maxLength: 4,
                       ),
 
                       const SizedBox(height: 16),
@@ -87,7 +85,14 @@ class _CreateRoomState extends State<CreateRoom> {
                         ),
                       ),
                       const SizedBox(height: 4),
+
                       TextField(
+                        maxLength: 50,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r"[a-zA-Z0-9@._\-+]"),
+                          ),
+                        ],
                         style: TextStyle(color: constants.darkGrey),
                         controller: viewModel.acceptedEmailController,
                         decoration: InputDecoration(
@@ -234,39 +239,6 @@ class _CreateRoomState extends State<CreateRoom> {
             ),
           );
         },
-      ),
-    );
-  }
-
-  Widget _inputBox({
-    required TextEditingController controller,
-    required String hintText,
-    int maxLines = 1,
-    TextInputType keyboardType = TextInputType.text,
-  }) {
-    return Container(
-      clipBehavior: Clip.none,
-      decoration: constants.squircleShadow(color: constants.background),
-      child: TextField(
-        style: TextStyle(color: constants.darkGrey),
-        controller: controller,
-        maxLines: maxLines,
-        keyboardType: keyboardType,
-        decoration: InputDecoration(
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: constants.grey),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: constants.grey),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: constants.primary, width: 1.5),
-          ),
-          hintText: hintText,
-        ),
       ),
     );
   }

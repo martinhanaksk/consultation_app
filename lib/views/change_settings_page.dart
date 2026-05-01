@@ -2,6 +2,7 @@ import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/change_settings_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/custom_checkbox_widget.dart';
+import 'package:consultation_app/views/custom_widgets/custom_text_field_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -87,7 +88,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                   svgName: 'pencil',
                                   label: "Visit Reason",
                                   value: viewModel.visitReason.isEmpty
-                                      ? "Not set"
+                                      ? ""
                                       : viewModel.visitReason,
                                   onEdit: () => _showVisitReasonDialog(
                                     context,
@@ -236,9 +237,17 @@ class _ChangeSettingsState extends State<ChangeSettings> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _dialogField(nameCtrl, "First name"),
+            CustomInputTextField(
+              controller: nameCtrl,
+              hintText: "Name",
+              maxLength: 50,
+            ),
             const SizedBox(height: 12),
-            _dialogField(surnameCtrl, "Last name"),
+            CustomInputTextField(
+              controller: surnameCtrl,
+              hintText: "Surname",
+              maxLength: 50,
+            ),
           ],
         ),
         actions: [
@@ -250,7 +259,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
             ),
           ),
           TextButton(
-            onPressed: () async {
+            onPressed: () async { FocusScope.of(context).unfocus();
               await vm.updateName(
                 nameCtrl.text.trim(),
                 surnameCtrl.text.trim(),
@@ -289,7 +298,11 @@ class _ChangeSettingsState extends State<ChangeSettings> {
             color: constants.darkGrey,
           ),
         ),
-        content: _dialogField(ctrl, "Reason for visit", maxLines: 3),
+        content: CustomInputTextField(
+          controller: ctrl,
+          hintText: "Reason for visit",
+          maxLength: 50,
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -299,7 +312,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
             ),
           ),
           TextButton(
-            onPressed: () async {
+            onPressed: () async { FocusScope.of(context).unfocus();
               await vm.updateVisitReason(ctrl.text.trim());
               if (ctx.mounted) Navigator.pop(ctx);
             },
@@ -312,35 +325,6 @@ class _ChangeSettingsState extends State<ChangeSettings> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  TextField _dialogField(
-    TextEditingController ctrl,
-    String hint, {
-    int maxLines = 1,
-  }) {
-    return TextField(
-      controller: ctrl,
-      maxLines: maxLines,
-      style: TextStyle(fontSize: constants.fsLabel, color: constants.darkGrey),
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: TextStyle(
-          color: constants.darkGrey150,
-          fontSize: constants.fsLabel,
-        ),
-        filled: true,
-        fillColor: constants.darkGrey30,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 14,
-          vertical: 10,
-        ),
       ),
     );
   }
@@ -374,11 +358,25 @@ class _ChangeSettingsState extends State<ChangeSettings> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _dialogField(emailCtrl, "Email"),
+              CustomInputTextField(
+                controller: emailCtrl,
+                hintText: "Email",
+                maxLength: 50,
+              ),
+
               const SizedBox(height: 12),
-              _dialogField(nameCtrl, "First name"),
+              CustomInputTextField(
+                controller: nameCtrl,
+                hintText: "First name",
+                maxLength: 50,
+              ),
               const SizedBox(height: 12),
-              _dialogField(surnameCtrl, "Last name"),
+              CustomInputTextField(
+                controller: surnameCtrl,
+                hintText: "Last name",
+                maxLength: 50,
+              ),
+
               if (errorMsg != null) ...[
                 const SizedBox(height: 10),
                 Text(
@@ -677,11 +675,7 @@ class _CheckboxTile extends StatelessWidget {
               ],
             ),
           ),
-            CustomCheckbox(
-                              value: value,
-                              onChanged: onChanged,
-                            ),
-          
+          CustomCheckbox(value: value, onChanged: onChanged),
         ],
       ),
     );
@@ -725,8 +719,8 @@ class _NotifyHoursTileState extends State<_NotifyHoursTile> {
 
   void _onChanged(String val) {
     final parsed = int.tryParse(val);
-    if (parsed == null || parsed < 0 || parsed > 1000) {
-      setState(() => _error = "0–1000");
+    if (parsed == null || parsed < 0 || parsed > 999) {
+      setState(() => _error = "0–999");
     } else {
       setState(() => _error = null);
       widget.viewModel.updateNotifyHoursBefore(parsed);
@@ -767,36 +761,20 @@ class _NotifyHoursTileState extends State<_NotifyHoursTile> {
           ),
           const SizedBox(width: 12),
           SizedBox(
-            width: 64,
-            child: TextField(
+            width: 80,
+            child: CustomInputTextField(
               controller: _ctrl,
+              maxLength: 3,
               keyboardType: TextInputType.number,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: constants.fsBody,
-                fontWeight: constants.fwSemiBold,
-                color: _error != null ? Colors.red : constants.primary,
-              ),
-              decoration: InputDecoration(
-                suffixText: "h",
-                suffixStyle: TextStyle(
-                  fontSize: constants.fsLabel,
-                  color: constants.darkGrey150,
-                ),
-                errorText: _error,
-                errorStyle: const TextStyle(fontSize: 9, height: 0.8),
-                filled: true,
-                fillColor: constants.darkGrey30,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 10,
-                ),
-              ),
               onChanged: _onChanged,
+              textColor: _error != null ? constants.red : constants.primary,
+              suffixText: "h",
+              textCenter: true,
+              showClearIcon: false,
+              suffixStyle: TextStyle(
+                fontSize: constants.fsLabel,
+                color: constants.darkGrey150,
+              ),
             ),
           ),
         ],

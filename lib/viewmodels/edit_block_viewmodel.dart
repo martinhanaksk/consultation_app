@@ -269,7 +269,8 @@ class EditBlockViewmodel extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
-      final tmpSlots = await api.getSlotsForBlock(int.parse(blockId));
+      String now = DateTime.now().toString().substring(0, 10);
+      final tmpSlots = await api.getSlotsForBlock(int.parse(blockId),now);
       if (tmpSlots != null) {
         tmpSlots.sort((a, b) => a.startTime.compareTo(b.startTime));
         slots = tmpSlots;

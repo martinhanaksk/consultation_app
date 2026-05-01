@@ -1,6 +1,7 @@
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/verify_otp_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
+import 'package:consultation_app/views/custom_widgets/custom_text_field_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
@@ -47,7 +48,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
       child: Consumer<VerifyOtpViewmodel>(
         builder: (context, viewModel, child) {
           return Scaffold(
-            appBar: AppBarMenu(onVerificationPage:true),
+            appBar: AppBarMenu(onVerificationPage: true),
             backgroundColor: constants.background,
             body: SafeArea(
               child: Padding(
@@ -80,16 +81,12 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                       decoration: constants.squircleShadow(
                         color: constants.background,
                       ),
-                      child: TextField(style: TextStyle(color: constants.darkGrey),
-                        scrollPadding: EdgeInsets.only(bottom: 1000),
+                      child: CustomInputTextField(
                         controller: otpcontroller,
+                        hintText: "Code",
                         keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                          hintText: 'Code',
-                        ),
+                        maxLength: 4,
+                        textCounterEnabled: false,
                       ),
                     ),
                     SizedBox(height: 32),
@@ -103,6 +100,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                             )
                           : ElevatedButton(
                               onPressed: () {
+                                FocusScope.of(context).unfocus();
                                 viewModel.connect(
                                   widget.email,
                                   otpcontroller.text.trim(),

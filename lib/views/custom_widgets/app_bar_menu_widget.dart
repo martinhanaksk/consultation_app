@@ -6,7 +6,7 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
   final BaseConsultationsViewmodel? viewModel;
   final Widget? toggle;
   final bool onHomePage;
-  final bool onVerificationPage;
+  final bool onVerificationPage;final bool onRegistrationPage;
   final bool onSettingsPage;
 
   AppBarMenu({
@@ -15,7 +15,7 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
     this.toggle,
     this.onHomePage = false,
     this.onVerificationPage = false,
-    this.onSettingsPage = false,
+    this.onSettingsPage = false,this.onRegistrationPage=false
   });
   @override
   Widget build(BuildContext context) {
@@ -77,7 +77,7 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
       ),
       flexibleSpace: SafeArea(child: Center(child: toggle)),
       actions: [
-        onSettingsPage || onVerificationPage
+        onSettingsPage || onVerificationPage || onRegistrationPage
             ? SizedBox.shrink()
             : Padding(
                 padding: EdgeInsets.only(right: 12),

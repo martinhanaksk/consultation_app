@@ -480,9 +480,10 @@ class ApiService {
   }
 
   // Slot endpoints
-
-  Future<List<SlotModel>?> getSlotsForBlock(int blockId) async {
-    final Uri url = Uri.parse('${constants.url}/slot/get?id=$blockId');
+ 
+  Future<List<SlotModel>?> getSlotsForBlock(int blockId, [String? now]) async {
+     final String query = now != null ? '&start=$now' : '';
+    final Uri url = Uri.parse('${constants.url}/slot/get?id=$blockId$query');
     final response = await http.get(url, headers: _headers(sm.token));
 
     _checkUnauthorized(response);

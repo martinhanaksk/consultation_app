@@ -113,10 +113,8 @@ class _AddSlotOnOutskirts extends StatelessWidget {
                     : () async {
                         if (isBefore) {
                           await viewModel.addSlotBeforeBlock(blockId);
-                          await viewModel.loadRoom();
                         } else {
                           await viewModel.addSlotAfterBlock(blockId);
-                          await viewModel.loadRoom();
                         }
                       },
                 child: Padding(
@@ -296,7 +294,7 @@ class _DeleteRoomDialog extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
-                        onPressed: () => nav.pop(),
+                        onPressed: () => { FocusScope.of(context).unfocus(),nav.pop(),},
                         child: Text(
                           "Cancel",
                           style: TextStyle(color: constants.darkGrey),

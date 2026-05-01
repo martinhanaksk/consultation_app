@@ -93,9 +93,7 @@ class _DisplayUsersInRoomPageState extends State<DisplayUsersInRoomPage> {
             children: [
               Text(
                 'Members',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                style: TextStyle(color: constants.darkGrey,fontSize: constants.fsBody),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(

@@ -27,57 +27,119 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   int _ownerView = 1;
   int get ownerView => _ownerView;
   String? selectedRoomId;
-  Map<int, bool> _slotLoading = {};
+  final Map<int, bool> _slotLoading = {};
   bool isSlotLoading(int slotId) => _slotLoading[slotId] ?? false;
-  Map<int, bool> _optimisticallyReleased = {};
+  final Map<int, bool> _optimisticallyReleased = {};
   bool isOptimisticallyReleased(int slotId) =>
       _optimisticallyReleased[slotId] ?? false;
-  Map<int, bool> _takingSlot = {};
+  final Map<int, bool> _takingSlot = {};
   bool isTakingSlot(int slotId) => _takingSlot[slotId] ?? false;
+
   Future<void> takeSlot(int slotId, String note, int isOnline) async {
     _takingSlot[slotId] = true;
     notifyListeners();
+
+    final oldSlot = _findSlot(slotId);
+    if (oldSlot != null) {
+      final updatedSlot = SlotModel(
+        id: oldSlot.id,
+        blockId: oldSlot.blockId,
+        roomId: oldSlot.roomId,
+        startTime: oldSlot.startTime,
+        duration: oldSlot.duration,
+        isOnline: oldSlot.isOnline,
+        valid: oldSlot.valid,
+        note: oldSlot.note,
+        takenBy: sm.email,
+        takenByName: sm.name,
+        takenByReason: note,
+        history: oldSlot.history,
+      );
+      _updateSlotInCache(slotId, updatedSlot);
+    }
+
     try {
       await api.takeSlot(slotId, note, isOnline);
+      await _refreshSlotsForBlock(slotId);
     } catch (e) {
-      _takingSlot[slotId] = false;
-      notify.showToast('manipulated');
+      if (oldSlot != null) _updateSlotInCache(slotId, oldSlot);
+      notify.showToast('Failed to take slot');
       rethrow;
     } finally {
       _takingSlot.remove(slotId);
       notifyListeners();
-      await loadRoom();
     }
   }
 
   Future<void> releaseSlot(int slotId) async {
     _optimisticallyReleased[slotId] = true;
-
     notifyListeners();
+
+    final oldSlot = _findSlot(slotId);
+    if (oldSlot != null) {
+      final releasedSlot = SlotModel(
+        id: oldSlot.id,
+        blockId: oldSlot.blockId,
+        roomId: oldSlot.roomId,
+        startTime: oldSlot.startTime,
+        duration: oldSlot.duration,
+        isOnline: oldSlot.isOnline,
+        valid: oldSlot.valid,
+        note: oldSlot.note,
+        takenBy: null,
+        takenByName: null,
+        takenByReason: null,
+        history: oldSlot.history,
+      );
+      _updateSlotInCache(slotId, releasedSlot);
+    }
+
     try {
       await api.releaseSlot(slotId);
+      await _refreshSlotsForBlock(slotId);
     } catch (e) {
-      _optimisticallyReleased[slotId] = false;
+      if (oldSlot != null) _updateSlotInCache(slotId, oldSlot);
       notify.showToast('Failed to release slot');
       rethrow;
     } finally {
       _optimisticallyReleased.remove(slotId);
-      loadRoom();
+      notifyListeners();
     }
   }
 
   Future<void> onChangeConsultationType(int slotId) async {
     isLoading = true;
     notifyListeners();
+
+    final oldSlot = _findSlot(slotId);
+    if (oldSlot != null) {
+      final toggledSlot = SlotModel(
+        id: oldSlot.id,
+        blockId: oldSlot.blockId,
+        roomId: oldSlot.roomId,
+        startTime: oldSlot.startTime,
+        duration: oldSlot.duration,
+        isOnline: oldSlot.isOnline == 0 ? 1 : 0,
+        valid: oldSlot.valid,
+        note: oldSlot.note,
+        takenBy: oldSlot.takenBy,
+        takenByName: oldSlot.takenByName,
+        takenByReason: oldSlot.takenByReason,
+        history: oldSlot.history,
+      );
+      _updateSlotInCache(slotId, toggledSlot);
+    }
+
     try {
       await api.changeConsultationType(slotId);
+      await _refreshSlotsForBlock(slotId);
     } catch (e) {
+      if (oldSlot != null) _updateSlotInCache(slotId, oldSlot);
       notify.showToast('Slot cannot be manipulated');
       rethrow;
     } finally {
       isLoading = false;
       notifyListeners();
-      loadRoom();
     }
   }
 
@@ -155,7 +217,8 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   }
 
   Future<void> refreshRoomData(int roomId) async {
-    isLoading = true; notifyListeners();
+    isLoading = true;
+    notifyListeners();
     if (!await checkConnection()) return;
     final subscriptions = await api.getMySubscriptions();
     final newUsers = await api.getUsers();
@@ -175,9 +238,9 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     List<Future<void>> futures = [];
     for (var block in newBlocks) {
       futures.add(() async {
-        final slots = await api.getSlotsForBlock(block.id);
+        String now = DateTime.now().toString().substring(0, 10);
+        final slots = await api.getSlotsForBlock(block.id, now);
         if (slots != null) {
-          slots.sort((a, b) => a.startTime.compareTo(b.startTime));
           newSlotsInBlocks[block.id] = slots;
         } else {
           newSlotsInBlocks[block.id] = [];
@@ -190,7 +253,8 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     rooms = newRooms;
     blocks = newBlocks;
     slotsInBlocks = newSlotsInBlocks;
-    blocksFiltered = true; isLoading = false;
+    blocksFiltered = true;
+    isLoading = false;
     notifyListeners();
   }
 
@@ -295,7 +359,6 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
     if (!await checkConnection()) return;
-    final room = selectedRoom;
     sm.checkIfValidToken();
     isOwner = await resolveUserRole(email);
     _visitReason = sm.visitReason;
@@ -319,9 +382,54 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     try {
       return await api.getRole() == "teacher";
     } catch (_) {
-      notify.showToast('Error while acquiring role');
       return false;
     }
+  }
+
+  SlotModel? _findSlot(int slotId) {
+    for (final slots in slotsInBlocks.values) {
+      if (slots != null) {
+        for (final slot in slots) {
+          if (slot.id == slotId) return slot;
+        }
+      }
+    }
+    return null;
+  }
+
+  int? _findBlockIdForSlot(int slotId) {
+    for (final entry in slotsInBlocks.entries) {
+      if (entry.value != null && entry.value!.any((s) => s.id == slotId)) {
+        return entry.key;
+      }
+    }
+    return null;
+  }
+
+  void _updateSlotInCache(int slotId, SlotModel updatedSlot) {
+    final blockId = _findBlockIdForSlot(slotId);
+    if (blockId == null) return;
+    final slots = slotsInBlocks[blockId];
+    if (slots != null) {
+      final index = slots.indexWhere((s) => s.id == slotId);
+      if (index != -1) {
+        slots[index] = updatedSlot;
+        notifyListeners();
+      }
+    }
+  }
+
+  Future<void> _refreshSlotsForBlock(int slotId) async {
+    final blockId = _findBlockIdForSlot(slotId);
+    if (blockId == null) return;
+    try {
+      String now = DateTime.now().toString().substring(0, 10);
+      final freshSlots = await api.getSlotsForBlock(blockId, now);
+      if (freshSlots != null) {
+        slotsInBlocks[blockId] = freshSlots;
+        notifyListeners();
+      }
+    } catch (e) {}
   }
 }
 
