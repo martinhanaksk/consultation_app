@@ -22,11 +22,12 @@ class _ConsultationsOwnerPageState extends State<ConsultationsOwnerPage> {
     _viewModel = OwnerConsultationsViewmodel();
     initialize();
   }
+
   void initialize() async {
     try {
       await _viewModel.init();
     } catch (e) {
-      notify.showToast('Something went wrong. Please try again.');
+      notify.showToast('Something went wrong. Please try again.',isError: true);
     }
   }
 
@@ -359,7 +360,7 @@ class _EditBlockButton extends StatelessWidget {
     return GestureDetector(
       onTap: () => nav.toEditBlock(
         roomId: viewModel.safeSelectedRoomId!,
-        blockId: blockId.toString(),
+        blockId: blockId,
         onSuccess: () => viewModel.loadRoom(),
       ),
       child: svgs.icon("edit", constants.darkGrey, width: constants.fsTitle),

@@ -36,7 +36,7 @@ class SliderMenuViewmodel extends ChangeNotifier {
       sm.checkIfValidToken();
       _email = sm.email;
       if (!await helpers.handleIsInternetConnection()) {
-        notify.showToast('Please connect to internet');
+        notify.showToast('Please connect to internet',isError: true);
         _isOwner = false;
       } else {
         bool isOwnerTemp = await api.getIsOwner();

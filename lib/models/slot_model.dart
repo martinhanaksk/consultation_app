@@ -1,15 +1,32 @@
+// slot_model.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// Represents a single time slot within a block.
+// A slot is either free or taken by a student, and tracks the full booking state.
+
 class SlotModel {
   final int id;
   final int blockId;
+  // Start time (HH:MM:SS)
   final String startTime;
+  // Duration in minutes
   final int duration;
-  final int valid;
+  // Null if available
   final String? takenBy;
+  // Name and surname of user, null if available
   final String? takenByName;
+  // Reason of user, null if available
   final String? takenByReason;
+  // JSON of emails who previously took the slot
   final String? history;
+  // Optional note for the slot
   final String? note;
-  final int isOnline;final int isOnlineTeacher;
+
+  // 1 = slot will be online, 0 = slot will be offline
+  final int isOnline;
+  // 1 = slot must be online, 0 = slot can be offline
+  final int isOnlineTeacher;
+  // Id of room, in which slot is located
   final int roomId;
 
   SlotModel({
@@ -17,13 +34,13 @@ class SlotModel {
     required this.blockId,
     required this.startTime,
     required this.duration,
-    required this.valid,
     this.takenBy,
     this.takenByName,
     this.takenByReason,
     this.history,
     this.note,
-    required this.isOnline, required this.isOnlineTeacher,
+    required this.isOnline,
+    required this.isOnlineTeacher,
     required this.roomId,
   });
 
@@ -32,13 +49,13 @@ class SlotModel {
     blockId: json['block_id'],
     startTime: json['start_time'],
     duration: json['duration'],
-    valid: json['valid'],
     takenBy: json['taken_by'],
     takenByName: json['taken_by_name'],
     takenByReason: json['taken_by_reason'],
     history: json['history'],
     note: json['note'],
-    isOnline: json['is_online'],isOnlineTeacher: json['teacher_is_online'],
+    isOnline: json['is_online'],
+    isOnlineTeacher: json['teacher_is_online'],
     roomId: json['room_id'],
   );
 
@@ -47,13 +64,13 @@ class SlotModel {
     "block_id": blockId,
     "start_time": startTime,
     "duration": duration,
-    "valid": valid,
     "taken_by": takenBy,
     "taken_by_name": takenByName,
     "taken_by_reason": takenByReason,
     "history": history,
     "note": note,
-    "is_online": isOnline,"teacher_is_online": isOnlineTeacher,
+    "is_online": isOnline,
+    "teacher_is_online": isOnlineTeacher,
     "room_id": roomId,
   };
 }

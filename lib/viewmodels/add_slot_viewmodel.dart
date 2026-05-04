@@ -37,13 +37,13 @@ class AddSlotViewmodel extends ChangeNotifier {
     return null;
   }
 
-  void addSlot(String blockId, VoidCallback? onSuccess) async {
+  void addSlot(int blockId, VoidCallback? onSuccess) async {
     isLoading = true;
     notifyListeners();
 
     final error = validateCreate();
     if (error != null) {
-      notify.showToast(error);
+      notify.showToast(error,isError: true);
       isLoading = false;
       notifyListeners();
       return;
@@ -54,7 +54,7 @@ class AddSlotViewmodel extends ChangeNotifier {
     final String note = noteController.text.trim();
 
     final bool success = await api.createSlot(
-      int.parse(blockId),
+      blockId,
       startTimeStr,
       durationMinutes,
       isOnlineInt,

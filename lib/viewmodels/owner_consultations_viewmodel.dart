@@ -17,21 +17,29 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
     isLoading = true;
     notifyListeners();
     try {
-      bool b = await api.deleteRoom(int.parse(safeSelectedRoomId!));
+      bool b = await api.deleteRoom(selectedRoomId!);
       if (b) {
         nav.pop();
         notify.showToast('Room was successfully deleted');
       }
     } catch (e) {
       nav.pop();
-      notify.showToast('Error while deleting room');
+      notify.showToast('Error while deleting room',isError: true);
     } finally {
       isLoading = false;
       notifyListeners();
       nav.toOwnerConsultations();
     }
   }
-
+ String? getRoomNameById() {
+    return rooms
+        ?.cast<RoomModel?>()
+        .firstWhere(
+          (r) => r!.id == selectedRoomId,
+          orElse: () => null,
+        )
+        ?.title;
+  }
   Future<void> displayHistoryOfSlot(int slotId, int blockId) async {
     try {
       String now = DateTime.now().toString().substring(0, 10);
@@ -62,20 +70,20 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
       }
       
       visitorSelectedRoomId = _visitorRooms.isNotEmpty
-          ? sm.roomIdVisitor ?? _visitorRooms[0].id.toString()
+          ? sm.roomIdVisitor ?? _visitorRooms[0].id
           : null;
       ownerSelectedRoomId = _ownerRooms.isNotEmpty
-          ? sm.roomIdOwner ?? _ownerRooms[0].id.toString()
+          ? sm.roomIdOwner ?? _ownerRooms[0].id
           : null;
       selectedRoomId = ownerView == 1
           ? ownerSelectedRoomId
           : visitorSelectedRoomId;
 
       if (selectedRoomId != null) {
-        await refreshRoomData(int.parse(selectedRoomId!));
+        await refreshRoomData(selectedRoomId!);
       }
     } catch (e) {
-      notify.showToast('Failed to load consultations. Please try again.');
+      notify.showToast('Failed to load consultations. Please try again.',isError: true);
     } finally {
       isLoading = false;
       notifyListeners();
@@ -121,12 +129,11 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
       final tempSlot = SlotModel(
         id: -DateTime.now().millisecondsSinceEpoch,
         blockId: blockId,
-        roomId: int.parse(selectedRoomId ?? '0'),
+        roomId: selectedRoomId ?? 0,
         startTime: newStartTime,
         duration: anchorSlot.duration,
         isOnline: anchorSlot.isOnline,
         isOnlineTeacher: anchorSlot.isOnlineTeacher,
-        valid: 1,
         note: "",
         takenBy: null,
         takenByName: null,
@@ -151,13 +158,13 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
         currentSlots.removeWhere((s) => s.id == tempSlot.id);
         slotsInBlocks[blockId] = currentSlots;
         notifyListeners();
-        notify.showToast("Could not create new slot");
+        notify.showToast("Could not create new slot",isError: true);
         return;
       }
 
       await refreshBlock(blockId);
     } catch (e) {
-      notify.showToast("Error adding slot");
+      notify.showToast("Error adding slot",isError: true);
       await refreshBlock(blockId);
     } finally {
       atEnd
@@ -188,16 +195,6 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
         '${(newStart.inSeconds % 60).toString().padLeft(2, '0')}';
   }
 
-  String? getRoomNameById() {
-    return rooms
-        ?.cast<RoomModel?>()
-        .firstWhere(
-          (r) => r!.id.toString() == safeSelectedRoomId,
-          orElse: () => null,
-        )
-        ?.title;
-  }
-
   void toggleView(int value) async {
     await setOwnerView(value);
 
@@ -214,9 +211,9 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
     noRoomsFound = false;
     selectedRoomId = value == 1 ? ownerSelectedRoomId : visitorSelectedRoomId;
 
-    final isValid = rooms!.any((r) => r.id.toString() == selectedRoomId);
+    final isValid = rooms!.any((r) => r.id == selectedRoomId);
     if (!isValid) {
-      final firstId = rooms![0].id.toString();
+      final firstId = rooms![0].id;
       if (value == 1) {
         ownerSelectedRoomId = firstId;
       } else {

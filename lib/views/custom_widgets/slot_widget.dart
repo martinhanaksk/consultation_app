@@ -8,7 +8,6 @@ import 'package:figma_squircle/figma_squircle.dart';
 class SlotWidget extends StatelessWidget {
   final String visitReason;
   final SlotModel slot;
-  final String roomId;
   final int cancellationNoticeHours;
   final int blockId;
   final int isOwnerView;
@@ -28,7 +27,6 @@ class SlotWidget extends StatelessWidget {
     super.key,
     required this.visitReason,
     required this.slot,
-    required this.roomId,
     required this.cancellationNoticeHours,
     required this.blockId,
     required this.showHistoryOption,

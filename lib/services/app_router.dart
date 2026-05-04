@@ -1,3 +1,9 @@
+// app_router.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// Centralises all named routes and argument parsing for the app.
+// Every navigation target is declared here
+
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/views/consultations_base_page.dart';
 import 'package:consultation_app/views/consultations_owner_page.dart';
@@ -17,6 +23,7 @@ import 'package:consultation_app/views/registration_page.dart';
 import 'package:flutter/material.dart';
 
 class AppRouter {
+  // Named route constants
   static const String login = '/login';
   static const String verifyOtp = '/verifyOtp';
   static const String register = '/register';
@@ -35,6 +42,8 @@ class AppRouter {
   static const String displayUsersInRoom = '/displayUsersInRoom';
   static const String displaySlotHistory = '/displaySlotHistory';
 
+  // Route factory wired into MaterialApp.onGenerateRoute.
+  // Arguments are passed as Map<String, dynamic> via Navigator
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case register:
@@ -48,13 +57,9 @@ class AppRouter {
       case login:
         return MaterialPageRoute(builder: (_) => const EmailInputPage());
       case consultationsBasePage:
-        return MaterialPageRoute(
-          builder: (_) => BaseConsultationsPage(),
-        );
+        return MaterialPageRoute(builder: (_) => BaseConsultationsPage());
       case consultationsOwnerPage:
-        return MaterialPageRoute(
-          builder: (_) => ConsultationsOwnerPage(),
-        );
+        return MaterialPageRoute(builder: (_) => ConsultationsOwnerPage());
       case verifyOtp:
         final args = settings.arguments as Map<String, dynamic>;
         final email = args['email'] as String;
@@ -68,24 +73,22 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => CreateRoom());
       case createBlock:
         final args = settings.arguments as Map<String, dynamic>;
-        final roomId = args['roomId'] as String;
+        final roomId = args['roomId'] as int;
         final onSuccess = args['onSuccess'] as VoidCallback?;
         return MaterialPageRoute(
-          builder: (_) =>
-              CreateBlock( roomId: roomId, onSuccess: onSuccess),
+          builder: (_) => CreateBlock(roomId: roomId, onSuccess: onSuccess),
         );
       case addSlot:
         final args = settings.arguments as Map<String, dynamic>;
-        final blockId = args['blockId'] as String;
+        final blockId = args['blockId'] as int;
         final onSuccess = args['onSuccess'] as VoidCallback?;
         return MaterialPageRoute(
-          builder: (_) =>
-              AddSlot(blockId: blockId, onSuccess: onSuccess),
+          builder: (_) => AddSlot(blockId: blockId, onSuccess: onSuccess),
         );
       case editBlock:
         final args = settings.arguments as Map<String, dynamic>;
-        final roomId = args['roomId'] as String;
-        final blockId = args['blockId'] as String;
+        final roomId = args['roomId'] as int;
+        final blockId = args['blockId'] as int;
         final onSuccess = args['onSuccess'] as VoidCallback?;
         return MaterialPageRoute(
           builder: (_) => EditBlock(
@@ -102,6 +105,7 @@ class AppRouter {
         );
       case displayListOfEmails:
         final args = settings.arguments as Map<String, dynamic>;
+        // Typed as dynamic to avoid a hard dependency on the concrete viewmodel type
         final viewModel = args['viewModel'] as dynamic;
         return MaterialPageRoute(
           builder: (_) => DisplayListOfEmailsPage(viewModel: viewModel),
@@ -124,6 +128,7 @@ class AppRouter {
         );
       case changeSettings:
         return MaterialPageRoute(builder: (_) => ChangeSettings());
+      // Fallback for any unregistered route — shown instead of a blank crash screen
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

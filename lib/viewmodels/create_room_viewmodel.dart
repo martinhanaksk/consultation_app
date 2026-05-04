@@ -44,7 +44,7 @@ class CreateRoomViewmodel extends ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      notify.showToast('Error while creating room');
+      notify.showToast('Error while creating room',isError: true);
       _isLoading = false;
       notifyListeners();
     }

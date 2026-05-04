@@ -71,12 +71,11 @@ class EditRoomViewmodel extends ChangeNotifier {
 
     if (success) {
       notify.showToast("Room updated successfully");
-      String email = sm.email;
       nav.toOwnerConsultations();
     } else if (errorMessage != null) {
-      notify.showToast(errorMessage!);
+      notify.showToast(errorMessage!,isError: true);
     } else {
-      notify.showToast('Failed to update room');
+      notify.showToast('Failed to update room',isError: true);
     }
   }
 

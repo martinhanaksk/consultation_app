@@ -11,8 +11,8 @@ class EditBlockViewmodel extends ChangeNotifier {
   List<SlotModel> slots = [];
   bool _isLoading = false;
   String roomName = "";
-  String _roomId = "";
-  String get roomId => _roomId;
+  int _roomId =0;
+  int get roomId => _roomId;
   bool get isLoading => _isLoading;
   BlockModel? block;
   DateRangePickerSelectionMode _selectionMode =
@@ -40,7 +40,7 @@ class EditBlockViewmodel extends ChangeNotifier {
       notifyListeners();
       notify.showToast("Add slots first");
     }
-    refreshEditBlock(blockId.toString());
+    refreshEditBlock(blockId);
     notifyListeners();
   }
 
@@ -84,7 +84,7 @@ class EditBlockViewmodel extends ChangeNotifier {
     }
   }
 
-  Future<void> copyBlock(String roomId) async {
+  Future<void> copyBlock(int roomId) async {
     List<String> dates = getSelectedDatesIso();
 
     if (dates.isEmpty) {
@@ -97,9 +97,9 @@ class EditBlockViewmodel extends ChangeNotifier {
       final slotCount = slots.length;
 
       for (int i = 0; i < dates.length; i++) {
-        String response = await api.createBlock(int.parse(roomId), dates[i]);
+        String response = await api.createBlock(roomId, dates[i]);
         if (response.isEmpty) {
-          notify.showToast('Failed to create block for ${dates[i]}');
+          notify.showToast('Failed to create block for ${dates[i]}',isError: true);
           continue;
         }
         final int blockId = jsonDecode(response)['id'];
@@ -113,7 +113,7 @@ class EditBlockViewmodel extends ChangeNotifier {
               slots[j].note ?? "",
             );
             if (!success) {
-              notify.showToast('Failed to create slot $j for block $blockId');
+              notify.showToast('Failed to create slot $j for block $blockId',isError: true);
               _isLoading = false;
               notifyListeners();
               return;
@@ -123,7 +123,7 @@ class EditBlockViewmodel extends ChangeNotifier {
       }
       notify.showToast('Blocks copied successfully');
     } catch (e) {
-      notify.showToast('An unexpected error occurred while copying');
+      notify.showToast('Error while copying',isError: true);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -132,7 +132,7 @@ class EditBlockViewmodel extends ChangeNotifier {
     nav.pop();
   }
 
-  Future<void> deleteBlock(String blockId) async {
+  Future<void> deleteBlock(int blockId) async {
     final BlockModel? previousBlock = block;
     final List<SlotModel> previousSlots = List.from(slots);
 
@@ -141,7 +141,7 @@ class EditBlockViewmodel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      bool deleted = await api.deleteBlock(int.parse(blockId));
+      bool deleted = await api.deleteBlock(blockId);
       if (deleted) {
         notify.showToast("Block was deleted successfully");
       } else {
@@ -154,11 +154,11 @@ class EditBlockViewmodel extends ChangeNotifier {
       block = previousBlock;
       slots = previousSlots;
       notifyListeners();
-      notify.showToast("Error while deleting block");
+      notify.showToast("Error while deleting block",isError: true);
     }
   }
 
-  void refetchData(String? blockId) {
+  void refetchData(int? blockId) {
     if (blockId != null) {
       fetchSlotsForBlock(blockId);
     }
@@ -177,7 +177,6 @@ class EditBlockViewmodel extends ChangeNotifier {
       duration: original.duration,
       isOnline: original.isOnline == 0 ? 1 : 0,
        isOnlineTeacher: original.isOnlineTeacher,
-      valid: original.valid,
       note: original.note,
       takenBy: original.takenBy,
       takenByName: original.takenByName,
@@ -192,7 +191,7 @@ class EditBlockViewmodel extends ChangeNotifier {
     } catch (e) {
       slots[index] = original;
       notifyListeners();
-      notify.showToast('Error while changing consultation type');
+      notify.showToast('Error while changing consultation type',isError: true);
     }
   }
 
@@ -207,21 +206,21 @@ class EditBlockViewmodel extends ChangeNotifier {
       if (!b) {
         slots.insert(removedIndex, removedSlot);
         notifyListeners();
-        notify.showToast('Error while deleting slot');
+        notify.showToast('Error while deleting slot',isError: true);
       }
     } catch (e) {
       slots.insert(removedIndex, removedSlot);
       notifyListeners();
-      notify.showToast('Error while deleting slot');
+      notify.showToast('Error while deleting slot',isError: true);
     }
   }
 
-  void refreshEditBlock(String blockId) async {
+  void refreshEditBlock(int blockId) async {
     _isLoading = true;
     notifyListeners();
-    await assignBlock(int.parse(blockId), int.parse(_roomId));
+    await assignBlock(blockId, _roomId);
     await fetchSlotsForBlock(blockId);
-    roomName = await getRoomNameById(int.parse(_roomId));
+    roomName = await getRoomNameById(_roomId);
     if (block != null) {
       _isChecked = block!.isOnline == 1 ? true : false;
     }
@@ -229,7 +228,7 @@ class EditBlockViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void init(String blockId, String roomId) async {
+  void init(int blockId, int roomId) async {
     _roomId = roomId;
      WidgetsBinding.instance.addPostFrameCallback((_) {
     refreshEditBlock(blockId);
@@ -262,18 +261,18 @@ class EditBlockViewmodel extends ChangeNotifier {
 
   String getBlockDate() {
     if (block != null) {
-      return helpers.getTDateOnlySimple(block!.date);
+      return helpers.getDateOnlySimple(block!.date);
     } else {
       return "";
     }
   }
 
-  Future<void> fetchSlotsForBlock(String blockId) async {
+  Future<void> fetchSlotsForBlock(int blockId) async {
     _isLoading = true;
     notifyListeners();
     try {
       String now = DateTime.now().toString().substring(0, 10);
-      final tmpSlots = await api.getSlotsForBlock(int.parse(blockId),now);
+      final tmpSlots = await api.getSlotsForBlock(blockId,now);
       if (tmpSlots != null) {
         tmpSlots.sort((a, b) => a.startTime.compareTo(b.startTime));
         slots = tmpSlots;

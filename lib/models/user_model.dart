@@ -1,10 +1,20 @@
+// user_model.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// Represents the authenticated user's profile.
+
 class UserModel {
+  // Primary key
   final String email;
   final String name;
   final String surname;
+  // 'teacher' or 'student'
   final String role;
+  // Purpose of the visit (e.g., 'DP', 'teacher')
   final String visitReason;
+  // 1 = visible, 0 = hidden
   final int visible;
+  // sets how many hours before consultation user will get notification
   final int notification;
   UserModel({
     required this.email,

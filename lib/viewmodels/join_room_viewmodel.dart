@@ -72,7 +72,7 @@ class JoinRoomViewmodel extends ChangeNotifier {
         notify.showToast(
           title: 'Access Restricted',
 
-          'You cannot join this room.\n\nOnly accounts matching these email addresses or domains are allowed:\n\n• $formattedList',
+          'Email addresses/domains allowed:\n\n• $formattedList',
         );
       } catch (_) {
         notify.showToast('You cannot join this room');

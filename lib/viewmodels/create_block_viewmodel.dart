@@ -168,7 +168,7 @@ class CreateBlockViewmodel extends ChangeNotifier {
     super.dispose();
   }
 
-  void createBlock(String roomId, VoidCallback? onSuccess) async {
+  void createBlock(int roomId, VoidCallback? onSuccess) async {
     isLoading = true;
     notifyListeners();
     final slotCount = int.tryParse(slotNumberController.text.trim());
@@ -180,7 +180,7 @@ class CreateBlockViewmodel extends ChangeNotifier {
       endTime: _endTime,
     );
     if (error != null) {
-      notify.showToast(error);
+      notify.showToast(error,isError: true);
       isLoading = false;
       notifyListeners();
       return;
@@ -190,11 +190,11 @@ class CreateBlockViewmodel extends ChangeNotifier {
     final String note = noteController.text.trim();
     final int isOnline = isChecked ? 1 : 0;
     for (int i = 0; i < dates.length; i++) {
-      String response = await api.createBlock(int.parse(roomId), dates[i]);
+      String response = await api.createBlock(roomId, dates[i]);
 
       if (response.isEmpty) {
         notify.showToast(
-          'Failed to create block for ${dates[i]}. It might already exist',
+          'Failed to create block for ${dates[i]}. It might already exist',isError: true,
         );
         continue;
       } else {
@@ -215,7 +215,7 @@ class CreateBlockViewmodel extends ChangeNotifier {
             note,
           );
           if (!success) {
-            notify.showToast('Failed to create slot $j for block $blockId');
+            notify.showToast('Failed to create slot $j for block $blockId',isError: true);
             isLoading = false;
             notifyListeners();
             return;

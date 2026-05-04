@@ -101,7 +101,7 @@ class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
                                 : _ConsultationsContent(
                                     viewModel: viewModel,
                                     shortName:
-                                        viewModel.selectedRoom!.shortName,
+                                        viewModel.selectedRoom?.shortName,
                                     toggle: widget.toggle,
                                     addButton: widget.addButton,
                                     showHistoryOption: widget.showHistoryOption,
@@ -197,9 +197,9 @@ class _RoomSelectorButton extends StatelessWidget {
                 shadowColor: constants.darkGrey30,
                 onSelected: (String newValue) async {
                   final success = await viewModel.validateAndSelectRoom(
-                    newValue,
+                    int.parse(newValue),
                   );
-                  if (success) await viewModel.switchRoom(newValue);
+                  if (success) await viewModel.switchRoom(int.parse(newValue));
                 },
                 itemBuilder: (context) => viewModel.rooms == null
                     ? []
@@ -248,7 +248,7 @@ class _RoomSelectorButton extends StatelessWidget {
                               : (viewModel.noRoomsFound ||
                                     viewModel.selectedRoomId == null)
                               ? "No rooms created"
-                              : '${viewModel.selectedRoom!.title} - ${viewModel.selectedRoom!.description}',
+                              : '${viewModel.selectedRoom?.title} - ${viewModel.selectedRoom?.description}',
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: constants.fwSemiBold,
@@ -523,7 +523,6 @@ class _ConsultationBlockCard extends StatelessWidget {
                             visitReason: viewModel.visitReason,
                             showHistoryOption: showHistoryOption,
                             slot: slot,
-                            roomId: viewModel.selectedRoomId!,
                             cancellationNoticeHours:
                                 viewModel.selectedRoom == null
                                 ? 0

@@ -1,8 +1,18 @@
+// session_manager.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// Holds the authenticated user's session state in memory and keeps it
+// in sync with persistent storage. Extends ChangeNotifier so any widget
+// listening to it rebuilds automatically on session changes.
+
 import 'package:consultation_app/setup.dart';
 import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
 class SessionManager extends ChangeNotifier {
+
+  // --- Storage keys ---
+
   static const String _emailKey = 'email';
   static const String _roleKey = 'role';
   static const String _visibilityKey = 'visibility';
@@ -11,6 +21,8 @@ class SessionManager extends ChangeNotifier {
   static const String _nameKey = 'name';
   static const String _surnameKey = 'surname';
   static const String _isDarkModeOnKey = 'darkMode';
+
+  // --- In-memory state ---
 
   String _token = "";
   String _email = "";
@@ -22,6 +34,11 @@ class SessionManager extends ChangeNotifier {
   String _name = "";
   String _surname = "";
   bool _isLoggedIn = true;
+  // Guards against concurrent logout triggers firing multiple times
+  bool _isLoggingOut = false;
+
+  // --- Getters ---
+
   String get token => _token;
   String get email => _email;
   String get role => _role;
@@ -32,23 +49,28 @@ class SessionManager extends ChangeNotifier {
   String get name => _name;
   String get surname => _surname;
   bool get isLoggedIn => _isLoggedIn;
-  bool _isLoggingOut = false;
 
-  String? _roomIdOwner;
-  String? get roomIdOwner => _roomIdOwner;
-  String? _roomIdVisitor;
-  String? get roomIdVisitor => _roomIdVisitor;
+  // Last room the teacher had open; used to restore context after navigation
+  int? _roomIdOwner;
+  int? get roomIdOwner => _roomIdOwner;
 
-  void setRoomIdOwner(String value) {
+  // Last room the student had open; used to restore context after navigation
+  int? _roomIdVisitor;
+  int? get roomIdVisitor => _roomIdVisitor;
+
+  void setRoomIdOwner(int value) {
     _roomIdOwner = value;
   }
 
-  void setRoomIdVisitor(String value) {
+  void setRoomIdVisitor(int value) {
     _roomIdVisitor = value;
   }
 
   SessionManager();
 
+  // --- Persistence ---
+
+  // Restores session from storage on app start; called once in main() before runApp
   Future<void> load() async {
     _token = await securePrefs.getToken();
     _email = await prefs.getString(_emailKey);
@@ -62,6 +84,7 @@ class SessionManager extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Persists the full session after successful OTP verification and updates memory
   Future<void> saveSession(
     String token,
     String email,
@@ -91,6 +114,30 @@ class SessionManager extends ChangeNotifier {
     _isLoggedIn = true;
     notifyListeners();
   }
+
+  // Wipes all stored and in-memory session data; called on logout or token expiry
+  Future<void> clear() async {
+    await securePrefs.removeToken();
+    await prefs.removeItem(_emailKey);
+    await prefs.removeItem(_roleKey);
+    await prefs.removeItem('visibility');
+    await prefs.removeItem('visitReason');
+    await prefs.removeItem('notifyHoursBefore');
+    await prefs.removeItem('name');
+    await prefs.removeItem('surname');
+    _token = "";
+    _email = "";
+    _role = "";
+    _visibility = true;
+    _visitReason = "";
+    _notifyHoursBefore = 0;
+    _name = "";
+    _surname = "";
+    _isLoggedIn = false;
+    notifyListeners();
+  }
+
+  // --- Individual field updaters ---
 
   Future<void> updateToken(String token) async {
     await securePrefs.saveToken(token);
@@ -154,6 +201,9 @@ class SessionManager extends ChangeNotifier {
     notifyListeners();
   }
 
+  // --- Session validation ---
+
+  // Prevents duplicate logout calls if multiple widgets detect an invalid token simultaneously
   Future<void> checkIfValidToken() async {
     if (_isLoggingOut) return;
     _isLoggingOut = true;
@@ -166,6 +216,7 @@ class SessionManager extends ChangeNotifier {
     });
   }
 
+  // Called on app launch to skip the login screen when a valid, unexpired token exists
   void checkIfInSharedPreferences() async {
     if (sm.role.isNotEmpty && sm.token.isNotEmpty && sm.email.isNotEmpty) {
       bool isExpired = JwtDecoder.isExpired(sm.token);
@@ -180,26 +231,5 @@ class SessionManager extends ChangeNotifier {
         sm.clear();
       }
     }
-  }
-
-  Future<void> clear() async {
-    await securePrefs.removeToken();
-    await prefs.removeItem(_emailKey);
-    await prefs.removeItem(_roleKey);
-    await prefs.removeItem('visibility');
-    await prefs.removeItem('visitReason');
-    await prefs.removeItem('notifyHoursBefore');
-    await prefs.removeItem('name');
-    await prefs.removeItem('surname');
-    _token = "";
-    _email = "";
-    _role = "";
-    _visibility = true;
-    _visitReason = "";
-    _notifyHoursBefore = 0;
-    _name = "";
-    _surname = "";
-    _isLoggedIn = false;
-    notifyListeners();
   }
 }

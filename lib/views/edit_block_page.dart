@@ -10,8 +10,8 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
 class EditBlock extends StatefulWidget {
-  final String roomId;
-  final String blockId;
+  final int roomId;
+  final int blockId;
   final VoidCallback? onSuccess;
   const EditBlock({
     super.key,
@@ -236,7 +236,7 @@ class _EditBlockState extends State<EditBlock> {
                                   onChanged: (bool? value) => {
                                     viewModel.toggleIsOnline(
                                       value,
-                                      int.parse(widget.blockId),
+                                      widget.blockId,
                                     ),
                                     widget.onSuccess!(),
                                   },

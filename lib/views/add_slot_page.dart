@@ -10,7 +10,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
 class AddSlot extends StatefulWidget {
-  final String blockId;
+  final int blockId;
   final VoidCallback? onSuccess;
 
   const AddSlot({super.key, required this.blockId, required this.onSuccess});

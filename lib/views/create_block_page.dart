@@ -9,11 +9,10 @@ import 'package:consultation_app/views/custom_widgets/time_duration_picker.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:flutter/cupertino.dart';
 
 class CreateBlock extends StatefulWidget {
-  final String roomId;
+  final int roomId;
   final VoidCallback? onSuccess;
   const CreateBlock({super.key, required this.roomId, required this.onSuccess});
 

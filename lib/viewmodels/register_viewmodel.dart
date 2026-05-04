@@ -21,11 +21,11 @@ class RegisterViewmodel extends ChangeNotifier {
       await helpers.handleServer(response, um.email, rememberMe);
       setIsLoading(false); 
     } else {
-      notify.showToast('Failed to register user');
+      notify.showToast('Failed to register user',isError: true);
       setIsLoading(false);
     }
   } catch (e) {
-     notify.showToast('Failed to register user');
+     notify.showToast('Failed to register user',isError: true);
     setIsLoading(false);
   }
 }

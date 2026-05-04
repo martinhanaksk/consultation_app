@@ -29,7 +29,7 @@ class VerifyOtpViewmodel extends ChangeNotifier {
     } catch (e) {
       _isLoading = false;
       notifyListeners();
-      notify.showToast('Connection failed, lease try again later');
+      notify.showToast('Connection failed, lease try again later',isError: true);
     }
   }
 }

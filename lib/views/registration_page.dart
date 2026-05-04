@@ -157,7 +157,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                     );
                                   } catch (e) {
                                     notify.showToast(
-                                      "Error while registering user",
+                                      "Error while registering user",isError: true
                                     );
                                   }
                                 }

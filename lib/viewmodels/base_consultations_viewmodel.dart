@@ -23,13 +23,13 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   List<RoomModel>? rooms = [];
   Map<int, List<SlotModel>?> slotsInBlocks = {};
   List<BlockModel> blocks = [];
-  String? ownerSelectedRoomId;
-  String? visitorSelectedRoomId;
+  int? ownerSelectedRoomId;
+  int? visitorSelectedRoomId;
   String _visitReason = "";
   String get visitReason => _visitReason;
   int _ownerView = 1;
   int get ownerView => _ownerView;
-  String? selectedRoomId;
+  int? selectedRoomId;
   final Map<int, bool> _slotLoading = {};
   bool isSlotLoading(int slotId) => _slotLoading[slotId] ?? false;
   final Map<int, bool> _optimisticallyReleased = {};
@@ -59,12 +59,12 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
       );
 
       if (!launched) {
-        notify.showToast('Could not launch $normalized');
+        notify.showToast('Could not launch $normalized',isError: true);
       }
       _isWebsiteLoading = false;
       notifyListeners();
     } catch (e) {
-      notify.showToast('Could not launch $normalized');
+      notify.showToast('Could not launch $normalized',isError: true);
       _isWebsiteLoading = false;
       notifyListeners();
     }
@@ -84,7 +84,6 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
         duration: oldSlot.duration,
         isOnline: oldSlot.isOnline,
         isOnlineTeacher: oldSlot.isOnlineTeacher,
-        valid: oldSlot.valid,
         note: oldSlot.note,
         takenBy: sm.email,
         takenByName: sm.name,
@@ -99,7 +98,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
       await _refreshSlotsForBlock(slotId);
     } catch (e) {
       if (oldSlot != null) _updateSlotInCache(slotId, oldSlot);
-      notify.showToast('Failed to take slot');
+      notify.showToast('Failed to take slot',isError: true);
     } finally {
       _takingSlot.remove(slotId);
       notifyListeners();
@@ -120,7 +119,6 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
         duration: oldSlot.duration,
         isOnline: oldSlot.isOnline,
         isOnlineTeacher: oldSlot.isOnlineTeacher,
-        valid: oldSlot.valid,
         note: oldSlot.note,
         takenBy: null,
         takenByName: null,
@@ -135,7 +133,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
       await _refreshSlotsForBlock(slotId);
     } catch (e) {
       if (oldSlot != null) _updateSlotInCache(slotId, oldSlot);
-      notify.showToast('Failed to release slot');
+      notify.showToast('Failed to release slot',isError: true);
     } finally {
       _optimisticallyReleased.remove(slotId);
       notifyListeners();
@@ -156,7 +154,6 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
         duration: oldSlot.duration,
         isOnline: oldSlot.isOnline == 0 ? 1 : 0,
         isOnlineTeacher: oldSlot.isOnlineTeacher,
-        valid: oldSlot.valid,
         note: oldSlot.note,
         takenBy: oldSlot.takenBy,
         takenByName: oldSlot.takenByName,
@@ -199,7 +196,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
         subscribedBlocks.remove(block);
       }
       notifyListeners();
-      notify.showToast('Failed to update subscription, please try again later');
+      notify.showToast('Failed to update subscription, please try again later',isError: true);
     }
   }
 
@@ -232,10 +229,10 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   int? get roomIdNumber => ownerView == 0
       ? visitorSelectedRoomId == null
             ? null
-            : int.parse(visitorSelectedRoomId!)
+            : visitorSelectedRoomId
       : ownerSelectedRoomId == null
       ? null
-      : int.parse(ownerSelectedRoomId!);
+      : ownerSelectedRoomId;
 
   int getBlocksCount() {
     if (blocksFiltered && blocks.isNotEmpty) {
@@ -259,7 +256,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   try {
     subscriptions = await api.getMySubscriptions();
   } catch (e) {
-    notify.showToast('Could not load your subscriptions');
+    notify.showToast('Could not load your subscriptions',isError: true);
   }
     final newUsers = await api.getUsers();
     final newRooms = await fetchRooms();
@@ -298,9 +295,9 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
-  String? get safeSelectedRoomId {
+  int? get safeSelectedRoomId {
     if (rooms == null || selectedRoomId == null) return null;
-    final exists = rooms!.any((r) => r.id.toString() == selectedRoomId);
+    final exists = rooms!.any((r) => r.id == selectedRoomId);
     return exists ? selectedRoomId : null;
   }
 
@@ -318,7 +315,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   String blockDateLabel(int blockId) {
     for (var tmpBlock in blocks) {
       if (tmpBlock.id == blockId) {
-        return "${helpers.getTDateOnlySimple(DateTime.parse(tmpBlock.date.toString()))} ${daysRemainingLabel(tmpBlock.date)}";
+        return "${helpers.getDateOnlySimple(DateTime.parse(tmpBlock.date.toString()))} ${daysRemainingLabel(tmpBlock.date)}";
       }
     }
     return "";
@@ -347,7 +344,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     return "($diff d.)";
   }
 
-  Future<void> switchRoom(String newRoomId) async {
+  Future<void> switchRoom(int newRoomId) async {
     _ownerView == 1
         ? ownerSelectedRoomId = newRoomId
         : visitorSelectedRoomId = newRoomId;
@@ -357,11 +354,11 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     await loadRoom();
   }
 
-  Future<bool> validateAndSelectRoom(String? id) async {
+  Future<bool> validateAndSelectRoom(int? id) async {
     if (id == null) return false;
 
     final myRooms = await fetchRooms();
-    final isValidRoom = myRooms.any((room) => room.id.toString() == id);
+    final isValidRoom = myRooms.any((room) => room.id == id);
 
     if (isValidRoom) {
       if (ownerView == 0) {
@@ -375,21 +372,21 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
       notifyListeners();
       return true;
     } else {
-      notify.showToast('Invalid room or access denied');
+      notify.showToast('Invalid room or access denied',isError: true);
       return false;
     }
   }
 
   Future<bool> checkConnection() async {
     if (await helpers.handleIsInternetConnection()) return true;
-    notify.showToast('Please check your internet connection and try again');
+    notify.showToast('Please check your internet connection and try again',isError: true);
     return false;
   }
 
   RoomModel? get selectedRoom {
     if (rooms == null || rooms!.isEmpty || selectedRoomId == null) return null;
     try {
-      return rooms!.firstWhere((r) => r.id.toString() == selectedRoomId);
+      return rooms!.firstWhere((r) => r.id == selectedRoomId);
     } catch (_) {
       return null;
     }
@@ -414,11 +411,11 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
       return;
     }
 
-    visitorSelectedRoomId = sm.roomIdVisitor ?? myRooms[0].id.toString();
+    visitorSelectedRoomId = sm.roomIdVisitor ?? myRooms[0].id;
     selectedRoomId = visitorSelectedRoomId;
     await refreshRoomData(myRooms[0].id);
       } catch (e) {
-    notify.showToast('Failed to load consultations. Please check your internet connection.');
+    notify.showToast('Failed to load consultations. Please check your internet connection.',isError: true);
   } finally {
     isLoading = false;
     notifyListeners();

@@ -1,3 +1,9 @@
+// verify_otp_page.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// OTP verification screen shown after a successful login email submission.
+// Accepts the 4-digit code sent to the user's email and completes authentication.
+
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/verify_otp_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
@@ -6,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
+// Passed via named route arguments from the login/register page
 class VerifyOtpPageArgs {
   final String email;
   final bool rememberMe;
@@ -28,9 +35,12 @@ class VerifyOtpPage extends StatefulWidget {
 class _VerifyOtpPageState extends State<VerifyOtpPage> {
   late final VerifyOtpViewmodel _viewModel;
   final TextEditingController otpcontroller = TextEditingController();
+
   @override
   void initState() {
     super.initState();
+    // ViewModel is created here rather than inside build() to prevent
+    // re-instantiation on every rebuild
     _viewModel = VerifyOtpViewmodel();
   }
 
@@ -43,6 +53,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
 
   @override
   Widget build(BuildContext context) {
+    // The viewmodel lifecycle is managed by this State
     return ChangeNotifierProvider.value(
       value: _viewModel,
       child: Consumer<VerifyOtpViewmodel>(
@@ -93,6 +104,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                     SizedBox(
                       width: double.infinity,
                       height: 48,
+                      // Replaces the button with a spinner for the duration of the API call
                       child: viewModel.isLoading()
                           ? SpinKitPouringHourGlass(
                               color: constants.primary,
@@ -100,6 +112,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                             )
                           : ElevatedButton(
                               onPressed: () {
+                                // Dismiss keyboard before triggering the network request
                                 FocusScope.of(context).unfocus();
                                 viewModel.connect(
                                   widget.email,

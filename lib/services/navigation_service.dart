@@ -1,3 +1,9 @@
+// navigation_service.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// Provides programmatic navigation without requiring a BuildContext.
+// Tracks route history to check the current and previous route at any time.
+
 import 'package:consultation_app/services/app_router.dart';
 import 'package:consultation_app/views/email_input_page.dart';
 import 'package:flutter/material.dart';
@@ -5,7 +11,11 @@ import 'package:consultation_app/setup.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class NavigationService {
+
+  // Required by MaterialApp.navigatorKey to drive navigation from outside the widget tree
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+  // --- Route history ---
 
   final List<String> _routeHistory = [];
 
@@ -16,71 +26,60 @@ class NavigationService {
   String? get currentRoute =>
       _routeHistory.isNotEmpty ? _routeHistory.last : null;
 
+  // --- Core helpers ---
+
   NavigatorState? _navigator() {
     return navigatorKey.currentState;
   }
 
-  BuildContext? _context() {
-    return _navigator()?.context;
-  }
-
+  // All named pushes go through here so _routeHistory stays in sync
   Future<dynamic> _pushNamed(String routeName, {Object? arguments}) {
     _routeHistory.add(routeName);
     return _navigator()!.pushNamed(routeName, arguments: arguments);
   }
 
-  Future<dynamic> _pushReplacementNamed(String routeName, {Object? arguments}) {
+  void pop<T extends Object?>([T? result]) {
     if (_routeHistory.isNotEmpty) _routeHistory.removeLast();
-    _routeHistory.add(routeName);
-    return _navigator()!.pushReplacementNamed(routeName, arguments: arguments);
+    _navigator()?.pop(result);
   }
 
-  Future<dynamic> _pushNamedAndRemoveUntil(
-    String routeName, {
-    Object? arguments,
-  }) {
-    _routeHistory.clear();
-    _routeHistory.add(routeName);
-    return _navigator()!.pushNamedAndRemoveUntil(
-      routeName,
-      (route) => false,
-      arguments: arguments,
-    );
-  }
+  // --- Auth ---
 
- void toLogin() async {
-  _navigator()?.push(
-    PageRouteBuilder(
-      opaque: true,
-      transitionDuration: Duration.zero,
-      reverseTransitionDuration: Duration.zero,
-      pageBuilder: (_, __, ___) => Scaffold(
-        backgroundColor: constants.background,
-        body: Center(
-          child: SpinKitPouringHourGlass(
-            color: constants.primary,
-            size: constants.fsHeadline,
+  // Shows a spinner instantly while the session clears, then fades in the
+  // login page and removes the entire back stack so the user cannot go back
+  void toLogin() async {
+    _navigator()?.push(
+      PageRouteBuilder(
+        opaque: true,
+        transitionDuration: Duration.zero,
+        reverseTransitionDuration: Duration.zero,
+        pageBuilder: (_, __, ___) => Scaffold(
+          backgroundColor: constants.background,
+          body: Center(
+            child: SpinKitPouringHourGlass(
+              color: constants.primary,
+              size: constants.fsHeadline,
+            ),
           ),
         ),
       ),
-    ),
-  );
+    );
 
-  await sm.clear();
-  _routeHistory.clear();
-  await Future.delayed(const Duration(milliseconds: 400));
+    await sm.clear();
+    _routeHistory.clear();
+    await Future.delayed(const Duration(milliseconds: 400));
 
-  _navigator()?.pushAndRemoveUntil(
-    PageRouteBuilder(
-      pageBuilder: (_, __, ___) => const EmailInputPage(),
-      transitionsBuilder: (_, animation, __, child) {
-        return FadeTransition(opacity: animation, child: child);
-      },
-      transitionDuration: const Duration(milliseconds: 400),
-    ),
-    (route) => false,
-  );
-}
+    _navigator()?.pushAndRemoveUntil(
+      PageRouteBuilder(
+        pageBuilder: (_, __, ___) => const EmailInputPage(),
+        transitionsBuilder: (_, animation, __, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+        transitionDuration: const Duration(milliseconds: 400),
+      ),
+      (route) => false,
+    );
+  }
 
   Future<dynamic> toVerifyOtp({
     required String email,
@@ -92,14 +91,9 @@ class NavigationService {
     );
   }
 
-  Future<dynamic> toEditRoom({required int roomId}) {
-    return _pushNamed(AppRouter.editRoom, arguments: {'roomId': roomId});
-  }
-
-  void redirectToRegister(BuildContext context, String email) {
+  void redirectToRegister(String email) {
     _routeHistory.add(AppRouter.register);
-    Navigator.pushNamed(
-      context,
+    _pushNamed(
       AppRouter.register,
       arguments: <String, dynamic>{'email': email},
     );
@@ -112,6 +106,9 @@ class NavigationService {
     );
   }
 
+  // --- Home pages ---
+
+  // Resets the stack to a single root before replacing, preventing accumulating
   void toOwnerConsultations() {
     _routeHistory.clear();
     _routeHistory.add(AppRouter.consultationsOwnerPage);
@@ -126,47 +123,16 @@ class NavigationService {
     _navigator()?.pushReplacementNamed(AppRouter.consultationsBasePage);
   }
 
+  // --- Rooms ---
+
   void toJoinRoom() {
     _pushNamed(AppRouter.joinRoom, arguments: <String, dynamic>{});
   }
 
-  void toDisplaySlotHistory({required String history}) {
-    _pushNamed(
-      AppRouter.displaySlotHistory,
-      arguments: <String, dynamic>{'history': history},
-    );
-  }
+  void toCreateRoom() => _pushNamed(AppRouter.createRoom);
 
-  void toCreateBlock({
-    required String roomId,
-    required VoidCallback? onSuccess,
-  }) {
-    _pushNamed(
-      AppRouter.createBlock,
-      arguments: <String, dynamic>{'roomId': roomId, 'onSuccess': onSuccess},
-    );
-  }
-
-  void toAddSlot({required String blockId, required VoidCallback? onSuccess}) {
-    _pushNamed(
-      AppRouter.addSlot,
-      arguments: <String, dynamic>{'blockId': blockId, 'onSuccess': onSuccess},
-    );
-  }
-
-  void toEditBlock({
-    required String roomId,
-    required String blockId,
-    required VoidCallback? onSuccess,
-  }) {
-    _pushNamed(
-      AppRouter.editBlock,
-      arguments: <String, dynamic>{
-        'roomId': roomId,
-        'blockId': blockId,
-        'onSuccess': onSuccess,
-      },
-    );
+  Future<dynamic> toEditRoom({required int roomId}) {
+    return _pushNamed(AppRouter.editRoom, arguments: {'roomId': roomId});
   }
 
   void toDisplayUsersInRoom({required int roomId, required String roomName}) {
@@ -183,14 +149,50 @@ class NavigationService {
     );
   }
 
+  // --- Blocks and slots ---
+
+  void toCreateBlock({
+    required int roomId,
+    required VoidCallback? onSuccess,
+  }) {
+    _pushNamed(
+      AppRouter.createBlock,
+      arguments: <String, dynamic>{'roomId': roomId, 'onSuccess': onSuccess},
+    );
+  }
+
+  void toEditBlock({
+    required int roomId,
+    required int blockId,
+    required VoidCallback? onSuccess,
+  }) {
+    _pushNamed(
+      AppRouter.editBlock,
+      arguments: <String, dynamic>{
+        'roomId': roomId,
+        'blockId': blockId,
+        'onSuccess': onSuccess,
+      },
+    );
+  }
+
+  void toAddSlot({required int blockId, required VoidCallback? onSuccess}) {
+    _pushNamed(
+      AppRouter.addSlot,
+      arguments: <String, dynamic>{'blockId': blockId, 'onSuccess': onSuccess},
+    );
+  }
+
+  void toDisplaySlotHistory({required String history}) {
+    _pushNamed(
+      AppRouter.displaySlotHistory,
+      arguments: <String, dynamic>{'history': history},
+    );
+  }
+
+  // --- Other ---
+
   void toChangeSettings() => _pushNamed(AppRouter.changeSettings);
 
   void toProvideFeedback() => _pushNamed(AppRouter.provideFeedback);
-
-  void toCreateRoom() => _pushNamed(AppRouter.createRoom);
-
-  void pop<T extends Object?>([T? result]) {
-    if (_routeHistory.isNotEmpty) _routeHistory.removeLast();
-    _navigator()?.pop(result);
-  }
 }

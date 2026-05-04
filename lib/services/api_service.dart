@@ -1,3 +1,9 @@
+// api_service.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// Central HTTP client for all API communication.
+// Organises endpoints into sections: auth, users, rooms, blocks, and slots.
+
 import 'dart:convert';
 import 'package:consultation_app/setup.dart';
 import 'package:http/http.dart' as http;
@@ -7,7 +13,7 @@ import 'package:consultation_app/models/block_model.dart';
 import 'package:consultation_app/models/slot_model.dart';
 
 class ApiService {
-  // Helper endpoints
+  // --- Shared helpers ---
 
   Map<String, String> _headers(String token) {
     return {
@@ -16,6 +22,7 @@ class ApiService {
     };
   }
 
+  // Redirects to login and notifies the user when the server rejects the token
   void _checkUnauthorized(http.Response response) {
     if (response.statusCode == 401) {
       nav.toLogin();
@@ -23,8 +30,10 @@ class ApiService {
     }
   }
 
-  // Authentication and session endpoints
+  // --- Authentication ---
 
+  // Verifies the OTP, fetches the user profile, and persists the session.
+  // Returns true on success; false if the OTP is invalid or expired.
   Future<bool> connect(String email, String otp, bool rememberMe) async {
     final Uri url = getVerifyLoginOtpUrl(rememberMe);
 
@@ -62,6 +71,7 @@ class ApiService {
     );
   }
 
+  // Long-session endpoint keeps the token alive longer (based on API)
   Uri getVerifyLoginOtpUrl(bool rememberMe) {
     if (rememberMe) {
       return Uri.parse('${constants.url}/auth/verify-login-otp-long');
@@ -69,6 +79,7 @@ class ApiService {
     return Uri.parse('${constants.url}/auth/verify-login-otp');
   }
 
+  // Registers a new user and immediately syncs the relevant fields into the session
   Future<http.Response> registerUser(UserModel um) async {
     final Uri url = Uri.parse('${constants.url}/auth/register');
 
@@ -91,6 +102,9 @@ class ApiService {
     return response;
   }
 
+  // --- Users ---
+
+  // Falls back to 'student' if the API returns a null or missing role field
   Future<String> getRole() async {
     final Uri url = Uri.parse('${constants.url}/users?email=${sm.email}');
     final response = await http.get(url, headers: _headers(sm.token));
@@ -108,12 +122,12 @@ class ApiService {
     }
   }
 
+  // Resolved locally from the cached session — no network call needed
   Future<bool> getIsOwner() async {
     return sm.role == 'teacher';
   }
 
-  // Users and visibility endpoints
-
+  // Updates both the server record and the local session cache in one call
   Future<void> updateUserData(
     String name,
     String surname,
@@ -211,6 +225,7 @@ class ApiService {
     throw Exception('Failed to get visibility ${response.statusCode}');
   }
 
+  // Toggles the current user's visibility — the server flips the state server-side
   Future<void> setVisibility() async {
     final Uri url = Uri.parse('${constants.url}/users/visible');
     final response = await http.post(url, headers: _headers(sm.token));
@@ -222,7 +237,7 @@ class ApiService {
     }
   }
 
-  // Room endpoints
+  // --- Rooms ---
 
   Future<List<RoomModel>> getAllRooms() async {
     final Uri url = Uri.parse('${constants.url}/room/get');
@@ -238,6 +253,8 @@ class ApiService {
     }
   }
 
+  // Fetches the IDs of rooms the student has joined, then filters the full room list.
+  // Two requests are made because the joined-rooms endpoint returns IDs only.
   Future<List<RoomModel>> getJoinedRooms() async {
     final Uri urlToGetRooms = Uri.parse('${constants.url}/users/my-rooms');
     final responseToGetRooms = await http.get(
@@ -259,6 +276,7 @@ class ApiService {
     return allRooms.where((room) => roomIds.contains(room.id)).toList();
   }
 
+  // Same two-request pattern as getJoinedRooms, but scoped to rooms the teacher owns
   Future<List<RoomModel>> getMyRoomsOwner() async {
     final Uri urlToGetRooms = Uri.parse('${constants.url}/room/get-my');
     final responseToGetRooms = await http.get(
@@ -286,6 +304,7 @@ class ApiService {
 
     _checkUnauthorized(response);
     if (response.statusCode == 403) {
+      // 403 means the student's email is not in the room's acceptedEmails list
       throw Exception('You cannot join this room');
     } else if (response.statusCode == 200) {
       notify.showToast('Room joined');
@@ -294,6 +313,7 @@ class ApiService {
     }
   }
 
+  // acceptedEmailsArray is converted to the comma-separated string the API expects
   Future<bool> createRoom(
     String roomName,
     String title,
@@ -377,8 +397,9 @@ class ApiService {
     }
   }
 
-  // Block and subscription endpoints
+  // --- Blocks ---
 
+  // Optional [now] parameter filters out blocks that start before the given datetime string
   Future<List<BlockModel>> getBlocks(int roomId, [String? now]) async {
     final String query = now != null ? '&start=$now' : '';
     final Uri url = Uri.parse(
@@ -397,6 +418,7 @@ class ApiService {
     }
   }
 
+  // Returns the raw response body (the created block as JSON string) or empty string on failure
   Future<String> createBlock(int id, String date) async {
     final Uri url = Uri.parse('${constants.url}/block/create');
     final response = await http.post(
@@ -450,6 +472,7 @@ class ApiService {
     }
   }
 
+  // Subscribes the current user to block availability notifications
   Future<void> subscribeToBlock(int blockId) async {
     final Uri url = Uri.parse(
       '${constants.url}/block/subscribe?block_id=$blockId',
@@ -463,6 +486,7 @@ class ApiService {
     }
   }
 
+  // Returns a flat list of block IDs the current user is subscribed to
   Future<List<int>> getMySubscriptions() async {
     final Uri url = Uri.parse('${constants.url}/block/get-my-subscriptions');
     final response = await http.get(url, headers: _headers(sm.token));
@@ -477,10 +501,11 @@ class ApiService {
     }
   }
 
-  // Slot endpoints
- 
+  // --- Slots ---
+
+  // Optional [now] filters out slots, returns null on error
   Future<List<SlotModel>?> getSlotsForBlock(int blockId, [String? now]) async {
-     final String query = now != null ? '&start=$now' : '';
+    final String query = now != null ? '&start=$now' : '';
     final Uri url = Uri.parse('${constants.url}/slot/get?id=$blockId$query');
     final response = await http.get(url, headers: _headers(sm.token));
 
@@ -507,6 +532,7 @@ class ApiService {
       headers: _headers(sm.token),
       body: jsonEncode({
         "block_id": block_id,
+        // Wrapped in a list, which API supports
         "slots": [
           {
             "start_time": start_time,
@@ -531,7 +557,7 @@ class ApiService {
     _checkUnauthorized(response);
 
     if (response.statusCode != 200) {
-      notify.showToast("Failed to take slot");
+      notify.showToast("Failed to take slot", isError: true);
     }
   }
 
@@ -554,6 +580,7 @@ class ApiService {
     return response.statusCode == 200;
   }
 
+  // Toggles between online and in-person for an already-booked slot
   Future<void> changeConsultationType(int slotId) async {
     final Uri url = Uri.parse(
       '${constants.url}/slot/change-consultation-type?slot_id=$slotId',
@@ -563,7 +590,7 @@ class ApiService {
     _checkUnauthorized(response);
 
     if (response.statusCode != 200) {
-      notify.showToast("Failed to change consultation type");
+      notify.showToast("Failed to change consultation type", isError: true);
     }
   }
 }

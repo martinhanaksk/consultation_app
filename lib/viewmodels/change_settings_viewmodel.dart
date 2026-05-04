@@ -72,7 +72,7 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
     } catch (e) {
       _name = oldName;
       _surname = oldSurname;
-        notify.showToast('Failed to update name');
+      notify.showToast('Failed to update name',isError: true);
       notifyListeners();
     }
   }
@@ -92,9 +92,9 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
       sm.updateVisitReason(reason);
       notify.showToast('Visit reason updated');
     } catch (e) {
-      _visitReason = old; notify.showToast('Failed to visit reason');
+      _visitReason = old;
+      notify.showToast('Failed to visit reason',isError: true);
       notifyListeners();
-      
     }
   }
 
@@ -119,7 +119,7 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
     } catch (e) {
       _notifyHoursBefore = old;
       notifyListeners();
-      notify.showToast('Failed to update notification hours');
+      notify.showToast('Failed to update notification hours', isError: true);
     }
   }
 

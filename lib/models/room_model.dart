@@ -1,10 +1,24 @@
+// room_model.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// Represents a consultation room owned by a teacher/owner.
+// including access control and cancellation policy.
+
 class RoomModel {
+  // Primary key
   final int id;
+  // Owner of the room
   final String ownerEmail;
+  // Used for storing links
   final String shortName;
+  // Room title
   final String title;
+  // Optional description
   final String description;
-  final String acceptedEmails;final int cancellationNoticeHours;
+  // Comma-separated list of allowed emails or domains (@vutbr.cz, test@example.com)
+  final String acceptedEmails;
+  // Minimum hours before a block starts within which cancellation is still allowed
+  final int cancellationNoticeHours;
 
   RoomModel({
     required this.id,
@@ -12,7 +26,8 @@ class RoomModel {
     required this.shortName,
     required this.title,
     required this.description,
-    required this.acceptedEmails, required this.cancellationNoticeHours,
+    required this.acceptedEmails,
+    required this.cancellationNoticeHours,
   });
 
   factory RoomModel.fromJson(Map<String, dynamic> json) => RoomModel(
@@ -21,7 +36,8 @@ class RoomModel {
         shortName: json['short_name'],
         title: json['title'],
         description: json['description'],
-        acceptedEmails: json['accepted_emails'],  cancellationNoticeHours: json['cancellation_notice_hours'],
+        acceptedEmails: json['accepted_emails'],
+        cancellationNoticeHours: json['cancellation_notice_hours'],
       );
 
   Map<String, dynamic> toJson() => {
@@ -30,6 +46,7 @@ class RoomModel {
         "short_name": shortName,
         "title": title,
         "description": description,
-        "accepted_emails": acceptedEmails, "cancellation_notice_hours": cancellationNoticeHours,
+        "accepted_emails": acceptedEmails,
+        "cancellation_notice_hours": cancellationNoticeHours,
       };
 }
