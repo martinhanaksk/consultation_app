@@ -612,7 +612,7 @@ class _ConsultationTypeSelectionState
                       elevation: 0,
                     ),
                     child: Text(
-                      "Submit",
+                      "Change",
                       style: TextStyle(color: constants.background),
                     ),
                   ),
@@ -888,7 +888,7 @@ class __NoteBottomSheetState extends State<_NoteBottomSheet> {
                       elevation: 0,
                     ),
                     child: Text(
-                      "Submit",
+                      "Take",
                       style: TextStyle(color: constants.background),
                     ),
                   ),

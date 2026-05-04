@@ -4,6 +4,7 @@ import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/custom_checkbox_widget.dart';
 import 'package:consultation_app/views/custom_widgets/custom_text_field_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
+import 'package:consultation_app/views/custom_widgets/time_duration_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
@@ -293,45 +294,14 @@ class _CreateBlockState extends State<CreateBlock> {
                               ],
                             ),
                           ),
-                        ),
-                        SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Flexible(
-                              flex: 8,
-                              child: Column(
-                                children: [
-                                  Text(
-                                    "Minutes per Slot",
-                                    style: TextStyle(
-                                      fontSize: constants.fsLabel,
-                                      fontWeight: constants.fwSemiBold,
-                                      color: constants.darkGrey,
-                                    ),
-                                  ),
-                                  _DurationPicker(viewModel: viewModel),
-                                ],
-                              ),
-                            ),
-                            Flexible(flex: 1, child: SizedBox()),
-                            Flexible(
-                              flex: 10,
-                              child: Column(
-                                children: [
-                                  Text(
-                                    "Block Start Time",
-                                    style: TextStyle(
-                                      fontSize: constants.fsLabel,
-                                      fontWeight: constants.fwSemiBold,
-                                      color: constants.darkGrey,
-                                    ),
-                                  ),
-                                  _StartTimePicker(viewModel: viewModel),
-                                ],
-                              ),
-                            ),
-                          ],
+                        ),SizedBox(height: 20),
+                       TimeDurationPicker(
+                          initialStartTime: viewModel.startTime,
+                          initialDuration: viewModel.duration,
+                          onStartTimeChanged: viewModel.setStartTime,
+                          onDurationChanged: viewModel.setDuration,
+                          durationLabel: 'Minutes per Slot',
+                          startTimeLabel: 'Block Start Time',
                         ),
                         SizedBox(height: 20),
                         Row(
@@ -434,7 +404,8 @@ class _CreateBlockState extends State<CreateBlock> {
                                 width: double.infinity,
                                 height: 48,
                                 child: ElevatedButton(
-                                  onPressed: () => {FocusScope.of(context).unfocus(),
+                                  onPressed: () => {
+                                    FocusScope.of(context).unfocus(),
                                     viewModel.createBlock(
                                       widget.roomId,
                                       widget.onSuccess,

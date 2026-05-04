@@ -231,7 +231,9 @@ class EditBlockViewmodel extends ChangeNotifier {
 
   void init(String blockId, String roomId) async {
     _roomId = roomId;
+     WidgetsBinding.instance.addPostFrameCallback((_) {
     refreshEditBlock(blockId);
+  });
   }
 
   Future<String> getRoomNameById(int roomId) async {
@@ -284,6 +286,17 @@ class EditBlockViewmodel extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+   bool _disposed = false;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }  
+  @override
+  void notifyListeners() {
+    if (!_disposed) super.notifyListeners();
   }
 }
 

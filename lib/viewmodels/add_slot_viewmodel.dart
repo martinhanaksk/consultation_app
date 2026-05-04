@@ -1,4 +1,5 @@
 import 'package:consultation_app/setup.dart';
+import 'package:consultation_app/utils/time_utils.dart';
 import 'package:flutter/material.dart';
 
 class AddSlotViewmodel extends ChangeNotifier {
@@ -28,13 +29,6 @@ class AddSlotViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
-  String _formatTimeWithSeconds(Duration d) {
-    final hours = d.inHours.toString().padLeft(2, '0');
-    final minutes = (d.inMinutes % 60).toString().padLeft(2, '0');
-    const seconds = '00';
-    return '$hours:$minutes:$seconds';
-  }
-
   String? validateCreate() {
     if (_startTime == null) return 'Please set a start time';
     if (_duration == null || _duration!.inMinutes == 0) {
@@ -54,8 +48,7 @@ class AddSlotViewmodel extends ChangeNotifier {
       notifyListeners();
       return;
     }
-
-    final String startTimeStr = _formatTimeWithSeconds(_startTime!);
+    final String startTimeStr = TimeUtils.formatTimeWithSeconds(_startTime!);
     final int durationMinutes = _duration!.inMinutes;
     final int isOnlineInt = _isOnline ? 1 : 0;
     final String note = noteController.text.trim();

@@ -4,8 +4,8 @@ import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/custom_checkbox_widget.dart';
 import 'package:consultation_app/views/custom_widgets/custom_text_field_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
+import 'package:consultation_app/views/custom_widgets/time_duration_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
@@ -60,43 +60,13 @@ class _AddSlotState extends State<AddSlot> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Flexible(
-                              flex: 8,
-                              child: Column(
-                                children: [
-                                  Text(
-                                    'Minutes per Slot',
-                                    style: TextStyle(
-                                      fontSize: constants.fsLabel,
-                                      fontWeight: constants.fwSemiBold,
-                                      color: constants.darkGrey,
-                                    ),
-                                  ),
-                                  _DurationPicker(viewModel: viewModel),
-                                ],
-                              ),
-                            ),
-                            const Flexible(flex: 1, child: SizedBox()),
-                            Flexible(
-                              flex: 10,
-                              child: Column(
-                                children: [
-                                  Text(
-                                    'Slot Start Time',
-                                    style: TextStyle(
-                                      fontSize: constants.fsLabel,
-                                      fontWeight: constants.fwSemiBold,
-                                      color: constants.darkGrey,
-                                    ),
-                                  ),
-                                  _StartTimePicker(viewModel: viewModel),
-                                ],
-                              ),
-                            ),
-                          ],
+                         TimeDurationPicker(
+                          initialStartTime: viewModel.startTime,
+                          initialDuration: viewModel.duration,
+                          onStartTimeChanged: viewModel.setStartTime,
+                          onDurationChanged: viewModel.setDuration,
+                          durationLabel: 'Minutes per Slot',
+                          startTimeLabel: 'Slot Start Time',
                         ),
                         const SizedBox(height: 20),
                         Container(
@@ -141,7 +111,8 @@ class _AddSlotState extends State<AddSlot> {
                                 width: double.infinity,
                                 height: 48,
                                 child: ElevatedButton(
-                                  onPressed: () { FocusScope.of(context).unfocus();
+                                  onPressed: () {
+                                    FocusScope.of(context).unfocus();
                                     if (viewModel.duration == null ||
                                         viewModel.duration!.inMinutes == 0) {
                                       notify.showToast(
@@ -187,125 +158,6 @@ class _AddSlotState extends State<AddSlot> {
             ),
           );
         },
-      ),
-    );
-  }
-}
-
-class _StartTimePicker extends StatefulWidget {
-  final AddSlotViewmodel viewModel;
-  const _StartTimePicker({required this.viewModel});
-
-  @override
-  State<_StartTimePicker> createState() => _StartTimePickerState();
-}
-
-class _StartTimePickerState extends State<_StartTimePicker> {
-  late DateTime _current;
-
-  @override
-  void initState() {
-    super.initState();
-    final now = TimeOfDay.now();
-    final rounded = now.minute - (now.minute % 5);
-
-    _current = widget.viewModel.startTime != null
-        ? DateTime(
-            2000,
-            1,
-            1,
-            widget.viewModel.startTime!.inHours,
-            widget.viewModel.startTime!.inMinutes % 60,
-          )
-        : DateTime(2000, 1, 1, now.hour, rounded);
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.viewModel.setStartTime(
-        Duration(hours: _current.hour, minutes: _current.minute),
-      );
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 150,
-      child: CupertinoTheme(
-        data: CupertinoThemeData(
-          textTheme: CupertinoTextThemeData(
-            dateTimePickerTextStyle: TextStyle(
-              color: constants.darkGrey,
-              fontSize: constants.fsTitle,
-            ),
-          ),
-        ),
-        child: CupertinoDatePicker(
-          backgroundColor: constants.background,
-          mode: CupertinoDatePickerMode.time,
-          use24hFormat: true,
-          initialDateTime: _current,
-          minuteInterval: 5,
-          onDateTimeChanged: (dt) {
-            _current = dt;
-            widget.viewModel.setStartTime(
-              Duration(hours: dt.hour, minutes: dt.minute),
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class _DurationPicker extends StatefulWidget {
-  final AddSlotViewmodel viewModel;
-  const _DurationPicker({required this.viewModel});
-
-  @override
-  State<_DurationPicker> createState() => _DurationPickerState();
-}
-
-class _DurationPickerState extends State<_DurationPicker> {
-  late FixedExtentScrollController _scrollController;
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController = FixedExtentScrollController(initialItem: 2);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.viewModel.setDuration(const Duration(minutes: 15));
-    });
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 150,
-      child: CupertinoPicker(
-        backgroundColor: constants.background,
-        itemExtent: 40,
-        scrollController: _scrollController,
-        onSelectedItemChanged: (index) {
-          widget.viewModel.setDuration(Duration(minutes: (index + 1) * 5));
-        },
-        children: List.generate(
-          24,
-          (i) => Center(
-            child: Text(
-              '${(i + 1) * 5} min',
-              style: TextStyle(
-                fontSize: constants.fsBody,
-                color: constants.darkGrey,
-              ),
-            ),
-          ),
-        ),
       ),
     );
   }

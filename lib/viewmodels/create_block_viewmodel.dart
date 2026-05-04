@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:consultation_app/setup.dart';
+import 'package:consultation_app/utils/time_utils.dart';
+import 'package:consultation_app/utils/time_validation_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -117,11 +119,7 @@ class CreateBlockViewmodel extends ChangeNotifier {
   }
 
   void setEndTime(Duration value) {
-    if (value.inHours > 23) {
-      _endTime = null;
-    } else {
-      _endTime = value;
-    }
+    _endTime = value;
 
     notifyListeners();
   }
@@ -138,7 +136,7 @@ class CreateBlockViewmodel extends ChangeNotifier {
       TimePickerAction.endTime => endTime ?? Duration(hours: 0),
       TimePickerAction.duration => duration ?? Duration(hours: 0),
     };
-    result = _formatTime(temp);
+    result = TimeUtils.formatTime(temp);
     return result;
   }
 
@@ -151,17 +149,16 @@ class CreateBlockViewmodel extends ChangeNotifier {
 
     final slots = int.tryParse(slotNumberController.text.trim());
     if (slots == null || slots <= 0) return;
-
-    final resultEndTime = Duration(
-      minutes: _startTime!.inMinutes + slots * _duration!.inMinutes,
+    final resultEndTime = TimeUtils.computeEndTime(
+      _startTime!,
+      _duration!,
+      slots,
     );
+    if (resultEndTime == null) {
+      _endTime = null;
+      return;
+    }
     setEndTime(resultEndTime);
-  }
-
-  String _formatTime(Duration d) {
-    final hours = d.inHours;
-    final minutes = d.inMinutes % 60;
-    return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
   }
 
   @override
@@ -171,33 +168,17 @@ class CreateBlockViewmodel extends ChangeNotifier {
     super.dispose();
   }
 
-  String? validateCreate(int? slots) {
-    if (getSelectedDatesIso().isEmpty) return 'Please select at least one date';
-    if (_startTime == null) return 'Please set a start time';
-    if (_duration == null) return 'Please set a duration';
-
-    if (slots == null || slots < 0) {
-      return 'Please enter a valid number of slots';
-    }
-
-    if (_endTime == null && slots != 0)
-      return 'End time is invalid (exceeds 24h)';
-
-    return null;
-  }
-
-  String _formatTimeWithSeconds(Duration d) {
-    final hours = d.inHours.toString().padLeft(2, '0');
-    final minutes = (d.inMinutes % 60).toString().padLeft(2, '0');
-    const seconds = '00';
-    return '$hours:$minutes:$seconds';
-  }
-
   void createBlock(String roomId, VoidCallback? onSuccess) async {
     isLoading = true;
     notifyListeners();
     final slotCount = int.tryParse(slotNumberController.text.trim());
-    final error = validateCreate(slotCount);
+    final error = TimeValidationUtils.validateBlockCreation(
+      selectedDates: getSelectedDatesIso(),
+      startTime: startTime,
+      duration: duration,
+      slotCount: slotCount,
+      endTime: _endTime,
+    );
     if (error != null) {
       notify.showToast(error);
       isLoading = false;
@@ -209,13 +190,12 @@ class CreateBlockViewmodel extends ChangeNotifier {
     final String note = noteController.text.trim();
     final int isOnline = isChecked ? 1 : 0;
     for (int i = 0; i < dates.length; i++) {
-      String response = await api.createBlock(
-        int.parse(roomId),
-        dates[i],
-      );
+      String response = await api.createBlock(int.parse(roomId), dates[i]);
 
       if (response.isEmpty) {
-        notify.showToast('Failed to create block for ${dates[i]}. It might already exist');
+        notify.showToast(
+          'Failed to create block for ${dates[i]}. It might already exist',
+        );
         continue;
       } else {
         notify.showToast('Blocks created successfully');
@@ -224,7 +204,9 @@ class CreateBlockViewmodel extends ChangeNotifier {
       if (slotCount != 0) {
         for (int j = 0; j < slotCount!; j++) {
           final Duration slotStart = _startTime! + (_duration! * j);
-          final String startTimeStr = _formatTimeWithSeconds(slotStart);
+          final String startTimeStr = TimeUtils.formatTimeWithSeconds(
+            slotStart,
+          );
           bool success = await api.createSlot(
             blockId,
             startTimeStr,
@@ -237,7 +219,7 @@ class CreateBlockViewmodel extends ChangeNotifier {
             isLoading = false;
             notifyListeners();
             return;
-          } 
+          }
         }
       }
     }
