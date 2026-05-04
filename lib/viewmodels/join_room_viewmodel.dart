@@ -54,9 +54,30 @@ class JoinRoomViewmodel extends ChangeNotifier {
         nav.toBaseConsultations();
       }
     } catch (e) {
-      notify.showToast('You cannot join this room');_isLoading = false;
+      _isLoading = false;
       notifyListeners();
-    } 
+      try {
+        if (_allRooms == null) {
+          notify.showToast('You cannot join this room');
+        }
+        final room = _allRooms!.firstWhere((r) => r.id == id);
+
+        final emailList = room.acceptedEmails
+            .split(',')
+            .map((e) => e.trim())
+            .where((e) => e.isNotEmpty)
+            .toList();
+
+        final formattedList = emailList.join('\n• ');
+        notify.showToast(
+          title: 'Access Restricted',
+
+          'You cannot join this room.\n\nOnly accounts matching these email addresses or domains are allowed:\n\n• $formattedList',
+        );
+      } catch (_) {
+        notify.showToast('You cannot join this room');
+      }
+    }
   }
 
   bool isInJoinedRooms(RoomModel option) {

@@ -285,8 +285,6 @@ class ApiService {
     final response = await http.post(url, headers: _headers(sm.token));
 
     _checkUnauthorized(response);
-    print(response.statusCode);
-    print(response.body);
     if (response.statusCode == 403) {
       throw Exception('You cannot join this room');
     } else if (response.statusCode == 200) {

@@ -4,7 +4,8 @@
     <application
         android:label="Office Hours"
         android:name="${applicationName}"
-         android:networkSecurityConfig="@xml/network_security_config"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:enableOnBackInvokedCallback="true"
         android:icon="@mipmap/launcher_icons">
         <activity
             android:name=".MainActivity"

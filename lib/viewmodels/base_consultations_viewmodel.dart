@@ -255,7 +255,12 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
     if (!await checkConnection()) return;
-    final subscriptions = await api.getMySubscriptions();
+     List<int> subscriptions = [];
+  try {
+    subscriptions = await api.getMySubscriptions();
+  } catch (e) {
+    notify.showToast('Could not load your subscriptions');
+  }
     final newUsers = await api.getUsers();
     final newRooms = await fetchRooms();
     _visitReason = sm.visitReason;
@@ -396,6 +401,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
     if (!await checkConnection()) return;
+    try {
     sm.checkIfValidToken();
     isOwner = await resolveUserRole(email);
     _visitReason = sm.visitReason;
@@ -411,8 +417,12 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     visitorSelectedRoomId = sm.roomIdVisitor ?? myRooms[0].id.toString();
     selectedRoomId = visitorSelectedRoomId;
     await refreshRoomData(myRooms[0].id);
+      } catch (e) {
+    notify.showToast('Failed to load consultations. Please check your internet connection.');
+  } finally {
     isLoading = false;
     notifyListeners();
+  }
   }
 
   Future<bool> resolveUserRole(String email) async {
