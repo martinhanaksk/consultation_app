@@ -43,10 +43,7 @@ class AddSlotViewmodel extends ChangeNotifier {
     return null;
   }
 
-  void addSlot(
-    String blockId,
-    VoidCallback? onSuccess,
-  ) async {
+  void addSlot(String blockId, VoidCallback? onSuccess) async {
     isLoading = true;
     notifyListeners();
 
@@ -72,7 +69,7 @@ class AddSlotViewmodel extends ChangeNotifier {
     );
 
     if (!success) {
-      notify.showToast('Failed to create slot');
+      notify.showToast('Slot for selected time already exists');
       isLoading = false;
       notifyListeners();
       return;

@@ -23,8 +23,14 @@ class _ConsultationsOwnerPageState extends State<ConsultationsOwnerPage> {
     initialize();
   }
 
+  // FIX: catch any exception that escapes the viewmodel so it never reaches
+  // Flutter's unhandled-exception handler and crashes the app.
   void initialize() async {
-    await _viewModel.init();
+    try {
+      await _viewModel.init();
+    } catch (e) {
+      notify.showToast('Something went wrong. Please try again.');
+    }
   }
 
   @override
@@ -294,7 +300,10 @@ class _DeleteRoomDialog extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
-                        onPressed: () => { FocusScope.of(context).unfocus(),nav.pop(),},
+                        onPressed: () {
+                          FocusScope.of(context).unfocus();
+                          nav.pop();
+                        },
                         child: Text(
                           "Cancel",
                           style: TextStyle(color: constants.darkGrey),

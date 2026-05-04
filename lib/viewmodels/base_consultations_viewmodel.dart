@@ -4,10 +4,13 @@ import 'package:consultation_app/models/slot_model.dart';
 import 'package:consultation_app/models/user_model.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:flutter/foundation.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class BaseConsultationsViewmodel extends ChangeNotifier {
   bool isOwner = false;
   bool isLoading = false;
+  bool _isWebsiteLoading = false;
+  bool get isWebsiteLoading => _isWebsiteLoading;
   Map<int, bool> _addingSlotBefore = {};
   Map<int, bool> _addingSlotAfter = {};
 
@@ -35,6 +38,36 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   final Map<int, bool> _takingSlot = {};
   bool isTakingSlot(int slotId) => _takingSlot[slotId] ?? false;
 
+  Future<void> launchWebsite(String url) async {
+    if (_isWebsiteLoading) return;
+    _isWebsiteLoading = true;
+    notifyListeners();
+    final trimmed = url.trim();
+    if (trimmed.isEmpty) {
+      notify.showToast('URL is empty');
+      return;
+    }
+    final normalized =
+        trimmed.startsWith('http://') || trimmed.startsWith('https://')
+        ? trimmed
+        : 'https://$trimmed';
+    final uri = Uri.tryParse(normalized);
+    try {
+      final launched = await launchUrl(
+        uri!,
+        mode: LaunchMode.externalApplication,
+      );
+
+      if (!launched) {
+        notify.showToast('Could not launch $normalized');
+      }_isWebsiteLoading = false;
+    notifyListeners();
+    } catch (e) {
+      notify.showToast('Could not launch $normalized'); _isWebsiteLoading = false;
+    notifyListeners();
+    }
+  }
+
   Future<void> takeSlot(int slotId, String note, int isOnline) async {
     _takingSlot[slotId] = true;
     notifyListeners();
@@ -47,7 +80,8 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
         roomId: oldSlot.roomId,
         startTime: oldSlot.startTime,
         duration: oldSlot.duration,
-        isOnline: oldSlot.isOnline,isOnlineTeacher: oldSlot.isOnlineTeacher,
+        isOnline: oldSlot.isOnline,
+        isOnlineTeacher: oldSlot.isOnlineTeacher,
         valid: oldSlot.valid,
         note: oldSlot.note,
         takenBy: sm.email,
@@ -83,7 +117,8 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
         roomId: oldSlot.roomId,
         startTime: oldSlot.startTime,
         duration: oldSlot.duration,
-        isOnline: oldSlot.isOnline,isOnlineTeacher: oldSlot.isOnlineTeacher,
+        isOnline: oldSlot.isOnline,
+        isOnlineTeacher: oldSlot.isOnlineTeacher,
         valid: oldSlot.valid,
         note: oldSlot.note,
         takenBy: null,
@@ -119,7 +154,8 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
         roomId: oldSlot.roomId,
         startTime: oldSlot.startTime,
         duration: oldSlot.duration,
-        isOnline: oldSlot.isOnline == 0 ? 1 : 0,isOnlineTeacher: oldSlot.isOnlineTeacher,
+        isOnline: oldSlot.isOnline == 0 ? 1 : 0,
+        isOnlineTeacher: oldSlot.isOnlineTeacher,
         valid: oldSlot.valid,
         note: oldSlot.note,
         takenBy: oldSlot.takenBy,
@@ -340,7 +376,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
 
   Future<bool> checkConnection() async {
     if (await helpers.handleIsInternetConnection()) return true;
-    notify.showToast('Please connect to internet');
+    notify.showToast('Please check your internet connection and try again');
     return false;
   }
 

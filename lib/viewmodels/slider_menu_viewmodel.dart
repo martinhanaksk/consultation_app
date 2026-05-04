@@ -7,12 +7,10 @@ class SliderMenuViewmodel extends ChangeNotifier {
   String? _email = "";
   bool? _isOwner;
   bool _isLoading = false;
-  final Uri _url = Uri.parse(
-    'https://docs.google.com/forms/d/e/1FAIpQLScm7rfzCowdWgC_8-yCJURY5DqBcwrsp9zDaRoVqFF2O3Bc2Q/viewform?usp=publish-editor',
-  );
+  
   Future<void> launchFeedbackWebsite() async {
-    if (!await launchUrl(_url)) {
-      throw Exception('Could not launch $_url');
+    if (!await launchUrl(constants.feedbackUrl)) {
+      throw Exception('Could not launch $constants.feedbackUrl');
     }
   }
 

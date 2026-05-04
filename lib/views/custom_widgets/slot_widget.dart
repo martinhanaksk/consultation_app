@@ -98,7 +98,7 @@ class SlotWidget extends StatelessWidget {
     final bool isFree = slot.takenBy == null || treatAsFree;
     final bool isMySlot = !isFree && slot.takenBy == sm.email;
     final bool isSomeonesSlot = !isFree && !isMySlot;
-final bool canSeeIdentity = sm.visibility == true;
+    final bool canSeeIdentity = sm.visibility == true;
 
     if (isFree) {
       return _FreeSlot(
@@ -179,28 +179,44 @@ class _FreeSlot extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             _SlotTime(time: slot.startTime, color: constants.darkGrey),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                if (showHistoryOption != null)
-                  showHistoryOption!(slot.id, blockId, constants.darkGrey) ??
-                      const SizedBox.shrink(),
-                if (slot.isOnline == 1) ...[
-                  const SizedBox(width: 8),
-                  svgs.icon(
-                    'screen',
-                    constants.darkGrey,
-                    width: constants.fsTitle,
+            Flexible(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.loose,
+                    child: Text(
+                      slot.note ?? '',
+                      maxLines: 1,
+                      style: TextStyle(
+                        color: constants.darkGrey,
+                        fontSize: constants.fsLabel,
+                        fontWeight: constants.fwRegular,
+                      ),
+                    ),
                   ),
+                  const SizedBox(width: 8),
+                  if (showHistoryOption != null)
+                    showHistoryOption!(slot.id, blockId, constants.darkGrey) ??
+                        const SizedBox.shrink(),
+                  if (slot.isOnline == 1) ...[
+                    const SizedBox(width: 8),
+                    svgs.icon(
+                      'screen',
+                      constants.darkGrey,
+                      width: constants.fsTitle,
+                    ),
+                  ],
+                  const SizedBox(width: 8),
+                  isTakingSlot
+                      ? SpinKitPouringHourGlass(
+                          color: constants.primary,
+                          size: constants.fsLabel,
+                        )
+                      : svgs.icon("add", constants.darkGrey),
                 ],
-                const SizedBox(width: 8),
-                isTakingSlot
-                    ? SpinKitPouringHourGlass(
-                        color: constants.primary,
-                        size: constants.fsLabel,
-                      )
-                    : svgs.icon("add", constants.darkGrey),
-              ],
+              ),
             ),
           ],
         ),
@@ -320,7 +336,9 @@ class _CurrentUserSlot extends StatelessWidget {
                   flex: 2,
                   fit: FlexFit.loose,
                   child: Text(
-                     sm.visibility == true ? helpers.cropText(slot.takenByName ?? '') : '',
+                    sm.visibility == true
+                        ? helpers.cropText(slot.takenByName ?? '')
+                        : '',
                     style: TextStyle(
                       color: constants.background,
                       fontSize: constants.fsLabel,
@@ -427,7 +445,9 @@ class _AnotherUsersSlot extends StatelessWidget {
                   flex: 2,
                   fit: FlexFit.loose,
                   child: Text(
-                     sm.visibility == true ? helpers.cropText(slot.takenByName ?? '') : '',
+                    sm.visibility == true
+                        ? helpers.cropText(slot.takenByName ?? '')
+                        : '',
                     style: TextStyle(
                       color: constants.textUnavailableGrey,
                       fontSize: constants.fsLabel,
@@ -823,7 +843,7 @@ class __NoteBottomSheetState extends State<_NoteBottomSheet> {
             const SizedBox(height: 12),
             CustomInputTextField(
               controller: _controller,
-              hintText: "Type in visit purpose...",
+              hintText: "Type in visit reason...",
               filled: true,
             ),
             const SizedBox(height: 16),

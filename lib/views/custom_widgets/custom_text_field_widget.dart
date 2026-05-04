@@ -17,6 +17,7 @@ class CustomInputTextField extends StatefulWidget {
   final bool filled;
   final ValueChanged<String>? onChanged;
   final bool isEmail;
+  final bool isUrl;
   final bool textCenter;
   final String? suffixText;
   final TextStyle? suffixStyle;
@@ -39,6 +40,7 @@ class CustomInputTextField extends StatefulWidget {
     this.onChanged,
     this.textCenter = false,
     this.isEmail = false,
+    this.isUrl = false,
     this.filled = false,
     this.suffixText,
     this.suffixStyle,
@@ -93,9 +95,12 @@ class _CustomInputTextFieldState extends State<CustomInputTextField> {
 
   @override
   Widget build(BuildContext context) {
+    final effectiveKeyboardType =
+        widget.isUrl ? TextInputType.url : widget.keyboardType;
+
     final effectiveInputFormatters =
         widget.inputFormatters ??
-        (widget.keyboardType == TextInputType.number
+        (effectiveKeyboardType == TextInputType.number
             ? [FilteringTextInputFormatter.digitsOnly]
             : (widget.isEmail
                 ? [
@@ -103,11 +108,17 @@ class _CustomInputTextFieldState extends State<CustomInputTextField> {
                       RegExp(r"[a-zA-Z0-9@._\-+]"),
                     ),
                   ]
-                : [
-                    FilteringTextInputFormatter.allow(
-                      RegExp(r"[a-zA-ZÀ-ž0-9 '-]")
-                    ),
-                  ]));
+                : (widget.isUrl
+                    ? [
+                        FilteringTextInputFormatter.allow(
+                          RegExp(r"[a-zA-Z0-9:/?#[\]@!$&'()*+,;=._~%-]"),
+                        ),
+                      ]
+                    : [
+                        FilteringTextInputFormatter.allow(
+                          RegExp(r"[a-zA-ZÀ-ž0-9 '-]"),
+                        ),
+                      ])));
 
     final hasText = _controller?.text.isNotEmpty ?? false;
 
@@ -136,7 +147,7 @@ class _CustomInputTextFieldState extends State<CustomInputTextField> {
             widget.onChanged?.call(value);
             setState(() {});
           },
-          keyboardType: widget.keyboardType,
+          keyboardType: effectiveKeyboardType,
           inputFormatters: effectiveInputFormatters,
           maxLength: widget.maxLength,
           maxLines: widget.maxLines,

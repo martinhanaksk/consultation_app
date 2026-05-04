@@ -70,23 +70,25 @@ class _EditRoomPageState extends State<EditRoomPage> {
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 28),
-                            CustomInputTextField(
-                              controller: viewModel.shortNameController,
-                              hintText: 'Short Name (e.g. TestRm)',
-                            ),
+                           
 
                             const SizedBox(height: 20),
                             CustomInputTextField(
                               controller: viewModel.titleController,
-                              hintText: 'Room Title (e.g. Main test room)',
+                              hintText: "Title (e.g. Martin's room)",
+                            ), const SizedBox(height: 28),
+                            CustomInputTextField(
+                              controller: viewModel.shortNameController,
+                              hintText: "https://example.com",
+                              isUrl: true,
+                              maxLength: 2000,
                             ),
 
                             const SizedBox(height: 20),
                             CustomInputTextField(
                               controller: viewModel.descriptionController,
-                              hintText: 'Description',
-                              maxLines: 3,
+
+                              hintText: 'Description (e.g. D105)',
                             ),
                             const SizedBox(height: 20),
                             CustomInputTextField(
@@ -195,7 +197,8 @@ class _EditRoomPageState extends State<EditRoomPage> {
                                     width: double.infinity,
                                     height: 48,
                                     child: ElevatedButton(
-                                      onPressed: () async => {FocusScope.of(context).unfocus(),
+                                      onPressed: () async => {
+                                        FocusScope.of(context).unfocus(),
                                         await viewModel.handleSave(),
                                       },
                                       style: ElevatedButton.styleFrom(

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
 
 class CreateRoomViewmodel extends ChangeNotifier {
-  final TextEditingController roomNameController = TextEditingController();
+  final TextEditingController shortNameController = TextEditingController();
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController acceptedEmailController = TextEditingController();

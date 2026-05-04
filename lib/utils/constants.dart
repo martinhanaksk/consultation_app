@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 
 class Constants {
+  final Uri feedbackUrl = Uri.parse(
+    'https://docs.google.com/forms/d/e/1FAIpQLScm7rfzCowdWgC_8-yCJURY5DqBcwrsp9zDaRoVqFF2O3Bc2Q/viewform?usp=publish-editor',
+  );
   Color white = Color(0xffffffff);
   Color checkboxColor = Color(0xFF2A4E7A);
   Color background = Color(0xfff9f9f9);
@@ -59,6 +62,7 @@ class Constants {
   static final Constants _instance = Constants._internal();
   factory Constants() => _instance;
   Constants._internal();
+  
   void setServerUrl() {
     url = "https://office-hours.fit.vutbr.cz/api/dev";
   }

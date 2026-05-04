@@ -60,7 +60,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     const SizedBox(height: 72),
                     Center(
                       child: Text(
-                        'Register',
+                        'Create new account',
                         style: TextStyle(
                           fontSize: constants.fsHeadline,
                           fontWeight: constants.fwSemiBold,

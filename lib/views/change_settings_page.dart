@@ -137,7 +137,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                       ? 'eye_open'
                                       : 'eye_closed',
                                   title: "Visibility",
-                                  subtitle: "Show your name to others.",
+                                  subtitle: "Show your name to others",
                                   value: viewModel.visibility,
                                   onChanged: (_) => viewModel.setVisibility(),
                                 ),
@@ -147,7 +147,7 @@ class _ChangeSettingsState extends State<ChangeSettings> {
                                       ? 'moon'
                                       : 'sun',
                                   title: "Theme",
-                                  subtitle: "Switch to dark appearance.",
+                                  subtitle: "Switch to dark appearance",
                                   value: themeSelector.isDark,
                                   onChanged: viewModel.setTheme,
                                 ),

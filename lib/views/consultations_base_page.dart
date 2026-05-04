@@ -100,6 +100,8 @@ class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
                                   )
                                 : _ConsultationsContent(
                                     viewModel: viewModel,
+                                    shortName:
+                                        viewModel.selectedRoom!.shortName,
                                     toggle: widget.toggle,
                                     addButton: widget.addButton,
                                     showHistoryOption: widget.showHistoryOption,
@@ -182,82 +184,100 @@ class _RoomSelectorButton extends StatelessWidget {
         decoration: BoxDecoration(color: constants.background),
         padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
         child: Center(
-          child: PopupMenuButton<String>(
-            position: PopupMenuPosition.under,
-            offset: const Offset(0, 6),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            color: constants.background,
-            elevation: 12,
-            shadowColor: constants.darkGrey30,
-            onSelected: (String newValue) async {
-              final success = await viewModel.validateAndSelectRoom(newValue);
-              if (success) await viewModel.switchRoom(newValue);
-            },
-            itemBuilder: (context) => viewModel.rooms == null
-                ? []
-                : viewModel.rooms!.map((RoomModel value) {
-                    final isSelected =
-                        value.id.toString() == viewModel.safeSelectedRoomId;
-                    return PopupMenuItem<String>(
-                      value: value.id.toString(),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 4,
-                      ),
-                      child: Text(
-                        value.title,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: isSelected
-                              ? constants.fwSemiBold
-                              : constants.fwRegular,
-                          color: isSelected
-                              ? constants.primary
-                              : constants.darkGrey,
+          child: Column(
+            children: [
+              PopupMenuButton<String>(
+                position: PopupMenuPosition.under,
+                offset: const Offset(0, 6),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                color: constants.background,
+                elevation: 12,
+                shadowColor: constants.darkGrey30,
+                onSelected: (String newValue) async {
+                  final success = await viewModel.validateAndSelectRoom(
+                    newValue,
+                  );
+                  if (success) await viewModel.switchRoom(newValue);
+                },
+                itemBuilder: (context) => viewModel.rooms == null
+                    ? []
+                    : viewModel.rooms!.map((RoomModel value) {
+                        final isSelected =
+                            value.id.toString() == viewModel.safeSelectedRoomId;
+                        return PopupMenuItem<String>(
+                          value: value.id.toString(),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 4,
+                          ),
+                          child: Text(
+                            value.title,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: isSelected
+                                  ? constants.fwSemiBold
+                                  : constants.fwRegular,
+                              color: isSelected
+                                  ? constants.primary
+                                  : constants.darkGrey,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                child: Container(
+                  constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width * 0.8,
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
+                  decoration: constants.squircleShadow(color: constants.grey),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
+                          viewModel.isLoading
+                              ? "Loading..."
+                              : (viewModel.noRoomsFound ||
+                                    viewModel.selectedRoomId == null)
+                              ? "No rooms created"
+                              : '${viewModel.selectedRoom!.title} - ${viewModel.selectedRoom!.description}',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: constants.fwSemiBold,
+                            color:
+                                (viewModel.noRoomsFound ||
+                                    viewModel.selectedRoomId == null)
+                                ? constants.darkGrey100
+                                : viewModel.isLoading
+                                ? constants.primary
+                                : constants.darkGrey,
+                          ),
                         ),
                       ),
-                    );
-                  }).toList(),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              decoration: constants.squircleShadow(color: constants.grey),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    viewModel.isLoading
-                        ? "Loading..."
-                        : (viewModel.noRoomsFound ||
-                              viewModel.selectedRoomId == null)
-                        ? "No rooms created"
-                        : viewModel.selectedRoom!.title,
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: constants.fwSemiBold,
-                      color:
-                          (viewModel.noRoomsFound ||
-                              viewModel.selectedRoomId == null)
-                          ? constants.darkGrey100
-                          : viewModel.isLoading
-                          ? constants.primary
-                          : constants.darkGrey,
-                    ),
+                      const SizedBox(width: 6),
+                      svgs.icon(
+                        'arrow_down',
+                        (viewModel.noRoomsFound ||
+                                viewModel.selectedRoomId == null)
+                            ? constants.darkGrey100
+                            : viewModel.isLoading
+                            ? constants.primary
+                            : constants.darkGrey,
+                        width: constants.fsBody,
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 6),
-                  svgs.icon(
-                    'arrow_down',
-                    (viewModel.noRoomsFound || viewModel.selectedRoomId == null)
-                        ? constants.darkGrey100
-                        : viewModel.isLoading
-                        ? constants.primary
-                        : constants.darkGrey,
-                    width: constants.fsBody,
-                  ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
         ),
       ),
@@ -269,6 +289,7 @@ class _ConsultationsContent extends StatelessWidget {
   final BaseConsultationsViewmodel viewModel;
   final Widget? toggle;
   final Widget? addButton;
+  final String? shortName;
   final Widget? deleteButton;
   final Widget? Function(int slotId, int blockId, Color color)?
   showHistoryOption;
@@ -279,6 +300,7 @@ class _ConsultationsContent extends StatelessWidget {
   const _ConsultationsContent({
     required this.viewModel,
     this.toggle,
+    this.shortName,
     this.addButton,
     this.deleteButton,
     this.showHistoryOption,
@@ -291,12 +313,41 @@ class _ConsultationsContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 30),
+        const SizedBox(height: 12),
 
         (viewModel.noRoomsFound || viewModel.selectedRoomId == null)
             ? _NoRoomsFound(viewModel: viewModel)
             : Column(
                 children: [
+                  viewModel.isWebsiteLoading
+                      ? Center(
+                          child: SpinKitPouringHourGlass(
+                            color: constants.primary,
+                            size: constants.fsHeadline,
+                          ),
+                        )
+                      : ElevatedButton(
+                          child: Text(
+                            "Room Link",
+                            style: TextStyle(
+                              color: constants.background,
+                              fontSize: constants.fsLabel,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: constants.primary,
+                            disabledBackgroundColor: constants.primary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            elevation: 2,
+                            shadowColor: constants.primary,
+                          ),
+                          onPressed: () => {
+                            viewModel.launchWebsite(shortName ?? ""),
+                          },
+                        ),
+                  const SizedBox(height: 12),
                   if (addButton != null || deleteButton != null) ...[
                     Row(
                       mainAxisSize: MainAxisSize.min,
@@ -308,7 +359,7 @@ class _ConsultationsContent extends StatelessWidget {
                         if (deleteButton != null) deleteButton!,
                       ],
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 12),
                   ],
                   if (viewModel.getBlocksCount() == 0)
                     Padding(

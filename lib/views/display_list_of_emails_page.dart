@@ -30,48 +30,56 @@ class _DisplayListOfEmailsPageState extends State<DisplayListOfEmailsPage> {
                   ),
                 ),
                 Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    itemCount: widget.viewModel.acceptedEmails.length,
-                    itemBuilder: (context, index) {
-                      final emailDomain =
-                          widget.viewModel.acceptedEmails[index];
-
-                      return Container(
-                        decoration: constants.squircleShadow(
-                          color: constants.lightPrimary,
+                  child: ScrollConfiguration(
+                      behavior: ScrollConfiguration.of(context).copyWith(
+                        physics: const BouncingScrollPhysics(
+                          parent: AlwaysScrollableScrollPhysics(),
                         ),
-
-                        margin: const EdgeInsets.symmetric(vertical: 6.0),
-
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16.0,
-                            vertical: 2.0,
+                        overscroll: false,
+                      ),
+                      child:  ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      itemCount: widget.viewModel.acceptedEmails.length,
+                      itemBuilder: (context, index) {
+                        final emailDomain =
+                            widget.viewModel.acceptedEmails[index];
+                    
+                        return Container(
+                          decoration: constants.squircleShadow(
+                            color: constants.lightPrimary,
                           ),
-                          title: Text(
-                            emailDomain,
-                            style: TextStyle(
-                              color: constants.darkGrey,
-                              fontWeight: constants.fwSemiBold,
+                    
+                          margin: const EdgeInsets.symmetric(vertical: 6.0),
+                    
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16.0,
+                              vertical: 2.0,
                             ),
-                          ),
-                          trailing: InkWell(
-                            borderRadius: BorderRadius.circular(20),
-                            onTap: () => widget.viewModel
-                                .removeFromAcceptedEmails(emailDomain),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: svgs.icon(
-                                'trash',
-                                constants.red,
-                                width: constants.fsTitle,
+                            title: Text(
+                              emailDomain,
+                              style: TextStyle(
+                                color: constants.darkGrey,
+                                fontWeight: constants.fwSemiBold,
+                              ),
+                            ),
+                            trailing: InkWell(
+                              borderRadius: BorderRadius.circular(20),
+                              onTap: () => widget.viewModel
+                                  .removeFromAcceptedEmails(emailDomain),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: svgs.icon(
+                                  'trash',
+                                  constants.red,
+                                  width: constants.fsTitle,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
                 ),
               ],

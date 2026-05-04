@@ -51,26 +51,29 @@ class _CreateRoomState extends State<CreateRoom> {
                       const SizedBox(height: 16),
                       CustomInputTextField(
                         controller: viewModel.titleController,
-                        hintText: 'Title',
+                        hintText: "Title (e.g. Martin's room)",
                       ),
 
                       const SizedBox(height: 16),
                       CustomInputTextField(
-                        controller: viewModel.roomNameController,
-                        hintText: 'Room name',
+                        controller: viewModel.shortNameController,
+                        hintText: "https://example.com",
+                        isUrl: true,
+                        maxLength: 2000,
                       ),
 
                       const SizedBox(height: 16),
                       CustomInputTextField(
                         controller: viewModel.descriptionController,
-                        hintText: 'Description',
+                        hintText: 'Description (e.g. D105)',
                       ),
 
                       const SizedBox(height: 16),
                       CustomInputTextField(
                         controller: viewModel.cancellationHoursController,
                         hintText: 'Cancel deadline in hours',
-                        keyboardType: TextInputType.number,maxLength: 4,
+                        keyboardType: TextInputType.number,
+                        maxLength: 4,
                       ),
 
                       const SizedBox(height: 16),
@@ -170,7 +173,7 @@ class _CreateRoomState extends State<CreateRoom> {
                                 onPressed: () async {
                                   FocusScope.of(context).unfocus();
                                   if (validator.validateNotEmpty(
-                                        viewModel.roomNameController.text
+                                        viewModel.shortNameController.text
                                             .trim(),
                                         context,
                                       ) &&
@@ -192,7 +195,7 @@ class _CreateRoomState extends State<CreateRoom> {
                                       )) {
                                     viewModel.createRoom(
                                       helpers.trimText(
-                                        viewModel.roomNameController.text
+                                        viewModel.shortNameController.text
                                             .trim(),
                                       ),
                                       helpers.trimText(
