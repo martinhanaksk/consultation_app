@@ -60,11 +60,13 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
 
       if (!launched) {
         notify.showToast('Could not launch $normalized');
-      }_isWebsiteLoading = false;
-    notifyListeners();
+      }
+      _isWebsiteLoading = false;
+      notifyListeners();
     } catch (e) {
-      notify.showToast('Could not launch $normalized'); _isWebsiteLoading = false;
-    notifyListeners();
+      notify.showToast('Could not launch $normalized');
+      _isWebsiteLoading = false;
+      notifyListeners();
     }
   }
 
@@ -98,7 +100,6 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     } catch (e) {
       if (oldSlot != null) _updateSlotInCache(slotId, oldSlot);
       notify.showToast('Failed to take slot');
-      rethrow;
     } finally {
       _takingSlot.remove(slotId);
       notifyListeners();
@@ -135,7 +136,6 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     } catch (e) {
       if (oldSlot != null) _updateSlotInCache(slotId, oldSlot);
       notify.showToast('Failed to release slot');
-      rethrow;
     } finally {
       _optimisticallyReleased.remove(slotId);
       notifyListeners();
@@ -172,7 +172,6 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     } catch (e) {
       if (oldSlot != null) _updateSlotInCache(slotId, oldSlot);
       notify.showToast('Slot cannot be manipulated');
-      rethrow;
     } finally {
       isLoading = false;
       notifyListeners();
@@ -362,8 +361,10 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     if (isValidRoom) {
       if (ownerView == 0) {
         visitorSelectedRoomId = id;
+        sm.setRoomIdVisitor(id);
       } else {
         ownerSelectedRoomId = id;
+        sm.setRoomIdOwner(id);
       }
       selectedRoomId = id;
       notifyListeners();
@@ -407,7 +408,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
       return;
     }
 
-    visitorSelectedRoomId = myRooms[0].id.toString();
+    visitorSelectedRoomId = sm.roomIdVisitor ?? myRooms[0].id.toString();
     selectedRoomId = visitorSelectedRoomId;
     await refreshRoomData(myRooms[0].id);
     isLoading = false;

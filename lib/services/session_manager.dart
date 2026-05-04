@@ -1,6 +1,7 @@
 import 'package:consultation_app/setup.dart';
 import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+
 class SessionManager extends ChangeNotifier {
   static const String _emailKey = 'email';
   static const String _roleKey = 'role';
@@ -32,6 +33,20 @@ class SessionManager extends ChangeNotifier {
   String get surname => _surname;
   bool get isLoggedIn => _isLoggedIn;
   bool _isLoggingOut = false;
+
+  String? _roomIdOwner;
+  String? get roomIdOwner => _roomIdOwner;
+  String? _roomIdVisitor;
+  String? get roomIdVisitor => _roomIdVisitor;
+
+  void setRoomIdOwner(String value) {
+    _roomIdOwner = value;
+  }
+
+  void setRoomIdVisitor(String value) {
+    _roomIdVisitor = value;
+  }
+
   SessionManager();
 
   Future<void> load() async {
@@ -152,10 +167,7 @@ class SessionManager extends ChangeNotifier {
   }
 
   void checkIfInSharedPreferences() async {
-    if (
-        sm.role.isNotEmpty &&
-        sm.token.isNotEmpty &&
-        sm.email.isNotEmpty) {
+    if (sm.role.isNotEmpty && sm.token.isNotEmpty && sm.email.isNotEmpty) {
       bool isExpired = JwtDecoder.isExpired(sm.token);
 
       if (!isExpired) {

@@ -49,8 +49,6 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
     notifyListeners();
     if (!await checkConnection()) return;
 
-    // FIX: wrap all API calls in try/catch so a network failure (e.g.
-    // "Network is unreachable") is handled gracefully instead of crashing.
     try {
       sm.checkIfValidToken();
       isOwner = await resolveUserRole(sm.email);
@@ -62,12 +60,12 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
         noRoomsFound = true;
         return;
       }
-
+      
       visitorSelectedRoomId = _visitorRooms.isNotEmpty
-          ? _visitorRooms[0].id.toString()
+          ? sm.roomIdVisitor ?? _visitorRooms[0].id.toString()
           : null;
       ownerSelectedRoomId = _ownerRooms.isNotEmpty
-          ? _ownerRooms[0].id.toString()
+          ? sm.roomIdOwner ?? _ownerRooms[0].id.toString()
           : null;
       selectedRoomId = ownerView == 1
           ? ownerSelectedRoomId
@@ -84,23 +82,39 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
     }
   }
 
-  Future<void> addSlotBeforeBlock(int blockId) async {
-    setAddingSlotBefore(blockId, true);
+  Future<void> addSlotBeforeBlock(int blockId) =>
+      _addSlotAtMargin(blockId, atEnd: false);
+
+  Future<void> addSlotAfterBlock(int blockId) =>
+      _addSlotAtMargin(blockId, atEnd: true);
+
+  Future<void> _addSlotAtMargin(int blockId, {required bool atEnd}) async {
+    atEnd
+        ? setAddingSlotAfter(blockId, true)
+        : setAddingSlotBefore(blockId, true);
+
     try {
-      String now = DateTime.now().toString().substring(0, 10);
+      final now = DateTime.now().toString().substring(0, 10);
       final slotsForBlock = await api.getSlotsForBlock(blockId, now);
+
       if (slotsForBlock == null || slotsForBlock.isEmpty) {
         notify.showToast("No slots found in block");
         return;
       }
-      final firstSlot = slotsForBlock[0];
+
+      final anchorSlot = atEnd ? slotsForBlock.last : slotsForBlock.first;
       final newStartTime = calculateMarginTimes(
-        0,
-        firstSlot.startTime,
-        firstSlot.duration,
+        atEnd ? 1 : 0,
+        anchorSlot.startTime,
+        anchorSlot.duration,
       );
+
       if (newStartTime == null) {
-        notify.showToast("Cannot add a slot before 00:00");
+        notify.showToast(
+          atEnd
+              ? "Cannot add a slot after 24:00"
+              : "Cannot add a slot before 00:00",
+        );
         return;
       }
 
@@ -109,9 +123,9 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
         blockId: blockId,
         roomId: int.parse(selectedRoomId ?? '0'),
         startTime: newStartTime,
-        duration: firstSlot.duration,
-        isOnline: firstSlot.isOnline,
-        isOnlineTeacher: firstSlot.isOnlineTeacher,
+        duration: anchorSlot.duration,
+        isOnline: anchorSlot.isOnline,
+        isOnlineTeacher: anchorSlot.isOnlineTeacher,
         valid: 1,
         note: "",
         takenBy: null,
@@ -119,18 +133,20 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
         takenByReason: null,
         history: null,
       );
+
       final currentSlots = slotsInBlocks[blockId] ?? [];
-      currentSlots.insert(0, tempSlot);
+      atEnd ? currentSlots.add(tempSlot) : currentSlots.insert(0, tempSlot);
       slotsInBlocks[blockId] = currentSlots;
       notifyListeners();
 
       final slotCreated = await api.createSlot(
         blockId,
         newStartTime,
-        firstSlot.duration,
-        firstSlot.isOnline,
+        anchorSlot.duration,
+        anchorSlot.isOnline,
         "",
       );
+
       if (!slotCreated) {
         currentSlots.removeWhere((s) => s.id == tempSlot.id);
         slotsInBlocks[blockId] = currentSlots;
@@ -138,76 +154,15 @@ class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
         notify.showToast("Could not create new slot");
         return;
       }
+
       await refreshBlock(blockId);
     } catch (e) {
       notify.showToast("Error adding slot");
       await refreshBlock(blockId);
     } finally {
-      setAddingSlotBefore(blockId, false);
-    }
-  }
-
-  Future<void> addSlotAfterBlock(int blockId) async {
-    setAddingSlotAfter(blockId, true);
-    try {
-      // FIX: was missing the required `now` date argument.
-      String now = DateTime.now().toString().substring(0, 10);
-      final slotsForBlock = await api.getSlotsForBlock(blockId, now);
-      if (slotsForBlock == null || slotsForBlock.isEmpty) {
-        notify.showToast("No slots found in block");
-        return;
-      }
-      final lastSlot = slotsForBlock.last;
-      final newStartTime = calculateMarginTimes(
-        1,
-        lastSlot.startTime,
-        lastSlot.duration,
-      );
-      if (newStartTime == null) {
-        notify.showToast("Cannot add a slot after 24:00");
-        return;
-      }
-
-      final tempSlot = SlotModel(
-        id: -DateTime.now().millisecondsSinceEpoch,
-        blockId: blockId,
-        roomId: int.parse(selectedRoomId ?? '0'),
-        startTime: newStartTime,
-        duration: lastSlot.duration,
-        isOnline: lastSlot.isOnline,
-        isOnlineTeacher: lastSlot.isOnlineTeacher,
-        valid: 1,
-        note: "",
-        takenBy: null,
-        takenByName: null,
-        takenByReason: null,
-        history: null,
-      );
-      final currentSlots = slotsInBlocks[blockId] ?? [];
-      currentSlots.add(tempSlot);
-      slotsInBlocks[blockId] = currentSlots;
-      notifyListeners();
-
-      final slotCreated = await api.createSlot(
-        blockId,
-        newStartTime,
-        lastSlot.duration,
-        lastSlot.isOnline,
-        "",
-      );
-      if (!slotCreated) {
-        currentSlots.removeWhere((s) => s.id == tempSlot.id);
-        slotsInBlocks[blockId] = currentSlots;
-        notifyListeners();
-        notify.showToast("Could not create new slot");
-        return;
-      }
-      await refreshBlock(blockId);
-    } catch (e) {
-      notify.showToast("Error adding slot");
-      await refreshBlock(blockId);
-    } finally {
-      setAddingSlotAfter(blockId, false);
+      atEnd
+          ? setAddingSlotAfter(blockId, false)
+          : setAddingSlotBefore(blockId, false);
     }
   }
 

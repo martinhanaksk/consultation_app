@@ -3,11 +3,11 @@ import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/edit_block_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/custom_checkbox_widget.dart';
+import 'package:consultation_app/views/custom_widgets/custom_date_range_picker_dialog.dart';
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class EditBlock extends StatefulWidget {
   final String roomId;
@@ -37,172 +37,6 @@ class _EditBlockState extends State<EditBlock> {
   void dispose() {
     _viewModel.dispose();
     super.dispose();
-  }
-
-  void _showDatePickerDialog(
-    BuildContext context,
-    EditBlockViewmodel viewModel,
-    String blockId,
-  ) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return ListenableBuilder(
-          listenable: viewModel,
-          builder: (context, _) {
-            return AlertDialog(
-              backgroundColor: constants.background,
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Copy to',
-                    style: TextStyle(
-                      color: constants.darkGrey,
-                      fontWeight: constants.fwSemiBold,
-                      fontSize: constants.fsTitle,
-                    ),
-                  ),
-                  Container(
-                    color: constants.background,
-                    child: PopupMenuButton<dynamic>(
-                      position: PopupMenuPosition.under,
-                      offset: const Offset(0, 6),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      color: constants.background,
-                      elevation: 12,
-                      shadowColor: constants.darkGrey30,
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        decoration: constants.squircleShadow(
-                          color: constants.background,
-                        ),
-                        child: Text(
-                          "${viewModel.selectionMode.name[0].toUpperCase()}${viewModel.selectionMode.name.substring(1).toLowerCase()}",
-                          style: TextStyle(
-                            color: constants.darkGrey,
-                            fontWeight: constants.fwSemiBold,
-                            fontSize: constants.fsLabel,
-                          ),
-                        ),
-                      ),
-                      itemBuilder: (context) => [
-                        PopupMenuItem<dynamic>(
-                          value: DateRangePickerSelectionMode.multiple,
-                          child: Text(
-                            'Multiple',
-                            style: TextStyle(
-                              color: constants.darkGrey,
-                              fontWeight: constants.fwSemiBold,
-                              fontSize: constants.fsLabel,
-                            ),
-                          ),
-                        ),
-                        PopupMenuItem<dynamic>(
-                          value: DateRangePickerSelectionMode.range,
-                          child: Text(
-                            'Range',
-                            style: TextStyle(
-                              color: constants.darkGrey,
-                              fontWeight: constants.fwSemiBold,
-                              fontSize: constants.fsLabel,
-                            ),
-                          ),
-                        ),
-                      ],
-                      onSelected: (mode) {
-                        if (mode != null) {
-                          viewModel.setSelectedDates(null);
-                          viewModel.setSelectionMode(mode);
-                        }
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              content: SizedBox(
-                height: 320,
-                width: double.maxFinite,
-
-                child: SfDateRangePicker(
-                  headerStyle: DateRangePickerHeaderStyle(
-                    backgroundColor: constants.background,
-                    textStyle: TextStyle(
-                      color: constants.primary,
-                      fontWeight: constants.fwSemiBold,
-                      fontSize: constants.fsBody,
-                    ),
-                  ),
-                  backgroundColor: constants.background,
-                  selectionColor: constants.primary,
-                  rangeSelectionColor: constants.lightPrimary,
-                  todayHighlightColor: constants.lightPrimary,
-                  startRangeSelectionColor: constants.primary,
-                  endRangeSelectionColor: constants.primary,
-                  view: DateRangePickerView.month,
-                  selectionMode: viewModel.selectionMode,
-                  initialSelectedDates:
-                      viewModel.selectionMode ==
-                          DateRangePickerSelectionMode.multiple
-                      ? viewModel.selectedDates
-                      : null,
-                  initialSelectedRange:
-                      viewModel.selectionMode ==
-                          DateRangePickerSelectionMode.range
-                      ? viewModel.selectedDates
-                      : null,
-                  onSelectionChanged:
-                      (DateRangePickerSelectionChangedArgs args) {
-                        viewModel.setSelectedDates(args.value);
-                      },
-                ),
-              ),
-              actions: [
-                GestureDetector(
-                  onTap: () => {
-                    Navigator.pop(context),
-                    viewModel.setSelectedDates(null),
-                  },
-                  child: Text(
-                    'Cancel',
-                    style: TextStyle(
-                      color: constants.primary,
-                      fontWeight: constants.fwRegular,
-                      fontSize: constants.fsLabel,
-                    ),
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                    viewModel.copyBlock(widget.roomId);
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: constants.squircleShadow(
-                      color: constants.primary,
-                    ),
-                    child: Text(
-                      'Copy',
-                      style: TextStyle(
-                        color: constants.background,
-                        fontWeight: constants.fwRegular,
-                        fontSize: constants.fsLabel,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
   }
 
   @override
@@ -424,10 +258,21 @@ class _EditBlockState extends State<EditBlock> {
                               children: [
                                 ElevatedButton(
                                   onPressed: () {
-                                    _showDatePickerDialog(
-                                      context,
-                                      viewModel,
-                                      widget.blockId,
+                                    CustomDateRangePickerDialog.show(
+                                      context: context,
+                                      title: 'Copy to',
+                                      selectionMode: viewModel.selectionMode,
+                                      selectedDates: viewModel.selectedDates,
+                                      onSelectionModeChanged: (mode) {
+                                        viewModel.setSelectedDates(null);
+                                        viewModel.setSelectionMode(mode);
+                                      },
+                                      onDatesSelected: (dates) =>
+                                          viewModel.setSelectedDates(dates),
+                                      onConfirm: () {
+                                        Navigator.pop(context);
+                                        viewModel.copyBlock(widget.roomId);
+                                      },
                                     );
                                   },
                                   style: ElevatedButton.styleFrom(

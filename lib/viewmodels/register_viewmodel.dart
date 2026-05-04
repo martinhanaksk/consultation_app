@@ -25,8 +25,8 @@ class RegisterViewmodel extends ChangeNotifier {
       setIsLoading(false);
     }
   } catch (e) {
+     notify.showToast('Failed to register user');
     setIsLoading(false);
-    rethrow;
   }
 }
 }

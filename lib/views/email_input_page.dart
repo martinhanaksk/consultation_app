@@ -90,6 +90,7 @@ class _EmailInputPageState extends State<EmailInputPage> {
                                 )
                               : ElevatedButton(
                                   onPressed: () async {
+                                    print("AAA");
                                     FocusScope.of(context).unfocus();
                                     if (!viewModel.isLoading &&
                                         validator.validateEmail(

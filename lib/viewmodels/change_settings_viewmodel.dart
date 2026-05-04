@@ -72,8 +72,8 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
     } catch (e) {
       _name = oldName;
       _surname = oldSurname;
+        notify.showToast('Failed to update name');
       notifyListeners();
-      rethrow;
     }
   }
 
@@ -92,9 +92,9 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
       sm.updateVisitReason(reason);
       notify.showToast('Visit reason updated');
     } catch (e) {
-      _visitReason = old;
+      _visitReason = old; notify.showToast('Failed to visit reason');
       notifyListeners();
-      rethrow;
+      
     }
   }
 

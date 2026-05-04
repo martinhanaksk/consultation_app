@@ -3,17 +3,7 @@ import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:consultation_app/setup.dart';
 
 class CustomDateRangePickerDialog {
-  /// Zobrazí dialóg na výber dátumov.
-  /// [context] – build kontext.
-  /// [title] – nadpis dialógu ('Select Dates', 'Copy to', …).
-  /// [selectionMode] – aktuálny režim výberu.
-  /// [selectedDates] – už vybrané dátumy (z viewmodelu).
-  /// [onSelectionModeChanged] – callback pri zmene režimu.
-  /// [onDatesSelected] – callback pri výbere dátumov v pickeri.
-  /// [onConfirm] – akcia po potvrdení (napr. copyBlock).
-  /// [onCancel] – akcia po zrušení (voliteľná, defaultne len zavrie dialóg).
-  /// [selectionModeNotifier] – ValueNotifier pre režim, ak viewmodel nie je ChangeNotifier.
-  ///   V našom prípade použijeme priamo viewmodel (ListenableBuilder).
+
   static Future<void> show ({
     required BuildContext context,
     required String title,
@@ -23,8 +13,7 @@ class CustomDateRangePickerDialog {
     required void Function(dynamic) onDatesSelected,
     VoidCallback? onConfirm,
     VoidCallback? onCancel,
-    bool showActions = true, // niekedy chceme len výber bez tlačidiel
-    // Pridaj ďalšie parametre ak treba (napr. farby)
+    bool showActions = true,
   }) async {
     showDialog(
       context: context,
@@ -37,7 +26,7 @@ class CustomDateRangePickerDialog {
           onDatesSelected: onDatesSelected,
           onConfirm: onConfirm ?? () => Navigator.pop(dialogContext),
           onCancel: onCancel ?? () {
-            onDatesSelected(null); // vynulovať výber pri Cancel
+            onDatesSelected(null);
             Navigator.pop(dialogContext);
           },
         );
@@ -72,7 +61,6 @@ class _DateRangePickerDialogContent extends StatefulWidget {
 
 class _DateRangePickerDialogContentState
     extends State<_DateRangePickerDialogContent> {
-  // Lokálne držíme aktuálny režim + výber (ak by sme chceli nezávislosť od viewmodelu)
   late DateRangePickerSelectionMode _currentMode;
   late dynamic _currentSelection;
 
@@ -138,7 +126,7 @@ class _DateRangePickerDialogContentState
                 if (mode != null) {
                   setState(() {
                     _currentMode = mode;
-                    _currentSelection = null; // vynuluj výber pri zmene režimu
+                    _currentSelection = null;
                   });
                   widget.onSelectionModeChanged(mode);
                 }
@@ -159,7 +147,6 @@ class _DateRangePickerDialogContentState
               fontSize: constants.fsBody,
             ),
           ),
-          // Spoločné štýly – ak niekde potrebuješ špecifické, odovzdaj ich cez parameter
           monthCellStyle: DateRangePickerMonthCellStyle(
             textStyle: TextStyle(
               color: constants.darkGrey,

@@ -22,9 +22,6 @@ class _ConsultationsOwnerPageState extends State<ConsultationsOwnerPage> {
     _viewModel = OwnerConsultationsViewmodel();
     initialize();
   }
-
-  // FIX: catch any exception that escapes the viewmodel so it never reaches
-  // Flutter's unhandled-exception handler and crashes the app.
   void initialize() async {
     try {
       await _viewModel.init();
