@@ -5,8 +5,8 @@
 // Every navigation target is declared here
 
 import 'package:consultation_app/setup.dart';
-import 'package:consultation_app/views/consultations_base_page.dart';
-import 'package:consultation_app/views/consultations_owner_page.dart';
+import 'package:consultation_app/views/base_consultations/base_consultations_page.dart';
+import 'package:consultation_app/views/owner_consultations_page.dart';
 import 'package:consultation_app/views/create_block_page.dart';
 import 'package:consultation_app/views/create_room_page.dart';
 import 'package:consultation_app/views/add_slot_page.dart';
@@ -17,7 +17,7 @@ import 'package:consultation_app/views/edit_block_page.dart';
 import 'package:consultation_app/views/edit_room_page.dart';
 import 'package:consultation_app/views/email_input_page.dart';
 import 'package:consultation_app/views/join_room_page.dart';
-import 'package:consultation_app/views/change_settings_page.dart';
+import 'package:consultation_app/views/settings/change_settings_page.dart';
 import 'package:consultation_app/views/verify_otp_page.dart';
 import 'package:consultation_app/views/registration_page.dart';
 import 'package:flutter/material.dart';

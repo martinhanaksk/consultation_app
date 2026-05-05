@@ -1,17 +1,9 @@
-import 'package:flutter/material.dart';
+// edit_room_viewmodel.dart
 import 'package:consultation_app/models/room_model.dart';
 import 'package:consultation_app/setup.dart';
+import 'base_room_viewmodel.dart';
 
-class EditRoomViewmodel extends ChangeNotifier {
-  final TextEditingController shortNameController = TextEditingController();
-  final TextEditingController titleController = TextEditingController();
-  final TextEditingController descriptionController = TextEditingController();
-  final TextEditingController acceptedEmailController = TextEditingController();
-  final TextEditingController cancellationHoursController =
-      TextEditingController();
-
-  List<String> acceptedEmails = [];
-
+class EditRoomViewmodel extends BaseRoomViewmodel {
   bool _isLoading = true;
   bool get isLoading => _isLoading;
 
@@ -24,14 +16,13 @@ class EditRoomViewmodel extends ChangeNotifier {
   Future<void> loadData(int roomId) async {
     _setLoading(true);
     try {
-      List<RoomModel> allRooms = await api.getAllRooms();
+      final allRooms = await api.getAllRooms();
       room = allRooms.firstWhere((r) => r.id == roomId);
 
       shortNameController.text = room!.shortName;
       titleController.text = room!.title;
       descriptionController.text = room!.description;
-      cancellationHoursController.text = room!.cancellationNoticeHours
-          .toString();
+      cancellationHoursController.text = room!.cancellationNoticeHours.toString();
 
       acceptedEmails = room!.acceptedEmails
           .split(',')
@@ -49,44 +40,22 @@ class EditRoomViewmodel extends ChangeNotifier {
     }
   }
 
-  void addToAcceptedEmails(String value) {
-    final trimmed = value.trim();
-    if (trimmed.isEmpty) return;
-
-    if (!acceptedEmails.contains(trimmed)) {
-      acceptedEmails.add(trimmed);
-      acceptedEmailController.clear();
-      notifyListeners();
-    }
-  }
-
-  void removeFromAcceptedEmails(String value) {
-    acceptedEmails.remove(value);
-    notifyListeners();
-  }
-
   Future<void> handleSave() async {
     clearError();
-    bool success = await submitChanges();
+    final success = await _submitChanges();
 
     if (success) {
-      notify.showToast("Room updated successfully");
+      notify.showToast('Room updated successfully');
       nav.toOwnerConsultations();
-    } else if (errorMessage != null) {
-      notify.showToast(errorMessage!,isError: true);
     } else {
-      notify.showToast('Failed to update room',isError: true);
+      notify.showToast(errorMessage ?? 'Failed to update room', isError: true);
     }
   }
 
-  Future<bool> submitChanges() async {
+  Future<bool> _submitChanges() async {
     if (room == null) return false;
 
-    if (shortNameController.text.isEmpty ||
-        titleController.text.isEmpty ||
-        descriptionController.text.isEmpty ||
-        cancellationHoursController.text.isEmpty ||
-        acceptedEmails.isEmpty) {
+    if (_anyFieldEmpty()) {
       errorMessage = 'Please fill out all required fields.';
       notifyListeners();
       return false;
@@ -94,8 +63,7 @@ class EditRoomViewmodel extends ChangeNotifier {
 
     _setSaving(true);
     try {
-      bool success = await api.editRoom(
-        
+      return await api.editRoom(
         room!.id,
         shortNameController.text.trim(),
         titleController.text.trim(),
@@ -103,8 +71,6 @@ class EditRoomViewmodel extends ChangeNotifier {
         int.parse(cancellationHoursController.text.trim()),
         acceptedEmails,
       );
-
-      return success;
     } catch (e) {
       errorMessage = 'Error: $e';
       return false;
@@ -112,6 +78,13 @@ class EditRoomViewmodel extends ChangeNotifier {
       _setSaving(false);
     }
   }
+
+  bool _anyFieldEmpty() =>
+      shortNameController.text.isEmpty ||
+      titleController.text.isEmpty ||
+      descriptionController.text.isEmpty ||
+      cancellationHoursController.text.isEmpty ||
+      acceptedEmails.isEmpty;
 
   void _setLoading(bool value) {
     _isLoading = value;
@@ -126,14 +99,5 @@ class EditRoomViewmodel extends ChangeNotifier {
   void clearError() {
     errorMessage = null;
     notifyListeners();
-  }
-
-  @override
-  void dispose() {
-    shortNameController.dispose();
-    titleController.dispose();
-    descriptionController.dispose();
-    acceptedEmailController.dispose();
-    super.dispose();
   }
 }

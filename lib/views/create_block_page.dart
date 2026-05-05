@@ -1,3 +1,10 @@
+// create_block_page.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// Form for creating a new consultation block within a room.
+// A block defines one or more dates, a start time, slot duration,
+// slot count, (endTime is calculated automatically) and an optional note, and whether slots are online or in-person.
+
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/create_block_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
@@ -9,11 +16,12 @@ import 'package:consultation_app/views/custom_widgets/time_duration_picker.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/cupertino.dart';
 
 class CreateBlock extends StatefulWidget {
   final int roomId;
+  // Called after successful block creation to refresh the parent room view
   final VoidCallback? onSuccess;
+
   const CreateBlock({super.key, required this.roomId, required this.onSuccess});
 
   @override
@@ -22,6 +30,7 @@ class CreateBlock extends StatefulWidget {
 
 class _CreateBlockState extends State<CreateBlock> {
   late final CreateBlockViewmodel _viewModel;
+
   @override
   void initState() {
     super.initState();
@@ -33,8 +42,6 @@ class _CreateBlockState extends State<CreateBlock> {
     _viewModel.dispose();
     super.dispose();
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -62,20 +69,21 @@ class _CreateBlockState extends State<CreateBlock> {
                           ),
                         ),
                         SizedBox(height: 20),
+                        // Tapping opens the date picker dialog
                         GestureDetector(
-                          onTap: () =>
-                              CustomDateRangePickerDialog.show(
-  context: context,
-  title: 'Select Dates',
-  selectionMode: viewModel.selectionMode,
-  selectedDates: viewModel.selectedDates,
-  onSelectionModeChanged: (mode) {
-    viewModel.setSelectedDates(null);
-    viewModel.setSelectionMode(mode);
-  },
-  onDatesSelected: (dates) => viewModel.setSelectedDates(dates),
-  onConfirm: () => Navigator.pop(context), 
-),
+                          onTap: () => CustomDateRangePickerDialog.show(
+                            context: context,
+                            title: 'Select Dates',
+                            selectionMode: viewModel.selectionMode,
+                            selectedDates: viewModel.selectedDates,
+                            onSelectionModeChanged: (mode) {
+                              viewModel.setSelectedDates(null);
+                              viewModel.setSelectionMode(mode);
+                            },
+                            onDatesSelected: (dates) =>
+                                viewModel.setSelectedDates(dates),
+                            onConfirm: () => Navigator.pop(context),
+                          ),
                           child: Container(
                             height: 56,
                             padding: EdgeInsets.symmetric(horizontal: 12),
@@ -86,8 +94,7 @@ class _CreateBlockState extends State<CreateBlock> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'Selected: ' +
-                                      viewModel.getSelectedDatesFormatted(),
+                                  'Selected: ${viewModel.getSelectedDatesFormatted()}',
                                   style: TextStyle(
                                     fontSize: constants.fsLabel,
                                     color: constants.darkGrey,
@@ -101,8 +108,9 @@ class _CreateBlockState extends State<CreateBlock> {
                               ],
                             ),
                           ),
-                        ),SizedBox(height: 20),
-                       TimeDurationPicker(
+                        ),
+                        SizedBox(height: 20),
+                        TimeDurationPicker(
                           initialStartTime: viewModel.startTime,
                           initialDuration: viewModel.duration,
                           onStartTimeChanged: viewModel.setStartTime,
@@ -130,6 +138,8 @@ class _CreateBlockState extends State<CreateBlock> {
                               ),
                             ),
                             Flexible(flex: 1, child: SizedBox()),
+                            // End time is computed from start + (slots × duration)
+                            // and it is read-only
                             Flexible(
                               flex: 10,
                               child: Opacity(
@@ -150,7 +160,6 @@ class _CreateBlockState extends State<CreateBlock> {
                                         viewModel.endTime == null
                                             ? 'End Time'
                                             : "End Time ${viewModel.getPrintableTimeFormat(TimePickerAction.endTime)}",
-
                                         style: TextStyle(
                                           fontSize: constants.fsBody,
                                           color: constants.darkGrey,
@@ -168,7 +177,6 @@ class _CreateBlockState extends State<CreateBlock> {
                             ),
                           ],
                         ),
-
                         SizedBox(height: 20),
                         Container(
                           clipBehavior: Clip.none,
@@ -188,7 +196,6 @@ class _CreateBlockState extends State<CreateBlock> {
                               value: viewModel.isChecked,
                               onChanged: viewModel.toggleIsOnline,
                             ),
-
                             SizedBox(width: 8),
                             Text(
                               'Online',
@@ -245,119 +252,6 @@ class _CreateBlockState extends State<CreateBlock> {
             ),
           );
         },
-      ),
-    );
-  }
-}
-
-class _StartTimePicker extends StatefulWidget {
-  final CreateBlockViewmodel viewModel;
-  const _StartTimePicker({required this.viewModel});
-
-  @override
-  State<_StartTimePicker> createState() => _StartTimePickerState();
-}
-
-class _StartTimePickerState extends State<_StartTimePicker> {
-  late DateTime _current;
-
-  @override
-  void initState() {
-    super.initState();
-    final now = TimeOfDay.now();
-    final rounded = now.minute - (now.minute % 5);
-
-    _current = widget.viewModel.startTime != null
-        ? DateTime(
-            2000,
-            1,
-            1,
-            widget.viewModel.startTime!.inHours,
-            widget.viewModel.startTime!.inMinutes % 60,
-          )
-        : DateTime(2000, 1, 1, now.hour, rounded);
-    widget.viewModel.setStartTime(
-      Duration(hours: _current.hour, minutes: _current.minute),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 150,
-      child: CupertinoTheme(
-        data: CupertinoThemeData(
-          textTheme: CupertinoTextThemeData(
-            dateTimePickerTextStyle: TextStyle(
-              color: constants.darkGrey,
-              fontSize: constants.fsTitle,
-            ),
-          ),
-        ),
-        child: CupertinoDatePicker(
-          backgroundColor: constants.background,
-          mode: CupertinoDatePickerMode.time,
-          use24hFormat: true,
-          initialDateTime: _current,
-          minuteInterval: 5,
-          onDateTimeChanged: (dt) {
-            _current = dt;
-            widget.viewModel.setStartTime(
-              Duration(hours: dt.hour, minutes: dt.minute),
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class _DurationPicker extends StatefulWidget {
-  final CreateBlockViewmodel viewModel;
-  const _DurationPicker({required this.viewModel});
-
-  @override
-  State<_DurationPicker> createState() => _DurationPickerState();
-}
-
-class _DurationPickerState extends State<_DurationPicker> {
-  late FixedExtentScrollController _scrollController;
-  @override
-  void initState() {
-    super.initState();
-    _scrollController = FixedExtentScrollController(initialItem: 3);
-    widget.viewModel.setDuration(Duration(minutes: 15));
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 150,
-      child: CupertinoPicker(
-        backgroundColor: constants.background,
-        itemExtent: 40,
-        scrollController: _scrollController,
-        onSelectedItemChanged: (index) {
-          widget.viewModel.setDuration(Duration(minutes: index * 5));
-        },
-        children: List.generate(
-          24,
-          (i) => Center(
-            child: Text(
-              '${i * 5} min',
-              style: TextStyle(
-                fontSize: constants.fsBody,
-                color: constants.darkGrey,
-              ),
-            ),
-          ),
-        ),
       ),
     );
   }

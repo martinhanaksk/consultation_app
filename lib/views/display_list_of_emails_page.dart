@@ -1,10 +1,18 @@
+// display_list_of_emails_page.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// Displays and manages the list of allowed email domains/addresses for a room.
+
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:flutter/material.dart';
 
 class DisplayListOfEmailsPage extends StatefulWidget {
+  // Typed as dynamic to accept both EditRoomViewmodel and CreateRoomViewmodel
   final dynamic viewModel;
+
   const DisplayListOfEmailsPage({super.key, required this.viewModel});
+
   @override
   State<DisplayListOfEmailsPage> createState() =>
       _DisplayListOfEmailsPageState();
@@ -18,6 +26,7 @@ class _DisplayListOfEmailsPageState extends State<DisplayListOfEmailsPage> {
       appBar: AppBarMenu(),
       body: SafeArea(
         child: ListenableBuilder(
+          // Rebuilds the list whenever an entry is added or removed in the parent viewmodel
           listenable: widget.viewModel,
           builder: (context, _) {
             return Column(
@@ -31,26 +40,24 @@ class _DisplayListOfEmailsPageState extends State<DisplayListOfEmailsPage> {
                 ),
                 Expanded(
                   child: ScrollConfiguration(
-                      behavior: ScrollConfiguration.of(context).copyWith(
-                        physics: const BouncingScrollPhysics(
-                          parent: AlwaysScrollableScrollPhysics(),
-                        ),
-                        overscroll: false,
+                    behavior: ScrollConfiguration.of(context).copyWith(
+                      physics: const BouncingScrollPhysics(
+                        parent: AlwaysScrollableScrollPhysics(),
                       ),
-                      child:  ListView.builder(
+                      overscroll: false,
+                    ),
+                    child: ListView.builder(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       itemCount: widget.viewModel.acceptedEmails.length,
                       itemBuilder: (context, index) {
                         final emailDomain =
                             widget.viewModel.acceptedEmails[index];
-                    
+
                         return Container(
                           decoration: constants.squircleShadow(
-                            color: constants.lightPrimary,
+                            color: constants.background,
                           ),
-                    
                           margin: const EdgeInsets.symmetric(vertical: 6.0),
-                    
                           child: ListTile(
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16.0,

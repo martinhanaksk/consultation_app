@@ -5,6 +5,7 @@ import 'package:figma_squircle/figma_squircle.dart';
 
 class CustomInputTextField extends StatefulWidget {
   final TextEditingController? controller;
+  final bool readOnly;
   final String? hintText;
   final List<TextInputFormatter>? inputFormatters;
   final TextInputType keyboardType;
@@ -28,6 +29,7 @@ class CustomInputTextField extends StatefulWidget {
   const CustomInputTextField({
     super.key,
     this.controller,
+    this.readOnly = false,
     this.hintText,
     this.focusNode,
     this.inputFormatters,
@@ -95,35 +97,36 @@ class _CustomInputTextFieldState extends State<CustomInputTextField> {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveKeyboardType =
-        widget.isUrl ? TextInputType.url : widget.keyboardType;
+    final effectiveKeyboardType = widget.isUrl
+        ? TextInputType.url
+        : widget.keyboardType;
 
     final effectiveInputFormatters =
         widget.inputFormatters ??
         (effectiveKeyboardType == TextInputType.number
             ? [FilteringTextInputFormatter.digitsOnly]
             : (widget.isEmail
-                ? [
-                    FilteringTextInputFormatter.allow(
-                      RegExp(r"[a-zA-Z0-9@._\-+]"),
-                    ),
-                  ]
-                : (widget.isUrl
-                    ? [
-                        FilteringTextInputFormatter.allow(
-                          RegExp(r"[a-zA-Z0-9:/?#[\]@!$&'()*+,;=._~%-]"),
-                        ),
-                      ]
-                    : [
-                        FilteringTextInputFormatter.allow(
-                          RegExp(r"[a-zA-ZÀ-ž0-9 '-]"),
-                        ),
-                      ])));
+                  ? [
+                      FilteringTextInputFormatter.allow(
+                        RegExp(r"[a-zA-Z0-9@._\-+]"),
+                      ),
+                    ]
+                  : (widget.isUrl
+                        ? [
+                            FilteringTextInputFormatter.allow(
+                              RegExp(r"[a-zA-Z0-9:/?#[\]@!$&'()*+,;=._~%-]"),
+                            ),
+                          ]
+                        : [
+                            FilteringTextInputFormatter.allow(
+                              RegExp(r"[a-zA-ZÀ-ž0-9 '-]"),
+                            ),
+                          ])));
 
     final hasText = _controller?.text.isNotEmpty ?? false;
 
     Widget? suffix;
-    if (widget.showClearIcon && hasText && _controller != null) {
+    if (widget.showClearIcon && !widget.readOnly && hasText && _controller != null) {
       suffix = IconButton(
         onPressed: _clearText,
         icon: svgs.icon("cross", constants.darkGrey),
@@ -141,6 +144,7 @@ class _CustomInputTextFieldState extends State<CustomInputTextField> {
       child: ClipSmoothRect(
         radius: _radius,
         child: TextField(
+          readOnly: widget.readOnly,
           focusNode: widget.focusNode,
           controller: widget.controller,
           onChanged: (value) {
@@ -153,9 +157,7 @@ class _CustomInputTextFieldState extends State<CustomInputTextField> {
           maxLines: widget.maxLines,
           textAlign: widget.textCenter ? TextAlign.center : TextAlign.left,
           scrollPadding: const EdgeInsets.only(bottom: 1000),
-          style: TextStyle(
-            color: widget.textColor ?? constants.darkGrey,
-          ),
+          style: TextStyle(color: widget.textColor ?? constants.darkGrey),
           decoration: InputDecoration(
             hintText: widget.hintText ?? "",
             filled: true,

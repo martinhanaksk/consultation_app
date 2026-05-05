@@ -1,3 +1,10 @@
+// add_slot_page.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// Form for adding a single slot to an existing block.
+// Unlike CreateBlock (which generates multiple slots at once), this page
+// creates one slot with its own start time, duration, note, and online flag.
+
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/add_slot_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
@@ -11,6 +18,7 @@ import 'package:provider/provider.dart';
 
 class AddSlot extends StatefulWidget {
   final int blockId;
+  // Called after the slot is successfully created to refresh the EditBlock view
   final VoidCallback? onSuccess;
 
   const AddSlot({super.key, required this.blockId, required this.onSuccess});
@@ -60,7 +68,7 @@ class _AddSlotState extends State<AddSlot> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                         TimeDurationPicker(
+                        TimeDurationPicker(
                           initialStartTime: viewModel.startTime,
                           initialDuration: viewModel.duration,
                           onStartTimeChanged: viewModel.setStartTime,
@@ -88,7 +96,6 @@ class _AddSlotState extends State<AddSlot> {
                               value: viewModel.isOnline,
                               onChanged: viewModel.toggleIsOnline,
                             ),
-
                             const SizedBox(width: 8),
                             Text(
                               'Online',
@@ -113,19 +120,6 @@ class _AddSlotState extends State<AddSlot> {
                                 child: ElevatedButton(
                                   onPressed: () {
                                     FocusScope.of(context).unfocus();
-                                    if (viewModel.duration == null ||
-                                        viewModel.duration!.inMinutes == 0) {
-                                      notify.showToast(
-                                        'Duration must be greater than 0 minutes',
-                                      );
-                                      return;
-                                    }
-                                    if (viewModel.startTime == null) {
-                                      notify.showToast(
-                                        'Please select a start time',
-                                      );
-                                      return;
-                                    }
                                     viewModel.addSlot(
                                       widget.blockId,
                                       widget.onSuccess,

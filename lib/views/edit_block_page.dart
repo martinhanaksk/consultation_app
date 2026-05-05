@@ -1,3 +1,9 @@
+// edit_block_page.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// Allows a teacher to manage an existing block: view and delete its slots,
+// toggle the block's online mode, copy it to other dates, or delete it entirely.
+
 import 'package:consultation_app/models/slot_model.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/edit_block_viewmodel.dart';
@@ -12,7 +18,9 @@ import 'package:provider/provider.dart';
 class EditBlock extends StatefulWidget {
   final int roomId;
   final int blockId;
+  // VoidCallback to refresh the parent page
   final VoidCallback? onSuccess;
+
   const EditBlock({
     super.key,
     required this.roomId,
@@ -26,6 +34,7 @@ class EditBlock extends StatefulWidget {
 
 class _EditBlockState extends State<EditBlock> {
   late final EditBlockViewmodel _viewModel;
+
   @override
   void initState() {
     super.initState();
@@ -99,8 +108,7 @@ class _EditBlockState extends State<EditBlock> {
                                 Center(
                                   child: Container(
                                     clipBehavior: Clip.hardEdge,
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.9,
+                                    width: MediaQuery.of(context).size.width * 0.9,
                                     decoration: constants.squircleShadow(
                                       hasBorder: true,
                                       color: constants.background,
@@ -108,40 +116,35 @@ class _EditBlockState extends State<EditBlock> {
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
+                                        // Header row: block date centred, Add Slot button on the right
                                         Stack(
                                           alignment: Alignment.center,
                                           children: [
                                             Padding(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                    20,
-                                                    10,
-                                                    20,
-                                                    10,
-                                                  ),
+                                              padding: const EdgeInsets.fromLTRB(
+                                                20, 10, 20, 10,
+                                              ),
                                               child: Text(
                                                 viewModel.getBlockDate(),
                                                 style: TextStyle(
                                                   color: constants.darkGrey,
                                                   fontSize: constants.fsLabel,
-                                                  fontWeight:
-                                                      constants.fwSemiBold,
+                                                  fontWeight: constants.fwSemiBold,
                                                 ),
                                               ),
                                             ),
                                             Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal: 12.0,
-                                                  ),
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: 12.0,
+                                              ),
                                               child: GestureDetector(
                                                 onTap: () {
                                                   nav.toAddSlot(
                                                     blockId: widget.blockId,
-                                                    onSuccess: () =>
-                                                        viewModel.refetchData(
-                                                          widget.blockId,
-                                                        ),
+                                                    // Refreshes slot list after a new slot is added
+                                                    onSuccess: () => viewModel.refetchData(
+                                                      widget.blockId,
+                                                    ),
                                                   );
                                                 },
                                                 child: Row(
@@ -157,12 +160,9 @@ class _EditBlockState extends State<EditBlock> {
                                                     Text(
                                                       "Add Slot",
                                                       style: TextStyle(
-                                                        color:
-                                                            constants.primary,
-                                                        fontWeight: constants
-                                                            .fwSemiBold,
-                                                        fontSize:
-                                                            constants.fsLabel,
+                                                        color: constants.primary,
+                                                        fontWeight: constants.fwSemiBold,
+                                                        fontSize: constants.fsLabel,
                                                       ),
                                                     ),
                                                   ],
@@ -172,6 +172,7 @@ class _EditBlockState extends State<EditBlock> {
                                           ],
                                         ),
                                         const Divider(height: 1),
+                                        // Three states: loading, empty, or slot list
                                         viewModel.isLoading
                                             ? Padding(
                                                 padding: EdgeInsets.all(24),
@@ -182,9 +183,7 @@ class _EditBlockState extends State<EditBlock> {
                                               )
                                             : viewModel.slots.isEmpty
                                             ? Padding(
-                                                padding: const EdgeInsets.all(
-                                                  24,
-                                                ),
+                                                padding: const EdgeInsets.all(24),
                                                 child: Text(
                                                   "No slots in this block.",
                                                   style: TextStyle(
@@ -194,31 +193,21 @@ class _EditBlockState extends State<EditBlock> {
                                                 ),
                                               )
                                             : ListView.builder(
-                                                physics:
-                                                    const NeverScrollableScrollPhysics(),
                                                 shrinkWrap: true,
                                                 padding: EdgeInsets.zero,
-                                                itemCount:
-                                                    viewModel.slots.length,
+                                                itemCount: viewModel.slots.length,
                                                 itemBuilder: (context, index) {
-                                                  final slot =
-                                                      viewModel.slots[index];
+                                                  final slot = viewModel.slots[index];
                                                   return _SlotRow(
                                                     slot: slot,
                                                     isFirst: index == 0,
-                                                    isLast:
-                                                        index ==
-                                                        viewModel.slots.length -
-                                                            1,
-
+                                                    isLast: index == viewModel.slots.length - 1,
                                                     onIsOnlineClicked: () =>
-                                                        viewModel
-                                                            .changeSlotMeetingType(
-                                                              slot.id,
-                                                            ),
-
-                                                    onDelete: () => viewModel
-                                                        .deleteSlot(slot.id),
+                                                        viewModel.changeSlotMeetingType(
+                                                          slot.id,
+                                                        ),
+                                                    onDelete: () =>
+                                                        viewModel.deleteSlot(slot.id),
                                                   );
                                                 },
                                               ),
@@ -229,6 +218,7 @@ class _EditBlockState extends State<EditBlock> {
                               ],
                             ),
                             SizedBox(height: 32),
+                            // Toggles online mode for the entire block and notifies the parent
                             Row(
                               children: [
                                 CustomCheckbox(
@@ -241,7 +231,6 @@ class _EditBlockState extends State<EditBlock> {
                                     widget.onSuccess!(),
                                   },
                                 ),
-
                                 SizedBox(width: 8),
                                 Text(
                                   'Online',
@@ -256,6 +245,7 @@ class _EditBlockState extends State<EditBlock> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
+                                // Copies the block's slot structure to one or more selected dates
                                 ElevatedButton(
                                   onPressed: () {
                                     CustomDateRangePickerDialog.show(
@@ -280,9 +270,7 @@ class _EditBlockState extends State<EditBlock> {
                                     fixedSize: const Size(140, 120),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
-                                      side: BorderSide(
-                                        color: constants.background,
-                                      ),
+                                      side: BorderSide(color: constants.background),
                                     ),
                                     elevation: 0,
                                   ),
@@ -294,7 +282,6 @@ class _EditBlockState extends State<EditBlock> {
                                         constants.primary,
                                         width: constants.fsHeadline,
                                       ),
-
                                       const SizedBox(height: 12),
                                       Text(
                                         "Copy Block",
@@ -319,9 +306,7 @@ class _EditBlockState extends State<EditBlock> {
                                     fixedSize: const Size(140, 120),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
-                                      side: BorderSide(
-                                        color: constants.background,
-                                      ),
+                                      side: BorderSide(color: constants.background),
                                     ),
                                     elevation: 0,
                                   ),
@@ -362,6 +347,7 @@ class _EditBlockState extends State<EditBlock> {
   }
 }
 
+// Single row in the slot list showing start time, taken status, meeting type toggle, and delete
 class _SlotRow extends StatelessWidget {
   final SlotModel slot;
   final bool isFirst;
@@ -381,12 +367,13 @@ class _SlotRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        // Divider is skipped for the first row to avoid a double border with the card header
         if (!isFirst) Divider(height: 1, color: constants.grey),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-
           child: Row(
             children: [
+              // Displays time as "HH:mm"
               Text(
                 '${slot.startTime.split(":")[0]}:${slot.startTime.split(":")[1]}',
                 style: TextStyle(
@@ -395,7 +382,6 @@ class _SlotRow extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 16),
-
               Text(
                 slot.takenBy == null ? "" : "Taken",
                 style: TextStyle(
@@ -404,9 +390,8 @@ class _SlotRow extends StatelessWidget {
                   fontWeight: constants.fwSemiBold,
                 ),
               ),
-
               const Spacer(),
-
+              // Icon switches between location (in-person) and screen (online)
               GestureDetector(
                 onTap: onIsOnlineClicked,
                 child: svgs.icon(

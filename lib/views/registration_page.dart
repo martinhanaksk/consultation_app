@@ -1,3 +1,10 @@
+// registration_page.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// Registration form shown when a login attempt discoveres unregistered email.
+// The email field is pre-filled and read-only in practice — the user arrived here
+// from the login flow so the address is already known.
+
 import 'package:consultation_app/models/user_model.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/register_viewmodel.dart';
@@ -29,6 +36,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   @override
   void initState() {
     super.initState();
+    // Pre-fills the email field with the address carried over from the login page
     emailController.text = widget.email;
   }
 
@@ -43,6 +51,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   @override
   Widget build(BuildContext context) {
+    // ChangeNotifierProvider with create: is used here because this page
+    // owns the viewmodel lifecycle
     return ChangeNotifierProvider(
       create: (_) => RegisterViewmodel(),
       child: Consumer<RegisterViewmodel>(
@@ -50,6 +60,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           return Scaffold(
             appBar: AppBarMenu(onRegistrationPage: true),
             backgroundColor: constants.background,
+            // Allows the form to scroll up when the keyboard appears
             resizeToAvoidBottomInset: true,
             body: SafeArea(
               child: SingleChildScrollView(
@@ -71,32 +82,29 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     const SizedBox(height: 16),
                     CustomInputTextField(
                       controller: emailController,
+                      readOnly: true,
                       hintText: 'Email',
                       isEmail: true,
                       maxLength: 50,
                     ),
-
                     const SizedBox(height: 16),
                     CustomInputTextField(
                       controller: nameController,
                       hintText: 'Name',
                       maxLength: 50,
                     ),
-
                     const SizedBox(height: 16),
                     CustomInputTextField(
                       controller: surnameController,
                       hintText: 'Surname',
                       maxLength: 50,
                     ),
-
                     const SizedBox(height: 16),
                     CustomInputTextField(
                       controller: visitReasonController,
                       hintText: 'Visit reason',
                       maxLength: 50,
                     ),
-
                     const SizedBox(height: 16),
                     SizedBox(
                       width: double.infinity,
@@ -109,31 +117,23 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           : ElevatedButton(
                               onPressed: () async {
                                 FocusScope.of(context).unfocus();
-                                if (validator.validateNotEmpty(
-                                      emailController.text.trim(),
-
-                                      context,
-                                    ) &&
+                                // All fields must be non-empty, email was checked sooner
+                                if (
                                     validator.validateNotEmpty(
                                       nameController.text.trim(),
-
                                       context,
                                     ) &&
                                     validator.validateNotEmpty(
                                       surnameController.text.trim(),
-
                                       context,
                                     ) &&
                                     validator.validateNotEmpty(
                                       visitReasonController.text.trim(),
-
-                                      context,
-                                    ) &&
-                                    validator.validateEmail(
-                                      emailController.text.trim(),
                                       context,
                                     )) {
                                   try {
+                                    // role, visible, and notification are not used yet, user model here serves
+                                    // just to pass email, name, surname and visit reason
                                     UserModel um = UserModel(
                                       email: helpers.trimText(
                                         emailController.text.trim(),
@@ -157,7 +157,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                     );
                                   } catch (e) {
                                     notify.showToast(
-                                      "Error while registering user",isError: true
+                                      "Error while registering user",
+                                      isError: true,
                                     );
                                   }
                                 }

@@ -1,3 +1,9 @@
+// join_room_page.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// Allows students to search all available rooms and join one.
+// Also displays the list of rooms the student has already joined.
+
 import 'package:consultation_app/models/room_model.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/join_room_viewmodel.dart';
@@ -7,7 +13,6 @@ import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
-import 'package:dropdown_search/dropdown_search.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 
 class JoinRoom extends StatefulWidget {
@@ -19,6 +24,7 @@ class JoinRoom extends StatefulWidget {
 
 class _JoinRoomState extends State<JoinRoom> {
   late final JoinRoomViewmodel _viewModel;
+
   @override
   void initState() {
     super.initState();
@@ -26,7 +32,6 @@ class _JoinRoomState extends State<JoinRoom> {
     _viewModel.init();
   }
 
-  final dropDownKey = GlobalKey<DropdownSearchState>();
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
@@ -40,9 +45,9 @@ class _JoinRoomState extends State<JoinRoom> {
             backgroundColor: constants.background,
             body: SafeArea(
               child: GestureDetector(
+                // Dismisses the keyboard when tapping outside any input field
                 onTap: () => FocusScope.of(context).unfocus(),
                 child: SingleChildScrollView(
-                  reverse: true,
                   child: Center(
                     child: Container(
                       padding: EdgeInsets.all(10),
@@ -62,7 +67,6 @@ class _JoinRoomState extends State<JoinRoom> {
                             ),
                           ),
                           SizedBox(height: 24),
-
                           Container(
                             width: double.infinity,
                             padding: const EdgeInsets.all(24),
@@ -94,6 +98,8 @@ class _JoinRoomState extends State<JoinRoom> {
                                       (TextEditingValue textEditingValue) {
                                         final rooms =
                                             viewModel.allRooms() ?? [];
+                                        // Shows all rooms when the field is empty,
+                                        // otherwise filters by title substring
                                         if (textEditingValue.text.isEmpty) {
                                           return rooms;
                                         }
@@ -121,6 +127,9 @@ class _JoinRoomState extends State<JoinRoom> {
                                           onChanged: (value) {
                                             final rooms =
                                                 viewModel.allRooms() ?? [];
+                                            // Checks for match on every keystroke
+                                            // so the selection stays valid when the user
+                                            // types a full room title without picking from the list
                                             final match = rooms
                                                 .cast<RoomModel?>()
                                                 .firstWhere(
@@ -136,7 +145,8 @@ class _JoinRoomState extends State<JoinRoom> {
                                             } else {
                                               viewModel.clearSelection();
                                             }
-                                          },focusNode: focusNode,
+                                          },
+                                          focusNode: focusNode,
                                           controller: roomController,
                                           maxLength: 50,
                                           hintText: 'Type to search rooms...',
@@ -176,56 +186,91 @@ class _JoinRoomState extends State<JoinRoom> {
                                               child: ClipRRect(
                                                 borderRadius:
                                                     BorderRadius.circular(16),
-                                                child: ListView.builder(
-                                                  padding: EdgeInsets.zero,
-                                                  shrinkWrap: true,
-                                                  itemCount: options.length,
-                                                  itemBuilder: (BuildContext context, int index) {
-                                                    final RoomModel option =
-                                                        options.elementAt(
-                                                          index,
-                                                        );
-                                                    final bool isSelected =
-                                                        option.id.toString() ==
-                                                        viewModel
-                                                            .selectedRoomId;
-
-                                                    if (viewModel
-                                                        .isInJoinedRooms(
-                                                          option,
-                                                        )) {
-                                                      return const SizedBox.shrink();
-                                                    }
-
-                                                    return InkWell(
-                                                      onTap: () =>
-                                                          onSelected(option),
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets.symmetric(
-                                                              horizontal: 20,
-                                                              vertical: 4,
+                                                child: ScrollConfiguration(
+                                                  behavior:
+                                                      ScrollConfiguration.of(
+                                                        context,
+                                                      ).copyWith(
+                                                        physics:
+                                                            const BouncingScrollPhysics(
+                                                              parent:
+                                                                  AlwaysScrollableScrollPhysics(),
                                                             ),
-                                                        child: ListTile(
-                                                          contentPadding:
-                                                              EdgeInsets.zero,
-                                                          title: Text(
-                                                            option.title,
-                                                            style: TextStyle(
-                                                              fontSize:
-                                                                  constants
-                                                                      .fsLabel,
-                                                              fontWeight:
-                                                                  constants
-                                                                      .fwRegular,
-                                                              color: constants
-                                                                  .darkGrey,
-                                                            ),
-                                                          ),
-                                                        ),
+                                                        overscroll: false,
                                                       ),
-                                                    );
-                                                  },
+                                                  child: ScrollConfiguration(
+                                                    behavior:
+                                                        ScrollConfiguration.of(
+                                                          context,
+                                                        ).copyWith(
+                                                          physics:
+                                                              const BouncingScrollPhysics(
+                                                                parent:
+                                                                    AlwaysScrollableScrollPhysics(),
+                                                              ),
+                                                          overscroll: false,
+                                                        ),
+                                                    child: ListView.builder(
+                                                      padding: EdgeInsets.zero,
+                                                      shrinkWrap: true,
+                                                      itemCount: options.length,
+                                                      itemBuilder:
+                                                          (
+                                                            BuildContext
+                                                            context,
+                                                            int index,
+                                                          ) {
+                                                            final RoomModel
+                                                            option = options
+                                                                .elementAt(
+                                                                  index,
+                                                                );
+                                                            // Rooms the student has already joined
+                                                            // are excluded from the dropdown list
+                                                            if (viewModel
+                                                                .isInJoinedRooms(
+                                                                  option,
+                                                                )) {
+                                                              return const SizedBox.shrink();
+                                                            }
+
+                                                            return InkWell(
+                                                              onTap: () =>
+                                                                  onSelected(
+                                                                    option,
+                                                                  ),
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets.symmetric(
+                                                                      horizontal:
+                                                                          20,
+                                                                      vertical:
+                                                                          4,
+                                                                    ),
+                                                                child: ListTile(
+                                                                  contentPadding:
+                                                                      EdgeInsets
+                                                                          .zero,
+                                                                  title: Text(
+                                                                    option
+                                                                        .title,
+                                                                    style: TextStyle(
+                                                                      fontSize:
+                                                                          constants
+                                                                              .fsLabel,
+                                                                      fontWeight:
+                                                                          constants
+                                                                              .fwRegular,
+                                                                      color: constants
+                                                                          .darkGrey,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            );
+                                                          },
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
                                             ),
@@ -272,7 +317,6 @@ class _JoinRoomState extends State<JoinRoom> {
                             ),
                           ),
                           const SizedBox(height: 28),
-
                           Center(
                             child: Text(
                               "Rooms joined",
@@ -284,6 +328,7 @@ class _JoinRoomState extends State<JoinRoom> {
                             ),
                           ),
                           const SizedBox(height: 12),
+                          // Three states: loading spinner, empty message, or room list
                           viewModel.isLoadingRooms
                               ? Center(
                                   child: SpinKitPouringHourGlass(
@@ -304,7 +349,7 @@ class _JoinRoomState extends State<JoinRoom> {
                                 )
                               : ListView.separated(
                                   shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
+
                                   itemCount: viewModel.joinedRooms()!.length,
                                   separatorBuilder: (_, __) =>
                                       const SizedBox(height: 10),
@@ -347,7 +392,6 @@ class _JoinRoomState extends State<JoinRoom> {
                                     );
                                   },
                                 ),
-
                           const SizedBox(height: 24),
                         ],
                       ),

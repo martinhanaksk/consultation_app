@@ -1,9 +1,14 @@
+// edit_room_page.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// Allows a teacher to edit an existing room's details.
+// The form itself is delegated to RoomFormBody, which is shared with CreateRoomPage.
+
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/edit_room_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
-import 'package:consultation_app/views/custom_widgets/custom_text_field_widget.dart';
+import 'package:consultation_app/views/custom_widgets/room_form_body_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
@@ -22,8 +27,8 @@ class _EditRoomPageState extends State<EditRoomPage> {
   @override
   void initState() {
     super.initState();
-    _viewModel = EditRoomViewmodel();
-    _viewModel.loadData(widget.roomId);
+    // Cascade initialises and immediately fetches room data in one expression
+    _viewModel = EditRoomViewmodel()..loadData(widget.roomId);
   }
 
   @override
@@ -37,199 +42,35 @@ class _EditRoomPageState extends State<EditRoomPage> {
     return ChangeNotifierProvider.value(
       value: _viewModel,
       child: Consumer<EditRoomViewmodel>(
-        builder: (context, viewModel, child) {
-          return Scaffold(
-            appBar: AppBarMenu(),
-            backgroundColor: constants.background,
-            body: SafeArea(
-              child: viewModel.isLoading
-                  ? Center(
-                      child: SpinKitPouringHourGlass(
-                        color: constants.primary,
-                        size: constants.fsHeadline,
-                      ),
-                    )
-                  : viewModel.room == null
-                  ? Text(
-                      viewModel.errorMessage ?? 'Room not found',
-                      style: TextStyle(color: constants.darkGrey),
-                    )
-                  : SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Center(
-                              child: Text(
-                                'Edit Room',
-                                style: TextStyle(
-                                  color: constants.darkGrey,
-                                  fontWeight: constants.fwSemiBold,
-                                  fontSize: constants.fsHeadline,
-                                ),
-                              ),
-                            ),
-                           
-
-                            const SizedBox(height: 20),
-                            CustomInputTextField(
-                              controller: viewModel.titleController,
-                              hintText: "Title (e.g. Martin's room)",
-                            ), const SizedBox(height: 28),
-                            CustomInputTextField(
-                              controller: viewModel.shortNameController,
-                              hintText: "https://example.com",
-                              isUrl: true,
-                              maxLength: 2000,
-                            ),
-
-                            const SizedBox(height: 20),
-                            CustomInputTextField(
-                              controller: viewModel.descriptionController,
-
-                              hintText: 'Description (e.g. D105)',
-                            ),
-                            const SizedBox(height: 20),
-                            CustomInputTextField(
-                              controller: viewModel.cancellationHoursController,
-                              hintText: 'Cancel deadline (hrs)',
-                              maxLines: 1,
-                              maxLength: 4,
-                              keyboardType: TextInputType.number,
-                            ),
-
-                            const SizedBox(height: 20),
-
-                            Padding(
-                              padding: const EdgeInsets.only(left: 8),
-                              child: Text(
-                                "Allowed email domains",
-                                style: TextStyle(
-                                  fontSize: constants.fsLabel,
-                                  color: constants.darkGrey150,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            TextField(
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                  RegExp(r"[a-zA-Z0-9@._\-+]"),
-                                ),
-                              ],
-                              maxLength: 50,
-                              style: TextStyle(color: constants.darkGrey),
-                              controller: viewModel.acceptedEmailController,
-                              decoration: InputDecoration(
-                                counterText: "",
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(color: constants.grey),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(color: constants.grey),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(
-                                    color: constants.primary,
-                                    width: 1.5,
-                                  ),
-                                ),
-                                suffixIcon: GestureDetector(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: svgs.icon(
-                                      'add',
-                                      constants.primary,
-                                      width: constants.fsBody,
-                                    ),
-                                  ),
-                                  onTap: () {
-                                    if (validator.validateNotEmpty(
-                                      viewModel.acceptedEmailController.text
-                                          .trim(),
-                                      context,
-                                    )) {
-                                      viewModel.addToAcceptedEmails(
-                                        helpers.trimText(
-                                          viewModel.acceptedEmailController.text
-                                              .trim(),
-                                        ),
-                                      );
-                                      viewModel.acceptedEmailController.clear();
-                                    }
-                                  },
-                                ),
-                                hintText: '@domain.com, user@domain.com..',
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            Center(
-                              child: GestureDetector(
-                                onTap: () => nav.toDisplayListOfEmails(
-                                  viewModel: viewModel,
-                                ),
-                                child: Text(
-                                  "View added domains (${viewModel.acceptedEmails.length})",
-                                  style: TextStyle(
-                                    color: constants.primary,
-                                    fontSize: constants.fsLabel,
-                                    fontWeight: constants.fwSemiBold,
-                                    decoration: TextDecoration.underline,
-                                    decorationColor: constants.primary,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-
-                            viewModel.isSaving
-                                ? Center(
-                                    child: SpinKitPouringHourGlass(
-                                      color: constants.primary,
-                                      size: constants.fsHeadline,
-                                    ),
-                                  )
-                                : SizedBox(
-                                    width: double.infinity,
-                                    height: 48,
-                                    child: ElevatedButton(
-                                      onPressed: () async => {
-                                        FocusScope.of(context).unfocus(),
-                                        await viewModel.handleSave(),
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: constants.primary,
-                                        disabledBackgroundColor:
-                                            constants.primary,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            14,
-                                          ),
-                                        ),
-                                        elevation: 2,
-                                        shadowColor: constants.primary,
-                                      ),
-                                      child: Text(
-                                        'Save Changes',
-                                        style: TextStyle(
-                                          fontSize: constants.fsBody,
-                                          fontWeight: constants.fwSemiBold,
-                                          color: constants.background,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                          ],
-                        ),
-                      ),
+        builder: (context, viewModel, _) => Scaffold(
+          appBar: AppBarMenu(),
+          backgroundColor: constants.background,
+          body: SafeArea(
+            // Three states: loading while fetching, error if room is null, or the form
+            child: viewModel.isLoading
+                ? Center(
+                    child: SpinKitPouringHourGlass(
+                      color: constants.primary,
+                      size: constants.fsHeadline,
                     ),
-            ),
-          );
-        },
+                  )
+                : viewModel.room == null
+                    ? Text(
+                        viewModel.errorMessage ?? 'Room not found',
+                        style: TextStyle(color: constants.darkGrey),
+                      )
+                    : RoomFormBody(
+                        pageTitle: 'Edit Room',
+                        viewModel: viewModel,
+                        isSubmitting: viewModel.isSaving,
+                        submitLabel: 'Save Changes',
+                        onSubmit: () {
+                          FocusScope.of(context).unfocus();
+                          viewModel.handleSave();
+                        },
+                      ),
+          ),
+        ),
       ),
     );
   }

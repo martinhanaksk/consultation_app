@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
 class SessionManager extends ChangeNotifier {
-
   // --- Storage keys ---
 
   static const String _emailKey = 'email';
@@ -57,6 +56,10 @@ class SessionManager extends ChangeNotifier {
   // Last room the student had open; used to restore context after navigation
   int? _roomIdVisitor;
   int? get roomIdVisitor => _roomIdVisitor;
+
+  void resetRoomIdOwner() {
+    _roomIdOwner = null;
+  }
 
   void setRoomIdOwner(int value) {
     _roomIdOwner = value;

@@ -1,3 +1,9 @@
+// email_input_page.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// First screen of the login flow. Accepts an email address and triggers
+// the OTP request. Also handles auto-login if a valid session already exists.
+
 import 'package:consultation_app/viewmodels/email_input_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/custom_checkbox_widget.dart';
 import 'package:consultation_app/views/custom_widgets/custom_text_field_widget.dart';
@@ -5,8 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:figma_squircle/figma_squircle.dart';
-import 'dart:async';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 class EmailInputPage extends StatefulWidget {
@@ -20,6 +24,7 @@ class _EmailInputPageState extends State<EmailInputPage> {
   @override
   void initState() {
     super.initState();
+    // addPostFrameCallback ensures the widget tree is fully built first
     WidgetsBinding.instance.addPostFrameCallback((_) {
       FlutterNativeSplash.remove();
       sm.checkIfInSharedPreferences();
@@ -32,6 +37,7 @@ class _EmailInputPageState extends State<EmailInputPage> {
       create: (_) => EmailInputViewModel(),
       child: Consumer<EmailInputViewModel>(
         builder: (context, viewModel, child) {
+          // Prevents the user from navigating back from the login screen
           return PopScope(
             canPop: false,
             child: Scaffold(
@@ -58,7 +64,6 @@ class _EmailInputPageState extends State<EmailInputPage> {
                           isEmail: true,
                           maxLength: 50,
                         ),
-
                         const SizedBox(height: 12),
                         Row(
                           children: [
@@ -66,7 +71,6 @@ class _EmailInputPageState extends State<EmailInputPage> {
                               value: viewModel.isChecked,
                               onChanged: viewModel.toggleRememberMe,
                             ),
-
                             SizedBox(width: 4),
                             Text(
                               'Remember me',
@@ -91,13 +95,13 @@ class _EmailInputPageState extends State<EmailInputPage> {
                               : ElevatedButton(
                                   onPressed: () async {
                                     FocusScope.of(context).unfocus();
+                                    // Guards against double-taps triggering two OTP requests
                                     if (!viewModel.isLoading &&
                                         validator.validateEmail(
                                           viewModel.email,
                                           context,
                                         )) {
                                       viewModel.startLoadingTimeout();
-
                                       await viewModel.continueToVerify(context);
                                     }
                                   },

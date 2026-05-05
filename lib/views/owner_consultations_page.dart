@@ -1,5 +1,12 @@
+// consultations_owner_page.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// Home page for teachers. Wraps BaseConsultationsPage with owner-only controls:
+// block creation, slot insertion, room settings, and slot history access.
+// A toggle lets the teacher switch to the student (visitor) view.
+
 import 'package:consultation_app/viewmodels/owner_consultations_viewmodel.dart';
-import 'package:consultation_app/views/consultations_base_page.dart';
+import 'package:consultation_app/views/base_consultations/base_consultations_page.dart';
 import 'package:consultation_app/views/custom_widgets/animated_toggle_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -23,11 +30,15 @@ class _ConsultationsOwnerPageState extends State<ConsultationsOwnerPage> {
     initialize();
   }
 
+  // Separated from initState so async errors can be caught and shown as a toast
   void initialize() async {
     try {
       await _viewModel.init();
     } catch (e) {
-      notify.showToast('Something went wrong. Please try again.',isError: true);
+      notify.showToast(
+        'Something went wrong. Please try again.',
+        isError: true,
+      );
     }
   }
 
@@ -37,6 +48,7 @@ class _ConsultationsOwnerPageState extends State<ConsultationsOwnerPage> {
       value: _viewModel,
       child: Consumer<OwnerConsultationsViewmodel>(
         builder: (context, viewModel, child) {
+          // ownerView == 1 means the teacher is viewing as owner; 0 means visitor mode
           final isOwner = viewModel.ownerView == 1;
           return BaseConsultationsPage(
             viewModel: viewModel,
@@ -54,6 +66,8 @@ class _ConsultationsOwnerPageState extends State<ConsultationsOwnerPage> {
             deleteButton: isOwner
                 ? _SettingsDropdownButton(viewModel: viewModel)
                 : null,
+            // All owner-only slots are passed as null in visitor mode so
+            // BaseConsultationsPage renders no controls for them
             editBlockButton: isOwner
                 ? (blockId) =>
                       _EditBlockButton(blockId: blockId, viewModel: viewModel)
@@ -88,6 +102,8 @@ class _ConsultationsOwnerPageState extends State<ConsultationsOwnerPage> {
   }
 }
 
+// Renders a + button above or below a block's slot list.
+// Hidden when the block has no slots yet (isEmpty).
 class _AddSlotOnOutskirts extends StatelessWidget {
   final OwnerConsultationsViewmodel viewModel;
   final int blockId;
@@ -140,6 +156,7 @@ class _AddSlotOnOutskirts extends StatelessWidget {
   }
 }
 
+// Hidden when no room is selected or no rooms exist for the teacher
 class _AddBlockButton extends StatelessWidget {
   final OwnerConsultationsViewmodel viewModel;
 
@@ -152,6 +169,7 @@ class _AddBlockButton extends StatelessWidget {
         : GestureDetector(
             onTap: () => nav.toCreateBlock(
               roomId: viewModel.safeSelectedRoomId!,
+              // Refreshes the room's block list after a block is successfully created
               onSuccess: () => viewModel.loadRoom(),
             ),
             child: Container(
@@ -165,6 +183,7 @@ class _AddBlockButton extends StatelessWidget {
   }
 }
 
+// Three-option dropdown for room management: view members, edit, or delete
 class _SettingsDropdownButton extends StatelessWidget {
   final OwnerConsultationsViewmodel viewModel;
 
@@ -186,7 +205,6 @@ class _SettingsDropdownButton extends StatelessWidget {
         shadowColor: constants.darkGrey30,
         padding: EdgeInsets.all(8),
         child: svgs.icon('more', constants.darkGrey),
-
         itemBuilder: (context) => [
           PopupMenuItem<dynamic>(
             value: "see_all_users_joined",
@@ -252,6 +270,8 @@ class _SettingsDropdownButton extends StatelessWidget {
   }
 }
 
+// Confirmation dialog for room deletion
+// Shows a spinner while the delete is in progress
 class _DeleteRoomDialog extends StatelessWidget {
   final OwnerConsultationsViewmodel viewModel;
 
@@ -310,6 +330,9 @@ class _DeleteRoomDialog extends StatelessWidget {
                       GestureDetector(
                         onTap: () async {
                           await viewModel.deleteRoom();
+                          //reset view for owner since selected room was deleted
+                          sm.resetRoomIdOwner();
+                          viewModel.init();
                         },
                         child: Container(
                           padding: EdgeInsets.all(8),
@@ -361,6 +384,7 @@ class _EditBlockButton extends StatelessWidget {
       onTap: () => nav.toEditBlock(
         roomId: viewModel.safeSelectedRoomId!,
         blockId: blockId,
+        // Refreshes the room's block list after a block is edited
         onSuccess: () => viewModel.loadRoom(),
       ),
       child: svgs.icon("edit", constants.darkGrey, width: constants.fsTitle),

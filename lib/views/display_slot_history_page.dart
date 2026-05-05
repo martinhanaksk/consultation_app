@@ -1,3 +1,9 @@
+// display_slot_history_page.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// Shows the booking history of a single slot (who reserved it and when).
+// The history is passed as a raw string and parsed by the viewmodel on init.
+
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/display_slot_history_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
@@ -6,6 +12,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
 class DisplaySlotHistoryPage extends StatefulWidget {
+  // Raw history string
   final String history;
 
   const DisplaySlotHistoryPage({super.key, required this.history});
@@ -21,6 +28,7 @@ class _DisplaySlotHistoryPageState extends State<DisplaySlotHistoryPage> {
   void initState() {
     super.initState();
     _viewModel = DisplaySlotHistoryViewModel();
+    // Parses the raw history string into a list of HistoryItem objects
     _viewModel.init(widget.history);
   }
 
@@ -40,6 +48,7 @@ class _DisplaySlotHistoryPageState extends State<DisplaySlotHistoryPage> {
     );
   }
 
+  // Handles four states: loading, error (with retry), empty, and populated list
   Widget displayHistoryBody(
     BuildContext context,
     DisplaySlotHistoryViewModel viewModel,
@@ -97,6 +106,7 @@ class _DisplaySlotHistoryPageState extends State<DisplaySlotHistoryPage> {
                   color: constants.darkGrey,
                 ),
               ),
+              // Badge showing the total number of history entries
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 12,
@@ -119,65 +129,72 @@ class _DisplaySlotHistoryPageState extends State<DisplaySlotHistoryPage> {
           ),
         ),
         Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            itemCount: viewModel.historyItems.length,
-            itemBuilder: (context, index) {
-              final item = viewModel.historyItems[index];
+          child: ScrollConfiguration(
+            behavior: ScrollConfiguration.of(context).copyWith(
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
+              overscroll: false,
+            ),
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              itemCount: viewModel.historyItems.length,
+              itemBuilder: (context, index) {
+                final item = viewModel.historyItems[index];
 
-              return Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                decoration: constants.squircleShadow(
-                  color: constants.background,
-                ),
-                child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: constants.squircleShadow(
+                    color: constants.background,
                   ),
-                  leading: CircleAvatar(
-                    backgroundColor: constants.lightPrimary,
-                    child: svgs.icon(
-                      'history',
-                      constants.primary,
-                      width: constants.fsBody,
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
                     ),
-                  ),
-                  title: Text(
-                    item.user,
-                    style: TextStyle(
-                      fontWeight: constants.fwSemiBold,
-                      fontSize: constants.fsLabel,
-                      color: constants.darkGrey,
+                    leading: CircleAvatar(
+                      backgroundColor: constants.lightPrimary,
+                      child: svgs.icon(
+                        'history',
+                        constants.primary,
+                        width: constants.fsBody,
+                      ),
                     ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  subtitle: item.date.isNotEmpty
-                      ? Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Row(
-                            children: [
-                              svgs.icon(
-                                'calendar',
-                                constants.darkGrey150,
-                                width: constants.fsLabel,
-                              ),
-
-                              const SizedBox(width: 6),
-                              Text(
-                                item.date,
-                                style: TextStyle(
-                                  color: constants.darkGrey150,
-                                  fontSize: constants.fsLabel,
+                    title: Text(
+                      item.user,
+                      style: TextStyle(
+                        fontWeight: constants.fwSemiBold,
+                        fontSize: constants.fsLabel,
+                        color: constants.darkGrey,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    subtitle: item.date.isNotEmpty
+                        ? Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Row(
+                              children: [
+                                svgs.icon(
+                                  'calendar',
+                                  constants.darkGrey150,
+                                  width: constants.fsLabel,
                                 ),
-                              ),
-                            ],
-                          ),
-                        )
-                      : null,
-                ),
-              );
-            },
+                                const SizedBox(width: 6),
+                                Text(
+                                  item.date,
+                                  style: TextStyle(
+                                    color: constants.darkGrey150,
+                                    fontSize: constants.fsLabel,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : null,
+                  ),
+                );
+              },
+            ),
           ),
         ),
       ],

@@ -1,3 +1,9 @@
+// display_users_in_room_page.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// Shows the list of students who have joined a specific room.
+// Accessible from the room settings dropdown on the owner consultations page.
+
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/display_users_in_room_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
@@ -28,6 +34,7 @@ class _DisplayUsersInRoomPageState extends State<DisplayUsersInRoomPage> {
     _initialize();
   }
 
+  // Extracted so it can be called again from the error state's Retry button
   void _initialize() async {
     await _viewModel.init(widget.roomId);
   }
@@ -48,6 +55,7 @@ class _DisplayUsersInRoomPageState extends State<DisplayUsersInRoomPage> {
     );
   }
 
+  // Handles four states: loading, error (with retry), empty, and populated list
   Widget _buildBody(
     BuildContext context,
     DisplayUsersInRoomViewModel viewModel,
@@ -93,8 +101,12 @@ class _DisplayUsersInRoomPageState extends State<DisplayUsersInRoomPage> {
             children: [
               Text(
                 'Members',
-                style: TextStyle(color: constants.darkGrey,fontSize: constants.fsBody),
+                style: TextStyle(
+                  color: constants.darkGrey,
+                  fontSize: constants.fsBody,
+                ),
               ),
+              // Badge showing the total member count
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 12,
@@ -117,50 +129,61 @@ class _DisplayUsersInRoomPageState extends State<DisplayUsersInRoomPage> {
           ),
         ),
         Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            itemCount: viewModel.users.length,
-            itemBuilder: (context, index) {
-              final email = viewModel.users[index];
+          child: ScrollConfiguration(
+            // BouncingScrollPhysics with AlwaysScrollableScrollPhysics ensures
+            // the list is always scrollable and shows a bounce effect
+            behavior: ScrollConfiguration.of(context).copyWith(
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
+              overscroll: false,
+            ),
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              itemCount: viewModel.users.length,
+              itemBuilder: (context, index) {
+                final email = viewModel.users[index];
 
-              return Container(
-                margin: const EdgeInsets.only(bottom: 8),
-                decoration: constants.squircleShadow(
-                  color: constants.background,
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 20,
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  decoration: constants.squircleShadow(
+                    color: constants.background,
                   ),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        backgroundColor: constants.lightPrimary,
-                        foregroundColor: Theme.of(context).colorScheme.primary,
-                        child: Text(
-                          email.isNotEmpty ? email[0].toUpperCase() : '?',
-                          style: TextStyle(
-                            color: constants.primary,
-                            fontWeight: constants.fwSemiBold,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 20,
+                    ),
+                    child: Row(
+                      children: [
+                        // Avatar uses the first letter of the email as a placeholder initial
+                        CircleAvatar(
+                          backgroundColor: constants.lightPrimary,
+                          foregroundColor: constants.primary,
+                          child: Text(
+                            email.isNotEmpty ? email[0].toUpperCase() : '?',
+                            style: TextStyle(
+                              color: constants.primary,
+                              fontWeight: constants.fwSemiBold,
+                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(width: 8),
-                      Text(
-                        email,
-                        style: TextStyle(
-                          fontSize: constants.fsLabel,
-                          fontWeight: constants.fwSemiBold,
-                          color: constants.darkGrey,
+                        SizedBox(width: 8),
+                        Text(
+                          email,
+                          style: TextStyle(
+                            fontSize: constants.fsLabel,
+                            fontWeight: constants.fwSemiBold,
+                            color: constants.darkGrey,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
       ],

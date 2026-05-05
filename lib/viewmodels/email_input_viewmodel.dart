@@ -8,7 +8,6 @@ class EmailInputViewModel extends ChangeNotifier {
   bool _isChecked = false;
   String? _errorMessage;
   Timer? _loadingTimer;
-  String _email = '';
   bool get isLoading => _isLoading;
   bool get isChecked => _isChecked;
   String? get errorMessage => _errorMessage;
@@ -18,8 +17,6 @@ class EmailInputViewModel extends ChangeNotifier {
     if (_isLoading) return;
 
     final trimmedEmail = helpers.trimText(email);
-
-    if (!validator.validateEmail(trimmedEmail, context)) return;
 
     _isLoading = true;
     notifyListeners();
@@ -47,11 +44,6 @@ class EmailInputViewModel extends ChangeNotifier {
     _isChecked = value ?? false;
     notifyListeners();
   }
-
-  void updateEmail(String value) {
-    _email = value;
-  }
-
   
 
   void startLoadingTimeout() {

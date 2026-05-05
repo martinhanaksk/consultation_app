@@ -37,13 +37,15 @@ class AddSlotViewmodel extends ChangeNotifier {
     return null;
   }
 
+ 
+
   void addSlot(int blockId, VoidCallback? onSuccess) async {
     isLoading = true;
     notifyListeners();
 
     final error = validateCreate();
     if (error != null) {
-      notify.showToast(error,isError: true);
+      notify.showToast(error, isError: true);
       isLoading = false;
       notifyListeners();
       return;
