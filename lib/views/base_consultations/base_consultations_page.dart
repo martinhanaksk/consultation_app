@@ -16,7 +16,6 @@ import 'package:sticky_headers/sticky_headers.dart';
 import 'room_selector_button.dart';
 import 'content_consultations.dart';
 
-
 class BaseConsultationsPage extends StatefulWidget {
   final Widget? toggle;
   final Widget? addButton;
@@ -24,11 +23,10 @@ class BaseConsultationsPage extends StatefulWidget {
   final BaseConsultationsViewmodel? viewModel;
   // Builder callbacks are nullable
   final Widget Function(int blockId)? editBlockButton;
-  final Widget? Function(int slotId, int blockId, Color color)? showHistoryOption;
+  final Widget? Function(int slotId, int blockId, Color color)?
+  showHistoryOption;
   final Widget? Function(int blockId, bool isEmpty)? addSlotBefore;
   final Widget? Function(int blockId, bool isEmpty)? addSlotAfter;
-
-
   const BaseConsultationsPage({
     super.key,
     this.viewModel,
@@ -40,17 +38,12 @@ class BaseConsultationsPage extends StatefulWidget {
     this.addSlotBefore,
     this.addSlotAfter,
   });
-
-
   @override
   State<BaseConsultationsPage> createState() => _BaseConsultationsPageState();
 }
 
-
 class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
   late final BaseConsultationsViewmodel _viewModel;
-
-
   @override
   void initState() {
     super.initState();
@@ -59,7 +52,6 @@ class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
     _viewModel = widget.viewModel ?? BaseConsultationsViewmodel();
     if (widget.viewModel == null) _viewModel.init();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +102,8 @@ class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
                                   )
                                 : ConsultationsContent(
                                     viewModel: viewModel,
-                                    shortName: viewModel.selectedRoom?.shortName,
+                                    shortName:
+                                        viewModel.selectedRoom?.shortName,
                                     toggle: widget.toggle,
                                     addButton: widget.addButton,
                                     showHistoryOption: widget.showHistoryOption,

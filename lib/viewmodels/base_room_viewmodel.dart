@@ -1,8 +1,8 @@
-// display_users_in_room_page.dart
+// base_room_viewmodel.dart
 // Author: Martin Hanak
 // Email: xhanakm00@stud.fit.vut.cz
-// base_room_viewmodel.dart
 // Shared state and behaviour for CreateRoomViewmodel and EditRoomViewmodel.
+// Owns all form controllers and the accepted-email list
 
 import 'package:flutter/material.dart';
 
@@ -11,14 +11,17 @@ abstract class BaseRoomViewmodel extends ChangeNotifier {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController acceptedEmailController = TextEditingController();
-  final TextEditingController cancellationHoursController = TextEditingController();
+  final TextEditingController cancellationHoursController =
+      TextEditingController();
 
   List<String> acceptedEmails = [];
 
   void addToAcceptedEmails(String value) {
     final trimmed = value.trim();
+    // Ignore empty input or duplicates
     if (trimmed.isEmpty || acceptedEmails.contains(trimmed)) return;
     acceptedEmails.add(trimmed);
+    // Clear the input field after a successful add
     acceptedEmailController.clear();
     notifyListeners();
   }

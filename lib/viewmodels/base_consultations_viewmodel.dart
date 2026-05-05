@@ -1,3 +1,10 @@
+// base_consultations_viewmodel.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// Core ViewModel shared by both the student and owner consultation views.
+// Manages room selection, block/slot loading, optimistic UI updates for
+// take/release actions, email subscriptions and website launching.
+
 import 'package:consultation_app/models/block_model.dart';
 import 'package:consultation_app/models/room_model.dart';
 import 'package:consultation_app/models/slot_model.dart';
@@ -10,38 +17,33 @@ enum ViewMode { visitor, owner }
 
 class BaseConsultationsViewmodel extends ChangeNotifier {
   // ── State ──────────────────────────────────────────────────────────────────
-
   bool isOwner = false;
   bool isLoading = false;
   bool blocksFiltered = false;
   bool noRoomsFound = false;
-
   List<int> subscribedBlocks = [];
   List<UserModel>? users = [];
   List<RoomModel>? rooms = [];
   List<BlockModel> blocks = [];
   Map<int, List<SlotModel>?> slotsInBlocks = {};
-
   int? ownerSelectedRoomId;
   int? visitorSelectedRoomId;
   int? selectedRoomId;
-
   bool _isWebsiteLoading = false;
   String _visitReason = '';
+  // 0 = visitor/student view, 1 = owner view
   int _ownerView = 1;
-
+  // Per-block and per-slot loading flags stored as maps so only the
+  // affected item triggers rebuild
   final Map<int, bool> _addingSlotBefore = {};
   final Map<int, bool> _addingSlotAfter = {};
   final Map<int, bool> _slotLoading = {};
   final Map<int, bool> _optimisticallyReleased = {};
   final Map<int, bool> _takingSlot = {};
-
   // ── Getters ────────────────────────────────────────────────────────────────
-
   bool get isWebsiteLoading => _isWebsiteLoading;
   String get visitReason => _visitReason;
   int get ownerView => _ownerView;
-
   bool isAddingSlotBefore(int blockId) => _addingSlotBefore[blockId] ?? false;
   bool isAddingSlotAfter(int blockId) => _addingSlotAfter[blockId] ?? false;
   bool isSlotLoading(int slotId) => _slotLoading[slotId] ?? false;
@@ -49,14 +51,17 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
       _optimisticallyReleased[slotId] ?? false;
   bool isTakingSlot(int slotId) => _takingSlot[slotId] ?? false;
 
+  // Returns the correct selected room ID for the current view mode
   int? get roomIdNumber =>
       ownerView == 0 ? visitorSelectedRoomId : ownerSelectedRoomId;
 
+  // Guards against a selectedRoomId that no longer exists in the rooms list
   int? get safeSelectedRoomId {
     if (rooms == null || selectedRoomId == null) return null;
     return rooms!.any((r) => r.id == selectedRoomId) ? selectedRoomId : null;
   }
 
+  // Returns null instead of throwing if the selected room has been removed
   RoomModel? get selectedRoom {
     if (rooms == null || rooms!.isEmpty || selectedRoomId == null) return null;
     try {
@@ -67,12 +72,10 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   }
 
   // ── Public Methods ─────────────────────────────────────────────────────────
-
   Future<void> init() async {
     final email = sm.email;
     await setOwnerView(0);
     _setLoading(true);
-
     if (!await checkConnection()) return;
 
     try {
@@ -80,16 +83,16 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
       isOwner = await resolveUserRole(email);
       _visitReason = sm.visitReason;
       subscribedBlocks = await api.getMySubscriptions();
-
       final myRooms = await fetchRooms();
       if (myRooms.isEmpty) {
         noRoomsFound = true;
         return;
       }
 
+      // Restore the last visited room from session
       visitorSelectedRoomId = sm.roomIdVisitor ?? myRooms.first.id;
       selectedRoomId = visitorSelectedRoomId;
-      await refreshRoomData(myRooms.first.id);
+      await refreshRoomData(selectedRoomId!);
     } catch (_) {
       notify.showToast(
         'Failed to load consultations. Please check your internet connection.',
@@ -110,30 +113,28 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   Future<void> refreshRoomData(int roomId) async {
     _setLoading(true);
     if (!await checkConnection()) return;
-
     List<int> subscriptions = [];
     try {
       subscriptions = await api.getMySubscriptions();
     } catch (_) {
       notify.showToast('Could not load your subscriptions', isError: true);
     }
-
     final newUsers = await api.getUsers();
     final newRooms = await fetchRooms();
     _visitReason = sm.visitReason;
-
     if (newRooms.isEmpty) {
       noRoomsFound = true;
       notifyListeners();
       return;
     }
-
     noRoomsFound = false;
 
+    // Only fetch blocks from today onward to avoid showing past consultations
     final today = _todayString();
     final newBlocks = await api.getBlocks(roomId, today);
     final newSlotsInBlocks = await _fetchSlotsForBlocks(newBlocks);
 
+    // Assign all fetched data
     subscribedBlocks = subscriptions;
     users = newUsers;
     rooms = newRooms;
@@ -147,6 +148,8 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     _takingSlot[slotId] = true;
     notifyListeners();
 
+    // Optimistically mark the slot as taken in the local cache so the UI
+    // responds immediately before the API call completes
     final oldSlot = _findSlot(slotId);
     if (oldSlot != null) {
       _updateSlotInCache(
@@ -167,11 +170,11 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
         ),
       );
     }
-
     try {
       await api.takeSlot(slotId, note, isOnline);
       await _refreshSlotsForBlock(slotId);
     } catch (_) {
+      // Roll back the optimistic update on failure
       if (oldSlot != null) _updateSlotInCache(slotId, oldSlot);
       notify.showToast('Failed to take slot', isError: true);
     } finally {
@@ -184,6 +187,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     _optimisticallyReleased[slotId] = true;
     notifyListeners();
 
+    // Optimistically clear the booking fields in the local cache
     final oldSlot = _findSlot(slotId);
     if (oldSlot != null) {
       _updateSlotInCache(
@@ -204,11 +208,11 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
         ),
       );
     }
-
     try {
       await api.releaseSlot(slotId);
       await _refreshSlotsForBlock(slotId);
     } catch (_) {
+      // Roll back the optimistic update on failure
       if (oldSlot != null) _updateSlotInCache(slotId, oldSlot);
       notify.showToast('Failed to release slot', isError: true);
     } finally {
@@ -220,6 +224,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   Future<void> onChangeConsultationType(int slotId) async {
     _setLoading(true);
 
+    // Optimistically flip the isOnline flag before the API responds
     final oldSlot = _findSlot(slotId);
     if (oldSlot != null) {
       _updateSlotInCache(
@@ -240,7 +245,6 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
         ),
       );
     }
-
     try {
       await api.changeConsultationType(slotId);
       await _refreshSlotsForBlock(slotId);
@@ -253,14 +257,16 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   }
 
   Future<void> handleEmailSubscribe(int blockId) async {
+    // Optimistically toggle the local list so the bell icon flips instantly
     final wasSubscribed = subscribedBlocks.contains(blockId);
     _toggleSubscription(blockId, subscribe: !wasSubscribed);
-
     try {
       await api.subscribeToBlock(blockId);
+      // Re-fetch to stay in sync
       subscribedBlocks = await api.getMySubscriptions();
       notifyListeners();
     } catch (_) {
+      // Roll back the optimistic toggle on failure
       _toggleSubscription(blockId, subscribe: wasSubscribed);
       notify.showToast(
         'Failed to update subscription, please try again later',
@@ -270,6 +276,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   }
 
   Future<void> switchRoom(int newRoomId) async {
+    // Persist the selection in the correct slot depending on the active view mode
     if (_ownerView == 1) {
       ownerSelectedRoomId = newRoomId;
     } else {
@@ -282,12 +289,14 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   Future<bool> validateAndSelectRoom(int? id) async {
     if (id == null) return false;
 
+    // Re-fetch rooms to ensure the user still has access to the target room
     final myRooms = await fetchRooms();
     if (!myRooms.any((room) => room.id == id)) {
       notify.showToast('Invalid room or access denied', isError: true);
       return false;
     }
 
+    // Persist the selection in session storage
     if (ownerView == 0) {
       visitorSelectedRoomId = id;
       sm.setRoomIdVisitor(id);
@@ -301,6 +310,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   }
 
   Future<void> launchWebsite(String url) async {
+    // Guard against double-taps triggering a second launch while the first is pending
     if (_isWebsiteLoading) return;
 
     final normalized = _normalizeUrl(url.trim());
@@ -308,10 +318,8 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
       notify.showToast('URL is empty');
       return;
     }
-
     _isWebsiteLoading = true;
     notifyListeners();
-
     try {
       final uri = Uri.parse(normalized);
       final launched = await launchUrl(
@@ -346,9 +354,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   }
 
   void setIsLoading(bool value) => _setLoading(value);
-
   Future<List<RoomModel>> fetchRooms() => api.getJoinedRooms();
-
   Future<bool> checkConnection() async {
     if (await helpers.handleIsInternetConnection()) return true;
     notify.showToast(
@@ -368,7 +374,6 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
 
   int getBlocksCount() =>
       blocksFiltered && blocks.isNotEmpty ? blocks.length : 0;
-
   String blockDateLabel(int blockId) {
     final block = _findBlock(blockId);
     if (block == null) return '';
@@ -381,6 +386,8 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     return block != null ? '${DateTime.parse(block.date.toString())}' : '';
   }
 
+  // Returns a human-readable relative label: empty for past dates, "today",
+  // "tomorrow", or "N d." for dates further in the future
   String daysRemainingLabel(DateTime date) {
     final today = DateTime(
       DateTime.now().year,
@@ -389,7 +396,6 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     );
     final target = DateTime(date.year, date.month, date.day);
     final diff = target.difference(today).inDays;
-
     if (diff < 0) return '';
     if (diff == 0) return '(today)';
     if (diff == 1) return '(tomorrow)';
@@ -397,14 +403,15 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   }
 
   // ── Private Helpers ────────────────────────────────────────────────────────
-
   void _setLoading(bool value) {
     isLoading = value;
     notifyListeners();
   }
 
+  // Returns date portion of DateTime.now() as "yyyy-MM-dd"
   String _todayString() => DateTime.now().toString().substring(0, 10);
 
+  // Prepends "https://" when the URL has no scheme, rejects empty strings
   String? _normalizeUrl(String trimmed) {
     if (trimmed.isEmpty) return null;
     return trimmed.startsWith('http://') || trimmed.startsWith('https://')
@@ -421,6 +428,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Fetches slots for all blocks in parallel using Future.wait
   Future<Map<int, List<SlotModel>?>> _fetchSlotsForBlocks(
     List<BlockModel> blockList,
   ) async {
@@ -433,7 +441,6 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
         result[block.id] = slots ?? [];
       }),
     );
-
     return result;
   }
 
@@ -469,7 +476,6 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     if (blockId == null) return;
     final slots = slotsInBlocks[blockId];
     if (slots == null) return;
-
     final index = slots.indexWhere((s) => s.id == slotId);
     if (index != -1) {
       slots[index] = updatedSlot;

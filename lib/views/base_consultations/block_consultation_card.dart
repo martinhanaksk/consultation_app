@@ -11,18 +11,16 @@ import 'package:consultation_app/viewmodels/base_consultations_viewmodel.dart';
 import 'package:consultation_app/views/slots/slot_widget.dart';
 import 'package:provider/provider.dart';
 
-
 class ConsultationBlockCard extends StatelessWidget {
   final BaseConsultationsViewmodel viewModel;
   // blockEntry.key = block ID, blockEntry.value = list of slots in this block
   final MapEntry<int, List?> blockEntry;
   // Null in student view — presence of this callback switches the header action
   final Widget Function(int blockId)? editBlockButton;
-  final Widget? Function(int slotId, int blockId, Color color)? showHistoryOption;
+  final Widget? Function(int slotId, int blockId, Color color)?
+  showHistoryOption;
   final Widget? Function(int blockId, bool isEmpty)? addSlotBefore;
   final Widget? Function(int blockId, bool isEmpty)? addSlotAfter;
-
-
   const ConsultationBlockCard({
     super.key,
     required this.viewModel,
@@ -32,13 +30,9 @@ class ConsultationBlockCard extends StatelessWidget {
     this.addSlotBefore,
     this.addSlotAfter,
   });
-
-
   @override
   Widget build(BuildContext context) {
     final slots = blockEntry.value!;
-
-
     return Center(
       child: Column(
         children: [
@@ -75,17 +69,22 @@ class ConsultationBlockCard extends StatelessWidget {
                                 width: 20,
                                 child: GestureDetector(
                                   onTap: () async {
-                                    viewModel.handleEmailSubscribe(blockEntry.key);
+                                    viewModel.handleEmailSubscribe(
+                                      blockEntry.key,
+                                    );
                                     notify.showToast(
-                                      viewModel.subscribedBlocks
-                                              .contains(blockEntry.key)
+                                      viewModel.subscribedBlocks.contains(
+                                            blockEntry.key,
+                                          )
                                           ? "Notifications enabled for selected slot"
                                           : "Notifications disabled for selected slot",
                                     );
                                   },
                                   // Icon reflects current subscription state
-                                  child: viewModel.subscribedBlocks
-                                          .contains(blockEntry.key)
+                                  child:
+                                      viewModel.subscribedBlocks.contains(
+                                        blockEntry.key,
+                                      )
                                       ? svgs.icon(
                                           "notifications_bell_full",
                                           constants.darkGrey,
@@ -129,7 +128,10 @@ class ConsultationBlockCard extends StatelessWidget {
                             showHistoryOption: showHistoryOption,
                             slot: slot,
                             cancellationNoticeHours:
-                                viewModel.selectedRoom?.cancellationNoticeHours ?? 0,
+                                viewModel
+                                    .selectedRoom
+                                    ?.cancellationNoticeHours ??
+                                0,
                             blockId: blockEntry.key,
                             isOwnerView: viewModel.ownerView,
                             onChangeConsultationType: () =>

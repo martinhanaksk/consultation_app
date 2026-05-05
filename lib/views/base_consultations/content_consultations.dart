@@ -12,19 +12,17 @@ import 'package:consultation_app/viewmodels/base_consultations_viewmodel.dart';
 import 'no_rooms_found.dart';
 import 'block_consultation_card.dart';
 
-
 class ConsultationsContent extends StatelessWidget {
   final BaseConsultationsViewmodel viewModel;
   final Widget? toggle;
   final Widget? addButton;
   final String? shortName;
   final Widget? deleteButton;
-  final Widget? Function(int slotId, int blockId, Color color)? showHistoryOption;
+  final Widget? Function(int slotId, int blockId, Color color)?
+  showHistoryOption;
   final Widget? Function(int blockId, bool isEmpty)? addSlotBefore;
   final Widget? Function(int blockId, bool isEmpty)? addSlotAfter;
   final Widget Function(int blockId)? editBlockButton;
-
-
   const ConsultationsContent({
     super.key,
     required this.viewModel,
@@ -37,15 +35,11 @@ class ConsultationsContent extends StatelessWidget {
     this.addSlotBefore,
     this.addSlotAfter,
   });
-
-
   @override
   Widget build(BuildContext context) {
     // Treat a missing room selection the same as no rooms existing
     final bool noRoom =
         viewModel.noRoomsFound || viewModel.selectedRoomId == null;
-
-
     return Column(
       children: [
         const SizedBox(height: 12),
@@ -135,7 +129,6 @@ class ConsultationsContent extends StatelessWidget {
       ],
     );
   }
-
 
   // Sorts blocks by their date ascending so the nearest upcoming block appears first.
   List<MapEntry<int, List?>> _sortedBlocks() {

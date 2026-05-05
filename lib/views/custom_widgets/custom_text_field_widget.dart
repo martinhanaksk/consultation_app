@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 
-
 class CustomInputTextField extends StatefulWidget {
   final TextEditingController? controller;
   final bool readOnly;
@@ -32,8 +31,6 @@ class CustomInputTextField extends StatefulWidget {
   final bool showClearIcon;
   final VoidCallback? onClear;
   final Widget? prefixIcon;
-
-
   const CustomInputTextField({
     super.key,
     this.controller,
@@ -58,12 +55,9 @@ class CustomInputTextField extends StatefulWidget {
     this.onClear,
     this.prefixIcon,
   });
-
-
   @override
   State<CustomInputTextField> createState() => _CustomInputTextFieldState();
 }
-
 
 class _CustomInputTextFieldState extends State<CustomInputTextField> {
   TextEditingController? get _controller => widget.controller;
@@ -73,15 +67,12 @@ class _CustomInputTextFieldState extends State<CustomInputTextField> {
     cornerRadius: 12,
     cornerSmoothing: 0.6,
   );
-
-
   @override
   void initState() {
     super.initState();
     // Listen to controller changes so the clear button appears/disappears
     widget.controller?.addListener(_handleTextChanged);
   }
-
 
   @override
   void didUpdateWidget(covariant CustomInputTextField oldWidget) {
@@ -93,18 +84,15 @@ class _CustomInputTextFieldState extends State<CustomInputTextField> {
     }
   }
 
-
   @override
   void dispose() {
     _controller?.removeListener(_handleTextChanged);
     super.dispose();
   }
 
-
   void _handleTextChanged() {
     setState(() {});
   }
-
 
   void _clearText() {
     _controller?.clear();
@@ -113,7 +101,6 @@ class _CustomInputTextFieldState extends State<CustomInputTextField> {
     widget.onClear?.call();
     setState(() {});
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -146,13 +133,14 @@ class _CustomInputTextFieldState extends State<CustomInputTextField> {
                               RegExp(r"[a-zA-ZÀ-ž0-9 '-]"),
                             ),
                           ])));
-
-
     final hasText = _controller?.text.isNotEmpty ?? false;
 
     // Only show the clear button when the field is editable and has content
     Widget? suffix;
-    if (widget.showClearIcon && !widget.readOnly && hasText && _controller != null) {
+    if (widget.showClearIcon &&
+        !widget.readOnly &&
+        hasText &&
+        _controller != null) {
       suffix = IconButton(
         onPressed: _clearText,
         icon: svgs.icon("cross", constants.darkGrey),
@@ -161,8 +149,6 @@ class _CustomInputTextFieldState extends State<CustomInputTextField> {
         constraints: const BoxConstraints(),
       );
     }
-
-
     return Container(
       // Outer container carries the squircle-shaped drop shadow
       decoration: constants.squircleShadow(

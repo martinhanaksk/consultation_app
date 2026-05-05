@@ -9,14 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/base_consultations_viewmodel.dart';
 
-
 class NoRoomsFound extends StatelessWidget {
   final BaseConsultationsViewmodel viewModel;
-
-
   const NoRoomsFound({super.key, required this.viewModel});
-
-
   @override
   Widget build(BuildContext context) {
     return Center(

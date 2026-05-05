@@ -9,25 +9,19 @@ import 'package:consultation_app/models/room_model.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/base_consultations_viewmodel.dart';
 
-
 class RoomSelectorButton extends StatelessWidget {
   final BaseConsultationsViewmodel viewModel;
-
-
   const RoomSelectorButton({super.key, required this.viewModel});
-
-
   @override
   Widget build(BuildContext context) {
-    final bool noRoom = viewModel.noRoomsFound || viewModel.selectedRoomId == null;
+    final bool noRoom =
+        viewModel.noRoomsFound || viewModel.selectedRoomId == null;
     // Three-state color: muted when no room, primary while loading, dark when ready
     final Color labelColor = noRoom
         ? constants.darkGrey100
         : viewModel.isLoading
-            ? constants.primary
-            : constants.darkGrey;
-
-
+        ? constants.primary
+        : constants.darkGrey;
     return Transform.translate(
       // 1 px upward nudge to close the visual gap between this widget and the sticky header above it
       offset: const Offset(0, -1),
@@ -102,8 +96,8 @@ class RoomSelectorButton extends StatelessWidget {
                           viewModel.isLoading
                               ? "Loading..."
                               : noRoom
-                                  ? "No rooms created"
-                                  : '${viewModel.selectedRoom?.title} - ${viewModel.selectedRoom?.description}',
+                              ? "No rooms created"
+                              : '${viewModel.selectedRoom?.title} - ${viewModel.selectedRoom?.description}',
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: constants.fwSemiBold,
@@ -112,7 +106,11 @@ class RoomSelectorButton extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 6),
-                      svgs.icon('arrow_down', labelColor, width: constants.fsBody),
+                      svgs.icon(
+                        'arrow_down',
+                        labelColor,
+                        width: constants.fsBody,
+                      ),
                     ],
                   ),
                 ),

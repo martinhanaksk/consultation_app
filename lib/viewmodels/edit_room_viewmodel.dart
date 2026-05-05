@@ -1,4 +1,9 @@
 // edit_room_viewmodel.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// ViewModel for the Edit Room screen. Loads existing room data into the
+// inherited controllers and submits changes via the API.
+
 import 'package:consultation_app/models/room_model.dart';
 import 'package:consultation_app/setup.dart';
 import 'base_room_viewmodel.dart';
@@ -13,7 +18,7 @@ class EditRoomViewmodel extends BaseRoomViewmodel {
   bool get isLoading => _isLoading;
   bool get isSaving => _isSaving;
 
-  // ── Public Methods ─────────────────────────────────────────────────────────
+  // ── Public Methods ───────────────────────────────────────────────────────────────────────────
 
   Future<void> loadData(int roomId) async {
     _setLoading(true);
@@ -21,10 +26,12 @@ class EditRoomViewmodel extends BaseRoomViewmodel {
       final allRooms = await api.getAllRooms();
       room = allRooms.firstWhere((r) => r.id == roomId);
 
+      // Pre-populate the inherited form controllers with the current room values
       shortNameController.text = room!.shortName;
       titleController.text = room!.title;
       descriptionController.text = room!.description;
       cancellationHoursController.text = room!.cancellationNoticeHours.toString();
+      // The API returns a comma-separated string. Split into the list used by the form
       acceptedEmails = room!.acceptedEmails
           .split(',')
           .map((e) => e.trim())
@@ -34,7 +41,7 @@ class EditRoomViewmodel extends BaseRoomViewmodel {
       errorMessage = null;
       notifyListeners();
     } catch (e) {
-      errorMessage = 'Failed to load room details: $e';
+      errorMessage = 'Failed to load room details: \$e';
     } finally {
       _setLoading(false);
     }
@@ -56,7 +63,7 @@ class EditRoomViewmodel extends BaseRoomViewmodel {
     notifyListeners();
   }
 
-  // ── Private Helpers ────────────────────────────────────────────────────────
+  // ── Private Helpers ────────────────────────────────────────────────────────────────────────────
 
   Future<bool> _submitChanges() async {
     if (room == null) return false;
@@ -78,13 +85,14 @@ class EditRoomViewmodel extends BaseRoomViewmodel {
         acceptedEmails,
       );
     } catch (e) {
-      errorMessage = 'Error: $e';
+      errorMessage = 'Error: \$e';
       return false;
     } finally {
       _setSaving(false);
     }
   }
 
+  // Validates that no required field is empty before attempting to save
   bool _anyFieldEmpty() =>
       shortNameController.text.isEmpty ||
       titleController.text.isEmpty ||

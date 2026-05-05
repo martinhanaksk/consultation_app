@@ -93,11 +93,13 @@ class _CreateBlockState extends State<CreateBlock> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  'Selected: ${viewModel.getSelectedDatesFormatted()}',
-                                  style: TextStyle(
-                                    fontSize: constants.fsLabel,
-                                    color: constants.darkGrey,
+                                Expanded(
+                                  child: Text(
+                                    'Selected: ${viewModel.getSelectedDatesFormatted()}',
+                                    style: TextStyle(  overflow: TextOverflow.ellipsis,
+                                      fontSize: constants.fsLabel,
+                                      color: constants.darkGrey,
+                                    ),
                                   ),
                                 ),
                                 svgs.icon(

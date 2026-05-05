@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:consultation_app/setup.dart';
 
-
 class TimeDurationPicker extends StatefulWidget {
   final Duration? initialStartTime;
   final Duration? initialDuration;
@@ -16,8 +15,6 @@ class TimeDurationPicker extends StatefulWidget {
   final ValueChanged<Duration> onDurationChanged;
   final String durationLabel;
   final String startTimeLabel;
-
-
   const TimeDurationPicker({
     super.key,
     required this.onStartTimeChanged,
@@ -27,18 +24,13 @@ class TimeDurationPicker extends StatefulWidget {
     this.durationLabel = 'Minutes per Slot',
     this.startTimeLabel = 'Slot Start Time',
   });
-
-
   @override
   State<TimeDurationPicker> createState() => _TimeDurationPickerState();
 }
 
-
 class _TimeDurationPickerState extends State<TimeDurationPicker> {
   late DateTime _currentStart;
   late FixedExtentScrollController _durationController;
-
-
   @override
   void initState() {
     super.initState();
@@ -46,16 +38,14 @@ class _TimeDurationPickerState extends State<TimeDurationPicker> {
     // Round down to the nearest 5-minute mark so the time picker starts on a valid interval
     final rounded = now.minute - (now.minute % 5);
 
-    final start = widget.initialStartTime ??
-        Duration(hours: now.hour, minutes: rounded);
+    final start =
+        widget.initialStartTime ?? Duration(hours: now.hour, minutes: rounded);
     // CupertinoDatePicker requires a full DateTime; the date part (2000-01-01) is irrelevant here
     _currentStart = DateTime(2000, 1, 1, start.inHours, start.inMinutes % 60);
 
     final initDuration = widget.initialDuration ?? const Duration(minutes: 15);
     // Index 2 corresponds to 15 min ((2+1)*5); adjust if the default duration changes
-    _durationController = FixedExtentScrollController(
-      initialItem: 2,
-    );
+    _durationController = FixedExtentScrollController(initialItem: 2);
 
     // Notify the parent of the resolved initial values after the first frame,
     // so any dependent state is set even when the user never moves the pickers
@@ -65,13 +55,11 @@ class _TimeDurationPickerState extends State<TimeDurationPicker> {
     });
   }
 
-
   @override
   void dispose() {
     _durationController.dispose();
     super.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {

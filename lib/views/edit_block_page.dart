@@ -194,6 +194,7 @@ class _EditBlockState extends State<EditBlock> {
                                               )
                                             : ListView.builder(
                                                 shrinkWrap: true,
+                                                physics: NeverScrollableScrollPhysics(),
                                                 padding: EdgeInsets.zero,
                                                 itemCount: viewModel.slots.length,
                                                 itemBuilder: (context, index) {

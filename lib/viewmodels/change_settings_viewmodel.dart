@@ -1,9 +1,15 @@
+// change_settings_viewmodel.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// ViewModel for the Settings screen. Loads user profile data, and exposes
+// optimistic-update methods for name, visit reason, visibility, and
+// notification preferences, each rolling back on API failure.
+
 import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
 
 class ChangeSettingsViewmodel extends ChangeNotifier {
   // ── State ──────────────────────────────────────────────────────────────────
-
   String _name = '';
   String _surname = '';
   String _email = '';
@@ -11,9 +17,9 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
   String _visitReason = '';
   bool _visibility = true;
   bool _isLoading = false;
+  // Guards against re-running initialization if the widget rebuilds
   bool _hasBeenInitialized = false;
   int _notifyHoursBefore = 0;
-
   // ── Getters ────────────────────────────────────────────────────────────────
 
   String get name => _name;
@@ -29,6 +35,7 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
   // ── Public Methods ─────────────────────────────────────────────────────────
 
   Future<void> initialize() async {
+    // Prevent initializations if called more than once
     if (_isLoading) return;
     _setLoading(true);
     _hasBeenInitialized = true;
@@ -43,6 +50,7 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
     _visibility = data['visible'] == 1 || data['visible'] == true;
     _notifyHoursBefore = (data['notification'] as int?) ?? 0;
 
+    // Persist the freshly fetched profile into the local session
     await sm.saveSession(
       sm.token,
       _email,
@@ -53,7 +61,6 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
       _name,
       _surname,
     );
-
     _setLoading(false);
   }
 
@@ -63,10 +70,10 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
   }
 
   Future<void> setVisibility() async {
+    // Optimistically toggle visibility; revert if the API call fails
     final newVal = !_visibility;
     _visibility = newVal;
     notifyListeners();
-
     try {
       await _updateUserData();
       sm.updateVisibility(newVal);
@@ -84,12 +91,12 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
   }
 
   Future<void> updateName(String newName, String newSurname) async {
+    // Snapshot old values for rollback before applying the optimistic update
     final oldName = _name;
     final oldSurname = _surname;
     _name = newName;
     _surname = newSurname;
     notifyListeners();
-
     try {
       await _updateUserData();
       sm.updateFullName(newName, newSurname);
@@ -106,7 +113,6 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
     final old = _visitReason;
     _visitReason = reason;
     notifyListeners();
-
     try {
       await _updateUserData();
       sm.updateVisitReason(reason);
@@ -122,7 +128,6 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
     final old = _notifyHoursBefore;
     _notifyHoursBefore = hours;
     notifyListeners();
-
     try {
       await _updateUserData();
       sm.updateNotifyHoursBefore(hours);
@@ -144,11 +149,12 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Single call sends the full current profile state to the API
   Future<void> _updateUserData() => api.updateUserData(
-        _name,
-        _surname,
-        _visitReason,
-        _visibility,
-        _notifyHoursBefore,
-      );
+    _name,
+    _surname,
+    _visitReason,
+    _visibility,
+    _notifyHoursBefore,
+  );
 }

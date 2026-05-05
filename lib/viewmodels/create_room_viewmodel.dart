@@ -1,19 +1,24 @@
 // create_room_viewmodel.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// ViewModel for the Create Room screen. Extends BaseRoomViewmodel and adds
+// the createRoom action, which validates the accepted-email list
+// before calling the API.
+
 import 'package:consultation_app/setup.dart';
 import 'base_room_viewmodel.dart';
 
 class CreateRoomViewmodel extends BaseRoomViewmodel {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
-
   // ── Public Methods ─────────────────────────────────────────────────────────
-
   Future<void> createRoom(
     String shortName,
     String title,
     String description,
     int cancellationHours,
   ) async {
+    // At least one allowed email or domain is required before creating the room
     if (acceptedEmails.isEmpty) {
       notify.showToast('No emails or domain names provided');
       return;
@@ -32,6 +37,7 @@ class CreateRoomViewmodel extends BaseRoomViewmodel {
         notify.showToast('Room was successfully created');
         nav.toOwnerConsultations();
       } else {
+        // A false response means the short name is already taken
         notify.showToast('Room with provided name already exists');
       }
     } catch (_) {
@@ -42,7 +48,6 @@ class CreateRoomViewmodel extends BaseRoomViewmodel {
   }
 
   // ── Private Helpers ────────────────────────────────────────────────────────
-
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();

@@ -1,3 +1,10 @@
+// verify_otp_viewmodel.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// ViewModel for the OTP verification screen. Submits the email + OTP pair,
+// loads the session on success, and routes to the correct home screen based
+// on the user's role.
+
 import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
 
@@ -8,6 +15,7 @@ class VerifyOtpViewmodel extends ChangeNotifier {
   }
 
   Future<void> connect(String email, String otp, bool rememberMe) async {
+    // Prevent duplicate OTP submissions while a request is already in progress
     if (_isLoading) return;
     _isLoading = true;
     notifyListeners();
@@ -15,6 +23,7 @@ class VerifyOtpViewmodel extends ChangeNotifier {
       final success = await api.connect(email, otp, rememberMe);
 
       if (success) {
+        // Reload session so role and token are available for the routing decision below
         await sm.load();
         if (sm.role == 'teacher') {
           nav.toOwnerConsultations();
@@ -29,7 +38,7 @@ class VerifyOtpViewmodel extends ChangeNotifier {
     } catch (e) {
       _isLoading = false;
       notifyListeners();
-      notify.showToast('Connection failed, lease try again later',isError: true);
+      notify.showToast('Connection failed, please try again later', isError: true);
     }
   }
 }
