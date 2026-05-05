@@ -7,53 +7,56 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
+enum TimePickerAction { startTime, endTime, duration }
+
 class CreateBlockViewmodel extends ChangeNotifier {
+  // ── State ──────────────────────────────────────────────────────────────────
+
   bool isLoading = false;
-  bool _isChecked = false;
-  bool get isChecked => _isChecked;
   String dateCount = '';
   String range = '';
+
+  bool _isChecked = false;
+  Duration? _startTime;
+  Duration? _endTime;
+  Duration? _duration;
   DateRangePickerSelectionMode _selectionMode =
       DateRangePickerSelectionMode.multiple;
-  DateRangePickerSelectionMode get selectionMode => _selectionMode;
   dynamic _selectedDates;
-  dynamic get selectedDates => _selectedDates;
-  static final DateFormat _fmt = DateFormat('MMM d');
-  static final DateFormat _fmtYear = DateFormat('MMM d, y');
+
   final TextEditingController slotNumberController = TextEditingController();
   final TextEditingController noteController = TextEditingController();
-  void toggleIsOnline(bool? value) {
-    _isChecked = value ?? false;
-    notifyListeners();
-  }
+
+  static final DateFormat _fmt = DateFormat('MMM d');
+  static final DateFormat _fmtYear = DateFormat('MMM d, y');
+
+  // ── Constructor / Lifecycle ────────────────────────────────────────────────
 
   CreateBlockViewmodel() {
     slotNumberController.addListener(updateEndTime);
   }
-  String _formatDate(DateTime d) {
-    final now = DateTime.now();
-    return d.year == now.year ? _fmt.format(d) : _fmtYear.format(d);
+
+  @override
+  void dispose() {
+    noteController.dispose();
+    slotNumberController.dispose();
+    super.dispose();
   }
 
-  String getSelectedDatesFormatted() {
-    if (selectedDates != null) {
-      switch (selectionMode) {
-        case DateRangePickerSelectionMode.range:
-          final PickerDateRange r = _selectedDates as PickerDateRange;
-          final start = r.startDate != null ? _formatDate(r.startDate!) : '?';
-          final end = r.endDate != null ? _formatDate(r.endDate!) : '?';
-          return '$start – $end';
-        case DateRangePickerSelectionMode.multiple:
-          final List<DateTime> dates = _selectedDates as List<DateTime>;
-          if (dates.isEmpty) return ' ';
-          final previews = dates.take(3).map(_formatDate).join(', ');
-          return dates.length > 3 ? "$previews..." : previews;
-        default:
-          return "None";
-      }
-    } else {
-      return "None";
-    }
+  // ── Getters ────────────────────────────────────────────────────────────────
+
+  bool get isChecked => _isChecked;
+  Duration? get startTime => _startTime;
+  Duration? get endTime => _endTime;
+  Duration? get duration => _duration;
+  DateRangePickerSelectionMode get selectionMode => _selectionMode;
+  dynamic get selectedDates => _selectedDates;
+
+  // ── Setters ────────────────────────────────────────────────────────────────
+
+  void toggleIsOnline(bool? value) {
+    _isChecked = value ?? false;
+    notifyListeners();
   }
 
   void setSelectedDates(dynamic value) {
@@ -76,43 +79,6 @@ class CreateBlockViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
-  String _formatDateIso(DateTime d) => DateFormat('yyyy-MM-dd').format(d);
-
-  List<String> getSelectedDatesIso() {
-    if (_selectedDates == null) return [];
-
-    switch (_selectionMode) {
-      case DateRangePickerSelectionMode.multiple:
-        final List<DateTime> dates = _selectedDates as List<DateTime>;
-        return dates.map(_formatDateIso).toList();
-
-      case DateRangePickerSelectionMode.range:
-        final PickerDateRange r = _selectedDates as PickerDateRange;
-        if (r.startDate == null) return [];
-        final end = r.endDate ?? r.startDate!;
-        return _expandDateRange(r.startDate!, end);
-
-      default:
-        return [];
-    }
-  }
-
-  List<String> _expandDateRange(DateTime start, DateTime end) {
-    final List<String> dates = [];
-    DateTime current = start;
-    while (!current.isAfter(end)) {
-      dates.add(_formatDateIso(current));
-      current = current.add(const Duration(days: 1));
-    }
-    return dates;
-  }
-
-  Duration? _startTime;
-  Duration? _endTime;
-  Duration? _duration;
-  Duration? get startTime => _startTime;
-  Duration? get endTime => _endTime;
-  Duration? get duration => _duration;
   void setStartTime(Duration value) {
     _startTime = value;
     updateEndTime();
@@ -120,7 +86,6 @@ class CreateBlockViewmodel extends ChangeNotifier {
 
   void setEndTime(Duration value) {
     _endTime = value;
-
     notifyListeners();
   }
 
@@ -129,107 +94,155 @@ class CreateBlockViewmodel extends ChangeNotifier {
     updateEndTime();
   }
 
+  // ── Public Methods ─────────────────────────────────────────────────────────
+
   String getPrintableTimeFormat(TimePickerAction action) {
-    String result = "";
-    final temp = switch (action) {
-      TimePickerAction.startTime => startTime ?? Duration(hours: 0),
-      TimePickerAction.endTime => endTime ?? Duration(hours: 0),
-      TimePickerAction.duration => duration ?? Duration(hours: 0),
+    final time = switch (action) {
+      TimePickerAction.startTime => startTime ?? Duration.zero,
+      TimePickerAction.endTime => endTime ?? Duration.zero,
+      TimePickerAction.duration => duration ?? Duration.zero,
     };
-    result = TimeUtils.formatTime(temp);
-    return result;
+    return TimeUtils.formatTime(time);
   }
 
   void updateEndTime() {
-    if (_startTime == null ||
-        _duration == null ||
-        slotNumberController.text.trim().isEmpty) {
-      return;
-    }
-
+    if (_startTime == null || _duration == null) return;
     final slots = int.tryParse(slotNumberController.text.trim());
     if (slots == null || slots <= 0) return;
-    final resultEndTime = TimeUtils.computeEndTime(
-      _startTime!,
-      _duration!,
-      slots,
-    );
-    if (resultEndTime == null) {
-      _endTime = null;
-      return;
+
+    final computed = TimeUtils.computeEndTime(_startTime!, _duration!, slots);
+    _endTime = computed;
+    if (computed != null) notifyListeners();
+  }
+
+  String getSelectedDatesFormatted() {
+    if (_selectedDates == null) return 'None';
+
+    switch (_selectionMode) {
+      case DateRangePickerSelectionMode.range:
+        final r = _selectedDates as PickerDateRange;
+        final start = r.startDate != null ? _formatDate(r.startDate!) : '?';
+        final end = r.endDate != null ? _formatDate(r.endDate!) : '?';
+        return '$start – $end';
+
+      case DateRangePickerSelectionMode.multiple:
+        final dates = _selectedDates as List<DateTime>;
+        if (dates.isEmpty) return ' ';
+        final previews = dates.take(3).map(_formatDate).join(', ');
+        return dates.length > 3 ? '$previews...' : previews;
+
+      default:
+        return 'None';
     }
-    setEndTime(resultEndTime);
   }
 
-  @override
-  void dispose() {
-    noteController.dispose();
-    slotNumberController.dispose();
-    super.dispose();
+  List<String> getSelectedDatesIso() {
+    if (_selectedDates == null) return [];
+
+    switch (_selectionMode) {
+      case DateRangePickerSelectionMode.multiple:
+        return (_selectedDates as List<DateTime>).map(_formatDateIso).toList();
+
+      case DateRangePickerSelectionMode.range:
+        final r = _selectedDates as PickerDateRange;
+        if (r.startDate == null) return [];
+        return _expandDateRange(r.startDate!, r.endDate ?? r.startDate!);
+
+      default:
+        return [];
+    }
   }
 
-  void createBlock(int roomId, VoidCallback? onSuccess) async {
-    isLoading = true;
-    notifyListeners();
+  Future<void> createBlock(int roomId, VoidCallback? onSuccess) async {
     final slotCount = int.tryParse(slotNumberController.text.trim());
+    final dates = getSelectedDatesIso();
+
     final error = TimeValidationUtils.validateBlockCreation(
-      selectedDates: getSelectedDatesIso(),
-      startTime: startTime,
-      duration: duration,
+      selectedDates: dates,
+      startTime: _startTime,
+      duration: _duration,
       slotCount: slotCount,
       endTime: _endTime,
     );
+
     if (error != null) {
-      notify.showToast(error,isError: true);
-      isLoading = false;
-      notifyListeners();
+      notify.showToast(error, isError: true);
       return;
     }
 
-    List<String> dates = getSelectedDatesIso();
-    final String note = noteController.text.trim();
-    final int isOnline = isChecked ? 1 : 0;
-    for (int i = 0; i < dates.length; i++) {
-      String response = await api.createBlock(roomId, dates[i]);
+    _setLoading(true);
 
-      if (response.isEmpty) {
-        notify.showToast(
-          'Failed to create block for ${dates[i]}. It might already exist',isError: true,
-        );
-        continue;
-      } else {
-        notify.showToast('Blocks created successfully');
-      }
-      final int blockId = jsonDecode(response)['id'];
-      if (slotCount != 0) {
-        for (int j = 0; j < slotCount!; j++) {
-          final Duration slotStart = _startTime! + (_duration! * j);
-          final String startTimeStr = TimeUtils.formatTimeWithSeconds(
-            slotStart,
+    try {
+      final note = noteController.text.trim();
+      final isOnline = _isChecked ? 1 : 0;
+
+      for (final date in dates) {
+        final response = await api.createBlock(roomId, date);
+        if (response.isEmpty) {
+          notify.showToast(
+            'Failed to create block for $date. It might already exist',
+            isError: true,
           );
-          bool success = await api.createSlot(
-            blockId,
-            startTimeStr,
-            _duration!.inMinutes,
-            isOnline,
-            note,
-          );
-          if (!success) {
-            notify.showToast('Failed to create slot $j for block $blockId',isError: true);
-            isLoading = false;
-            notifyListeners();
-            return;
-          }
+          continue;
         }
+
+        notify.showToast('Blocks created successfully');
+        final blockId = jsonDecode(response)['id'] as int;
+        final created = await _createSlotsForBlock(blockId, slotCount!, isOnline, note);
+        if (!created) return;
       }
+    } finally {
+      _setLoading(false);
     }
 
-    isLoading = false;
-    notifyListeners();
     onSuccess?.call();
-
     nav.pop();
   }
-}
 
-enum TimePickerAction { startTime, endTime, duration }
+  // ── Private Helpers ────────────────────────────────────────────────────────
+
+  void _setLoading(bool value) {
+    isLoading = value;
+    notifyListeners();
+  }
+
+  String _formatDate(DateTime d) {
+    return d.year == DateTime.now().year ? _fmt.format(d) : _fmtYear.format(d);
+  }
+
+  String _formatDateIso(DateTime d) => DateFormat('yyyy-MM-dd').format(d);
+
+  List<String> _expandDateRange(DateTime start, DateTime end) {
+    final dates = <String>[];
+    DateTime current = start;
+    while (!current.isAfter(end)) {
+      dates.add(_formatDateIso(current));
+      current = current.add(const Duration(days: 1));
+    }
+    return dates;
+  }
+
+  Future<bool> _createSlotsForBlock(
+    int blockId,
+    int slotCount,
+    int isOnline,
+    String note,
+  ) async {
+    for (int j = 0; j < slotCount; j++) {
+      final slotStart = _startTime! + (_duration! * j);
+      final startTimeStr = TimeUtils.formatTimeWithSeconds(slotStart);
+      final success = await api.createSlot(
+        blockId,
+        startTimeStr,
+        _duration!.inMinutes,
+        isOnline,
+        note,
+      );
+      if (!success) {
+        notify.showToast('Failed to create slot $j for block $blockId', isError: true);
+        return false;
+      }
+    }
+    return true;
+  }
+}

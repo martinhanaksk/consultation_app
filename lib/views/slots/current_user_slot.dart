@@ -1,3 +1,11 @@
+// current_user_slot_widget.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// Renders a slot booked by the current user.
+// Displayed in the primary colour to distinguish it from other users' slots
+// (red) and free slots. Includes a release button that warns the user when
+// cancelling within the teacher-defined cancellation notice window.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:consultation_app/models/slot_model.dart';
@@ -7,9 +15,13 @@ import 'slot_time.dart';
 class CurrentUserSlot extends StatelessWidget {
   final SlotModel slot;
   final String date;
+  // Hours before the slot start time after which a cancellation is considered impolite
+  // set by the teacher per room
   final int cancellationNoticeHours;
   final int blockId;
+  // True while the optimistic UI release is in progress (API call not yet confirmed)
   final bool isOptimisticallyReleased;
+  // Nullable: only provided in owner view to show the slot history button
   final Widget? Function(int slotId, int blockId, Color color)? showHistoryOption;
   final VoidCallback onRelease;
   final VoidCallback onTap;
@@ -27,11 +39,15 @@ class CurrentUserSlot extends StatelessWidget {
   });
 
   void _handleRelease(BuildContext context) {
+    // The release is triggered immediately (optimistic update);
+    // the warning dialog is purely informational and does not block the action
     onRelease();
 
     final DateTime slotStart = DateTime.parse('$date ${slot.startTime}');
     final Duration timeDifference = slotStart.difference(DateTime.now());
 
+    // Shows warning only when cancelling inside the notice window
+    // The slot is already released at this point regardless
     if (timeDifference.inHours < cancellationNoticeHours) {
       showDialog(
         context: context,
@@ -60,6 +76,7 @@ class CurrentUserSlot extends StatelessWidget {
                         'You are canceling this consultation very close to its start time.\n\n'
                         'Next time, please try to cancel at least ',
                   ),
+                  // Selects between hour and hours based on number stored in cancellationNoticeHours
                   TextSpan(
                     text: cancellationNoticeHours == 1
                         ? '$cancellationNoticeHours hour'
@@ -115,6 +132,7 @@ class CurrentUserSlot extends StatelessWidget {
                   flex: 2,
                   fit: FlexFit.loose,
                   child: Text(
+                    // Mirrors the same visibility gate used in AnotherUsersSlot
                     sm.visibility == true
                         ? helpers.cropText(slot.takenByName ?? '')
                         : '',
@@ -153,9 +171,12 @@ class CurrentUserSlot extends StatelessWidget {
                         const SizedBox.shrink(),
                   if (slot.isOnline == 1) ...[
                     const SizedBox(width: 8),
-                    svgs.icon('screen', constants.background, width: constants.fsTitle),
+                    svgs.icon('screen', constants.background,
+                        width: constants.fsTitle),
                   ],
                   const SizedBox(width: 8),
+                  // The release button becomes a spinner while the optimistic
+                  // update is pending, preventing a second tap
                   GestureDetector(
                     onTap: () => _handleRelease(context),
                     child: isOptimisticallyReleased

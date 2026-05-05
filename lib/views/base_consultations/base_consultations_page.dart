@@ -1,3 +1,10 @@
+// base_consultations_page.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// Shared consultation list page used by both student and owner views.
+// Accepts optional action widgets so each caller can inject role-specific
+// controls without duplicating the surrounding layout.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:consultation_app/setup.dart';
@@ -9,15 +16,18 @@ import 'package:sticky_headers/sticky_headers.dart';
 import 'room_selector_button.dart';
 import 'content_consultations.dart';
 
+
 class BaseConsultationsPage extends StatefulWidget {
   final Widget? toggle;
   final Widget? addButton;
   final Widget? deleteButton;
   final BaseConsultationsViewmodel? viewModel;
+  // Builder callbacks are nullable
   final Widget Function(int blockId)? editBlockButton;
   final Widget? Function(int slotId, int blockId, Color color)? showHistoryOption;
   final Widget? Function(int blockId, bool isEmpty)? addSlotBefore;
   final Widget? Function(int blockId, bool isEmpty)? addSlotAfter;
+
 
   const BaseConsultationsPage({
     super.key,
@@ -31,19 +41,25 @@ class BaseConsultationsPage extends StatefulWidget {
     this.addSlotAfter,
   });
 
+
   @override
   State<BaseConsultationsPage> createState() => _BaseConsultationsPageState();
 }
 
+
 class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
   late final BaseConsultationsViewmodel _viewModel;
+
 
   @override
   void initState() {
     super.initState();
+    // If the caller provides its own viewModel (e.g. owner page), reuse it;
+    // otherwise create a default one and run init() to fetch initial data
     _viewModel = widget.viewModel ?? BaseConsultationsViewmodel();
     if (widget.viewModel == null) _viewModel.init();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +78,7 @@ class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
             return SafeArea(
               child: Center(
                 child: ConstrainedBox(
+                  // Cap content width for readability on tablets and wide screens
                   constraints: const BoxConstraints(maxWidth: 600),
                   child: RefreshIndicator(
                     color: constants.primary,
@@ -77,6 +94,7 @@ class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
                         children: [
                           const SizedBox(height: 100),
                           StickyHeader(
+                            // RoomSelectorButton stays pinned while the list scrolls
                             header: RoomSelectorButton(viewModel: viewModel),
                             content: viewModel.isLoading
                                 ? Padding(

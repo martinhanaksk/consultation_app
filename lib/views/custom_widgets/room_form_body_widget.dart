@@ -1,4 +1,6 @@
 // room_form_body.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
 // Shared form layout for CreateRoom and EditRoomPage.
 // Owns all repeated UI; each caller supplies only the parts that differ.
 
@@ -16,6 +18,7 @@ class RoomFormBody extends StatelessWidget {
   final String submitLabel;
   final VoidCallback onSubmit;
 
+
   const RoomFormBody({
     super.key,
     required this.pageTitle,
@@ -24,6 +27,7 @@ class RoomFormBody extends StatelessWidget {
     required this.submitLabel,
     required this.onSubmit,
   });
+
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +44,7 @@ class RoomFormBody extends StatelessWidget {
               hintText: "Title (e.g. Martin's room)",
             ),
             const SizedBox(height: 20),
+            // URL field — uses isUrl flag to restrict characters and set the correct keyboard
             CustomInputTextField(
               controller: viewModel.shortNameController,
               hintText: 'https://example.com',
@@ -52,6 +57,7 @@ class RoomFormBody extends StatelessWidget {
               hintText: 'Description (e.g. D105)',
             ),
             const SizedBox(height: 20),
+            // Number-only field; maxLength 4 caps the value at 9999 hours
             CustomInputTextField(
               controller: viewModel.cancellationHoursController,
               hintText: 'Cancel deadline in hours',
@@ -64,6 +70,7 @@ class RoomFormBody extends StatelessWidget {
             const SizedBox(height: 16),
             _ViewDomainsLink(viewModel: viewModel),
             const SizedBox(height: 16),
+            // Replace the submit button with a spinner while the request is in progress
             isSubmitting
                 ? Center(
                     child: SpinKitPouringHourGlass(
@@ -85,6 +92,7 @@ class _PageTitle extends StatelessWidget {
   final String title;
   const _PageTitle(this.title);
 
+
   @override
   Widget build(BuildContext context) => Center(
         child: Text(
@@ -103,6 +111,7 @@ class _EmailDomainField extends StatelessWidget {
   final BuildContext context;
   const _EmailDomainField({required this.viewModel, required this.context});
 
+
   @override
   Widget build(BuildContext ctx) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,6 +129,7 @@ class _EmailDomainField extends StatelessWidget {
           const SizedBox(height: 4),
           TextField(
             maxLength: 50,
+            // Restricts input to valid email/domain characters
             inputFormatters: [
               FilteringTextInputFormatter.allow(
                 RegExp(r'[a-zA-Z0-9@._\-+]'),
@@ -132,9 +142,11 @@ class _EmailDomainField extends StatelessWidget {
               hintText: '@domain.com, user@domain.com..',
               border: _border(constants.grey),
               enabledBorder: _border(constants.grey),
+              // Highlight border with primary color and slightly thicker stroke on focus
               focusedBorder: _border(constants.primary, width: 1.5),
               suffixIcon: GestureDetector(
                 onTap: () {
+                  // Validate before adding; validator shows its own error feedback
                   if (validator.validateNotEmpty(
                     viewModel.acceptedEmailController.text.trim(),
                     context,
@@ -163,15 +175,18 @@ class _EmailDomainField extends StatelessWidget {
       );
 }
 
+
 class _ViewDomainsLink extends StatelessWidget {
   final BaseRoomViewmodel viewModel;
   const _ViewDomainsLink({required this.viewModel});
+
 
   @override
   Widget build(BuildContext context) => Center(
         child: GestureDetector(
           onTap: () => nav.toDisplayListOfEmails(viewModel: viewModel),
           child: Text(
+            // Live count lets the user see how many domains are already saved
             'View added domains (${viewModel.acceptedEmails.length})',
             style: TextStyle(
               color: constants.primary,
@@ -185,10 +200,12 @@ class _ViewDomainsLink extends StatelessWidget {
       );
 }
 
+
 class _SubmitButton extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
   const _SubmitButton({required this.label, required this.onPressed});
+
 
   @override
   Widget build(BuildContext context) => SizedBox(

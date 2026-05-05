@@ -1,16 +1,26 @@
+// custom_date_range_picker_dialog_widget.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// A date-picker dialog built on top of SfDateRangePicker.
+// Supports two selection modes — multiple (individual days) and range
+
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:consultation_app/setup.dart';
 
+// Stateless facade — exposes only the static show() entry point.
+// All mutable picker state lives in _DateRangePickerDialogContent below.
 class CustomDateRangePickerDialog {
 
-  static Future<void> show ({
+  static Future<void> show({
     required BuildContext context,
     required String title,
     required DateRangePickerSelectionMode selectionMode,
+    // multiple mode → List<DateTime>; range mode → PickerDateRange
     required dynamic selectedDates,
     required void Function(DateRangePickerSelectionMode) onSelectionModeChanged,
     required void Function(dynamic) onDatesSelected,
+    // onConfirm/onCancel default to pop + clear
     VoidCallback? onConfirm,
     VoidCallback? onCancel,
     bool showActions = true,
@@ -25,6 +35,7 @@ class CustomDateRangePickerDialog {
           onSelectionModeChanged: onSelectionModeChanged,
           onDatesSelected: onDatesSelected,
           onConfirm: onConfirm ?? () => Navigator.pop(dialogContext),
+          // Default cancel: clear the selection then close
           onCancel: onCancel ?? () {
             onDatesSelected(null);
             Navigator.pop(dialogContext);
@@ -38,6 +49,9 @@ class CustomDateRangePickerDialog {
 class _DateRangePickerDialogContent extends StatefulWidget {
   final String title;
   final DateRangePickerSelectionMode selectionMode;
+  // dynamic because the type changes with the mode:
+  //   multiple → List<DateTime>
+  //   range    → PickerDateRange
   final dynamic selectedDates;
   final void Function(DateRangePickerSelectionMode) onSelectionModeChanged;
   final void Function(dynamic) onDatesSelected;
@@ -86,6 +100,9 @@ class _DateRangePickerDialogContentState
               fontSize: constants.fsTitle,
             ),
           ),
+          // Mode switcher: tapping opens a PopupMenu with "Multiple" and "Range".
+          // Switching mode resets _currentSelection to null to avoid passing a
+          // List<DateTime> to a range picker and vice versa.
           Container(
             color: constants.background,
             child: PopupMenuButton<DateRangePickerSelectionMode>(
@@ -97,6 +114,7 @@ class _DateRangePickerDialogContentState
               color: constants.background,
               elevation: 12,
               shadowColor: constants.darkGrey30,
+              // Display the current mode name
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: constants.squircleShadow(
@@ -123,13 +141,12 @@ class _DateRangePickerDialogContentState
                 ),
               ],
               onSelected: (mode) {
-                if (mode != null) {
                   setState(() {
                     _currentMode = mode;
                     _currentSelection = null;
                   });
                   widget.onSelectionModeChanged(mode);
-                }
+                
               },
             ),
           ),
@@ -156,12 +173,6 @@ class _DateRangePickerDialogContentState
               color: constants.primary,
               fontWeight: constants.fwSemiBold,
             ),
-            trailingDatesTextStyle: TextStyle(
-              color: constants.darkGrey.withValues(alpha: 0.3),
-            ),
-            leadingDatesTextStyle: TextStyle(
-              color: constants.darkGrey30,
-            ),
           ),
           yearCellStyle: DateRangePickerYearCellStyle(
             textStyle: TextStyle(
@@ -179,11 +190,13 @@ class _DateRangePickerDialogContentState
               color: constants.darkGrey30,
             ),
           ),
+          // Text inside a selected single/multiple cell
           selectionTextStyle: TextStyle(
             color: constants.background,
             fontWeight: constants.fwRegular,
             fontSize: constants.fsLabel,
           ),
+          // Text inside a range cell (between start and end)
           rangeTextStyle: TextStyle(
             color: constants.background,
             fontWeight: constants.fwRegular,
@@ -191,12 +204,14 @@ class _DateRangePickerDialogContentState
           ),
           backgroundColor: constants.background,
           selectionColor: constants.primary,
-          rangeSelectionColor: constants.lightPrimary,
+          // fill between start and end
+          rangeSelectionColor: constants.lightPrimary,   
           todayHighlightColor: constants.lightPrimary,
           startRangeSelectionColor: constants.primary,
           endRangeSelectionColor: constants.primary,
           view: DateRangePickerView.month,
           selectionMode: _currentMode,
+          // Only one of the two initial* parameters is non-null at a time
           initialSelectedDates:
               _currentMode == DateRangePickerSelectionMode.multiple
                   ? _currentSelection

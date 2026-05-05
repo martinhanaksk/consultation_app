@@ -1,6 +1,13 @@
+// time_duration_picker.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// Side-by-side Cupertino picker pair: a slot duration wheel (5–120 min)
+// and a 24-hour start-time picker, both snapped to 5-minute intervals.
+
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:consultation_app/setup.dart';
+
 
 class TimeDurationPicker extends StatefulWidget {
   final Duration? initialStartTime;
@@ -9,6 +16,7 @@ class TimeDurationPicker extends StatefulWidget {
   final ValueChanged<Duration> onDurationChanged;
   final String durationLabel;
   final String startTimeLabel;
+
 
   const TimeDurationPicker({
     super.key,
@@ -20,40 +28,50 @@ class TimeDurationPicker extends StatefulWidget {
     this.startTimeLabel = 'Slot Start Time',
   });
 
+
   @override
   State<TimeDurationPicker> createState() => _TimeDurationPickerState();
 }
+
 
 class _TimeDurationPickerState extends State<TimeDurationPicker> {
   late DateTime _currentStart;
   late FixedExtentScrollController _durationController;
 
+
   @override
   void initState() {
     super.initState();
     final now = TimeOfDay.now();
+    // Round down to the nearest 5-minute mark so the time picker starts on a valid interval
     final rounded = now.minute - (now.minute % 5);
 
     final start = widget.initialStartTime ??
         Duration(hours: now.hour, minutes: rounded);
+    // CupertinoDatePicker requires a full DateTime; the date part (2000-01-01) is irrelevant here
     _currentStart = DateTime(2000, 1, 1, start.inHours, start.inMinutes % 60);
 
     final initDuration = widget.initialDuration ?? const Duration(minutes: 15);
+    // Index 2 corresponds to 15 min ((2+1)*5); adjust if the default duration changes
     _durationController = FixedExtentScrollController(
-      initialItem:3,
+      initialItem: 2,
     );
 
-     WidgetsBinding.instance.addPostFrameCallback((_) {
-    widget.onStartTimeChanged(start);
-    widget.onDurationChanged(initDuration);
-  });
+    // Notify the parent of the resolved initial values after the first frame,
+    // so any dependent state is set even when the user never moves the pickers
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.onStartTimeChanged(start);
+      widget.onDurationChanged(initDuration);
+    });
   }
+
 
   @override
   void dispose() {
     _durationController.dispose();
     super.dispose();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -79,6 +97,7 @@ class _TimeDurationPickerState extends State<TimeDurationPicker> {
                   itemExtent: 40,
                   scrollController: _durationController,
                   onSelectedItemChanged: (index) {
+                    // index 0 → 5 min, index 1 → 10 min, …, index 23 → 120 min
                     widget.onDurationChanged(
                       Duration(minutes: (index + 1) * 5),
                     );
@@ -100,7 +119,9 @@ class _TimeDurationPickerState extends State<TimeDurationPicker> {
             ],
           ),
         ),
+        // Spacer between the two pickers
         const Flexible(flex: 1, child: SizedBox()),
+        // ── Start-time picker (24 h, 5-min steps) ────────────────────────
         Flexible(
           flex: 10,
           child: Column(

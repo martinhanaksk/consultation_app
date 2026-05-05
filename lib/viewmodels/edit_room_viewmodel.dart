@@ -4,14 +4,16 @@ import 'package:consultation_app/setup.dart';
 import 'base_room_viewmodel.dart';
 
 class EditRoomViewmodel extends BaseRoomViewmodel {
-  bool _isLoading = true;
-  bool get isLoading => _isLoading;
-
-  bool _isSaving = false;
-  bool get isSaving => _isSaving;
-
   RoomModel? room;
   String? errorMessage;
+
+  bool _isLoading = true;
+  bool _isSaving = false;
+
+  bool get isLoading => _isLoading;
+  bool get isSaving => _isSaving;
+
+  // ── Public Methods ─────────────────────────────────────────────────────────
 
   Future<void> loadData(int roomId) async {
     _setLoading(true);
@@ -23,13 +25,11 @@ class EditRoomViewmodel extends BaseRoomViewmodel {
       titleController.text = room!.title;
       descriptionController.text = room!.description;
       cancellationHoursController.text = room!.cancellationNoticeHours.toString();
-
       acceptedEmails = room!.acceptedEmails
           .split(',')
           .map((e) => e.trim())
           .where((e) => e.isNotEmpty)
           .toList();
-
       acceptedEmailController.clear();
       errorMessage = null;
       notifyListeners();
@@ -43,7 +43,6 @@ class EditRoomViewmodel extends BaseRoomViewmodel {
   Future<void> handleSave() async {
     clearError();
     final success = await _submitChanges();
-
     if (success) {
       notify.showToast('Room updated successfully');
       nav.toOwnerConsultations();
@@ -51,6 +50,13 @@ class EditRoomViewmodel extends BaseRoomViewmodel {
       notify.showToast(errorMessage ?? 'Failed to update room', isError: true);
     }
   }
+
+  void clearError() {
+    errorMessage = null;
+    notifyListeners();
+  }
+
+  // ── Private Helpers ────────────────────────────────────────────────────────
 
   Future<bool> _submitChanges() async {
     if (room == null) return false;
@@ -93,11 +99,6 @@ class EditRoomViewmodel extends BaseRoomViewmodel {
 
   void _setSaving(bool value) {
     _isSaving = value;
-    notifyListeners();
-  }
-
-  void clearError() {
-    errorMessage = null;
     notifyListeners();
   }
 }

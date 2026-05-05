@@ -6,6 +6,8 @@ class CreateRoomViewmodel extends BaseRoomViewmodel {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
+  // ── Public Methods ─────────────────────────────────────────────────────────
+
   Future<void> createRoom(
     String shortName,
     String title,
@@ -26,19 +28,20 @@ class CreateRoomViewmodel extends BaseRoomViewmodel {
         cancellationHours,
         acceptedEmails,
       );
-
       if (success) {
         notify.showToast('Room was successfully created');
         nav.toOwnerConsultations();
       } else {
         notify.showToast('Room with provided name already exists');
       }
-    } catch (e) {
+    } catch (_) {
       notify.showToast('Error while creating room', isError: true);
     } finally {
       _setLoading(false);
     }
   }
+
+  // ── Private Helpers ────────────────────────────────────────────────────────
 
   void _setLoading(bool value) {
     _isLoading = value;

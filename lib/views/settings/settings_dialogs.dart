@@ -1,6 +1,7 @@
 // settings_dialogs.dart
-// Dialog functions for the settings page. Kept as plain async functions
-// so they carry no widget state of their own.
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// Dialog functions for the settings page. Kept as plain async functions.
 
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/change_settings_viewmodel.dart';
@@ -30,9 +31,11 @@ Future<void> showNameDialog(
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CustomInputTextField(controller: nameCtrl, hintText: "Name", maxLength: 50),
+          CustomInputTextField(
+              controller: nameCtrl, hintText: "Name", maxLength: 50),
           const SizedBox(height: 12),
-          CustomInputTextField(controller: surnameCtrl, hintText: "Surname", maxLength: 50),
+          CustomInputTextField(
+              controller: surnameCtrl, hintText: "Surname", maxLength: 50),
         ],
       ),
       actions: [
@@ -40,7 +43,9 @@ Future<void> showNameDialog(
         TextButton(
           onPressed: () async {
             FocusScope.of(context).unfocus();
-            await vm.updateName(nameCtrl.text.trim(), surnameCtrl.text.trim());
+            await vm.updateName(
+                nameCtrl.text.trim(), surnameCtrl.text.trim());
+            // ctx.mounted guards against using the dialog context after dispose
             if (ctx.mounted) Navigator.pop(ctx);
           },
           child: _saveLabel(),
@@ -96,6 +101,7 @@ Future<void> showCreateTeacherDialog(
   final emailCtrl = TextEditingController();
   final nameCtrl = TextEditingController();
   final surnameCtrl = TextEditingController();
+  // Local state managed with StatefulBuilder; avoids promoting the caller to StatefulWidget
   bool loading = false;
   String? errorMsg;
 
@@ -104,7 +110,8 @@ Future<void> showCreateTeacherDialog(
     builder: (ctx) => StatefulBuilder(
       builder: (ctx, setDialogState) => AlertDialog(
         backgroundColor: constants.background,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           "Create Teacher",
           style: TextStyle(
@@ -116,23 +123,35 @@ Future<void> showCreateTeacherDialog(
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CustomInputTextField(controller: emailCtrl, hintText: "Email", maxLength: 50),
+            CustomInputTextField(
+                controller: emailCtrl, hintText: "Email", maxLength: 50),
             const SizedBox(height: 12),
-            CustomInputTextField(controller: nameCtrl, hintText: "First name", maxLength: 50),
+            CustomInputTextField(
+                controller: nameCtrl,
+                hintText: "First name",
+                maxLength: 50),
             const SizedBox(height: 12),
-            CustomInputTextField(controller: surnameCtrl, hintText: "Last name", maxLength: 50),
+            CustomInputTextField(
+                controller: surnameCtrl,
+                hintText: "Last name",
+                maxLength: 50),
             if (errorMsg != null) ...[
               const SizedBox(height: 10),
-              Text(errorMsg!, style: const TextStyle(color: Colors.red, fontSize: 12)),
+              Text(errorMsg!,
+                  style:
+                      const TextStyle(color: Colors.red, fontSize: 12)),
             ],
           ],
         ),
         actions: [
+          // Cancel is disabled while the API call is in progress
           TextButton(
             onPressed: loading ? null : () => Navigator.pop(ctx),
-            child: Text("Cancel", style: TextStyle(color: constants.darkGrey150)),
+            child: Text("Cancel",
+                style: TextStyle(color: constants.darkGrey150)),
           ),
           TextButton(
+            // Both buttons disabled during the API call to prevent double submission
             onPressed: loading
                 ? null
                 : () async {
@@ -140,14 +159,21 @@ Future<void> showCreateTeacherDialog(
                     final name = nameCtrl.text.trim();
                     final surname = surnameCtrl.text.trim();
 
-                    if (email.isEmpty || name.isEmpty || surname.isEmpty) {
-                      setDialogState(() => errorMsg = "All fields are required.");
+                    if (email.isEmpty ||
+                        name.isEmpty ||
+                        surname.isEmpty) {
+                      setDialogState(
+                          () => errorMsg = "All fields are required.");
                       return;
                     }
 
-                    setDialogState(() { loading = true; errorMsg = null; });
+                    setDialogState(() {
+                      loading = true;
+                      errorMsg = null;
+                    });
 
-                    final success = await vm.createTeacher(email, name, surname);
+                    final success =
+                        await vm.createTeacher(email, name, surname);
 
                     if (ctx.mounted) {
                       if (success) {
@@ -156,16 +182,19 @@ Future<void> showCreateTeacherDialog(
                       } else {
                         setDialogState(() {
                           loading = false;
-                          errorMsg = "Failed. User may already be registered";
+                          errorMsg =
+                              "Failed. User may already be registered";
                         });
                       }
                     }
                   },
+            // Submit button becomes an inline spinner while the call is in progress
             child: loading
                 ? SizedBox(
                     width: 16,
                     height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: constants.primary),
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2, color: constants.primary),
                   )
                 : _saveLabel(label: "Create"),
           ),
@@ -177,12 +206,16 @@ Future<void> showCreateTeacherDialog(
 
 // ─── Shared dialog helpers ───────────────────────────────────────────────────
 
+// Reused across all three dialogs to keep action rows consistent
 Widget _cancelButton(BuildContext ctx) => TextButton(
       onPressed: () => Navigator.pop(ctx),
-      child: Text("Cancel", style: TextStyle(color: constants.darkGrey150)),
+      child:
+          Text("Cancel", style: TextStyle(color: constants.darkGrey150)),
     );
 
+// Default label is "Save"; overridden to "Create" in showCreateTeacherDialog
 Widget _saveLabel({String label = "Save"}) => Text(
       label,
-      style: TextStyle(color: constants.primary, fontWeight: constants.fwSemiBold),
+      style: TextStyle(
+          color: constants.primary, fontWeight: constants.fwSemiBold),
     );

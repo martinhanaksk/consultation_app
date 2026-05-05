@@ -1,9 +1,17 @@
+// consultations_content.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// Scrollable body of the consultations page. Handles three states:
+// no room selected/found, room loaded with blocks, and room loaded but empty.
+// Owner-specific action widgets (add, delete, edit) are injected by the caller.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/base_consultations_viewmodel.dart';
 import 'no_rooms_found.dart';
 import 'block_consultation_card.dart';
+
 
 class ConsultationsContent extends StatelessWidget {
   final BaseConsultationsViewmodel viewModel;
@@ -15,6 +23,7 @@ class ConsultationsContent extends StatelessWidget {
   final Widget? Function(int blockId, bool isEmpty)? addSlotBefore;
   final Widget? Function(int blockId, bool isEmpty)? addSlotAfter;
   final Widget Function(int blockId)? editBlockButton;
+
 
   const ConsultationsContent({
     super.key,
@@ -29,10 +38,13 @@ class ConsultationsContent extends StatelessWidget {
     this.addSlotAfter,
   });
 
+
   @override
   Widget build(BuildContext context) {
+    // Treat a missing room selection the same as no rooms existing
     final bool noRoom =
         viewModel.noRoomsFound || viewModel.selectedRoomId == null;
+
 
     return Column(
       children: [
@@ -41,6 +53,7 @@ class ConsultationsContent extends StatelessWidget {
             ? NoRoomsFound(viewModel: viewModel)
             : Column(
                 children: [
+                  // Show a spinner while the room's public website URL is being resolved
                   viewModel.isWebsiteLoading
                       ? Center(
                           child: SpinKitPouringHourGlass(
@@ -69,12 +82,14 @@ class ConsultationsContent extends StatelessWidget {
                           ),
                         ),
                   const SizedBox(height: 12),
+                  // Owner-only action row; hidden entirely when neither button is provided
                   if (addButton != null || deleteButton != null) ...[
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         if (addButton != null) addButton!,
+                        // Separator only rendered when both buttons are present
                         if (addButton != null && deleteButton != null)
                           const SizedBox(width: 16),
                         if (deleteButton != null) deleteButton!,
@@ -102,6 +117,7 @@ class ConsultationsContent extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 20),
+                        // Blocks are sorted chronologically before rendering
                         ..._sortedBlocks().map(
                           (block) => ConsultationBlockCard(
                             viewModel: viewModel,
@@ -120,6 +136,8 @@ class ConsultationsContent extends StatelessWidget {
     );
   }
 
+
+  // Sorts blocks by their date ascending so the nearest upcoming block appears first.
   List<MapEntry<int, List?>> _sortedBlocks() {
     final sorted = viewModel.slotsInBlocks.entries.toList();
     final blockMap = {for (var b in viewModel.blocks) b.id: b};

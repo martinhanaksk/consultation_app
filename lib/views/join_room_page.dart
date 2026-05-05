@@ -97,7 +97,7 @@ class _JoinRoomState extends State<JoinRoom> {
                                   optionsBuilder:
                                       (TextEditingValue textEditingValue) {
                                         final rooms =
-                                            viewModel.allRooms() ?? [];
+                                            viewModel.allRooms;
                                         // Shows all rooms when the field is empty,
                                         // otherwise filters by title substring
                                         if (textEditingValue.text.isEmpty) {
@@ -126,7 +126,7 @@ class _JoinRoomState extends State<JoinRoom> {
                                         return CustomInputTextField(
                                           onChanged: (value) {
                                             final rooms =
-                                                viewModel.allRooms() ?? [];
+                                                viewModel.allRooms;
                                             // Checks for match on every keystroke
                                             // so the selection stays valid when the user
                                             // types a full room title without picking from the list
@@ -336,8 +336,8 @@ class _JoinRoomState extends State<JoinRoom> {
                                     size: constants.fsHeadline,
                                   ),
                                 )
-                              : viewModel.joinedRooms() == null ||
-                                    viewModel.joinedRooms()!.isEmpty
+                              : 
+                                    viewModel.joinedRooms.isEmpty
                               ? Center(
                                   child: Text(
                                     "You haven't joined any rooms yet.",
@@ -350,12 +350,12 @@ class _JoinRoomState extends State<JoinRoom> {
                               : ListView.separated(
                                   shrinkWrap: true,
 
-                                  itemCount: viewModel.joinedRooms()!.length,
+                                  itemCount: viewModel.joinedRooms.length,
                                   separatorBuilder: (_, __) =>
                                       const SizedBox(height: 10),
                                   itemBuilder: (context, index) {
                                     final room = viewModel
-                                        .joinedRooms()![index];
+                                        .joinedRooms[index];
                                     return Container(
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 20,

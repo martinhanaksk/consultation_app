@@ -85,7 +85,10 @@ class _DisplaySlotHistoryPageState extends State<DisplaySlotHistoryPage> {
       return Center(
         child: Text(
           'No history available',
-          style: TextStyle(color: constants.darkGrey150),
+          style: TextStyle(
+            color: constants.darkGrey150,
+            fontSize: constants.fsBody,
+          ),
         ),
       );
     }

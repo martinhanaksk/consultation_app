@@ -1,3 +1,10 @@
+// take_slot_bottom_sheet.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// Bottom sheet shown when a student taps a free slot.
+// Displays slot info (date, time, duration), a pre-filled visit reason field,
+// a consultation type toggle, and Confirm/Cancel actions.
+
 import 'package:consultation_app/views/custom_widgets/custom_text_field_widget.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +15,9 @@ import 'type_toggle.dart';
 class TakeSlotBottomSheet extends StatefulWidget {
   final String visitReason;
   final String startTime;
+  // Slot-level online flag set by the teacher when creating the block
   final bool isOnline;
+  // Teacher's own preference for attending online
   final bool isOnlineTeacher;
   final int duration;
   final String date;
@@ -35,6 +44,7 @@ class _TakeSlotBottomSheetState extends State<TakeSlotBottomSheet> {
   late final TextEditingController _controller;
   bool _isOnlineSelected = false;
   bool _isOnlineTeacherSelected = false;
+  // Guards the confirm button against double-tap. Sheet is popped immediately after submit
   bool _isSubmitting = false;
 
   @override
@@ -43,6 +53,8 @@ class _TakeSlotBottomSheetState extends State<TakeSlotBottomSheet> {
     _controller = TextEditingController(text: widget.visitReason);
     _isOnlineSelected = widget.isOnline;
     _isOnlineTeacherSelected = widget.isOnlineTeacher;
+    // Places the cursor at the end of the pre-filled visit reason so the user
+    // can append text without repositioning manually
     if (_controller.text.isNotEmpty) {
       _controller.selection = TextSelection.fromPosition(
         TextPosition(offset: _controller.text.length),
@@ -83,6 +95,7 @@ class _TakeSlotBottomSheetState extends State<TakeSlotBottomSheet> {
             SlotInfoCard(
               startTime: widget.startTime,
               duration: widget.duration,
+              // Converts (2025-01-15 → 2025.01.15)
               date: widget.date.replaceAll("-", "."),
             ),
             const SizedBox(height: 12),
@@ -118,6 +131,7 @@ class _TakeSlotBottomSheetState extends State<TakeSlotBottomSheet> {
                         : () {
                             FocusScope.of(context).unfocus();
                             setState(() => _isSubmitting = true);
+                            // Converts the bool toggle back to the API's int convention
                             widget.onTakeSlot(
                               _controller.text.trim(),
                               _isOnlineSelected ? 1 : 0,
@@ -147,13 +161,14 @@ class _TakeSlotBottomSheetState extends State<TakeSlotBottomSheet> {
   }
 }
 
-// ── Info card used inside NoteBottomSheet ────────────────────────────────────
-
+// Summary card displayed at the top of TakeSlotBottomSheet showing
+// the slot's date, start time, and duration before the user confirms.
 class SlotInfoCard extends StatelessWidget {
   final String startTime;
   final int duration;
   final String date;
 
+  // Shared border radius for consistent squircle styling across the card
   static final _borderRadius = SmoothBorderRadius(
     cornerRadius: 20,
     cornerSmoothing: 0.6,
@@ -192,6 +207,7 @@ class SlotInfoCard extends StatelessWidget {
   }
 }
 
+// Single icon + label + value row used inside SlotInfoCard
 class _InfoRow extends StatelessWidget {
   final String name;
   final String label;

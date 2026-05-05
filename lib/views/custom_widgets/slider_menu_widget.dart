@@ -1,9 +1,13 @@
+// slider_menu.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// Side drawer navigation menu. Renders owner-only items conditionally and
+// handles token validation.
+
 import 'package:consultation_app/viewmodels/slider_menu_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class SliderMenu extends StatefulWidget {
   const SliderMenu({super.key});
@@ -19,6 +23,7 @@ class _SliderMenuState extends State<SliderMenu> {
   void initState() {
     super.initState();
     _viewModel = SliderMenuViewmodel();
+    // Loads data the menu needs before first paint
     _viewModel.checkSliderMenuFundamentals();
   }
 
@@ -31,13 +36,15 @@ class _SliderMenuState extends State<SliderMenu> {
           return SafeArea(
             child: Drawer(
               backgroundColor: constants.background,
-              width: 220,
+              width: 240,
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 32, horizontal: 20),
                 child: Column(
+                  // Top group (nav links) pushed apart from bottom group (settings/logout)
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // ── Top navigation group ──────────────────────────────
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -49,6 +56,7 @@ class _SliderMenuState extends State<SliderMenu> {
                               width: 120,
                             ),
                             onTap: () {
+                              // Verify the session token is still valid before navigating
                               sm.checkIfValidToken();
                               viewModel.isOwner!
                                   ? nav.toOwnerConsultations()
@@ -60,14 +68,18 @@ class _SliderMenuState extends State<SliderMenu> {
 
                         const SizedBox(height: 20),
                         GestureDetector(
-                          child: Container(
-                            child: Text(
-                              "Home",
-                              style: TextStyle(
-                                fontSize: constants.fsBody,
-                                color: constants.darkGrey,
+                          child: Row(
+                            children: [
+                              svgs.icon("home", constants.darkGrey, width: 22),
+                              const SizedBox(width: 10),
+                              Text(
+                                "Home",
+                                style: TextStyle(
+                                  fontSize: constants.fsBody,
+                                  color: constants.darkGrey,
+                                ),
                               ),
-                            ),
+                            ],
                           ),
                           onTap: () {
                             sm.checkIfValidToken();
@@ -79,14 +91,18 @@ class _SliderMenuState extends State<SliderMenu> {
                         ),
                         const SizedBox(height: 20),
                         GestureDetector(
-                          child: Container(
-                            child: Text(
-                              "Join Room",
-                              style: TextStyle(
-                                fontSize: constants.fsBody,
-                                color: constants.darkGrey,
+                          child: Row(
+                            children: [
+                              svgs.icon("join", constants.darkGrey, width: 24),
+                              const SizedBox(width: 10),
+                              Text(
+                                "Join Room",
+                                style: TextStyle(
+                                  fontSize: constants.fsBody,
+                                  color: constants.darkGrey,
+                                ),
                               ),
-                            ),
+                            ],
                           ),
                           onTap: () {
                             sm.checkIfValidToken();
@@ -95,20 +111,30 @@ class _SliderMenuState extends State<SliderMenu> {
                           },
                         ),
                         const SizedBox(height: 20),
+                        // "Create Room" is only available to owners
                         (viewModel.isOwner != null && viewModel.isOwner!)
                             ? Column(
                                 children: [
                                   GestureDetector(
-                                    child: Container(
-                                      child: Text(
-                                        "Create Room",
-                                        style: TextStyle(
-                                          fontSize: constants.fsBody,
-                                          color: constants.darkGrey,
+                                    child: Row(
+                                      children: [
+                                        svgs.icon(
+                                          "create",
+                                          constants.darkGrey,
+                                          width: 20,
                                         ),
-                                      ),
+                                        const SizedBox(width: 10),
+                                        Text(
+                                          "Create Room",
+                                          style: TextStyle(
+                                            fontSize: constants.fsBody,
+                                            color: constants.darkGrey,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                     onTap: () {
+                                      sm.checkIfValidToken();
                                       nav.toCreateRoom();
                                       viewModel.closeDrawer(context);
                                     },
@@ -116,17 +142,29 @@ class _SliderMenuState extends State<SliderMenu> {
                                   SizedBox(height: 20),
                                 ],
                               )
-                            : SizedBox(height: 0),
+                            : SizedBox.shrink(),
 
+                        // Opens a confirmation dialog before launching the external feedback URL
                         GestureDetector(
-                          child: Text(
-                            "Provide Feedback",
-                            style: TextStyle(
-                              fontSize: constants.fsBody,
-                              color: constants.darkGrey,
-                            ),
+                          child: Row(
+                            children: [
+                              svgs.icon(
+                                "feedback",
+                                constants.darkGrey,
+                                width: 22,
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                "Provide Feedback",
+                                style: TextStyle(
+                                  fontSize: constants.fsBody,
+                                  color: constants.darkGrey,
+                                ),
+                              ),
+                            ],
                           ),
                           onTap: () {
+                            sm.checkIfValidToken();
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
@@ -145,12 +183,6 @@ class _SliderMenuState extends State<SliderMenu> {
                                         FocusScope.of(context).unfocus();
                                         nav.pop();
                                       },
-                                      child: Text(
-                                        "Cancel",
-                                        style: TextStyle(
-                                          color: constants.primary,
-                                        ),
-                                      ),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: constants.background,
                                         disabledBackgroundColor:
@@ -163,18 +195,19 @@ class _SliderMenuState extends State<SliderMenu> {
                                         elevation: 2,
                                         shadowColor: constants.background,
                                       ),
+                                      child: Text(
+                                        "Cancel",
+                                        style: TextStyle(
+                                          color: constants.primary,
+                                          fontSize: constants.fsLabel,
+                                        ),
+                                      ),
                                     ),
                                     ElevatedButton(
                                       onPressed: () async {
                                         FocusScope.of(context).unfocus();
                                         viewModel.launchFeedbackWebsite();
                                       },
-                                      child: Text(
-                                        "Yes",
-                                        style: TextStyle(
-                                          color: constants.background,
-                                        ),
-                                      ),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: constants.primary,
                                         disabledBackgroundColor:
@@ -187,6 +220,13 @@ class _SliderMenuState extends State<SliderMenu> {
                                         elevation: 2,
                                         shadowColor: constants.primary,
                                       ),
+                                      child: Text(
+                                        "Yes",
+                                        style: TextStyle(
+                                          color: constants.background,
+                                          fontSize: constants.fsLabel,
+                                        ),
+                                      ),
                                     ),
                                   ],
                                 );
@@ -196,31 +236,49 @@ class _SliderMenuState extends State<SliderMenu> {
                         ),
                       ],
                     ),
+                    // ── Bottom utility group (always visible) ─────────────
                     Column(
                       children: [
                         GestureDetector(
-                          child: Text(
-                            "Settings",
-                            style: TextStyle(
-                              fontSize: constants.fsBody,
-                              color: constants.darkGrey,
-                            ),
+                          child: Row(
+                            children: [
+                              svgs.icon(
+                                "settings",
+                                constants.darkGrey,
+                                width: 22,
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                "Settings",
+                                style: TextStyle(
+                                  fontSize: constants.fsBody,
+                                  color: constants.darkGrey,
+                                ),
+                              ),
+                            ],
                           ),
-
                           onTap: () {
+                            sm.checkIfValidToken();
                             nav.toChangeSettings();
                             viewModel.closeDrawer(context);
                           },
                         ),
                         const SizedBox(height: 20),
+                        // Red color signals a destructive action
                         GestureDetector(
-                          child: Text(
-                            "Log out",
-                            style: TextStyle(
-                              fontSize: constants.fsBody,
-                              color: constants.red,
-                              fontWeight: constants.fwSemiBold,
-                            ),
+                          child: Row(
+                            children: [
+                              svgs.icon("logout", constants.red, width: 20),
+                              const SizedBox(width: 10),
+                              Text(
+                                "Log out",
+                                style: TextStyle(
+                                  fontSize: constants.fsBody,
+                                  color: constants.red,
+                                  fontWeight: constants.fwSemiBold,
+                                ),
+                              ),
+                            ],
                           ),
                           onTap: () async {
                             nav.toLogin();

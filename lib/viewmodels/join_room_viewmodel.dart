@@ -3,20 +3,27 @@ import 'package:consultation_app/setup.dart';
 import 'package:flutter/material.dart';
 
 class JoinRoomViewmodel extends ChangeNotifier {
-  List<RoomModel>? _allRooms = [];
-  List<RoomModel>? _joinedRooms = [];
+  // ── State ──────────────────────────────────────────────────────────────────
+
+  List<RoomModel> _allRooms = [];
+  List<RoomModel> _joinedRooms = [];
   bool _isLoading = false;
-  bool get isLoading => _isLoading;
   bool _isLoadingRooms = false;
-  bool get isLoadingRooms => _isLoadingRooms;
   String? _selectedRoomId;
-  String? get selectedRoomId => _selectedRoomId;
   int? _selectedId;
-  int? get selectedId => _selectedId;
+
   final TextEditingController idController = TextEditingController();
-  List<RoomModel>? allRooms() {
-    return _allRooms;
-  }
+
+  // ── Getters ────────────────────────────────────────────────────────────────
+
+  bool get isLoading => _isLoading;
+  bool get isLoadingRooms => _isLoadingRooms;
+  String? get selectedRoomId => _selectedRoomId;
+  int? get selectedId => _selectedId;
+  List<RoomModel> get allRooms => _allRooms;
+  List<RoomModel> get joinedRooms => _joinedRooms;
+
+  // ── Lifecycle ──────────────────────────────────────────────────────────────
 
   @override
   void dispose() {
@@ -24,14 +31,15 @@ class JoinRoomViewmodel extends ChangeNotifier {
     super.dispose();
   }
 
-  void clearSelection() {
-    _selectedRoomId = null;
-    _selectedId = null;
-    notifyListeners();
-  }
+  // ── Public Methods ─────────────────────────────────────────────────────────
 
-  List<RoomModel>? joinedRooms() {
-    return _joinedRooms;
+  Future<void> init() async {
+    _isLoadingRooms = true;
+    notifyListeners();
+    await fetchAllRooms();
+    await fetchJoinedRooms();
+    _isLoadingRooms = false;
+    notifyListeners();
   }
 
   void setSelectedIds(RoomModel room) {
@@ -40,66 +48,27 @@ class JoinRoomViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearSelection() {
+    _selectedRoomId = null;
+    _selectedId = null;
+    notifyListeners();
+  }
+
+  bool isInJoinedRooms(RoomModel room) =>
+      _joinedRooms.any((r) => r.id == room.id);
+
   Future<void> joinRoom(int id) async {
+    if (_isLoading) return;
+    _setLoading(true);
+
     try {
-      if (_isLoading) return;
-      _isLoading = true;
-      notifyListeners();
       await api.joinRoomById(id);
-      _isLoading = false;
-      notifyListeners();
-      if (sm.role == "teacher") {
-        nav.toOwnerConsultations();
-      } else {
-        nav.toBaseConsultations();
-      }
-    } catch (e) {
-      _isLoading = false;
-      notifyListeners();
-      try {
-        if (_allRooms == null) {
-          notify.showToast('You cannot join this room');
-        }
-        final room = _allRooms!.firstWhere((r) => r.id == id);
-
-        final emailList = room.acceptedEmails
-            .split(',')
-            .map((e) => e.trim())
-            .where((e) => e.isNotEmpty)
-            .toList();
-
-        final formattedList = emailList.join('\n• ');
-        notify.showToast(
-          title: 'Access Restricted',
-
-          'Email addresses/domains allowed:\n\n• $formattedList',
-        );
-      } catch (_) {
-        notify.showToast('You cannot join this room');
-      }
+      _setLoading(false);
+      _navigateAfterJoin();
+    } catch (_) {
+      _setLoading(false);
+      _showJoinError(id);
     }
-  }
-
-  bool isInJoinedRooms(RoomModel option) {
-    if (_joinedRooms != null) {
-      final joinedIds = _joinedRooms!.map((room) => room.id).toList();
-      if (joinedIds.contains(option.id)) {
-        return true;
-      } else {
-        return false;
-      }
-    } else {
-      return false;
-    }
-  }
-
-  void init() async {
-    _isLoadingRooms = true;
-    notifyListeners();
-    await fetchAllRooms();
-    await fetchJoinedRooms();
-    _isLoadingRooms = false;
-    notifyListeners();
   }
 
   Future<void> fetchAllRooms() async {
@@ -110,5 +79,37 @@ class JoinRoomViewmodel extends ChangeNotifier {
   Future<void> fetchJoinedRooms() async {
     _joinedRooms = await api.getJoinedRooms();
     notifyListeners();
+  }
+
+  // ── Private Helpers ────────────────────────────────────────────────────────
+
+  void _setLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+
+  void _navigateAfterJoin() {
+    if (sm.role == 'teacher') {
+      nav.toOwnerConsultations();
+    } else {
+      nav.toBaseConsultations();
+    }
+  }
+
+  void _showJoinError(int id) {
+    try {
+      final room = _allRooms.firstWhere((r) => r.id == id);
+      final formatted = room.acceptedEmails
+          .split(',')
+          .map((e) => e.trim())
+          .where((e) => e.isNotEmpty)
+          .join('\n• ');
+      notify.showToast(
+        'Email addresses/domains allowed:\n\n• $formatted',
+        title: 'Access Restricted',
+      );
+    } catch (_) {
+      notify.showToast('You cannot join this room');
+    }
   }
 }

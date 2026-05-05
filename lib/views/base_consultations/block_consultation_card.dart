@@ -1,16 +1,27 @@
+// consultation_block_card.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// Card representing a single consultation block (group of slots).
+// Renders the block header with a date label, a notification bell or owner
+// edit button, optional slot-insertion controls, and the slot list.
+
 import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/base_consultations_viewmodel.dart';
 import 'package:consultation_app/views/slots/slot_widget.dart';
 import 'package:provider/provider.dart';
 
+
 class ConsultationBlockCard extends StatelessWidget {
   final BaseConsultationsViewmodel viewModel;
+  // blockEntry.key = block ID, blockEntry.value = list of slots in this block
   final MapEntry<int, List?> blockEntry;
+  // Null in student view — presence of this callback switches the header action
   final Widget Function(int blockId)? editBlockButton;
   final Widget? Function(int slotId, int blockId, Color color)? showHistoryOption;
   final Widget? Function(int blockId, bool isEmpty)? addSlotBefore;
   final Widget? Function(int blockId, bool isEmpty)? addSlotAfter;
+
 
   const ConsultationBlockCard({
     super.key,
@@ -22,9 +33,11 @@ class ConsultationBlockCard extends StatelessWidget {
     this.addSlotAfter,
   });
 
+
   @override
   Widget build(BuildContext context) {
     final slots = blockEntry.value!;
+
 
     return Center(
       child: Column(
@@ -39,6 +52,7 @@ class ConsultationBlockCard extends StatelessWidget {
             ),
             child: Column(
               children: [
+                // ── Block header: centered date label + trailing action ──
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
                   child: Stack(
@@ -52,6 +66,8 @@ class ConsultationBlockCard extends StatelessWidget {
                           fontWeight: constants.fwSemiBold,
                         ),
                       ),
+                      // Student view: bell icon toggles email notifications for the block.
+                      // Owner view: replaced by the injected editBlockButton.
                       editBlockButton == null
                           ? Align(
                               alignment: Alignment.centerRight,
@@ -67,6 +83,7 @@ class ConsultationBlockCard extends StatelessWidget {
                                           : "Notifications disabled for selected slot",
                                     );
                                   },
+                                  // Icon reflects current subscription state
                                   child: viewModel.subscribedBlocks
                                           .contains(blockEntry.key)
                                       ? svgs.icon(
@@ -87,6 +104,7 @@ class ConsultationBlockCard extends StatelessWidget {
                     ],
                   ),
                 ),
+                // Owner-only: button to insert a slot at the top of the block
                 if (addSlotBefore != null)
                   addSlotBefore!(blockEntry.key, slots.isEmpty)!,
                 ListView.builder(
@@ -96,12 +114,15 @@ class ConsultationBlockCard extends StatelessWidget {
                   itemCount: slots.length,
                   itemBuilder: (context, index) {
                     final slot = slots[index];
+                    // Selector rebuilds only this slot when its taking/release state changes,
+                    // avoiding a full-list rebuild on every interaction
                     return Selector<BaseConsultationsViewmodel, (bool, bool)>(
                       selector: (context, vm) => (
                         vm.isTakingSlot(slot.id),
                         vm.isOptimisticallyReleased(slot.id),
                       ),
                       builder: (context, slotState, _) {
+                        // RepaintBoundary isolates each slot's repaint from its neighbours
                         return RepaintBoundary(
                           child: SlotWidget(
                             visitReason: viewModel.visitReason,
@@ -121,6 +142,7 @@ class ConsultationBlockCard extends StatelessWidget {
                             isOptimisticallyReleased: slotState.$2,
                             isFirst: index == 0,
                             isLast: index == slots.length - 1,
+                            // Pass only the date portion
                             date: viewModel
                                 .blockDate(blockEntry.key)
                                 .substring(0, 10),
@@ -130,6 +152,7 @@ class ConsultationBlockCard extends StatelessWidget {
                     );
                   },
                 ),
+                // Owner-only: button to append a slot at the bottom of the block
                 if (addSlotAfter != null)
                   addSlotAfter!(blockEntry.key, slots.isEmpty)!,
               ],

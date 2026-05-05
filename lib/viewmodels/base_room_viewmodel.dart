@@ -1,7 +1,7 @@
 // display_users_in_room_page.dart
 // Author: Martin Hanak
 // Email: xhanakm00@stud.fit.vut.cz
-//// base_room_viewmodel.dart
+// base_room_viewmodel.dart
 // Shared state and behaviour for CreateRoomViewmodel and EditRoomViewmodel.
 
 import 'package:flutter/material.dart';

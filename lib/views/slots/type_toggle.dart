@@ -1,9 +1,20 @@
+// type_toggle_widget.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// Two-button toggle for selecting consultation type (In-Person / Online).
+// Used in both TakeSlotBottomSheet and ConsultationTypeBottomSheet.
+// The effective selection differs by role: teachers control the toggle freely,
+// while students are forced online when the teacher has set isOnlineTeacher = true.
+
 import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
 
 class ConsultationTypeToggle extends StatelessWidget {
+  // Student-facing online flag (the slot's current type)
   final bool isOnlineSelected;
+  // Teacher's own online preference; overrides the student's choice when true
   final bool isOnlineTeacherSelected;
+  // Occupant's name; displayed only when non-empty (owner view)
   final String name;
   final ValueChanged<bool> onChanged;
 
@@ -17,11 +28,13 @@ class ConsultationTypeToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Teachers can set online/offline, while students are locked to online
+    // if the teacher has set to online
     final bool effectivelyOnline = sm.role == "teacher"
         ? isOnlineSelected
         : isOnlineTeacherSelected
-        ? true
-        : isOnlineSelected;
+            ? true
+            : isOnlineSelected;
 
     return Column(
       children: [
@@ -33,6 +46,8 @@ class ConsultationTypeToggle extends StatelessWidget {
             color: constants.darkGrey,
           ),
         ),
+        // Occupant name is only shown when the viewer has visibility enabled
+        // and the sheet is opened from the owner view
         if (name.isNotEmpty) ...[
           const SizedBox(height: 20),
           RichText(
@@ -62,6 +77,7 @@ class ConsultationTypeToggle extends StatelessWidget {
             Expanded(
               child: ElevatedButton(
                 onPressed: () => onChanged(false),
+                // Active button uses darkGrey200 background; inactive uses plain background
                 style: ElevatedButton.styleFrom(
                   backgroundColor: effectivelyOnline
                       ? constants.background

@@ -1,5 +1,9 @@
 // change_settings_page.dart
-// Composes the settings screen from the tile and dialog files.
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// Settings screen
+// Responsible only for layout and section structure; all tile widgets live in
+// settings_tiles.dart and all dialogs live in settings_dialogs.dart.
 
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/change_settings_viewmodel.dart';
@@ -17,6 +21,7 @@ class ChangeSettings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
+      // Cascade calls initialize() immediately after construction
       create: (_) => ChangeSettingsViewmodel()..initialize(),
       child: Consumer<ChangeSettingsViewmodel>(
         builder: (context, viewModel, _) => Scaffold(
@@ -39,10 +44,13 @@ class ChangeSettings extends StatelessWidget {
   }
 }
 
+// Extracted into its own widget to keep ChangeSettings clean
 class _SettingsBody extends StatelessWidget {
   final ChangeSettingsViewmodel viewModel;
+
   const _SettingsBody({required this.viewModel});
 
+  // Inset divider used between tiles inside a card
   static Widget _divider() => Divider(
         indent: 20,
         endIndent: 20,
@@ -50,6 +58,7 @@ class _SettingsBody extends StatelessWidget {
         height: 1,
       );
 
+  // Full-width divider used below a section header inside a card
   static Widget _sectionDivider() =>
       Divider(color: constants.darkGrey30, height: 1);
 
@@ -64,8 +73,6 @@ class _SettingsBody extends StatelessWidget {
           ),
         ),
       );
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -85,18 +92,21 @@ class _SettingsBody extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             "View your profile and manage preferences",
-            style: TextStyle(fontSize: constants.fsLabel, color: constants.darkGrey150),
+            style: TextStyle(
+                fontSize: constants.fsLabel, color: constants.darkGrey150),
           ),
           const SizedBox(height: 28),
 
           // ── Profile card ──────────────────────────────────────────────────
           Container(
             width: double.infinity,
-            decoration: constants.squircleShadow(hasBorder: true, color: constants.background),
+            decoration: constants.squircleShadow(
+                hasBorder: true, color: constants.background),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                InfoTile(svgName: 'person', label: "Email", value: viewModel.email),
+                InfoTile(
+                    svgName: 'person', label: "Email", value: viewModel.email),
                 _divider(),
                 EditableTile(
                   svgName: 'id',
@@ -112,7 +122,8 @@ class _SettingsBody extends StatelessWidget {
                   onEdit: () => showVisitReasonDialog(context, viewModel),
                 ),
                 _divider(),
-                InfoTile(svgName: 'work', label: "Role", value: viewModel.role),
+                InfoTile(
+                    svgName: 'work', label: "Role", value: viewModel.role),
               ],
             ),
           ),
@@ -122,12 +133,14 @@ class _SettingsBody extends StatelessWidget {
           // ── Preferences card ──────────────────────────────────────────────
           Container(
             width: double.infinity,
-            decoration:  constants.squircleShadow(hasBorder: true, color: constants.background),
+            decoration: constants.squircleShadow(
+                hasBorder: true, color: constants.background),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _sectionHeader("Preferences"),
                 _sectionDivider(),
+                // Icon toggles between eye_open/eye_closed to reflect current state
                 CheckboxTile(
                   svgName: viewModel.visibility ? 'eye_open' : 'eye_closed',
                   title: "Visibility",
@@ -136,6 +149,7 @@ class _SettingsBody extends StatelessWidget {
                   onChanged: (_) => viewModel.setVisibility(),
                 ),
                 NotifyHoursTile(viewModel: viewModel),
+                // Icon toggles between moon/sun to reflect the active theme
                 CheckboxTile(
                   svgName: themeSelector.isDark ? 'moon' : 'sun',
                   title: "Theme",
@@ -152,7 +166,8 @@ class _SettingsBody extends StatelessWidget {
             const SizedBox(height: 20),
             Container(
               width: double.infinity,
-              decoration:  constants.squircleShadow(hasBorder: true, color: constants.background),
+              decoration: constants.squircleShadow(
+                  hasBorder: true, color: constants.background),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

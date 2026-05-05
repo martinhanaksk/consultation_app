@@ -1,5 +1,9 @@
 // settings_tiles.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
 // All list-tile widgets used on the settings page.
+// Tiles are stateless except for NotifyHoursTile, which manages its own
+// text field and inline validation state.
 
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/change_settings_viewmodel.dart';
@@ -7,6 +11,7 @@ import 'package:consultation_app/views/custom_widgets/custom_checkbox_widget.dar
 import 'package:consultation_app/views/custom_widgets/custom_text_field_widget.dart';
 import 'package:flutter/material.dart';
 
+// Read-only profile field: label above, bold value below
 class InfoTile extends StatelessWidget {
   final String svgName;
   final String label;
@@ -59,6 +64,7 @@ class InfoTile extends StatelessWidget {
   }
 }
 
+// Profile field with a trailing edit icon that opens a dialog via onEdit
 class EditableTile extends StatelessWidget {
   final String svgName;
   final String label;
@@ -120,6 +126,7 @@ class EditableTile extends StatelessWidget {
   }
 }
 
+// Tappable row with a trailing arrow
 class ActionTile extends StatelessWidget {
   final String svgName;
   final String title;
@@ -168,7 +175,11 @@ class ActionTile extends StatelessWidget {
                 ],
               ),
             ),
-            svgs.icon('arrow_right', constants.darkGrey150, width: constants.fsBody),
+            svgs.icon(
+              'arrow_right',
+              constants.darkGrey150,
+              width: constants.fsBody,
+            ),
           ],
         ),
       ),
@@ -176,6 +187,8 @@ class ActionTile extends StatelessWidget {
   }
 }
 
+// Preference row with a trailing checkbox; the caller controls the icon to
+// reflect the current state (e.g. eye_open/eye_closed, moon/sun)
 class CheckboxTile extends StatelessWidget {
   final String svgName;
   final String title;
@@ -231,8 +244,11 @@ class CheckboxTile extends StatelessWidget {
   }
 }
 
+// Inline editable tile for notification time (hours before a consultation).
+// StatefulWidget because the text field is self-contained here
 class NotifyHoursTile extends StatefulWidget {
   final ChangeSettingsViewmodel viewModel;
+
   const NotifyHoursTile({super.key, required this.viewModel});
 
   @override
@@ -241,7 +257,6 @@ class NotifyHoursTile extends StatefulWidget {
 
 class _NotifyHoursTileState extends State<NotifyHoursTile> {
   late TextEditingController _ctrl;
-  String? _error;
 
   @override
   void initState() {
@@ -251,6 +266,8 @@ class _NotifyHoursTileState extends State<NotifyHoursTile> {
     );
   }
 
+  // Keeps the field in sync if the viewmodel value changes externally
+  // (e.g. after a successful save resets it from the server response)
   @override
   void didUpdateWidget(NotifyHoursTile oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -264,12 +281,10 @@ class _NotifyHoursTileState extends State<NotifyHoursTile> {
     super.dispose();
   }
 
+  // Updates the viewmodel on input
   void _onChanged(String val) {
     final parsed = int.tryParse(val);
-    if (parsed == null || parsed < 0 || parsed > 999) {
-      setState(() => _error = "0–999");
-    } else {
-      setState(() => _error = null);
+    if (parsed != null) {
       widget.viewModel.updateNotifyHoursBefore(parsed);
     }
   }
@@ -314,7 +329,7 @@ class _NotifyHoursTileState extends State<NotifyHoursTile> {
               maxLength: 3,
               keyboardType: TextInputType.number,
               onChanged: _onChanged,
-              textColor: _error != null ? constants.red : constants.primary,
+              textColor: constants.primary,
               suffixText: "h",
               textCenter: true,
               showClearIcon: false,

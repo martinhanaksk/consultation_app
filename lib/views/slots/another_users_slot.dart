@@ -1,3 +1,10 @@
+// another_users_slot_widget.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// Renders a slot that is already booked by someone else.
+// Displayed in red to signal unavailability. The occupant's name is shown
+// only when the current user has visibility enabled in their settings.
+
 import 'package:flutter/material.dart';
 import 'package:consultation_app/models/slot_model.dart';
 import 'package:consultation_app/setup.dart';
@@ -6,6 +13,7 @@ import 'slot_time.dart';
 class AnotherUsersSlot extends StatelessWidget {
   final SlotModel slot;
   final int blockId;
+  // Nullable: only provided in owner view to show the slot history button
   final Widget? Function(int slotId, int blockId, Color color)? showHistoryOption;
   final VoidCallback? onTap;
 
@@ -35,12 +43,17 @@ class AnotherUsersSlot extends StatelessWidget {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                SlotTime(time: slot.startTime, color: constants.textUnavailableGrey),
+                SlotTime(
+                  time: slot.startTime,
+                  color: constants.textUnavailableGrey,
+                ),
                 const SizedBox(width: 12),
                 Flexible(
                   flex: 2,
                   fit: FlexFit.loose,
                   child: Text(
+                    // Shows the occupant's name only when the viewer has
+                    // visibility turned on; otherwise renders an empty string
                     sm.visibility == true
                         ? helpers.cropText(slot.takenByName ?? '')
                         : '',
@@ -74,6 +87,7 @@ class AnotherUsersSlot extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
+                  // showHistoryOption returns null when the slot has no history to show
                   if (showHistoryOption != null)
                     showHistoryOption!(slot.id, blockId, constants.background) ??
                         const SizedBox.shrink(),

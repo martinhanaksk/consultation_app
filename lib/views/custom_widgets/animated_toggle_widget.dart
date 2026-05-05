@@ -1,3 +1,10 @@
+// animated_toggle_widget.dart
+// Author: Martin Hanak
+// Email: xhanakm00@stud.fit.vut.cz
+// A two-option animated toggle switch. The active pill slides left/right
+// over a static background row that always shows both labels.
+// Used in owner room page to switch between the owner and student view.
+
 import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
 
@@ -28,7 +35,9 @@ class AnimatedToggle extends StatefulWidget {
 }
 
 class _AnimatedToggleState extends State<AnimatedToggle> {
+  // true = left option (owner/values[0]); false = right option (student/values[1])
   bool initialPosition = true;
+
   @override
   void initState() {
     super.initState();
@@ -39,18 +48,21 @@ class _AnimatedToggleState extends State<AnimatedToggle> {
     setState(() {
       initialPosition = !initialPosition;
     });
-
+    // Callback receives 1 for left (owner) and 0 for right (student)
     widget.onToggleCallback(initialPosition ? 1 : 0);
   }
 
   @override
   Widget build(BuildContext context) {
-    final selectedText = initialPosition ? widget.values[0] : widget.values[1];
+    final selectedText =
+        initialPosition ? widget.values[0] : widget.values[1];
+
     return SizedBox(
       width: widget.width,
       height: widget.height,
       child: Stack(
         children: [
+          // Static background layer: both labels always visible, full-width tap area
           GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: _toggle,
@@ -93,6 +105,8 @@ class _AnimatedToggleState extends State<AnimatedToggle> {
               ),
             ),
           ),
+          // Animated pill: slides over the background to indicate the active option.
+          // Exactly half the total width so it covers one label at a time.
           AnimatedAlign(
             duration: const Duration(milliseconds: 250),
             curve: Curves.decelerate,

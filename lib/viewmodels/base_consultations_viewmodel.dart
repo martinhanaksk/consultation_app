@@ -6,68 +6,141 @@ import 'package:consultation_app/setup.dart';
 import 'package:flutter/foundation.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+enum ViewMode { visitor, owner }
+
 class BaseConsultationsViewmodel extends ChangeNotifier {
+  // ── State ──────────────────────────────────────────────────────────────────
+
   bool isOwner = false;
   bool isLoading = false;
-  bool _isWebsiteLoading = false;
-  bool get isWebsiteLoading => _isWebsiteLoading;
-  Map<int, bool> _addingSlotBefore = {};
-  Map<int, bool> _addingSlotAfter = {};
-
-  bool isAddingSlotBefore(int blockId) => _addingSlotBefore[blockId] ?? false;
-  bool isAddingSlotAfter(int blockId) => _addingSlotAfter[blockId] ?? false;
   bool blocksFiltered = false;
   bool noRoomsFound = false;
+
   List<int> subscribedBlocks = [];
   List<UserModel>? users = [];
   List<RoomModel>? rooms = [];
-  Map<int, List<SlotModel>?> slotsInBlocks = {};
   List<BlockModel> blocks = [];
+  Map<int, List<SlotModel>?> slotsInBlocks = {};
+
   int? ownerSelectedRoomId;
   int? visitorSelectedRoomId;
-  String _visitReason = "";
-  String get visitReason => _visitReason;
-  int _ownerView = 1;
-  int get ownerView => _ownerView;
   int? selectedRoomId;
+
+  bool _isWebsiteLoading = false;
+  String _visitReason = '';
+  int _ownerView = 1;
+
+  final Map<int, bool> _addingSlotBefore = {};
+  final Map<int, bool> _addingSlotAfter = {};
   final Map<int, bool> _slotLoading = {};
-  bool isSlotLoading(int slotId) => _slotLoading[slotId] ?? false;
   final Map<int, bool> _optimisticallyReleased = {};
+  final Map<int, bool> _takingSlot = {};
+
+  // ── Getters ────────────────────────────────────────────────────────────────
+
+  bool get isWebsiteLoading => _isWebsiteLoading;
+  String get visitReason => _visitReason;
+  int get ownerView => _ownerView;
+
+  bool isAddingSlotBefore(int blockId) => _addingSlotBefore[blockId] ?? false;
+  bool isAddingSlotAfter(int blockId) => _addingSlotAfter[blockId] ?? false;
+  bool isSlotLoading(int slotId) => _slotLoading[slotId] ?? false;
   bool isOptimisticallyReleased(int slotId) =>
       _optimisticallyReleased[slotId] ?? false;
-  final Map<int, bool> _takingSlot = {};
   bool isTakingSlot(int slotId) => _takingSlot[slotId] ?? false;
 
-  Future<void> launchWebsite(String url) async {
-    if (_isWebsiteLoading) return;
-    _isWebsiteLoading = true;
-    notifyListeners();
-    final trimmed = url.trim();
-    if (trimmed.isEmpty) {
-      notify.showToast('URL is empty');
+  int? get roomIdNumber =>
+      ownerView == 0 ? visitorSelectedRoomId : ownerSelectedRoomId;
+
+  int? get safeSelectedRoomId {
+    if (rooms == null || selectedRoomId == null) return null;
+    return rooms!.any((r) => r.id == selectedRoomId) ? selectedRoomId : null;
+  }
+
+  RoomModel? get selectedRoom {
+    if (rooms == null || rooms!.isEmpty || selectedRoomId == null) return null;
+    try {
+      return rooms!.firstWhere((r) => r.id == selectedRoomId);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  // ── Public Methods ─────────────────────────────────────────────────────────
+
+  Future<void> init() async {
+    final email = sm.email;
+    await setOwnerView(0);
+    _setLoading(true);
+
+    if (!await checkConnection()) return;
+
+    try {
+      sm.checkIfValidToken();
+      isOwner = await resolveUserRole(email);
+      _visitReason = sm.visitReason;
+      subscribedBlocks = await api.getMySubscriptions();
+
+      final myRooms = await fetchRooms();
+      if (myRooms.isEmpty) {
+        noRoomsFound = true;
+        return;
+      }
+
+      visitorSelectedRoomId = sm.roomIdVisitor ?? myRooms.first.id;
+      selectedRoomId = visitorSelectedRoomId;
+      await refreshRoomData(myRooms.first.id);
+    } catch (_) {
+      notify.showToast(
+        'Failed to load consultations. Please check your internet connection.',
+        isError: true,
+      );
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> loadRoom() async {
+    sm.checkIfValidToken();
+    if (roomIdNumber != null) {
+      await refreshRoomData(roomIdNumber!);
+    }
+  }
+
+  Future<void> refreshRoomData(int roomId) async {
+    _setLoading(true);
+    if (!await checkConnection()) return;
+
+    List<int> subscriptions = [];
+    try {
+      subscriptions = await api.getMySubscriptions();
+    } catch (_) {
+      notify.showToast('Could not load your subscriptions', isError: true);
+    }
+
+    final newUsers = await api.getUsers();
+    final newRooms = await fetchRooms();
+    _visitReason = sm.visitReason;
+
+    if (newRooms.isEmpty) {
+      noRoomsFound = true;
+      notifyListeners();
       return;
     }
-    final normalized =
-        trimmed.startsWith('http://') || trimmed.startsWith('https://')
-        ? trimmed
-        : 'https://$trimmed';
-    final uri = Uri.tryParse(normalized);
-    try {
-      final launched = await launchUrl(
-        uri!,
-        mode: LaunchMode.externalApplication,
-      );
 
-      if (!launched) {
-        notify.showToast('Could not launch $normalized',isError: true);
-      }
-      _isWebsiteLoading = false;
-      notifyListeners();
-    } catch (e) {
-      notify.showToast('Could not launch $normalized',isError: true);
-      _isWebsiteLoading = false;
-      notifyListeners();
-    }
+    noRoomsFound = false;
+
+    final today = _todayString();
+    final newBlocks = await api.getBlocks(roomId, today);
+    final newSlotsInBlocks = await _fetchSlotsForBlocks(newBlocks);
+
+    subscribedBlocks = subscriptions;
+    users = newUsers;
+    rooms = newRooms;
+    blocks = newBlocks;
+    slotsInBlocks = newSlotsInBlocks;
+    blocksFiltered = true;
+    _setLoading(false);
   }
 
   Future<void> takeSlot(int slotId, String note, int isOnline) async {
@@ -76,29 +149,31 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
 
     final oldSlot = _findSlot(slotId);
     if (oldSlot != null) {
-      final updatedSlot = SlotModel(
-        id: oldSlot.id,
-        blockId: oldSlot.blockId,
-        roomId: oldSlot.roomId,
-        startTime: oldSlot.startTime,
-        duration: oldSlot.duration,
-        isOnline: oldSlot.isOnline,
-        isOnlineTeacher: oldSlot.isOnlineTeacher,
-        note: oldSlot.note,
-        takenBy: sm.email,
-        takenByName: sm.name,
-        takenByReason: note,
-        history: oldSlot.history,
+      _updateSlotInCache(
+        slotId,
+        SlotModel(
+          id: oldSlot.id,
+          blockId: oldSlot.blockId,
+          roomId: oldSlot.roomId,
+          startTime: oldSlot.startTime,
+          duration: oldSlot.duration,
+          isOnline: oldSlot.isOnline,
+          isOnlineTeacher: oldSlot.isOnlineTeacher,
+          note: oldSlot.note,
+          takenBy: sm.email,
+          takenByName: sm.name,
+          takenByReason: note,
+          history: oldSlot.history,
+        ),
       );
-      _updateSlotInCache(slotId, updatedSlot);
     }
 
     try {
       await api.takeSlot(slotId, note, isOnline);
       await _refreshSlotsForBlock(slotId);
-    } catch (e) {
+    } catch (_) {
       if (oldSlot != null) _updateSlotInCache(slotId, oldSlot);
-      notify.showToast('Failed to take slot',isError: true);
+      notify.showToast('Failed to take slot', isError: true);
     } finally {
       _takingSlot.remove(slotId);
       notifyListeners();
@@ -111,29 +186,31 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
 
     final oldSlot = _findSlot(slotId);
     if (oldSlot != null) {
-      final releasedSlot = SlotModel(
-        id: oldSlot.id,
-        blockId: oldSlot.blockId,
-        roomId: oldSlot.roomId,
-        startTime: oldSlot.startTime,
-        duration: oldSlot.duration,
-        isOnline: oldSlot.isOnline,
-        isOnlineTeacher: oldSlot.isOnlineTeacher,
-        note: oldSlot.note,
-        takenBy: null,
-        takenByName: null,
-        takenByReason: null,
-        history: oldSlot.history,
+      _updateSlotInCache(
+        slotId,
+        SlotModel(
+          id: oldSlot.id,
+          blockId: oldSlot.blockId,
+          roomId: oldSlot.roomId,
+          startTime: oldSlot.startTime,
+          duration: oldSlot.duration,
+          isOnline: oldSlot.isOnline,
+          isOnlineTeacher: oldSlot.isOnlineTeacher,
+          note: oldSlot.note,
+          takenBy: null,
+          takenByName: null,
+          takenByReason: null,
+          history: oldSlot.history,
+        ),
       );
-      _updateSlotInCache(slotId, releasedSlot);
     }
 
     try {
       await api.releaseSlot(slotId);
       await _refreshSlotsForBlock(slotId);
-    } catch (e) {
+    } catch (_) {
       if (oldSlot != null) _updateSlotInCache(slotId, oldSlot);
-      notify.showToast('Failed to release slot',isError: true);
+      notify.showToast('Failed to release slot', isError: true);
     } finally {
       _optimisticallyReleased.remove(slotId);
       notifyListeners();
@@ -141,62 +218,114 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   }
 
   Future<void> onChangeConsultationType(int slotId) async {
-    isLoading = true;
-    notifyListeners();
+    _setLoading(true);
 
     final oldSlot = _findSlot(slotId);
     if (oldSlot != null) {
-      final toggledSlot = SlotModel(
-        id: oldSlot.id,
-        blockId: oldSlot.blockId,
-        roomId: oldSlot.roomId,
-        startTime: oldSlot.startTime,
-        duration: oldSlot.duration,
-        isOnline: oldSlot.isOnline == 0 ? 1 : 0,
-        isOnlineTeacher: oldSlot.isOnlineTeacher,
-        note: oldSlot.note,
-        takenBy: oldSlot.takenBy,
-        takenByName: oldSlot.takenByName,
-        takenByReason: oldSlot.takenByReason,
-        history: oldSlot.history,
+      _updateSlotInCache(
+        slotId,
+        SlotModel(
+          id: oldSlot.id,
+          blockId: oldSlot.blockId,
+          roomId: oldSlot.roomId,
+          startTime: oldSlot.startTime,
+          duration: oldSlot.duration,
+          isOnline: oldSlot.isOnline == 0 ? 1 : 0,
+          isOnlineTeacher: oldSlot.isOnlineTeacher,
+          note: oldSlot.note,
+          takenBy: oldSlot.takenBy,
+          takenByName: oldSlot.takenByName,
+          takenByReason: oldSlot.takenByReason,
+          history: oldSlot.history,
+        ),
       );
-      _updateSlotInCache(slotId, toggledSlot);
     }
 
     try {
       await api.changeConsultationType(slotId);
       await _refreshSlotsForBlock(slotId);
-    } catch (e) {
+    } catch (_) {
       if (oldSlot != null) _updateSlotInCache(slotId, oldSlot);
       notify.showToast('Slot cannot be manipulated');
     } finally {
-      isLoading = false;
-      notifyListeners();
+      _setLoading(false);
     }
   }
 
-  Future<void> handleEmailSubscribe(int block) async {
-    final isCurrentlySubscribed = subscribedBlocks.contains(block);
+  Future<void> handleEmailSubscribe(int blockId) async {
+    final wasSubscribed = subscribedBlocks.contains(blockId);
+    _toggleSubscription(blockId, subscribe: !wasSubscribed);
 
-    if (isCurrentlySubscribed) {
-      subscribedBlocks.remove(block);
-    } else {
-      subscribedBlocks.add(block);
+    try {
+      await api.subscribeToBlock(blockId);
+      subscribedBlocks = await api.getMySubscriptions();
+      notifyListeners();
+    } catch (_) {
+      _toggleSubscription(blockId, subscribe: wasSubscribed);
+      notify.showToast(
+        'Failed to update subscription, please try again later',
+        isError: true,
+      );
     }
+  }
+
+  Future<void> switchRoom(int newRoomId) async {
+    if (_ownerView == 1) {
+      ownerSelectedRoomId = newRoomId;
+    } else {
+      visitorSelectedRoomId = newRoomId;
+    }
+    selectedRoomId = roomIdNumber;
+    await loadRoom();
+  }
+
+  Future<bool> validateAndSelectRoom(int? id) async {
+    if (id == null) return false;
+
+    final myRooms = await fetchRooms();
+    if (!myRooms.any((room) => room.id == id)) {
+      notify.showToast('Invalid room or access denied', isError: true);
+      return false;
+    }
+
+    if (ownerView == 0) {
+      visitorSelectedRoomId = id;
+      sm.setRoomIdVisitor(id);
+    } else {
+      ownerSelectedRoomId = id;
+      sm.setRoomIdOwner(id);
+    }
+    selectedRoomId = id;
+    notifyListeners();
+    return true;
+  }
+
+  Future<void> launchWebsite(String url) async {
+    if (_isWebsiteLoading) return;
+
+    final normalized = _normalizeUrl(url.trim());
+    if (normalized == null) {
+      notify.showToast('URL is empty');
+      return;
+    }
+
+    _isWebsiteLoading = true;
     notifyListeners();
 
     try {
-      await api.subscribeToBlock(block);
-      subscribedBlocks = await api.getMySubscriptions();
-      notifyListeners();
-    } catch (e) {
-      if (isCurrentlySubscribed) {
-        subscribedBlocks.add(block);
-      } else {
-        subscribedBlocks.remove(block);
+      final uri = Uri.parse(normalized);
+      final launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+      if (!launched) {
+        notify.showToast('Could not launch $normalized', isError: true);
       }
+    } catch (_) {
+      notify.showToast('Could not launch $normalized', isError: true);
+    } finally {
+      _isWebsiteLoading = false;
       notifyListeners();
-      notify.showToast('Failed to update subscription, please try again later',isError: true);
     }
   }
 
@@ -216,234 +345,119 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setIsLoading(bool value) {
-    if (value) {
-      isLoading = true;
-    } else {
-      isLoading = false;
-    }
-    notifyListeners();
-  }
+  void setIsLoading(bool value) => _setLoading(value);
 
   Future<List<RoomModel>> fetchRooms() => api.getJoinedRooms();
-  int? get roomIdNumber => ownerView == 0
-      ? visitorSelectedRoomId == null
-            ? null
-            : visitorSelectedRoomId
-      : ownerSelectedRoomId == null
-      ? null
-      : ownerSelectedRoomId;
 
-  int getBlocksCount() {
-    if (blocksFiltered && blocks.isNotEmpty) {
-      return blocks.length;
-    }
-    return 0;
+  Future<bool> checkConnection() async {
+    if (await helpers.handleIsInternetConnection()) return true;
+    notify.showToast(
+      'Please check your internet connection and try again',
+      isError: true,
+    );
+    return false;
   }
 
-  Future<void> loadRoom() async {
-    sm.checkIfValidToken();
-    if (roomIdNumber != null) {
-      await refreshRoomData(roomIdNumber!);
-    }
-  }
-
-  Future<void> refreshRoomData(int roomId) async {
-    isLoading = true;
-    notifyListeners();
-    if (!await checkConnection()) return;
-     List<int> subscriptions = [];
-  try {
-    subscriptions = await api.getMySubscriptions();
-  } catch (e) {
-    notify.showToast('Could not load your subscriptions',isError: true);
-  }
-    final newUsers = await api.getUsers();
-    final newRooms = await fetchRooms();
-    _visitReason = sm.visitReason;
-    if (newRooms.isEmpty) {
-      noRoomsFound = true;
-      notifyListeners();
-      return;
-    }
-
-    noRoomsFound = false;
-    String now = DateTime.now().toString().substring(0, 10);
-    List<BlockModel> newBlocks = await api.getBlocks(roomId, now);
-
-    Map<int, List<SlotModel>?> newSlotsInBlocks = {};
-    List<Future<void>> futures = [];
-    for (var block in newBlocks) {
-      futures.add(() async {
-        String now = DateTime.now().toString().substring(0, 10);
-        final slots = await api.getSlotsForBlock(block.id, now);
-        if (slots != null) {
-          newSlotsInBlocks[block.id] = slots;
-        } else {
-          newSlotsInBlocks[block.id] = [];
-        }
-      }());
-    }
-    await Future.wait(futures);
-    subscribedBlocks = subscriptions;
-    users = newUsers;
-    rooms = newRooms;
-    blocks = newBlocks;
-    slotsInBlocks = newSlotsInBlocks;
-    blocksFiltered = true;
-    isLoading = false;
-    notifyListeners();
-  }
-
-  int? get safeSelectedRoomId {
-    if (rooms == null || selectedRoomId == null) return null;
-    final exists = rooms!.any((r) => r.id == selectedRoomId);
-    return exists ? selectedRoomId : null;
-  }
-
-  UserModel? getUserByEmail(String emailToFind) {
-    if (users != null) {
-      for (var tmpUser in users!) {
-        if (tmpUser.email == emailToFind) {
-          return tmpUser;
-        }
-      }
-    }
-    return null;
-  }
-
-  String blockDateLabel(int blockId) {
-    for (var tmpBlock in blocks) {
-      if (tmpBlock.id == blockId) {
-        return "${helpers.getDateOnlySimple(DateTime.parse(tmpBlock.date.toString()))} ${daysRemainingLabel(tmpBlock.date)}";
-      }
-    }
-    return "";
-  }
-
-  String blockDate(int blockId) {
-    for (var tmpBlock in blocks) {
-      if (tmpBlock.id == blockId) {
-        return "${DateTime.parse(tmpBlock.date.toString())}";
-      }
-    }
-    return "";
-  }
-
-  String daysRemainingLabel(DateTime date) {
-    final now = DateTime.now();
-
-    final today = DateTime(now.year, now.month, now.day);
-    final target = DateTime(date.year, date.month, date.day);
-
-    final diff = target.difference(today).inDays;
-    if (diff < 0) return "";
-    if (diff == 0) return "(today)";
-    if (diff == 1) return "(tomorrow)";
-
-    return "($diff d.)";
-  }
-
-  Future<void> switchRoom(int newRoomId) async {
-    _ownerView == 1
-        ? ownerSelectedRoomId = newRoomId
-        : visitorSelectedRoomId = newRoomId;
-    selectedRoomId = _ownerView == 1
-        ? ownerSelectedRoomId
-        : visitorSelectedRoomId;
-    await loadRoom();
-  }
-
-  Future<bool> validateAndSelectRoom(int? id) async {
-    if (id == null) return false;
-
-    final myRooms = await fetchRooms();
-    final isValidRoom = myRooms.any((room) => room.id == id);
-
-    if (isValidRoom) {
-      if (ownerView == 0) {
-        visitorSelectedRoomId = id;
-        sm.setRoomIdVisitor(id);
-      } else {
-        ownerSelectedRoomId = id;
-        sm.setRoomIdOwner(id);
-      }
-      selectedRoomId = id;
-      notifyListeners();
-      return true;
-    } else {
-      notify.showToast('Invalid room or access denied',isError: true);
+  Future<bool> resolveUserRole(String email) async {
+    try {
+      return await api.getRole() == 'teacher';
+    } catch (_) {
       return false;
     }
   }
 
-  Future<bool> checkConnection() async {
-    if (await helpers.handleIsInternetConnection()) return true;
-    notify.showToast('Please check your internet connection and try again',isError: true);
-    return false;
+  int getBlocksCount() =>
+      blocksFiltered && blocks.isNotEmpty ? blocks.length : 0;
+
+  String blockDateLabel(int blockId) {
+    final block = _findBlock(blockId);
+    if (block == null) return '';
+    final date = DateTime.parse(block.date.toString());
+    return '${helpers.getDateOnlySimple(date)} ${daysRemainingLabel(block.date)}';
   }
 
-  RoomModel? get selectedRoom {
-    if (rooms == null || rooms!.isEmpty || selectedRoomId == null) return null;
+  String blockDate(int blockId) {
+    final block = _findBlock(blockId);
+    return block != null ? '${DateTime.parse(block.date.toString())}' : '';
+  }
+
+  String daysRemainingLabel(DateTime date) {
+    final today = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+    );
+    final target = DateTime(date.year, date.month, date.day);
+    final diff = target.difference(today).inDays;
+
+    if (diff < 0) return '';
+    if (diff == 0) return '(today)';
+    if (diff == 1) return '(tomorrow)';
+    return '($diff d.)';
+  }
+
+  // ── Private Helpers ────────────────────────────────────────────────────────
+
+  void _setLoading(bool value) {
+    isLoading = value;
+    notifyListeners();
+  }
+
+  String _todayString() => DateTime.now().toString().substring(0, 10);
+
+  String? _normalizeUrl(String trimmed) {
+    if (trimmed.isEmpty) return null;
+    return trimmed.startsWith('http://') || trimmed.startsWith('https://')
+        ? trimmed
+        : 'https://$trimmed';
+  }
+
+  void _toggleSubscription(int blockId, {required bool subscribe}) {
+    if (subscribe) {
+      subscribedBlocks.add(blockId);
+    } else {
+      subscribedBlocks.remove(blockId);
+    }
+    notifyListeners();
+  }
+
+  Future<Map<int, List<SlotModel>?>> _fetchSlotsForBlocks(
+    List<BlockModel> blockList,
+  ) async {
+    final result = <int, List<SlotModel>?>{};
+    final today = _todayString();
+
+    await Future.wait(
+      blockList.map((block) async {
+        final slots = await api.getSlotsForBlock(block.id, today);
+        result[block.id] = slots ?? [];
+      }),
+    );
+
+    return result;
+  }
+
+  BlockModel? _findBlock(int blockId) {
     try {
-      return rooms!.firstWhere((r) => r.id == selectedRoomId);
+      return blocks.firstWhere((b) => b.id == blockId);
     } catch (_) {
       return null;
     }
   }
 
-  Future<void> init() async {
-    String email = sm.email;
-    await setOwnerView(0);
-    isLoading = true;
-    notifyListeners();
-    if (!await checkConnection()) return;
-    try {
-    sm.checkIfValidToken();
-    isOwner = await resolveUserRole(email);
-    _visitReason = sm.visitReason;
-    subscribedBlocks = await api.getMySubscriptions();
-    final myRooms = await fetchRooms();
-    if (myRooms.isEmpty) {
-      noRoomsFound = true;
-      isLoading = false;
-      notifyListeners();
-      return;
-    }
-
-    visitorSelectedRoomId = sm.roomIdVisitor ?? myRooms[0].id;
-    selectedRoomId = visitorSelectedRoomId;
-    await refreshRoomData(myRooms[0].id);
-      } catch (e) {
-    notify.showToast('Failed to load consultations. Please check your internet connection.',isError: true);
-  } finally {
-    isLoading = false;
-    notifyListeners();
-  }
-  }
-
-  Future<bool> resolveUserRole(String email) async {
-    try {
-      return await api.getRole() == "teacher";
-    } catch (_) {
-      return false;
-    }
-  }
-
   SlotModel? _findSlot(int slotId) {
     for (final slots in slotsInBlocks.values) {
-      if (slots != null) {
-        for (final slot in slots) {
-          if (slot.id == slotId) return slot;
-        }
-      }
+      if (slots == null) continue;
+      try {
+        return slots.firstWhere((s) => s.id == slotId);
+      } catch (_) {}
     }
     return null;
   }
 
   int? _findBlockIdForSlot(int slotId) {
     for (final entry in slotsInBlocks.entries) {
-      if (entry.value != null && entry.value!.any((s) => s.id == slotId)) {
+      if (entry.value?.any((s) => s.id == slotId) ?? false) {
         return entry.key;
       }
     }
@@ -454,12 +468,12 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     final blockId = _findBlockIdForSlot(slotId);
     if (blockId == null) return;
     final slots = slotsInBlocks[blockId];
-    if (slots != null) {
-      final index = slots.indexWhere((s) => s.id == slotId);
-      if (index != -1) {
-        slots[index] = updatedSlot;
-        notifyListeners();
-      }
+    if (slots == null) return;
+
+    final index = slots.indexWhere((s) => s.id == slotId);
+    if (index != -1) {
+      slots[index] = updatedSlot;
+      notifyListeners();
     }
   }
 
@@ -467,14 +481,11 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     final blockId = _findBlockIdForSlot(slotId);
     if (blockId == null) return;
     try {
-      String now = DateTime.now().toString().substring(0, 10);
-      final freshSlots = await api.getSlotsForBlock(blockId, now);
+      final freshSlots = await api.getSlotsForBlock(blockId, _todayString());
       if (freshSlots != null) {
         slotsInBlocks[blockId] = freshSlots;
         notifyListeners();
       }
-    } catch (e) {}
+    } catch (_) {}
   }
 }
-
-enum ViewMode { visitor, owner }
