@@ -102,8 +102,7 @@ class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
                                   )
                                 : ConsultationsContent(
                                     viewModel: viewModel,
-                                    shortName:
-                                        viewModel.selectedRoom?.shortName,
+                                    link: viewModel.selectedRoom?.link,
                                     toggle: widget.toggle,
                                     addButton: widget.addButton,
                                     showHistoryOption: widget.showHistoryOption,

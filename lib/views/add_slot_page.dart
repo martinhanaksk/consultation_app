@@ -11,7 +11,7 @@ import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:consultation_app/views/custom_widgets/custom_checkbox_widget.dart';
 import 'package:consultation_app/views/custom_widgets/custom_text_field_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
-import 'package:consultation_app/views/custom_widgets/time_duration_picker.dart';
+import 'package:consultation_app/views/custom_widgets/custom_time_duration_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
@@ -68,7 +68,7 @@ class _AddSlotState extends State<AddSlot> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        TimeDurationPicker(
+                        CustomTimeDurationPicker(
                           initialStartTime: viewModel.startTime,
                           initialDuration: viewModel.duration,
                           onStartTimeChanged: viewModel.setStartTime,

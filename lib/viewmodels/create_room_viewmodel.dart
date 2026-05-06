@@ -13,7 +13,7 @@ class CreateRoomViewmodel extends BaseRoomViewmodel {
   bool get isLoading => _isLoading;
   // ── Public Methods ─────────────────────────────────────────────────────────
   Future<void> createRoom(
-    String shortName,
+    String link,
     String title,
     String description,
     int cancellationHours,
@@ -27,7 +27,7 @@ class CreateRoomViewmodel extends BaseRoomViewmodel {
     _setLoading(true);
     try {
       final success = await api.createRoom(
-        shortName,
+        link,
         title,
         description,
         cancellationHours,

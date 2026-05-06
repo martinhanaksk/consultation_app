@@ -7,7 +7,7 @@
 import 'package:flutter/material.dart';
 
 abstract class BaseRoomViewmodel extends ChangeNotifier {
-  final TextEditingController shortNameController = TextEditingController();
+  final TextEditingController linkController = TextEditingController();
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController acceptedEmailController = TextEditingController();
@@ -33,7 +33,7 @@ abstract class BaseRoomViewmodel extends ChangeNotifier {
 
   @override
   void dispose() {
-    shortNameController.dispose();
+    linkController.dispose();
     titleController.dispose();
     descriptionController.dispose();
     acceptedEmailController.dispose();

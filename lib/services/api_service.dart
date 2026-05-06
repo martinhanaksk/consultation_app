@@ -330,7 +330,7 @@ class ApiService {
       url,
       headers: _headers(sm.token),
       body: jsonEncode({
-        "shortname": roomName,
+        "link": roomName,
         "title": title,
         "description": description,
         "accepted_emails": convertedAcceptedEmails,
@@ -344,7 +344,7 @@ class ApiService {
 
   Future<bool> editRoom(
     int roomId,
-    String shortName,
+    String link,
     String title,
     String description,
     int cancellationHours,
@@ -359,7 +359,7 @@ class ApiService {
       url,
       headers: _headers(sm.token),
       body: jsonEncode({
-        "shortname": shortName,
+        "link": link,
         "title": title,
         "description": description,
         "accepted_emails": convertedAcceptedEmails,

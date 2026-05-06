@@ -34,11 +34,14 @@ class CreateRoom extends StatelessWidget {
               onSubmit: () {
                 FocusScope.of(context).unfocus();
                 viewModel.createRoom(
-                  helpers.trimText(viewModel.shortNameController.text.trim()),
+                  helpers.trimText(viewModel.linkController.text.trim()),
                   helpers.trimText(viewModel.titleController.text.trim()),
                   helpers.trimText(viewModel.descriptionController.text.trim()),
-                  int.parse(helpers.trimText(
-                      viewModel.cancellationHoursController.text.trim())),
+                  int.parse(
+                    helpers.trimText(
+                      viewModel.cancellationHoursController.text.trim(),
+                    ),
+                  ),
                 );
               },
             ),

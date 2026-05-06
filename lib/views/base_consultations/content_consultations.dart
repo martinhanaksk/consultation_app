@@ -16,7 +16,7 @@ class ConsultationsContent extends StatelessWidget {
   final BaseConsultationsViewmodel viewModel;
   final Widget? toggle;
   final Widget? addButton;
-  final String? shortName;
+  final String? link;
   final Widget? deleteButton;
   final Widget? Function(int slotId, int blockId, Color color)?
   showHistoryOption;
@@ -27,7 +27,7 @@ class ConsultationsContent extends StatelessWidget {
     super.key,
     required this.viewModel,
     this.toggle,
-    this.shortName,
+    this.link,
     this.addButton,
     this.deleteButton,
     this.showHistoryOption,
@@ -56,8 +56,7 @@ class ConsultationsContent extends StatelessWidget {
                           ),
                         )
                       : ElevatedButton(
-                          onPressed: () =>
-                              viewModel.launchWebsite(shortName ?? ""),
+                          onPressed: () => viewModel.launchWebsite(link ?? ""),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: constants.primary,
                             disabledBackgroundColor: constants.primary,

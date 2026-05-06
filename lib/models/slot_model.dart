@@ -59,18 +59,5 @@ class SlotModel {
     roomId: json['room_id'],
   );
 
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "block_id": blockId,
-    "start_time": startTime,
-    "duration": duration,
-    "taken_by": takenBy,
-    "taken_by_name": takenByName,
-    "taken_by_reason": takenByReason,
-    "history": history,
-    "note": note,
-    "is_online": isOnline,
-    "teacher_is_online": isOnlineTeacher,
-    "room_id": roomId,
-  };
+ 
 }

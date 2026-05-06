@@ -42,7 +42,7 @@ class RoomFormBody extends StatelessWidget {
             const SizedBox(height: 20),
             // URL field — uses isUrl flag to restrict characters and set the correct keyboard
             CustomInputTextField(
-              controller: viewModel.shortNameController,
+              controller: viewModel.linkController,
               hintText: 'https://example.com',
               isUrl: true,
               maxLength: 2000,

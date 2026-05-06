@@ -12,7 +12,7 @@ import 'package:consultation_app/views/custom_widgets/custom_checkbox_widget.dar
 import 'package:consultation_app/views/custom_widgets/custom_date_range_picker_dialog.dart';
 import 'package:consultation_app/views/custom_widgets/custom_text_field_widget.dart';
 import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
-import 'package:consultation_app/views/custom_widgets/time_duration_picker.dart';
+import 'package:consultation_app/views/custom_widgets/custom_time_duration_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
@@ -112,7 +112,7 @@ class _CreateBlockState extends State<CreateBlock> {
                           ),
                         ),
                         SizedBox(height: 20),
-                        TimeDurationPicker(
+                        CustomTimeDurationPicker(
                           initialStartTime: viewModel.startTime,
                           initialDuration: viewModel.duration,
                           onStartTimeChanged: viewModel.setStartTime,

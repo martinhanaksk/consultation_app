@@ -27,10 +27,11 @@ class EditRoomViewmodel extends BaseRoomViewmodel {
       room = allRooms.firstWhere((r) => r.id == roomId);
 
       // Pre-populate the inherited form controllers with the current room values
-      shortNameController.text = room!.shortName;
+      linkController.text = room!.link;
       titleController.text = room!.title;
       descriptionController.text = room!.description;
-      cancellationHoursController.text = room!.cancellationNoticeHours.toString();
+      cancellationHoursController.text = room!.cancellationNoticeHours
+          .toString();
       // The API returns a comma-separated string. Split into the list used by the form
       acceptedEmails = room!.acceptedEmails
           .split(',')
@@ -78,7 +79,7 @@ class EditRoomViewmodel extends BaseRoomViewmodel {
     try {
       return await api.editRoom(
         room!.id,
-        shortNameController.text.trim(),
+        linkController.text.trim(),
         titleController.text.trim(),
         descriptionController.text.trim(),
         int.parse(cancellationHoursController.text.trim()),
@@ -94,7 +95,7 @@ class EditRoomViewmodel extends BaseRoomViewmodel {
 
   // Validates that no required field is empty before attempting to save
   bool _anyFieldEmpty() =>
-      shortNameController.text.isEmpty ||
+      linkController.text.isEmpty ||
       titleController.text.isEmpty ||
       descriptionController.text.isEmpty ||
       cancellationHoursController.text.isEmpty ||

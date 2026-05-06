@@ -295,7 +295,13 @@ class _NotifyHoursTileState extends State<NotifyHoursTile> {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       child: Row(
         children: [
-          svgs.icon('clock', constants.primary, width: constants.fsTitle),
+          _ctrl.text == "0"
+              ? svgs.icon(
+                  'clock_crossed',
+                  constants.primary,
+                  width: constants.fsTitle,
+                )
+              : svgs.icon('clock', constants.primary, width: constants.fsTitle),
           const SizedBox(width: 12),
           Expanded(
             child: Column(

@@ -26,10 +26,4 @@ class BlockModel {
     isOnline: json['is_online'],
   );
 
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "date": date.toIso8601String(),
-    "room_id": roomId,
-    "is_online": isOnline,
-  };
 }

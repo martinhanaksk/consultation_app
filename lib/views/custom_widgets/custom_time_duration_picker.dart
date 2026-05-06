@@ -1,4 +1,4 @@
-// time_duration_picker.dart
+// custom_time_duration_picker.dart
 // Author: Martin Hanak
 // Email: xhanakm00@stud.fit.vut.cz
 // Side-by-side Cupertino picker pair: a slot duration wheel (5–120 min)
@@ -8,14 +8,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:consultation_app/setup.dart';
 
-class TimeDurationPicker extends StatefulWidget {
+class CustomTimeDurationPicker extends StatefulWidget {
   final Duration? initialStartTime;
   final Duration? initialDuration;
   final ValueChanged<Duration> onStartTimeChanged;
   final ValueChanged<Duration> onDurationChanged;
   final String durationLabel;
   final String startTimeLabel;
-  const TimeDurationPicker({
+  const CustomTimeDurationPicker({
     super.key,
     required this.onStartTimeChanged,
     required this.onDurationChanged,
@@ -25,10 +25,10 @@ class TimeDurationPicker extends StatefulWidget {
     this.startTimeLabel = 'Slot Start Time',
   });
   @override
-  State<TimeDurationPicker> createState() => _TimeDurationPickerState();
+  State<CustomTimeDurationPicker> createState() => _CustomTimeDurationPickerState();
 }
 
-class _TimeDurationPickerState extends State<TimeDurationPicker> {
+class _CustomTimeDurationPickerState extends State<CustomTimeDurationPicker> {
   late DateTime _currentStart;
   late FixedExtentScrollController _durationController;
   @override
