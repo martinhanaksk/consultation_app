@@ -45,11 +45,7 @@ class SliderMenuViewmodel extends ChangeNotifier {
       _token = sm.token;
       sm.checkIfValidToken();
       _email = sm.email;
-      if (!await helpers.handleIsInternetConnection()) {
-        notify.showToast('Please connect to internet', isError: true);
-        // Default to non-owner so owner-only menu items are hidden when offline
-        _isOwner = false;
-      } else {
+      if (await helpers.handleIsInternetConnection()) {
         bool isOwnerTemp = await api.getIsOwner();
         notifyListeners();
         _isOwner = isOwnerTemp;

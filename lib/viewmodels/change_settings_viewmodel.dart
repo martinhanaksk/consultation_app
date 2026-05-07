@@ -43,12 +43,12 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
 
     final data = await api.getUserData(sm.token, _email);
 
-    _name = data['name'] ?? '';
-    _surname = data['surname'] ?? '';
-    _role = data['role'] ?? '';
-    _visitReason = data['visit_reason'] ?? '';
-    _visibility = data['visible'] == 1 || data['visible'] == true;
-    _notifyHoursBefore = (data['notification'] as int?) ?? 0;
+    _name = data?['name'] ?? '';
+    _surname = data?['surname'] ?? '';
+    _role = data?['role'] ?? '';
+    _visitReason = data?['visit_reason'] ?? '';
+    _visibility = data?['visible'] == 1 || data?['visible'] == true;
+    _notifyHoursBefore = (data?['notification'] as int?) ?? 0;
 
     // Persist the freshly fetched profile into the local session
     await sm.saveSession(

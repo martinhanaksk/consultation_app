@@ -24,9 +24,9 @@ class RegisterViewmodel extends ChangeNotifier {
 
     try {
       final response = await api.registerUser(um);
-      if (response.statusCode == 200) {
+      if (response?.statusCode == 200) {
         // On success, handleServer is called to redirect to verify page
-        await helpers.handleServer(response, um.email, rememberMe);
+        await helpers.handleServer(response!, um.email, rememberMe);
         setIsLoading(false);
       } else {
         notify.showToast('Failed to register user', isError: true);

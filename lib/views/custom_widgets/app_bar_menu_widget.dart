@@ -10,7 +10,7 @@ import 'package:consultation_app/viewmodels/base_consultations_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
 
-class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
+class AppBarMenu extends StatefulWidget implements PreferredSizeWidget {
   final BaseConsultationsViewmodel? viewModel;
   // Optional centre widget; used for the owner/student AnimatedToggle on the home page
   final Widget? toggle;
@@ -30,6 +30,23 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
   });
 
   @override
+  State<AppBarMenu> createState() => _AppBarMenuState();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+class _AppBarMenuState extends State<AppBarMenu> {
+  // Cached once so FutureBuilder doesn't re-fire on every rebuild
+  late final Future<bool> _internetFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _internetFuture = helpers.handleIsInternetConnection();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: constants.background,
@@ -39,7 +56,7 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
       leading: Center(
         child: Padding(
           padding: EdgeInsets.only(left: 12),
-          child: onHomePage
+          child: widget.onHomePage
               // Home page: hamburger opens the drawer
               ? Container(
                   width: 48,
@@ -91,10 +108,24 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
         ),
       ),
       // toggle is null on most pages
-      flexibleSpace: SafeArea(child: Center(child: toggle)),
+      flexibleSpace: FutureBuilder<bool>(
+        future: _internetFuture,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return SafeArea(child: Center(child: widget.toggle));
+          }
+          return snapshot.data!
+              ? SafeArea(child: Center(child: widget.toggle))
+              : SafeArea(
+                  child: Center(
+                    child: svgs.icon("no_connection", constants.red),
+                  ),
+                );
+        },
+      ),
       actions: [
         // Settings icon is hidden on pages where navigating to settings makes no sense
-        onSettingsPage || onVerificationPage || onRegistrationPage
+        widget.onSettingsPage || widget.onVerificationPage || widget.onRegistrationPage
             ? SizedBox.shrink()
             : Padding(
                 padding: EdgeInsets.only(right: 12),

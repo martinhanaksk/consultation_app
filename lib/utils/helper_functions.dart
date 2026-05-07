@@ -74,7 +74,7 @@ class HelperFunctions {
   // Trims and truncates to 12 characters, appending "..." if the text was cut
   String cropText(String text) {
     String trimmed = text.trim();
-    int maxTextLength = 12;
+    int maxTextLength = 20;
     if (trimmed.length > maxTextLength) {
       return '${trimmed.substring(0, maxTextLength)}...';
     }

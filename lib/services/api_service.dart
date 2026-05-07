@@ -5,6 +5,8 @@
 // Organises endpoints into sections: auth, users, rooms, blocks, and slots.
 
 import 'dart:convert';
+import 'dart:io';
+import 'dart:async';
 import 'package:consultation_app/setup.dart';
 import 'package:http/http.dart' as http;
 import 'package:consultation_app/models/user_model.dart';
@@ -30,23 +32,50 @@ class ApiService {
     }
   }
 
+  // Central wrapper for all HTTP requests — catches network-level errors before
+  // they propagate. Returns null when no response could be obtained.
+  Future<http.Response?> _safeRequest(
+    Future<http.Response> Function() request,
+  ) async {
+    try {
+      return await request();
+    } on SocketException {
+      notify.showToast('No internet connection', isError: true);
+      return null;
+    } on TimeoutException {
+      notify.showToast('Request timed out', isError: true);
+      return null;
+    } on HandshakeException {
+      notify.showToast('Secure connection failed', isError: true);
+      return null;
+    } catch (e) {
+      notify.showToast('Unexpected error', isError: true);
+      return null;
+    }
+  }
+
   // --- Authentication ---
 
   // Verifies the OTP, fetches the user profile, and persists the session.
-  // Returns true on success; false if the OTP is invalid or expired.
+  // Returns true on success; false if the OTP is invalid, expired, or on network error.
   Future<bool> connect(String email, String otp, bool rememberMe) async {
     final Uri url = getVerifyLoginOtpUrl(rememberMe);
 
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'email': email, 'otp': otp}),
+    final response = await _safeRequest(
+      () => http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email, 'otp': otp}),
+      ),
     );
+
+    if (response == null) return false;
 
     final data = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
       final userDataFetched = await api.getUserData(data['token'], email);
+      if (userDataFetched == null) return false;
       await sm.saveSession(
         data['token'],
         email,
@@ -63,11 +92,13 @@ class ApiService {
     }
   }
 
-  Future<http.Response> requestLoginOtp(String email) async {
-    return await http.post(
-      Uri.parse('${constants.url}/auth/request-login-otp'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'email': email}),
+  Future<http.Response?> requestLoginOtp(String email) async {
+    return await _safeRequest(
+      () => http.post(
+        Uri.parse('${constants.url}/auth/request-login-otp'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email}),
+      ),
     );
   }
 
@@ -80,19 +111,23 @@ class ApiService {
   }
 
   // Registers a new user and immediately syncs the relevant fields into the session
-  Future<http.Response> registerUser(UserModel um) async {
+  Future<http.Response?> registerUser(UserModel um) async {
     final Uri url = Uri.parse('${constants.url}/auth/register');
 
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        "email": um.email,
-        "name": um.name,
-        "surname": um.surname,
-        "visit_reason": um.visitReason,
-      }),
+    final response = await _safeRequest(
+      () => http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          "email": um.email,
+          "name": um.name,
+          "surname": um.surname,
+          "visit_reason": um.visitReason,
+        }),
+      ),
     );
+
+    if (response == null) return null;
 
     if (response.statusCode == 200) {
       sm.updateEmail(um.email);
@@ -107,7 +142,12 @@ class ApiService {
   // Falls back to 'student' if the API returns a null or missing role field
   Future<String> getRole() async {
     final Uri url = Uri.parse('${constants.url}/users?email=${sm.email}');
-    final response = await http.get(url, headers: _headers(sm.token));
+
+    final response = await _safeRequest(
+      () => http.get(url, headers: _headers(sm.token)),
+    );
+
+    if (response == null) return 'student';
 
     _checkUnauthorized(response);
 
@@ -137,17 +177,22 @@ class ApiService {
   ) async {
     final Uri url = Uri.parse('${constants.url}/users/data');
 
-    final response = await http.post(
-      url,
-      headers: _headers(sm.token),
-      body: jsonEncode({
-        "name": name,
-        "surname": surname,
-        "visit_reason": visitReason,
-        "visible": visible,
-        "notification": notificationHoursBefore,
-      }),
+    final response = await _safeRequest(
+      () => http.post(
+        url,
+        headers: _headers(sm.token),
+        body: jsonEncode({
+          "name": name,
+          "surname": surname,
+          "visit_reason": visitReason,
+          "visible": visible,
+          "notification": notificationHoursBefore,
+        }),
+      ),
     );
+
+    if (response == null) return;
+
     _checkUnauthorized(response);
 
     if (response.statusCode != 200) {
@@ -160,9 +205,14 @@ class ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> getUserData(String token, String email) async {
+  Future<Map<String, dynamic>?> getUserData(String token, String email) async {
     final Uri url = Uri.parse('${constants.url}/users/data?email=$email');
-    final response = await http.get(url, headers: _headers(token));
+
+    final response = await _safeRequest(
+      () => http.get(url, headers: _headers(token)),
+    );
+
+    if (response == null) return {};
 
     _checkUnauthorized(response);
 
@@ -175,7 +225,12 @@ class ApiService {
 
   Future<List<UserModel>> getUsers() async {
     final Uri url = Uri.parse('${constants.url}/users');
-    final response = await http.get(url, headers: _headers(sm.token));
+
+    final response = await _safeRequest(
+      () => http.get(url, headers: _headers(sm.token)),
+    );
+
+    if (response == null) return [];
 
     _checkUnauthorized(response);
 
@@ -187,9 +242,14 @@ class ApiService {
     }
   }
 
-  Future<UserModel> getUserByEmail(String email) async {
+  Future<UserModel?> getUserByEmail(String email) async {
     final Uri url = Uri.parse('${constants.url}/users?email=$email');
-    final response = await http.get(url, headers: _headers(sm.token));
+
+    final response = await _safeRequest(
+      () => http.get(url, headers: _headers(sm.token)),
+    );
+
+    if (response == null) return null;
 
     _checkUnauthorized(response);
 
@@ -205,16 +265,25 @@ class ApiService {
     final Uri url = Uri.parse(
       '${constants.url}/users/create-teacher?email=$email&name=$name&surname=$surname',
     );
-    final response = await http.post(url, headers: _headers(sm.token));
+
+    final response = await _safeRequest(
+      () => http.post(url, headers: _headers(sm.token)),
+    );
+
+    if (response == null) return false;
 
     _checkUnauthorized(response);
-
     return response.statusCode == 200;
   }
 
   Future<bool> getVisibility(String email) async {
     final Uri url = Uri.parse('${constants.url}/users/visible?email=$email');
-    final response = await http.get(url, headers: _headers(sm.token));
+
+    final response = await _safeRequest(
+      () => http.get(url, headers: _headers(sm.token)),
+    );
+
+    if (response == null) return false;
 
     _checkUnauthorized(response);
 
@@ -228,7 +297,12 @@ class ApiService {
   // Toggles the current user's visibility — the server flips the state server-side
   Future<void> setVisibility() async {
     final Uri url = Uri.parse('${constants.url}/users/visible');
-    final response = await http.post(url, headers: _headers(sm.token));
+
+    final response = await _safeRequest(
+      () => http.post(url, headers: _headers(sm.token)),
+    );
+
+    if (response == null) return;
 
     _checkUnauthorized(response);
 
@@ -241,7 +315,12 @@ class ApiService {
 
   Future<List<RoomModel>> getAllRooms() async {
     final Uri url = Uri.parse('${constants.url}/room/get');
-    final response = await http.get(url, headers: _headers(sm.token));
+
+    final response = await _safeRequest(
+      () => http.get(url, headers: _headers(sm.token)),
+    );
+
+    if (response == null) return [];
 
     _checkUnauthorized(response);
 
@@ -257,10 +336,12 @@ class ApiService {
   // Two requests are made because the joined-rooms endpoint returns IDs only.
   Future<List<RoomModel>> getJoinedRooms() async {
     final Uri urlToGetRooms = Uri.parse('${constants.url}/users/my-rooms');
-    final responseToGetRooms = await http.get(
-      urlToGetRooms,
-      headers: _headers(sm.token),
+
+    final responseToGetRooms = await _safeRequest(
+      () => http.get(urlToGetRooms, headers: _headers(sm.token)),
     );
+
+    if (responseToGetRooms == null) return [];
 
     _checkUnauthorized(responseToGetRooms);
 
@@ -279,10 +360,12 @@ class ApiService {
   // Same two-request pattern as getJoinedRooms, but scoped to rooms the teacher owns
   Future<List<RoomModel>> getMyRoomsOwner() async {
     final Uri urlToGetRooms = Uri.parse('${constants.url}/room/get-my');
-    final responseToGetRooms = await http.get(
-      urlToGetRooms,
-      headers: _headers(sm.token),
+
+    final responseToGetRooms = await _safeRequest(
+      () => http.get(urlToGetRooms, headers: _headers(sm.token)),
     );
+
+    if (responseToGetRooms == null) return [];
 
     _checkUnauthorized(responseToGetRooms);
 
@@ -300,9 +383,15 @@ class ApiService {
 
   Future<void> joinRoomById(int id) async {
     final Uri url = Uri.parse('${constants.url}/room/join?room_id=$id');
-    final response = await http.post(url, headers: _headers(sm.token));
+
+    final response = await _safeRequest(
+      () => http.post(url, headers: _headers(sm.token)),
+    );
+
+    if (response == null) return;
 
     _checkUnauthorized(response);
+
     if (response.statusCode == 403) {
       // 403 means the student's email is not in the room's acceptedEmails list
       throw Exception('You cannot join this room');
@@ -326,17 +415,21 @@ class ApiService {
     );
     final Uri url = Uri.parse('${constants.url}/room/create');
 
-    final response = await http.post(
-      url,
-      headers: _headers(sm.token),
-      body: jsonEncode({
-        "link": roomName,
-        "title": title,
-        "description": description,
-        "accepted_emails": convertedAcceptedEmails,
-        "cancellation_notice_hours": cancellationHours,
-      }),
+    final response = await _safeRequest(
+      () => http.post(
+        url,
+        headers: _headers(sm.token),
+        body: jsonEncode({
+          "link": roomName,
+          "title": title,
+          "description": description,
+          "accepted_emails": convertedAcceptedEmails,
+          "cancellation_notice_hours": cancellationHours,
+        }),
+      ),
     );
+
+    if (response == null) return false;
 
     _checkUnauthorized(response);
     return response.statusCode == 200;
@@ -355,17 +448,21 @@ class ApiService {
     );
     final Uri url = Uri.parse('${constants.url}/room/edit?room_id=$roomId');
 
-    final response = await http.post(
-      url,
-      headers: _headers(sm.token),
-      body: jsonEncode({
-        "link": link,
-        "title": title,
-        "description": description,
-        "accepted_emails": convertedAcceptedEmails,
-        "cancellation_notice_hours": cancellationHours,
-      }),
+    final response = await _safeRequest(
+      () => http.post(
+        url,
+        headers: _headers(sm.token),
+        body: jsonEncode({
+          "link": link,
+          "title": title,
+          "description": description,
+          "accepted_emails": convertedAcceptedEmails,
+          "cancellation_notice_hours": cancellationHours,
+        }),
+      ),
     );
+
+    if (response == null) return false;
 
     _checkUnauthorized(response);
     return response.statusCode == 200;
@@ -373,7 +470,12 @@ class ApiService {
 
   Future<bool> deleteRoom(int roomid) async {
     final Uri url = Uri.parse('${constants.url}/room/delete?room_id=$roomid');
-    final response = await http.delete(url, headers: _headers(sm.token));
+
+    final response = await _safeRequest(
+      () => http.delete(url, headers: _headers(sm.token)),
+    );
+
+    if (response == null) return false;
 
     _checkUnauthorized(response);
     return response.statusCode == 200;
@@ -383,7 +485,12 @@ class ApiService {
     final Uri url = Uri.parse(
       '${constants.url}/room/get-conected-users?room_id=$roomId',
     );
-    final response = await http.get(url, headers: _headers(sm.token));
+
+    final response = await _safeRequest(
+      () => http.get(url, headers: _headers(sm.token)),
+    );
+
+    if (response == null) return [];
 
     _checkUnauthorized(response);
 
@@ -405,7 +512,12 @@ class ApiService {
     final Uri url = Uri.parse(
       '${constants.url}/block/get?room_id=$roomId$query',
     );
-    final response = await http.get(url, headers: _headers(sm.token));
+
+    final response = await _safeRequest(
+      () => http.get(url, headers: _headers(sm.token)),
+    );
+
+    if (response == null) return [];
 
     _checkUnauthorized(response);
 
@@ -421,11 +533,16 @@ class ApiService {
   // Returns the raw response body (the created block as JSON string) or empty string on failure
   Future<String> createBlock(int id, String date) async {
     final Uri url = Uri.parse('${constants.url}/block/create');
-    final response = await http.post(
-      url,
-      headers: _headers(sm.token),
-      body: jsonEncode({"room_id": id, "date": date}),
+
+    final response = await _safeRequest(
+      () => http.post(
+        url,
+        headers: _headers(sm.token),
+        body: jsonEncode({"room_id": id, "date": date}),
+      ),
     );
+
+    if (response == null) return "";
 
     _checkUnauthorized(response);
 
@@ -440,7 +557,12 @@ class ApiService {
     final Uri url = Uri.parse(
       '${constants.url}/block/delete?block_id=$blockId',
     );
-    final response = await http.delete(url, headers: _headers(sm.token));
+
+    final response = await _safeRequest(
+      () => http.delete(url, headers: _headers(sm.token)),
+    );
+
+    if (response == null) return false;
 
     _checkUnauthorized(response);
     return response.statusCode == 200;
@@ -450,7 +572,12 @@ class ApiService {
     final Uri url = Uri.parse(
       '${constants.url}/block/set-offline?block_id=$blockId',
     );
-    final response = await http.post(url, headers: _headers(sm.token));
+
+    final response = await _safeRequest(
+      () => http.post(url, headers: _headers(sm.token)),
+    );
+
+    if (response == null) return;
 
     _checkUnauthorized(response);
 
@@ -463,7 +590,12 @@ class ApiService {
     final Uri url = Uri.parse(
       '${constants.url}/block/set-online?block_id=$blockId',
     );
-    final response = await http.post(url, headers: _headers(sm.token));
+
+    final response = await _safeRequest(
+      () => http.post(url, headers: _headers(sm.token)),
+    );
+
+    if (response == null) return;
 
     _checkUnauthorized(response);
 
@@ -477,7 +609,12 @@ class ApiService {
     final Uri url = Uri.parse(
       '${constants.url}/block/subscribe?block_id=$blockId',
     );
-    final response = await http.post(url, headers: _headers(sm.token));
+
+    final response = await _safeRequest(
+      () => http.post(url, headers: _headers(sm.token)),
+    );
+
+    if (response == null) return;
 
     _checkUnauthorized(response);
 
@@ -489,7 +626,12 @@ class ApiService {
   // Returns a flat list of block IDs the current user is subscribed to
   Future<List<int>> getMySubscriptions() async {
     final Uri url = Uri.parse('${constants.url}/block/get-my-subscriptions');
-    final response = await http.get(url, headers: _headers(sm.token));
+
+    final response = await _safeRequest(
+      () => http.get(url, headers: _headers(sm.token)),
+    );
+
+    if (response == null) return [];
 
     _checkUnauthorized(response);
 
@@ -503,11 +645,16 @@ class ApiService {
 
   // --- Slots ---
 
-  // Optional [now] filters out slots, returns null on error
+  // Optional [now] filters out slots; returns null on server error, empty list on network error
   Future<List<SlotModel>?> getSlotsForBlock(int blockId, [String? now]) async {
     final String query = now != null ? '&start=$now' : '';
     final Uri url = Uri.parse('${constants.url}/slot/get?id=$blockId$query');
-    final response = await http.get(url, headers: _headers(sm.token));
+
+    final response = await _safeRequest(
+      () => http.get(url, headers: _headers(sm.token)),
+    );
+
+    if (response == null) return [];
 
     _checkUnauthorized(response);
 
@@ -527,22 +674,27 @@ class ApiService {
     String note,
   ) async {
     final Uri url = Uri.parse('${constants.url}/slot/create');
-    final response = await http.post(
-      url,
-      headers: _headers(sm.token),
-      body: jsonEncode({
-        "block_id": block_id,
-        // Wrapped in a list, which API supports
-        "slots": [
-          {
-            "start_time": start_time,
-            "duration": duration,
-            "is_online": is_online,
-            "note": note,
-          },
-        ],
-      }),
+
+    final response = await _safeRequest(
+      () => http.post(
+        url,
+        headers: _headers(sm.token),
+        body: jsonEncode({
+          "block_id": block_id,
+          // Wrapped in a list, which API supports
+          "slots": [
+            {
+              "start_time": start_time,
+              "duration": duration,
+              "is_online": is_online,
+              "note": note,
+            },
+          ],
+        }),
+      ),
     );
+
+    if (response == null) return false;
 
     _checkUnauthorized(response);
     return response.statusCode == 200;
@@ -552,7 +704,12 @@ class ApiService {
     final Uri url = Uri.parse(
       '${constants.url}/slot/take?slot_id=$id&note=$note&is_online=$is_online',
     );
-    final response = await http.post(url, headers: _headers(sm.token));
+
+    final response = await _safeRequest(
+      () => http.post(url, headers: _headers(sm.token)),
+    );
+
+    if (response == null) return;
 
     _checkUnauthorized(response);
 
@@ -563,7 +720,12 @@ class ApiService {
 
   Future<void> releaseSlot(int id) async {
     final Uri url = Uri.parse('${constants.url}/slot/release?slot_id=$id');
-    final response = await http.post(url, headers: _headers(sm.token));
+
+    final response = await _safeRequest(
+      () => http.post(url, headers: _headers(sm.token)),
+    );
+
+    if (response == null) return;
 
     _checkUnauthorized(response);
 
@@ -574,7 +736,12 @@ class ApiService {
 
   Future<bool> deleteSlot(int slotId) async {
     final Uri url = Uri.parse('${constants.url}/slot/delete?slot_id=$slotId');
-    final response = await http.delete(url, headers: _headers(sm.token));
+
+    final response = await _safeRequest(
+      () => http.delete(url, headers: _headers(sm.token)),
+    );
+
+    if (response == null) return false;
 
     _checkUnauthorized(response);
     return response.statusCode == 200;
@@ -585,7 +752,12 @@ class ApiService {
     final Uri url = Uri.parse(
       '${constants.url}/slot/change-consultation-type?slot_id=$slotId',
     );
-    final response = await http.post(url, headers: _headers(sm.token));
+
+    final response = await _safeRequest(
+      () => http.post(url, headers: _headers(sm.token)),
+    );
+
+    if (response == null) return;
 
     _checkUnauthorized(response);
 

@@ -356,11 +356,23 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   void setIsLoading(bool value) => _setLoading(value);
   Future<List<RoomModel>> fetchRooms() => api.getJoinedRooms();
   Future<bool> checkConnection() async {
-    if (await helpers.handleIsInternetConnection()) return true;
+    bool isOffline = false;
+    isOffline = await helpers.handleIsInternetConnection();
+    if (isOffline) {
+      return true;
+    }
+
     notify.showToast(
       'Please check your internet connection and try again',
       isError: true,
     );
+    users = [];
+    rooms = [];
+    blocks = [];
+    slotsInBlocks = {};
+    ownerSelectedRoomId = 0;
+    visitorSelectedRoomId = 0;
+    selectedRoomId = 0;
     return false;
   }
 
