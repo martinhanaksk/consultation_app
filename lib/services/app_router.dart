@@ -7,6 +7,7 @@
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/views/base_consultations/base_consultations_page.dart';
 import 'package:consultation_app/views/display_notify_hours_page.dart';
+import 'package:consultation_app/views/my_reservations_page.dart';
 import 'package:consultation_app/views/owner_consultations_page.dart';
 import 'package:consultation_app/views/create_block_page.dart';
 import 'package:consultation_app/views/create_room_page.dart';
@@ -40,6 +41,7 @@ class AppRouter {
   static const String consultationsBasePage = '/consultationsBasePage';
   static const String consultationsOwnerPage = '/consultationsOwnerPage';
   static const String displayListOfEmails = '/displayListOfEmails';
+   static const String displayMyReservations = '/displayMyReservations';
   static const String displayNotifyHours = '/displayNotifyHours';
   static const String displayUsersInRoom = '/displayUsersInRoom';
   static const String displaySlotHistory = '/displaySlotHistory';
@@ -129,6 +131,10 @@ class AppRouter {
         final history = args['history'] as String;
         return MaterialPageRoute(
           builder: (_) => DisplaySlotHistoryPage(history: history),
+        );
+         case displayMyReservations:
+        return MaterialPageRoute(
+          builder: (_) => MyReservationsPage(),
         );
       case changeSettings:
         return MaterialPageRoute(builder: (_) => ChangeSettingsPage());

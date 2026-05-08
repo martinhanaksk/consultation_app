@@ -34,8 +34,9 @@ class _DisplayListOfEmailsPageState extends State<DisplayListOfEmailsPage> {
                 Text(
                   "Allowed email domains",
                   style: TextStyle(
-                    fontSize: constants.fsBody,
-                    color: constants.darkGrey150,
+                    fontWeight: constants.fwSemiBold,
+                    fontSize: constants.fsTitle,
+                    color: constants.darkGrey,
                   ),
                 ),
                 Expanded(

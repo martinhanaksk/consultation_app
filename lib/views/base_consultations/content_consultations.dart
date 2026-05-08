@@ -94,7 +94,7 @@ class ConsultationsContent extends StatelessWidget {
                       ? ListenableBuilder(
                           listenable: viewModel,
                           builder: (context, _) {
-                            final online = viewModel.isConnected ?? true;
+                           final online = viewModel.isConnected ?? false; 
                             return Padding(
                               padding: const EdgeInsets.only(top: 20),
                               child: Center(

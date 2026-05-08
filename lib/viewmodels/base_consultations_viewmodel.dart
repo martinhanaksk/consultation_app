@@ -74,12 +74,15 @@ class BaseConsultationsViewModel extends ChangeNotifier {
 
   // ── Public Methods ─────────────────────────────────────────────────────────
   Future<void> init() async {
+    noRoomsFound = false;
+    isConnected = null;
     final email = sm.email;
-    await setOwnerView(0);
+
     _setLoading(true);
 
     try {
       if (!await checkConnection()) return;
+      await setOwnerView(0);
       sm.checkIfValidToken();
       isOwner = await resolveUserRole(email);
       _visitReason = sm.visitReason;
@@ -383,6 +386,8 @@ class BaseConsultationsViewModel extends ChangeNotifier {
     ownerSelectedRoomId = null;
     visitorSelectedRoomId = null;
     selectedRoomId = null;
+    noRoomsFound = true;
+    notifyListeners();
     return false;
   }
 

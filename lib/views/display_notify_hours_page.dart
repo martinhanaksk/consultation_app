@@ -22,7 +22,7 @@ class _DisplayNotifyHoursPageState extends State<DisplayNotifyHoursPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: constants.background,
-      appBar: AppBarMenu(),
+      appBar: AppBarMenu(onSettingsPage: true),
       body: SafeArea(
         child: ListenableBuilder(
           // Rebuilds whenever an hour is added or removed in the viewmodel
@@ -32,23 +32,30 @@ class _DisplayNotifyHoursPageState extends State<DisplayNotifyHoursPage> {
 
             return Column(
               children: [
+                SizedBox(height: 8),
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 12.0,
+                  ),
                   child: Text(
-                    "Notification hours",
+                    "Notification hours before each consultation",
+                    textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: constants.fsBody,
-                      color: constants.darkGrey150,
+                      fontWeight: constants.fwSemiBold,
+                      fontSize: constants.fsTitle,
+                      color: constants.darkGrey,
                     ),
                   ),
                 ),
+                SizedBox(height: 8),
                 if (hours.isEmpty)
                   Expanded(
                     child: Center(
                       child: Text(
-                        "No notification hours added yet.",
+                        "Turned off",
                         style: TextStyle(
-                          fontSize: constants.fsLabel,
+                          fontSize: constants.fsBody,
                           color: constants.darkGrey150,
                         ),
                       ),

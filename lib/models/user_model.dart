@@ -32,6 +32,27 @@ class UserModel {
     role: json['role'],
     visitReason: json['visit_reason'],
     visible: json['visible'],
-    notificationHours: json['notification_times'],
+    notificationHours: parseNotificationTimes(json['notification_times']),
   );
+}
+
+List<int> parseNotificationTimes(dynamic raw) {
+  if (raw == null) return [];
+  if (raw is String) {
+    if (raw.trim().isEmpty) return [];
+    return raw
+        .split(',')
+        .map((e) => int.tryParse(e.trim()))
+        .whereType<int>()
+        .toList()
+      ..sort();
+  }
+  if (raw is List) {
+    return raw
+        .map((e) => int.tryParse(e.toString().trim()))
+        .whereType<int>()
+        .toList()
+      ..sort();
+  }
+  return [];
 }

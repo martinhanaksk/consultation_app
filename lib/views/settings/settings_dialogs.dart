@@ -130,6 +130,7 @@ Future<void> showCreateTeacherDialog(
             CustomInputTextField(
               controller: emailCtrl,
               hintText: "Email",
+              isEmail: true,
               maxLength: 50,
             ),
             const SizedBox(height: 12),

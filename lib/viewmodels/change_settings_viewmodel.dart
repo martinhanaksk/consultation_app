@@ -47,7 +47,7 @@ class ChangeSettingsPageViewModel extends ChangeNotifier {
     _visibility = data?['visible'] == 1 || data?['visible'] == true;
 
     // API returns a list of ints; fall back to empty list if absent
-    final raw = data?['notifications'];
+    final raw = data?['notification_times'];
     _notifyHours = raw is List ? List<int>.from(raw.whereType<int>()) : [];
 
     await sm.saveSession(
@@ -129,7 +129,7 @@ class ChangeSettingsPageViewModel extends ChangeNotifier {
     _notifyHours = [..._notifyHours, hours]..sort();
     notifyListeners();
     try {
-      await _updateUserData();
+      await api.updateNotificationTimes(_notifyHours);
       sm.updateNotifyHours(_notifyHours);
       notify.showToast('Notification added');
     } catch (_) {
@@ -144,7 +144,7 @@ class ChangeSettingsPageViewModel extends ChangeNotifier {
     _notifyHours = List<int>.from(_notifyHours)..remove(hours);
     notifyListeners();
     try {
-      await _updateUserData();
+      await api.updateNotificationTimes(_notifyHours);
       sm.updateNotifyHours(_notifyHours);
       notify.showToast('Notification removed');
     } catch (_) {
@@ -169,6 +169,6 @@ class ChangeSettingsPageViewModel extends ChangeNotifier {
     _surname,
     _visitReason,
     _visibility,
-    _notifyHours, // now a List<int>
+    _notifyHours,
   );
 }

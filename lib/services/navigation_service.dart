@@ -148,6 +148,12 @@ class NavigationService {
     );
   }
 
+  void toMyReservations() {
+    _pushNamed(
+      AppRouter.displayMyReservations,
+    );
+  }
+
   void toDisplayNotifyHours({required dynamic viewModel}) {
     _pushNamed(
       AppRouter.displayNotifyHours,

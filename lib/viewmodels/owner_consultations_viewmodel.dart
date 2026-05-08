@@ -47,7 +47,8 @@ class OwnerConsultationsViewModel extends BaseConsultationsViewModel {
           ? ownerSelectedRoomId
           : visitorSelectedRoomId;
       if (selectedRoomId != null) await refreshRoomData(selectedRoomId!);
-    } catch (_) {
+    } catch (e, stacktrace) {
+      print(stacktrace);
       notify.showToast(
         'Failed to load consultations. Please try again.',
         isError: true,

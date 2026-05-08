@@ -84,7 +84,7 @@ class _SliderMenuState extends State<SliderMenu> {
                                   constants.darkGrey,
                                   width: 22,
                                 ),
-                                const SizedBox(width: 10),
+                                const SizedBox(width: 12),
                                 Text(
                                   "Home",
                                   style: TextStyle(
@@ -107,6 +107,27 @@ class _SliderMenuState extends State<SliderMenu> {
                                   isError: true,
                                 );
                               }
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          GestureDetector(
+                            child: Row(
+                              children: [
+                                svgs.icon("my", constants.darkGrey, width: 24),
+                                const SizedBox(width: 10),
+                                Text(
+                                  "My reservations",
+                                  style: TextStyle(
+                                    fontSize: constants.fsBody,
+                                    color: constants.darkGrey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            onTap: () {
+                              sm.checkIfValidToken();
+                              nav.toMyReservations();
+                              viewModel.closeDrawer(context);
                             },
                           ),
                           const SizedBox(height: 20),
@@ -147,7 +168,7 @@ class _SliderMenuState extends State<SliderMenu> {
                                             constants.darkGrey,
                                             width: 20,
                                           ),
-                                          const SizedBox(width: 10),
+                                          const SizedBox(width: 14),
                                           Text(
                                             "Create Room",
                                             style: TextStyle(
@@ -177,7 +198,7 @@ class _SliderMenuState extends State<SliderMenu> {
                                   constants.darkGrey,
                                   width: 22,
                                 ),
-                                const SizedBox(width: 10),
+                                const SizedBox(width: 12),
                                 Text(
                                   "Provide Feedback",
                                   style: TextStyle(
@@ -271,7 +292,7 @@ class _SliderMenuState extends State<SliderMenu> {
                                   constants.darkGrey,
                                   width: 22,
                                 ),
-                                const SizedBox(width: 10),
+                                const SizedBox(width: 12),
                                 Text(
                                   "Settings",
                                   style: TextStyle(
@@ -293,7 +314,7 @@ class _SliderMenuState extends State<SliderMenu> {
                             child: Row(
                               children: [
                                 svgs.icon("logout", constants.red, width: 20),
-                                const SizedBox(width: 10),
+                                const SizedBox(width: 14),
                                 Text(
                                   "Log out",
                                   style: TextStyle(

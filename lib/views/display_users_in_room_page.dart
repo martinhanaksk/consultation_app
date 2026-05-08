@@ -102,8 +102,9 @@ class _DisplayUsersInRoomPageState extends State<DisplayUsersInRoomPage> {
               Text(
                 'Members',
                 style: TextStyle(
+                  fontWeight: constants.fwSemiBold,
+                  fontSize: constants.fsTitle,
                   color: constants.darkGrey,
-                  fontSize: constants.fsBody,
                 ),
               ),
               // Badge showing the total member count

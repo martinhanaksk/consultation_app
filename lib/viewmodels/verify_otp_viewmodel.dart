@@ -35,9 +35,11 @@ class VerifyOtpViewModel extends ChangeNotifier {
         notifyListeners();
         notify.showToast('Please enter a valid code');
       }
-    } catch (e) {
+    } catch (e, stacktrace) {
       _isLoading = false;
       notifyListeners();
+      print(e);
+      print(stacktrace);
       notify.showToast(
         'Connection failed, please try again later',
         isError: true,

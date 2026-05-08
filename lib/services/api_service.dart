@@ -75,15 +75,16 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final userDataFetched = await api.getUserData(data['token'], email);
-      
+
       if (userDataFetched == null) return false;
+
       await sm.saveSession(
         data['token'],
         email,
         userDataFetched['role'],
         userDataFetched['visible'] == 1 ? true : false,
         userDataFetched['visit_reason'],
-        userDataFetched['notification_times'],
+        parseNotificationTimes(userDataFetched['notification_times']),
         userDataFetched['name'],
         userDataFetched['surname'],
       );
@@ -177,7 +178,6 @@ class ApiService {
     List<int> notificationHoursBefore,
   ) async {
     final Uri url = Uri.parse('${constants.url}/users/data');
-
     final response = await _safeRequest(
       () => http.post(
         url,
@@ -205,8 +205,34 @@ class ApiService {
     }
   }
 
+  /// Updates the user's notification schedule on the server and syncs
+  /// the result into the local session cache on success.
+  Future<void> updateNotificationTimes(List<int> notificationTimes) async {
+    final Uri url = Uri.parse('${constants.url}/users/notification-time');
+
+    final response = await _safeRequest(
+      () => http.post(
+        url,
+        headers: _headers(sm.token),
+        body: jsonEncode(notificationTimes),
+      ),
+    );
+
+    if (response == null) return;
+
+    _checkUnauthorized(response);
+
+    if (response.statusCode != 200) {
+      throw Exception(
+        'Failed to update notification times: ${response.statusCode}',
+      );
+    } else {
+      await sm.updateNotifyHours(notificationTimes);
+    }
+  }
+
   Future<Map<String, dynamic>?> getUserData(String token, String email) async {
-    final Uri url = Uri.parse('${constants.url}/users/data?email=$email');
+    final Uri url = Uri.parse('${constants.url}/users?email=$email');
 
     final response = await _safeRequest(
       () => http.get(url, headers: _headers(token)),
@@ -662,6 +688,28 @@ class ApiService {
       final List<dynamic> decoded = jsonDecode(response.body);
       return decoded.map((json) => SlotModel.fromJson(json)).toList();
     } else {
+      return null;
+    }
+  }
+
+  /// GET /slot/get-my
+  Future<List<Map<String, dynamic>>?> getMyReservations(String token) async {
+    try {
+      final response = await http.get(
+        Uri.parse("${constants.url}/slot/get-my"),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> json = jsonDecode(response.body);
+        return json.cast<Map<String, dynamic>>();
+      }
+
+      return null;
+    } catch (_) {
       return null;
     }
   }
