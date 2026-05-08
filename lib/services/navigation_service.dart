@@ -11,7 +11,6 @@ import 'package:consultation_app/setup.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class NavigationService {
-
   // Required by MaterialApp.navigatorKey to drive navigation from outside the widget tree
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -125,11 +124,11 @@ class NavigationService {
 
   // --- Rooms ---
 
-  void toJoinRoom() {
+  void toJoinRoomPage() {
     _pushNamed(AppRouter.joinRoom, arguments: <String, dynamic>{});
   }
 
-  void toCreateRoom() => _pushNamed(AppRouter.createRoom);
+  void toCreateRoomPage() => _pushNamed(AppRouter.createRoom);
 
   Future<dynamic> toEditRoom({required int roomId}) {
     return _pushNamed(AppRouter.editRoom, arguments: {'roomId': roomId});
@@ -149,9 +148,16 @@ class NavigationService {
     );
   }
 
+  void toDisplayNotifyHours({required dynamic viewModel}) {
+    _pushNamed(
+      AppRouter.displayNotifyHours,
+      arguments: <String, dynamic>{'viewModel': viewModel},
+    );
+  }
+
   // --- Blocks and slots ---
 
-  void toCreateBlock({
+  void toCreateBlockPage({
     required int roomId,
     required VoidCallback? onSuccess,
   }) {
@@ -161,7 +167,7 @@ class NavigationService {
     );
   }
 
-  void toEditBlock({
+  void toEditBlockPage({
     required int roomId,
     required int blockId,
     required VoidCallback? onSuccess,
@@ -176,7 +182,7 @@ class NavigationService {
     );
   }
 
-  void toAddSlot({required int blockId, required VoidCallback? onSuccess}) {
+  void toAddSlotPage({required int blockId, required VoidCallback? onSuccess}) {
     _pushNamed(
       AppRouter.addSlot,
       arguments: <String, dynamic>{'blockId': blockId, 'onSuccess': onSuccess},
@@ -192,7 +198,7 @@ class NavigationService {
 
   // --- Other ---
 
-  void toChangeSettings() => _pushNamed(AppRouter.changeSettings);
+  void toChangeSettingsPage() => _pushNamed(AppRouter.changeSettings);
 
   void toProvideFeedback() => _pushNamed(AppRouter.provideFeedback);
 }

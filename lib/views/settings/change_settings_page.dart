@@ -15,15 +15,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
-class ChangeSettings extends StatelessWidget {
-  const ChangeSettings({super.key});
+class ChangeSettingsPage extends StatelessWidget {
+  const ChangeSettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       // Cascade calls initialize() immediately after construction
-      create: (_) => ChangeSettingsViewmodel()..initialize(),
-      child: Consumer<ChangeSettingsViewmodel>(
+      create: (_) => ChangeSettingsPageViewModel()..initialize(),
+      child: Consumer<ChangeSettingsPageViewModel>(
         builder: (context, viewModel, _) => Scaffold(
           appBar: AppBarMenu(onSettingsPage: true),
           drawer: SliderMenu(),
@@ -44,35 +44,35 @@ class ChangeSettings extends StatelessWidget {
   }
 }
 
-// Extracted into its own widget to keep ChangeSettings clean
+// Extracted into its own widget to keep ChangeSettingsPage clean
 class _SettingsBody extends StatelessWidget {
-  final ChangeSettingsViewmodel viewModel;
+  final ChangeSettingsPageViewModel viewModel;
 
   const _SettingsBody({required this.viewModel});
 
   // Inset divider used between tiles inside a card
   static Widget _divider() => Divider(
-        indent: 20,
-        endIndent: 20,
-        color: constants.darkGrey30,
-        height: 1,
-      );
+    indent: 20,
+    endIndent: 20,
+    color: constants.darkGrey30,
+    height: 1,
+  );
 
   // Full-width divider used below a section header inside a card
   static Widget _sectionDivider() =>
       Divider(color: constants.darkGrey30, height: 1);
 
   static Widget _sectionHeader(String title) => Padding(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-        child: Text(
-          title,
-          style: TextStyle(
-            fontSize: constants.fsLabel,
-            fontWeight: constants.fwSemiBold,
-            color: constants.darkGrey,
-          ),
-        ),
-      );
+    padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+    child: Text(
+      title,
+      style: TextStyle(
+        fontSize: constants.fsLabel,
+        fontWeight: constants.fwSemiBold,
+        color: constants.darkGrey,
+      ),
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +93,9 @@ class _SettingsBody extends StatelessWidget {
           Text(
             "View your profile and manage preferences",
             style: TextStyle(
-                fontSize: constants.fsLabel, color: constants.darkGrey150),
+              fontSize: constants.fsLabel,
+              color: constants.darkGrey150,
+            ),
           ),
           const SizedBox(height: 28),
 
@@ -101,12 +103,17 @@ class _SettingsBody extends StatelessWidget {
           Container(
             width: double.infinity,
             decoration: constants.squircleShadow(
-                hasBorder: true, color: constants.background),
+              hasBorder: true,
+              color: constants.background,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 InfoTile(
-                    svgName: 'person', label: "Email", value: viewModel.email),
+                  svgName: 'person',
+                  label: "Email",
+                  value: viewModel.email,
+                ),
                 _divider(),
                 EditableTile(
                   svgName: 'id',
@@ -122,8 +129,7 @@ class _SettingsBody extends StatelessWidget {
                   onEdit: () => showVisitReasonDialog(context, viewModel),
                 ),
                 _divider(),
-                InfoTile(
-                    svgName: 'work', label: "Role", value: viewModel.role),
+                InfoTile(svgName: 'work', label: "Role", value: viewModel.role),
               ],
             ),
           ),
@@ -134,7 +140,9 @@ class _SettingsBody extends StatelessWidget {
           Container(
             width: double.infinity,
             decoration: constants.squircleShadow(
-                hasBorder: true, color: constants.background),
+              hasBorder: true,
+              color: constants.background,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -167,7 +175,9 @@ class _SettingsBody extends StatelessWidget {
             Container(
               width: double.infinity,
               decoration: constants.squircleShadow(
-                  hasBorder: true, color: constants.background),
+                hasBorder: true,
+                color: constants.background,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

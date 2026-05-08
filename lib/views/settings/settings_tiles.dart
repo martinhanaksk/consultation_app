@@ -8,8 +8,8 @@
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/change_settings_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/custom_checkbox_widget.dart';
-import 'package:consultation_app/views/custom_widgets/custom_text_field_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 // Read-only profile field: label above, bold value below
 class InfoTile extends StatelessWidget {
@@ -244,10 +244,10 @@ class CheckboxTile extends StatelessWidget {
   }
 }
 
-// Inline editable tile for notification time (hours before a consultation).
-// StatefulWidget because the text field is self-contained here
+// Inline add tile for notification hours.
+// Mirrors _EmailDomainField + _ViewDomainsLink from room_form_body.dart.
 class NotifyHoursTile extends StatefulWidget {
-  final ChangeSettingsViewmodel viewModel;
+  final ChangeSettingsPageViewModel viewModel;
 
   const NotifyHoursTile({super.key, required this.viewModel});
 
@@ -261,18 +261,7 @@ class _NotifyHoursTileState extends State<NotifyHoursTile> {
   @override
   void initState() {
     super.initState();
-    _ctrl = TextEditingController(
-      text: widget.viewModel.notifyHoursBefore.toString(),
-    );
-  }
-
-  // Keeps the field in sync if the viewmodel value changes externally
-  // (e.g. after a successful save resets it from the server response)
-  @override
-  void didUpdateWidget(NotifyHoursTile oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    final newValue = widget.viewModel.notifyHoursBefore.toString();
-    if (_ctrl.text != newValue) _ctrl.text = newValue;
+    _ctrl = TextEditingController();
   }
 
   @override
@@ -281,67 +270,103 @@ class _NotifyHoursTileState extends State<NotifyHoursTile> {
     super.dispose();
   }
 
-  // Updates the viewmodel on input
-  void _onChanged(String val) {
-    final parsed = int.tryParse(val);
-    if (parsed != null) {
-      widget.viewModel.updateNotifyHoursBefore(parsed);
-    }
+  void _add() {
+    final parsed = int.tryParse(_ctrl.text.trim());
+    if (parsed == null || parsed <= 0) return;
+    widget.viewModel.addNotifyHour(parsed);
+    _ctrl.clear();
   }
 
   @override
   Widget build(BuildContext context) {
+    final count = widget.viewModel.notifyHours.length;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _ctrl.text == "0"
-              ? svgs.icon(
-                  'clock_crossed',
-                  constants.primary,
-                  width: constants.fsTitle,
-                )
-              : svgs.icon('clock', constants.primary, width: constants.fsTitle),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Notify me before",
-                  style: TextStyle(
-                    fontSize: constants.fsBody,
-                    fontWeight: constants.fwSemiBold,
-                    color: constants.darkGrey,
-                  ),
+          // ── Header row ──────────────────────────────────────────────────
+          Row(
+            children: [
+              svgs.icon(
+                count == 0
+                    ? 'notifications_bell_empty'
+                    : 'notifications_bell_full',
+                constants.primary,
+                width: constants.fsTitle,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Notify me before",
+                      style: TextStyle(
+                        fontSize: constants.fsBody,
+                        fontWeight: constants.fwSemiBold,
+                        color: constants.darkGrey,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "Hours before a consultation to receive a reminder",
+                      style: TextStyle(
+                        fontSize: constants.fsLabel,
+                        color: constants.darkGrey150,
+                        fontWeight: constants.fwRegular,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  "How early to receive a consultation reminder",
-                  style: TextStyle(
-                    fontSize: constants.fsLabel,
-                    color: constants.darkGrey150,
-                    fontWeight: constants.fwRegular,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          SizedBox(
-            width: 80,
-            child: CustomInputTextField(
-              controller: _ctrl,
-              maxLength: 3,
-              keyboardType: TextInputType.number,
-              onChanged: _onChanged,
-              textColor: constants.primary,
-              suffixText: "h",
-              textCenter: true,
-              showClearIcon: false,
+          const SizedBox(height: 10),
+          // ── Input row ───────────────────────────────────────────────────
+          TextField(
+            controller: _ctrl,
+            keyboardType: TextInputType.number,
+            maxLength: 3,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            style: TextStyle(color: constants.darkGrey),
+            decoration: InputDecoration(
+              counterText: '',
+              hintText: 'Hours (e.g. 24)',
+              border: _border(constants.grey),
+              enabledBorder: _border(constants.grey),
+              focusedBorder: _border(constants.primary, width: 1.5),
+              suffixText: 'h',
               suffixStyle: TextStyle(
                 fontSize: constants.fsLabel,
                 color: constants.darkGrey150,
+              ),
+              suffixIcon: GestureDetector(
+                onTap: _add,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: svgs.icon(
+                    'add',
+                    constants.primary,
+                    width: constants.fsBody,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          // ── View list link ──────────────────────────────────────────────
+          GestureDetector(
+            onTap: () => nav.toDisplayNotifyHours(viewModel: widget.viewModel),
+            child: Text(
+              'View added hours ($count)',
+              style: TextStyle(
+                color: constants.primary,
+                fontSize: constants.fsLabel,
+                fontWeight: constants.fwSemiBold,
+                decoration: TextDecoration.underline,
+                decorationColor: constants.primary,
               ),
             ),
           ),
@@ -349,4 +374,10 @@ class _NotifyHoursTileState extends State<NotifyHoursTile> {
       ),
     );
   }
+
+  OutlineInputBorder _border(Color color, {double width = 1.0}) =>
+      OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: color, width: width),
+      );
 }

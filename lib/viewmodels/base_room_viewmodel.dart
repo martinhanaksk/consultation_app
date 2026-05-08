@@ -1,12 +1,12 @@
 // base_room_viewmodel.dart
 // Author: Martin Hanak
 // Email: xhanakm00@stud.fit.vut.cz
-// Shared state and behaviour for CreateRoomViewmodel and EditRoomViewmodel.
+// Shared state and behaviour for CreateRoomPageViewModel and EditRoomViewModel.
 // Owns all form controllers and the accepted-email list
 
 import 'package:flutter/material.dart';
 
-abstract class BaseRoomViewmodel extends ChangeNotifier {
+abstract class BaseRoomViewModel extends ChangeNotifier {
   final TextEditingController linkController = TextEditingController();
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();

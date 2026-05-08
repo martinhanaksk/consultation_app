@@ -1,7 +1,7 @@
 // room_form_body.dart
 // Author: Martin Hanak
 // Email: xhanakm00@stud.fit.vut.cz
-// Shared form layout for CreateRoom and EditRoomPage.
+// Shared form layout for CreateRoomPage and EditRoomPage.
 // Owns all repeated UI; each caller supplies only the parts that differ.
 
 import 'package:consultation_app/setup.dart';
@@ -13,7 +13,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class RoomFormBody extends StatelessWidget {
   final String pageTitle;
-  final BaseRoomViewmodel viewModel;
+  final BaseRoomViewModel viewModel;
   final bool isSubmitting;
   final String submitLabel;
   final VoidCallback onSubmit;
@@ -101,7 +101,7 @@ class _PageTitle extends StatelessWidget {
 }
 
 class _EmailDomainField extends StatelessWidget {
-  final BaseRoomViewmodel viewModel;
+  final BaseRoomViewModel viewModel;
   final BuildContext context;
   const _EmailDomainField({required this.viewModel, required this.context});
   @override
@@ -170,7 +170,7 @@ class _EmailDomainField extends StatelessWidget {
 }
 
 class _ViewDomainsLink extends StatelessWidget {
-  final BaseRoomViewmodel viewModel;
+  final BaseRoomViewModel viewModel;
   const _ViewDomainsLink({required this.viewModel});
   @override
   Widget build(BuildContext context) => Center(

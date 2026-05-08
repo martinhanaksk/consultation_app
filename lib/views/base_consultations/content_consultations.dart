@@ -13,7 +13,7 @@ import 'no_rooms_found.dart';
 import 'block_consultation_card.dart';
 
 class ConsultationsContent extends StatelessWidget {
-  final BaseConsultationsViewmodel viewModel;
+  final BaseConsultationsViewModel viewModel;
   final Widget? toggle;
   final Widget? addButton;
   final String? link;
@@ -90,39 +90,48 @@ class ConsultationsContent extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                   ],
-                  if (viewModel.getBlocksCount() == 0)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20),
-                      child: Center(
-                        child: Text(
-                          "No upcoming consultations found.",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: constants.darkGrey,
-                            fontWeight: constants.fwSemiBold,
-                            fontSize: constants.fsTitle,
-                          ),
+                  viewModel.getBlocksCount() == 0
+                      ? ListenableBuilder(
+                          listenable: viewModel,
+                          builder: (context, _) {
+                            final online = viewModel.isConnected ?? true;
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 20),
+                              child: Center(
+                                child: Text(
+                                  online
+                                      ? "No upcoming consultations"
+                                      : "No internet connection",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: online
+                                        ? constants.darkGrey
+                                        : constants.red,
+                                    fontWeight: constants.fwSemiBold,
+                                    fontSize: constants.fsTitle,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 20),
+                            // Blocks are sorted chronologically before rendering
+                            ..._sortedBlocks().map(
+                              (block) => ConsultationBlockCard(
+                                viewModel: viewModel,
+                                blockEntry: block,
+                                showHistoryOption: showHistoryOption,
+                                editBlockButton: editBlockButton,
+                                addSlotBefore: addSlotBefore,
+                                addSlotAfter: addSlotAfter,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    )
-                  else
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 20),
-                        // Blocks are sorted chronologically before rendering
-                        ..._sortedBlocks().map(
-                          (block) => ConsultationBlockCard(
-                            viewModel: viewModel,
-                            blockEntry: block,
-                            showHistoryOption: showHistoryOption,
-                            editBlockButton: editBlockButton,
-                            addSlotBefore: addSlotBefore,
-                            addSlotAfter: addSlotAfter,
-                          ),
-                        ),
-                      ],
-                    ),
                 ],
               ),
       ],

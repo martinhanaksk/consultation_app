@@ -13,14 +13,14 @@ import 'package:consultation_app/views/custom_widgets/slider_menu_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class CreateRoom extends StatelessWidget {
-  const CreateRoom({super.key});
+class CreateRoomPage extends StatelessWidget {
+  const CreateRoomPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => CreateRoomViewmodel(),
-      child: Consumer<CreateRoomViewmodel>(
+      create: (_) => CreateRoomPageViewModel(),
+      child: Consumer<CreateRoomPageViewModel>(
         builder: (context, viewModel, _) => Scaffold(
           appBar: AppBarMenu(),
           drawer: SliderMenu(),

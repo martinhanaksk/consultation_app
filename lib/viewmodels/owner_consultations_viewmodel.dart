@@ -1,7 +1,7 @@
 // owner_consultations_viewmodel.dart
 // Author: Martin Hanak
 // Email: xhanakm00@stud.fit.vut.cz
-// Extends BaseConsultationsViewmodel for the owner view. Maintains separate
+// Extends BaseConsultationsViewModel for the owner view. Maintains separate
 // room lists for owner and visitor modes, overrides init() and fetchRooms()
 // and adds owner-only actions: room deletion, view toggling,
 // slot history, and inserting slots before/after a block.
@@ -11,7 +11,7 @@ import 'package:consultation_app/models/slot_model.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/base_consultations_viewmodel.dart';
 
-class OwnerConsultationsViewmodel extends BaseConsultationsViewmodel {
+class OwnerConsultationsViewModel extends BaseConsultationsViewModel {
   // Two separate room lists so switching views does not require a network call
   List<RoomModel> _ownerRooms = [];
   List<RoomModel> _visitorRooms = [];

@@ -2,7 +2,7 @@
 // Author: Martin Hanak
 // Email: xhanakm00@stud.fit.vut.cz
 // Form for adding a single slot to an existing block.
-// Unlike CreateBlock (which generates multiple slots at once), this page
+// Unlike CreateBlockPage (which generates multiple slots at once), this page
 // creates one slot with its own start time, duration, note, and online flag.
 
 import 'package:consultation_app/setup.dart';
@@ -16,24 +16,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
-class AddSlot extends StatefulWidget {
+class AddSlotPage extends StatefulWidget {
   final int blockId;
-  // Called after the slot is successfully created to refresh the EditBlock view
+  // Called after the slot is successfully created to refresh the EditBlockPage view
   final VoidCallback? onSuccess;
 
-  const AddSlot({super.key, required this.blockId, required this.onSuccess});
+  const AddSlotPage({
+    super.key,
+    required this.blockId,
+    required this.onSuccess,
+  });
 
   @override
-  State<AddSlot> createState() => _AddSlotState();
+  State<AddSlotPage> createState() => _AddSlotPageState();
 }
 
-class _AddSlotState extends State<AddSlot> {
-  late final AddSlotViewmodel _viewModel;
+class _AddSlotPageState extends State<AddSlotPage> {
+  late final AddSlotPageViewModel _viewModel;
 
   @override
   void initState() {
     super.initState();
-    _viewModel = AddSlotViewmodel();
+    _viewModel = AddSlotPageViewModel();
   }
 
   @override
@@ -46,7 +50,7 @@ class _AddSlotState extends State<AddSlot> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
       value: _viewModel,
-      child: Consumer<AddSlotViewmodel>(
+      child: Consumer<AddSlotPageViewModel>(
         builder: (context, viewModel, child) {
           return Scaffold(
             appBar: AppBarMenu(),

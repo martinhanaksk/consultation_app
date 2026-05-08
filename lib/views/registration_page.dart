@@ -54,8 +54,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
     // ChangeNotifierProvider with create: is used here because this page
     // owns the viewmodel lifecycle
     return ChangeNotifierProvider(
-      create: (_) => RegisterViewmodel(),
-      child: Consumer<RegisterViewmodel>(
+      create: (_) => RegisterViewModel(),
+      child: Consumer<RegisterViewModel>(
         builder: (context, viewModel, child) {
           return Scaffold(
             appBar: AppBarMenu(onRegistrationPage: true),
@@ -118,8 +118,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                               onPressed: () async {
                                 FocusScope.of(context).unfocus();
                                 // All fields must be non-empty, email was checked sooner
-                                if (
-                                    validator.validateNotEmpty(
+                                if (validator.validateNotEmpty(
                                       nameController.text.trim(),
                                       context,
                                     ) &&
@@ -149,7 +148,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                         visitReasonController.text.trim(),
                                       ),
                                       visible: 0,
-                                      notification: 0,
+                                      notificationHours: [],
                                     );
                                     await viewModel.handleRegisterUser(
                                       um,

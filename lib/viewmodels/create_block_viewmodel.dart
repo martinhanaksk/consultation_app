@@ -15,7 +15,7 @@ import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 enum TimePickerAction { startTime, endTime, duration }
 
-class CreateBlockViewmodel extends ChangeNotifier {
+class CreateBlockPageViewModel extends ChangeNotifier {
   // ── State ──────────────────────────────────────────────────────────────────
   bool isLoading = false;
   String dateCount = '';
@@ -37,7 +37,7 @@ class CreateBlockViewmodel extends ChangeNotifier {
 
   // ── Constructor / Lifecycle ────────────────────────────────────────────────
 
-  CreateBlockViewmodel() {
+  CreateBlockPageViewModel() {
     // Recalculate end time whenever the slot count changes
     slotNumberController.addListener(updateEndTime);
   }

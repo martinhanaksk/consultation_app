@@ -10,7 +10,7 @@ import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/base_consultations_viewmodel.dart';
 
 class RoomSelectorButton extends StatelessWidget {
-  final BaseConsultationsViewmodel viewModel;
+  final BaseConsultationsViewModel viewModel;
   const RoomSelectorButton({super.key, required this.viewModel});
   @override
   Widget build(BuildContext context) {
@@ -97,7 +97,9 @@ class RoomSelectorButton extends StatelessWidget {
                               ? "Loading..."
                               : noRoom
                               ? "No rooms created"
-                              : '${viewModel.selectedRoom?.title} - ${viewModel.selectedRoom?.description}',
+                              : viewModel.selectedRoom != null
+                              ? '${viewModel.selectedRoom!.title} - ${viewModel.selectedRoom!.description}'
+                              : 'No connection',
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: constants.fwSemiBold,

@@ -2,7 +2,7 @@
 // Author: Martin Hanak
 // Email: xhanakm00@stud.fit.vut.cz
 // Allows a teacher to edit an existing room's details.
-// The form itself is delegated to RoomFormBody, which is shared with CreateRoomPage.
+// The form itself is delegated to RoomFormBody, which is shared with CreateRoomPagePage.
 
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/edit_room_viewmodel.dart';
@@ -22,13 +22,13 @@ class EditRoomPage extends StatefulWidget {
 }
 
 class _EditRoomPageState extends State<EditRoomPage> {
-  late final EditRoomViewmodel _viewModel;
+  late final EditRoomViewModel _viewModel;
 
   @override
   void initState() {
     super.initState();
     // Cascade initialises and immediately fetches room data in one expression
-    _viewModel = EditRoomViewmodel()..loadData(widget.roomId);
+    _viewModel = EditRoomViewModel()..loadData(widget.roomId);
   }
 
   @override
@@ -41,7 +41,7 @@ class _EditRoomPageState extends State<EditRoomPage> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
       value: _viewModel,
-      child: Consumer<EditRoomViewmodel>(
+      child: Consumer<EditRoomViewModel>(
         builder: (context, viewModel, _) => Scaffold(
           appBar: AppBarMenu(),
           backgroundColor: constants.background,
@@ -55,20 +55,20 @@ class _EditRoomPageState extends State<EditRoomPage> {
                     ),
                   )
                 : viewModel.room == null
-                    ? Text(
-                        viewModel.errorMessage ?? 'Room not found',
-                        style: TextStyle(color: constants.darkGrey),
-                      )
-                    : RoomFormBody(
-                        pageTitle: 'Edit Room',
-                        viewModel: viewModel,
-                        isSubmitting: viewModel.isSaving,
-                        submitLabel: 'Save Changes',
-                        onSubmit: () {
-                          FocusScope.of(context).unfocus();
-                          viewModel.handleSave();
-                        },
-                      ),
+                ? Text(
+                    viewModel.errorMessage ?? 'Room not found',
+                    style: TextStyle(color: constants.darkGrey),
+                  )
+                : RoomFormBody(
+                    pageTitle: 'Edit Room',
+                    viewModel: viewModel,
+                    isSubmitting: viewModel.isSaving,
+                    submitLabel: 'Save Changes',
+                    onSubmit: () {
+                      FocusScope.of(context).unfocus();
+                      viewModel.handleSave();
+                    },
+                  ),
           ),
         ),
       ),

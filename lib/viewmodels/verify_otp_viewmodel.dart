@@ -8,7 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
 
-class VerifyOtpViewmodel extends ChangeNotifier {
+class VerifyOtpViewModel extends ChangeNotifier {
   bool _isLoading = false;
   bool isLoading() {
     return _isLoading;
@@ -38,7 +38,10 @@ class VerifyOtpViewmodel extends ChangeNotifier {
     } catch (e) {
       _isLoading = false;
       notifyListeners();
-      notify.showToast('Connection failed, please try again later', isError: true);
+      notify.showToast(
+        'Connection failed, please try again later',
+        isError: true,
+      );
     }
   }
 }

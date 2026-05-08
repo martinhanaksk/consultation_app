@@ -75,6 +75,7 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final userDataFetched = await api.getUserData(data['token'], email);
+      
       if (userDataFetched == null) return false;
       await sm.saveSession(
         data['token'],
@@ -82,7 +83,7 @@ class ApiService {
         userDataFetched['role'],
         userDataFetched['visible'] == 1 ? true : false,
         userDataFetched['visit_reason'],
-        userDataFetched['notification'],
+        userDataFetched['notification_times'],
         userDataFetched['name'],
         userDataFetched['surname'],
       );
@@ -173,7 +174,7 @@ class ApiService {
     String surname,
     String visitReason,
     bool visible,
-    int notificationHoursBefore,
+    List<int> notificationHoursBefore,
   ) async {
     final Uri url = Uri.parse('${constants.url}/users/data');
 
@@ -186,11 +187,10 @@ class ApiService {
           "surname": surname,
           "visit_reason": visitReason,
           "visible": visible,
-          "notification": notificationHoursBefore,
+          "notification_times": notificationHoursBefore,
         }),
       ),
     );
-
     if (response == null) return;
 
     _checkUnauthorized(response);
@@ -199,7 +199,7 @@ class ApiService {
       throw Exception('Failed to update user data: ${response.statusCode}');
     } else {
       sm.updateFullName(name, surname);
-      sm.updateNotifyHoursBefore(notificationHoursBefore);
+      sm.updateNotifyHours(notificationHoursBefore);
       sm.updateVisibility(visible);
       sm.updateVisitReason(visitReason);
     }

@@ -6,6 +6,7 @@
 
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/views/base_consultations/base_consultations_page.dart';
+import 'package:consultation_app/views/display_notify_hours_page.dart';
 import 'package:consultation_app/views/owner_consultations_page.dart';
 import 'package:consultation_app/views/create_block_page.dart';
 import 'package:consultation_app/views/create_room_page.dart';
@@ -39,6 +40,7 @@ class AppRouter {
   static const String consultationsBasePage = '/consultationsBasePage';
   static const String consultationsOwnerPage = '/consultationsOwnerPage';
   static const String displayListOfEmails = '/displayListOfEmails';
+  static const String displayNotifyHours = '/displayNotifyHours';
   static const String displayUsersInRoom = '/displayUsersInRoom';
   static const String displaySlotHistory = '/displaySlotHistory';
 
@@ -68,22 +70,22 @@ class AppRouter {
           builder: (_) => VerifyOtpPage(email: email, rememberMe: rememberMe),
         );
       case joinRoom:
-        return MaterialPageRoute(builder: (_) => JoinRoom());
+        return MaterialPageRoute(builder: (_) => JoinRoomPage());
       case createRoom:
-        return MaterialPageRoute(builder: (_) => CreateRoom());
+        return MaterialPageRoute(builder: (_) => CreateRoomPage());
       case createBlock:
         final args = settings.arguments as Map<String, dynamic>;
         final roomId = args['roomId'] as int;
         final onSuccess = args['onSuccess'] as VoidCallback?;
         return MaterialPageRoute(
-          builder: (_) => CreateBlock(roomId: roomId, onSuccess: onSuccess),
+          builder: (_) => CreateBlockPage(roomId: roomId, onSuccess: onSuccess),
         );
       case addSlot:
         final args = settings.arguments as Map<String, dynamic>;
         final blockId = args['blockId'] as int;
         final onSuccess = args['onSuccess'] as VoidCallback?;
         return MaterialPageRoute(
-          builder: (_) => AddSlot(blockId: blockId, onSuccess: onSuccess),
+          builder: (_) => AddSlotPage(blockId: blockId, onSuccess: onSuccess),
         );
       case editBlock:
         final args = settings.arguments as Map<String, dynamic>;
@@ -91,7 +93,7 @@ class AppRouter {
         final blockId = args['blockId'] as int;
         final onSuccess = args['onSuccess'] as VoidCallback?;
         return MaterialPageRoute(
-          builder: (_) => EditBlock(
+          builder: (_) => EditBlockPage(
             roomId: roomId,
             blockId: blockId,
             onSuccess: onSuccess,
@@ -100,9 +102,7 @@ class AppRouter {
       case editRoom:
         final args = settings.arguments as Map<String, dynamic>;
         final roomId = args['roomId'] as int;
-        return MaterialPageRoute(
-          builder: (_) => EditRoomPage(roomId: roomId),
-        );
+        return MaterialPageRoute(builder: (_) => EditRoomPage(roomId: roomId));
       case displayListOfEmails:
         final args = settings.arguments as Map<String, dynamic>;
         // Typed as dynamic to avoid a hard dependency on the concrete viewmodel type
@@ -110,15 +110,19 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => DisplayListOfEmailsPage(viewModel: viewModel),
         );
+      case displayNotifyHours:
+        final args = settings.arguments as Map<String, dynamic>;
+        final viewModel = args['viewModel'] as dynamic;
+        return MaterialPageRoute(
+          builder: (_) => DisplayNotifyHoursPage(viewModel: viewModel),
+        );
       case displayUsersInRoom:
         final args = settings.arguments as Map<String, dynamic>;
         final roomId = args['roomId'] as int;
         final roomName = args['roomName'] as String;
         return MaterialPageRoute(
-          builder: (_) => DisplayUsersInRoomPage(
-            roomId: roomId,
-            roomName: roomName,
-          ),
+          builder: (_) =>
+              DisplayUsersInRoomPage(roomId: roomId, roomName: roomName),
         );
       case displaySlotHistory:
         final args = settings.arguments as Map<String, dynamic>;
@@ -127,7 +131,7 @@ class AppRouter {
           builder: (_) => DisplaySlotHistoryPage(history: history),
         );
       case changeSettings:
-        return MaterialPageRoute(builder: (_) => ChangeSettings());
+        return MaterialPageRoute(builder: (_) => ChangeSettingsPage());
       // Fallback for any unregistered route — shown instead of a blank crash screen
       default:
         return MaterialPageRoute(

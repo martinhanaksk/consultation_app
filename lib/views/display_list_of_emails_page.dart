@@ -8,7 +8,7 @@ import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:flutter/material.dart';
 
 class DisplayListOfEmailsPage extends StatefulWidget {
-  // Typed as dynamic to accept both EditRoomViewmodel and CreateRoomViewmodel
+  // Typed as dynamic to accept both EditRoomViewModel and CreateRoomPageViewModel
   final dynamic viewModel;
 
   const DisplayListOfEmailsPage({super.key, required this.viewModel});

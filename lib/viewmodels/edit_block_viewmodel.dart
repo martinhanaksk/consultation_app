@@ -15,7 +15,7 @@ import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 enum TimePickerAction { startTime, endTime, duration }
 
-class EditBlockViewmodel extends ChangeNotifier {
+class EditBlockPageViewModel extends ChangeNotifier {
   // ── State ────────────────────────────────────────────────────────────────────────────
   List<SlotModel> slots = [];
   BlockModel? block;
@@ -39,7 +39,7 @@ class EditBlockViewmodel extends ChangeNotifier {
     _roomId = roomId;
     // Widget tree is fully built before any setState/notifyListeners calls occur
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      refreshEditBlock(blockId);
+      refreshEditBlockPage(blockId);
     });
   }
 
@@ -114,7 +114,7 @@ class EditBlockViewmodel extends ChangeNotifier {
       notifyListeners();
       notify.showToast('Add slots first');
     }
-    refreshEditBlock(blockId);
+    refreshEditBlockPage(blockId);
   }
 
   Future<void> copyBlock(int roomId) async {
@@ -225,7 +225,7 @@ class EditBlockViewmodel extends ChangeNotifier {
     }
   }
 
-  Future<void> refreshEditBlock(int blockId) async {
+  Future<void> refreshEditBlockPage(int blockId) async {
     _setLoading(true);
     await assignBlock(blockId, _roomId);
     await fetchSlotsForBlock(blockId);

@@ -21,12 +21,12 @@ class ConsultationsOwnerPage extends StatefulWidget {
 }
 
 class _ConsultationsOwnerPageState extends State<ConsultationsOwnerPage> {
-  late final OwnerConsultationsViewmodel _viewModel;
+  late final OwnerConsultationsViewModel _viewModel;
 
   @override
   void initState() {
     super.initState();
-    _viewModel = OwnerConsultationsViewmodel();
+    _viewModel = OwnerConsultationsViewModel();
     initialize();
   }
 
@@ -46,7 +46,7 @@ class _ConsultationsOwnerPageState extends State<ConsultationsOwnerPage> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
       value: _viewModel,
-      child: Consumer<OwnerConsultationsViewmodel>(
+      child: Consumer<OwnerConsultationsViewModel>(
         builder: (context, viewModel, child) {
           // ownerView == 1 means the teacher is viewing as owner; 0 means visitor mode
           final isOwner = viewModel.ownerView == 1;
@@ -69,8 +69,10 @@ class _ConsultationsOwnerPageState extends State<ConsultationsOwnerPage> {
             // All owner-only slots are passed as null in visitor mode so
             // BaseConsultationsPage renders no controls for them
             editBlockButton: isOwner
-                ? (blockId) =>
-                      _EditBlockButton(blockId: blockId, viewModel: viewModel)
+                ? (blockId) => _EditBlockPageButton(
+                    blockId: blockId,
+                    viewModel: viewModel,
+                  )
                 : null,
             showHistoryOption: isOwner
                 ? (slotId, blockId, color) => _ShowHistoryButton(
@@ -80,7 +82,7 @@ class _ConsultationsOwnerPageState extends State<ConsultationsOwnerPage> {
                   )
                 : null,
             addSlotBefore: isOwner
-                ? (blockId, isEmpty) => _AddSlotOnOutskirts(
+                ? (blockId, isEmpty) => _AddSlotPageOnOutskirts(
                     viewModel: viewModel,
                     blockId: blockId,
                     isBefore: true,
@@ -88,7 +90,7 @@ class _ConsultationsOwnerPageState extends State<ConsultationsOwnerPage> {
                   )
                 : null,
             addSlotAfter: isOwner
-                ? (blockId, isEmpty) => _AddSlotOnOutskirts(
+                ? (blockId, isEmpty) => _AddSlotPageOnOutskirts(
                     viewModel: viewModel,
                     blockId: blockId,
                     isBefore: false,
@@ -104,13 +106,13 @@ class _ConsultationsOwnerPageState extends State<ConsultationsOwnerPage> {
 
 // Renders a + button above or below a block's slot list.
 // Hidden when the block has no slots yet (isEmpty).
-class _AddSlotOnOutskirts extends StatelessWidget {
-  final OwnerConsultationsViewmodel viewModel;
+class _AddSlotPageOnOutskirts extends StatelessWidget {
+  final OwnerConsultationsViewModel viewModel;
   final int blockId;
   final bool isBefore;
   final bool isEmpty;
 
-  const _AddSlotOnOutskirts({
+  const _AddSlotPageOnOutskirts({
     required this.viewModel,
     required this.blockId,
     required this.isBefore,
@@ -121,7 +123,7 @@ class _AddSlotOnOutskirts extends StatelessWidget {
   Widget build(BuildContext context) {
     return isEmpty
         ? const SizedBox.shrink()
-        : Consumer<OwnerConsultationsViewmodel>(
+        : Consumer<OwnerConsultationsViewModel>(
             builder: (context, viewModel, child) {
               final bool isLoading = isBefore
                   ? viewModel.isAddingSlotBefore(blockId)
@@ -158,7 +160,7 @@ class _AddSlotOnOutskirts extends StatelessWidget {
 
 // Hidden when no room is selected or no rooms exist for the teacher
 class _AddBlockButton extends StatelessWidget {
-  final OwnerConsultationsViewmodel viewModel;
+  final OwnerConsultationsViewModel viewModel;
 
   const _AddBlockButton({required this.viewModel});
 
@@ -167,7 +169,7 @@ class _AddBlockButton extends StatelessWidget {
     return (viewModel.noRoomsFound || viewModel.selectedRoomId == null)
         ? const SizedBox.shrink()
         : GestureDetector(
-            onTap: () => nav.toCreateBlock(
+            onTap: () => nav.toCreateBlockPage(
               roomId: viewModel.safeSelectedRoomId!,
               // Refreshes the room's block list after a block is successfully created
               onSuccess: () => viewModel.loadRoom(),
@@ -185,7 +187,7 @@ class _AddBlockButton extends StatelessWidget {
 
 // Three-option dropdown for room management: view members, edit, or delete
 class _SettingsDropdownButton extends StatelessWidget {
-  final OwnerConsultationsViewmodel viewModel;
+  final OwnerConsultationsViewModel viewModel;
 
   const _SettingsDropdownButton({required this.viewModel});
 
@@ -273,7 +275,7 @@ class _SettingsDropdownButton extends StatelessWidget {
 // Confirmation dialog for room deletion
 // Shows a spinner while the delete is in progress
 class _DeleteRoomDialog extends StatelessWidget {
-  final OwnerConsultationsViewmodel viewModel;
+  final OwnerConsultationsViewModel viewModel;
 
   const _DeleteRoomDialog({required this.viewModel});
 
@@ -372,16 +374,16 @@ class _ShowHistoryButton extends StatelessWidget {
   }
 }
 
-class _EditBlockButton extends StatelessWidget {
+class _EditBlockPageButton extends StatelessWidget {
   final int blockId;
-  final OwnerConsultationsViewmodel viewModel;
+  final OwnerConsultationsViewModel viewModel;
 
-  const _EditBlockButton({required this.blockId, required this.viewModel});
+  const _EditBlockPageButton({required this.blockId, required this.viewModel});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => nav.toEditBlock(
+      onTap: () => nav.toEditBlockPage(
         roomId: viewModel.safeSelectedRoomId!,
         blockId: blockId,
         // Refreshes the room's block list after a block is edited

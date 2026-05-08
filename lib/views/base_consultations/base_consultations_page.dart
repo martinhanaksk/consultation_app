@@ -20,7 +20,7 @@ class BaseConsultationsPage extends StatefulWidget {
   final Widget? toggle;
   final Widget? addButton;
   final Widget? deleteButton;
-  final BaseConsultationsViewmodel? viewModel;
+  final BaseConsultationsViewModel? viewModel;
   // Builder callbacks are nullable
   final Widget Function(int blockId)? editBlockButton;
   final Widget? Function(int slotId, int blockId, Color color)?
@@ -43,13 +43,13 @@ class BaseConsultationsPage extends StatefulWidget {
 }
 
 class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
-  late final BaseConsultationsViewmodel _viewModel;
+  late final BaseConsultationsViewModel _viewModel;
   @override
   void initState() {
     super.initState();
     // If the caller provides its own viewModel (e.g. owner page), reuse it;
     // otherwise create a default one and run init() to fetch initial data
-    _viewModel = widget.viewModel ?? BaseConsultationsViewmodel();
+    _viewModel = widget.viewModel ?? BaseConsultationsViewModel();
     if (widget.viewModel == null) _viewModel.init();
   }
 
@@ -65,7 +65,7 @@ class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
         ),
         drawer: SliderMenu(),
         backgroundColor: constants.background,
-        body: Consumer<BaseConsultationsViewmodel>(
+        body: Consumer<BaseConsultationsViewModel>(
           builder: (context, viewModel, child) {
             return SafeArea(
               child: Center(
@@ -74,7 +74,7 @@ class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
                   constraints: const BoxConstraints(maxWidth: 600),
                   child: RefreshIndicator(
                     color: constants.primary,
-                    onRefresh: () => viewModel.loadRoom(),
+                    onRefresh: () => viewModel.init(),
                     child: ScrollConfiguration(
                       behavior: ScrollConfiguration.of(context).copyWith(
                         physics: const BouncingScrollPhysics(

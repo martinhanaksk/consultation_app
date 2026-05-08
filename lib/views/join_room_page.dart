@@ -15,20 +15,20 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 
-class JoinRoom extends StatefulWidget {
-  const JoinRoom({super.key});
+class JoinRoomPage extends StatefulWidget {
+  const JoinRoomPage({super.key});
 
   @override
-  State<JoinRoom> createState() => _JoinRoomState();
+  State<JoinRoomPage> createState() => _JoinRoomPageState();
 }
 
-class _JoinRoomState extends State<JoinRoom> {
-  late final JoinRoomViewmodel _viewModel;
+class _JoinRoomPageState extends State<JoinRoomPage> {
+  late final JoinRoomPageViewModel _viewModel;
 
   @override
   void initState() {
     super.initState();
-    _viewModel = JoinRoomViewmodel();
+    _viewModel = JoinRoomPageViewModel();
     _viewModel.init();
   }
 
@@ -36,7 +36,7 @@ class _JoinRoomState extends State<JoinRoom> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
       value: _viewModel,
-      child: Consumer<JoinRoomViewmodel>(
+      child: Consumer<JoinRoomPageViewModel>(
         builder: (context, viewModel, child) {
           return Scaffold(
             resizeToAvoidBottomInset: false,
@@ -96,8 +96,7 @@ class _JoinRoomState extends State<JoinRoom> {
                                       option.title,
                                   optionsBuilder:
                                       (TextEditingValue textEditingValue) {
-                                        final rooms =
-                                            viewModel.allRooms;
+                                        final rooms = viewModel.allRooms;
                                         // Shows all rooms when the field is empty,
                                         // otherwise filters by title substring
                                         if (textEditingValue.text.isEmpty) {
@@ -125,8 +124,7 @@ class _JoinRoomState extends State<JoinRoom> {
                                       ) {
                                         return CustomInputTextField(
                                           onChanged: (value) {
-                                            final rooms =
-                                                viewModel.allRooms;
+                                            final rooms = viewModel.allRooms;
                                             // Checks for match on every keystroke
                                             // so the selection stays valid when the user
                                             // types a full room title without picking from the list
@@ -336,8 +334,7 @@ class _JoinRoomState extends State<JoinRoom> {
                                     size: constants.fsHeadline,
                                   ),
                                 )
-                              : 
-                                    viewModel.joinedRooms.isEmpty
+                              : viewModel.joinedRooms.isEmpty
                               ? Center(
                                   child: Text(
                                     "You haven't joined any rooms yet.",
@@ -354,8 +351,7 @@ class _JoinRoomState extends State<JoinRoom> {
                                   separatorBuilder: (_, __) =>
                                       const SizedBox(height: 10),
                                   itemBuilder: (context, index) {
-                                    final room = viewModel
-                                        .joinedRooms[index];
+                                    final room = viewModel.joinedRooms[index];
                                     return Container(
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 20,

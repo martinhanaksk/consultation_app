@@ -17,24 +17,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
-class CreateBlock extends StatefulWidget {
+class CreateBlockPage extends StatefulWidget {
   final int roomId;
   // Called after successful block creation to refresh the parent room view
   final VoidCallback? onSuccess;
 
-  const CreateBlock({super.key, required this.roomId, required this.onSuccess});
+  const CreateBlockPage({
+    super.key,
+    required this.roomId,
+    required this.onSuccess,
+  });
 
   @override
-  State<CreateBlock> createState() => _CreateBlockState();
+  State<CreateBlockPage> createState() => _CreateBlockPageState();
 }
 
-class _CreateBlockState extends State<CreateBlock> {
-  late final CreateBlockViewmodel _viewModel;
+class _CreateBlockPageState extends State<CreateBlockPage> {
+  late final CreateBlockPageViewModel _viewModel;
 
   @override
   void initState() {
     super.initState();
-    _viewModel = CreateBlockViewmodel();
+    _viewModel = CreateBlockPageViewModel();
   }
 
   @override
@@ -47,7 +51,7 @@ class _CreateBlockState extends State<CreateBlock> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
       value: _viewModel,
-      child: Consumer<CreateBlockViewmodel>(
+      child: Consumer<CreateBlockPageViewModel>(
         builder: (context, viewModel, child) {
           return Scaffold(
             appBar: AppBarMenu(),
@@ -96,7 +100,8 @@ class _CreateBlockState extends State<CreateBlock> {
                                 Expanded(
                                   child: Text(
                                     'Selected: ${viewModel.getSelectedDatesFormatted()}',
-                                    style: TextStyle(  overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      overflow: TextOverflow.ellipsis,
                                       fontSize: constants.fsLabel,
                                       color: constants.darkGrey,
                                     ),

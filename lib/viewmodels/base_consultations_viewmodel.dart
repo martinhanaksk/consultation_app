@@ -15,7 +15,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 enum ViewMode { visitor, owner }
 
-class BaseConsultationsViewmodel extends ChangeNotifier {
+class BaseConsultationsViewModel extends ChangeNotifier {
   // ── State ──────────────────────────────────────────────────────────────────
   bool isOwner = false;
   bool isLoading = false;
@@ -40,6 +40,7 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   final Map<int, bool> _slotLoading = {};
   final Map<int, bool> _optimisticallyReleased = {};
   final Map<int, bool> _takingSlot = {};
+  bool? isConnected;
   // ── Getters ────────────────────────────────────────────────────────────────
   bool get isWebsiteLoading => _isWebsiteLoading;
   String get visitReason => _visitReason;
@@ -76,9 +77,9 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
     final email = sm.email;
     await setOwnerView(0);
     _setLoading(true);
-    if (!await checkConnection()) return;
 
     try {
+      if (!await checkConnection()) return;
       sm.checkIfValidToken();
       isOwner = await resolveUserRole(email);
       _visitReason = sm.visitReason;
@@ -112,36 +113,43 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
 
   Future<void> refreshRoomData(int roomId) async {
     _setLoading(true);
-    if (!await checkConnection()) return;
-    List<int> subscriptions = [];
-    try {
-      subscriptions = await api.getMySubscriptions();
-    } catch (_) {
-      notify.showToast('Could not load your subscriptions', isError: true);
-    }
-    final newUsers = await api.getUsers();
-    final newRooms = await fetchRooms();
-    _visitReason = sm.visitReason;
-    if (newRooms.isEmpty) {
-      noRoomsFound = true;
-      notifyListeners();
+    if (roomId == null) {
+      await init();
       return;
     }
-    noRoomsFound = false;
+    try {
+      if (!await checkConnection()) return;
+      List<int> subscriptions = [];
+      try {
+        subscriptions = await api.getMySubscriptions();
+      } catch (_) {
+        notify.showToast('Could not load your subscriptions', isError: true);
+      }
+      final newUsers = await api.getUsers();
+      final newRooms = await fetchRooms();
+      _visitReason = sm.visitReason;
+      if (newRooms.isEmpty) {
+        noRoomsFound = true;
+        notifyListeners();
+        return;
+      }
+      noRoomsFound = false;
 
-    // Only fetch blocks from today onward to avoid showing past consultations
-    final today = _todayString();
-    final newBlocks = await api.getBlocks(roomId, today);
-    final newSlotsInBlocks = await _fetchSlotsForBlocks(newBlocks);
+      // Only fetch blocks from today onward to avoid showing past consultations
+      final today = _todayString();
+      final newBlocks = await api.getBlocks(roomId, today);
+      final newSlotsInBlocks = await _fetchSlotsForBlocks(newBlocks);
 
-    // Assign all fetched data
-    subscribedBlocks = subscriptions;
-    users = newUsers;
-    rooms = newRooms;
-    blocks = newBlocks;
-    slotsInBlocks = newSlotsInBlocks;
-    blocksFiltered = true;
-    _setLoading(false);
+      // Assign all fetched data
+      subscribedBlocks = subscriptions;
+      users = newUsers;
+      rooms = newRooms;
+      blocks = newBlocks;
+      slotsInBlocks = newSlotsInBlocks;
+      blocksFiltered = true;
+    } finally {
+      _setLoading(false);
+    }
   }
 
   Future<void> takeSlot(int slotId, String note, int isOnline) async {
@@ -356,9 +364,10 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
   void setIsLoading(bool value) => _setLoading(value);
   Future<List<RoomModel>> fetchRooms() => api.getJoinedRooms();
   Future<bool> checkConnection() async {
-    bool isOffline = false;
-    isOffline = await helpers.handleIsInternetConnection();
-    if (isOffline) {
+    final online = await helpers.handleIsInternetConnection();
+    isConnected = online;
+    notifyListeners();
+    if (online) {
       return true;
     }
 
@@ -366,13 +375,14 @@ class BaseConsultationsViewmodel extends ChangeNotifier {
       'Please check your internet connection and try again',
       isError: true,
     );
+    _setLoading(false);
     users = [];
     rooms = [];
     blocks = [];
     slotsInBlocks = {};
-    ownerSelectedRoomId = 0;
-    visitorSelectedRoomId = 0;
-    selectedRoomId = 0;
+    ownerSelectedRoomId = null;
+    visitorSelectedRoomId = null;
+    selectedRoomId = null;
     return false;
   }
 

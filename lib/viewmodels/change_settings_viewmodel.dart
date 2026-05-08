@@ -1,6 +1,5 @@
 // change_settings_viewmodel.dart
 // Author: Martin Hanak
-// Email: xhanakm00@stud.fit.vut.cz
 // ViewModel for the Settings screen. Loads user profile data, and exposes
 // optimistic-update methods for name, visit reason, visibility, and
 // notification preferences, each rolling back on API failure.
@@ -8,7 +7,7 @@
 import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
 
-class ChangeSettingsViewmodel extends ChangeNotifier {
+class ChangeSettingsPageViewModel extends ChangeNotifier {
   // ── State ──────────────────────────────────────────────────────────────────
   String _name = '';
   String _surname = '';
@@ -17,11 +16,10 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
   String _visitReason = '';
   bool _visibility = true;
   bool _isLoading = false;
-  // Guards against re-running initialization if the widget rebuilds
   bool _hasBeenInitialized = false;
-  int _notifyHoursBefore = 0;
-  // ── Getters ────────────────────────────────────────────────────────────────
+  List<int> _notifyHours = [];
 
+  // ── Getters ────────────────────────────────────────────────────────────────
   String get name => _name;
   String get surname => _surname;
   String get email => _email;
@@ -30,12 +28,11 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
   bool get visibility => _visibility;
   bool get isLoading => _isLoading;
   bool get hasBeenInitialized => _hasBeenInitialized;
-  int get notifyHoursBefore => _notifyHoursBefore;
+  List<int> get notifyHours => List.unmodifiable(_notifyHours);
 
   // ── Public Methods ─────────────────────────────────────────────────────────
 
   Future<void> initialize() async {
-    // Prevent initializations if called more than once
     if (_isLoading) return;
     _setLoading(true);
     _hasBeenInitialized = true;
@@ -48,16 +45,18 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
     _role = data?['role'] ?? '';
     _visitReason = data?['visit_reason'] ?? '';
     _visibility = data?['visible'] == 1 || data?['visible'] == true;
-    _notifyHoursBefore = (data?['notification'] as int?) ?? 0;
 
-    // Persist the freshly fetched profile into the local session
+    // API returns a list of ints; fall back to empty list if absent
+    final raw = data?['notifications'];
+    _notifyHours = raw is List ? List<int>.from(raw.whereType<int>()) : [];
+
     await sm.saveSession(
       sm.token,
       _email,
       _role,
       _visibility,
       _visitReason,
-      _notifyHoursBefore,
+      _notifyHours,
       _name,
       _surname,
     );
@@ -70,7 +69,6 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
   }
 
   Future<void> setVisibility() async {
-    // Optimistically toggle visibility; revert if the API call fails
     final newVal = !_visibility;
     _visibility = newVal;
     notifyListeners();
@@ -91,7 +89,6 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
   }
 
   Future<void> updateName(String newName, String newSurname) async {
-    // Snapshot old values for rollback before applying the optimistic update
     final oldName = _name;
     final oldSurname = _surname;
     _name = newName;
@@ -124,18 +121,36 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
     }
   }
 
-  Future<void> updateNotifyHoursBefore(int hours) async {
-    final old = _notifyHoursBefore;
-    _notifyHoursBefore = hours;
+  Future<void> addNotifyHour(int hours) async {
+    if (_notifyHours.contains(hours)) {
+      notify.showToast('$hours h is already in the list');
+      return;
+    }
+    _notifyHours = [..._notifyHours, hours]..sort();
     notifyListeners();
     try {
       await _updateUserData();
-      sm.updateNotifyHoursBefore(hours);
-      notify.showToast('Notification hours updated');
+      sm.updateNotifyHours(_notifyHours);
+      notify.showToast('Notification added');
     } catch (_) {
-      _notifyHoursBefore = old;
+      _notifyHours = List<int>.from(_notifyHours)..remove(hours);
       notifyListeners();
-      notify.showToast('Failed to update notification hours', isError: true);
+      notify.showToast('Failed to add notification hour', isError: true);
+    }
+  }
+
+  Future<void> removeNotifyHour(int hours) async {
+    final snapshot = List<int>.from(_notifyHours);
+    _notifyHours = List<int>.from(_notifyHours)..remove(hours);
+    notifyListeners();
+    try {
+      await _updateUserData();
+      sm.updateNotifyHours(_notifyHours);
+      notify.showToast('Notification removed');
+    } catch (_) {
+      _notifyHours = snapshot;
+      notifyListeners();
+      notify.showToast('Failed to remove notification hour', isError: true);
     }
   }
 
@@ -149,12 +164,11 @@ class ChangeSettingsViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Single call sends the full current profile state to the API
   Future<void> _updateUserData() => api.updateUserData(
     _name,
     _surname,
     _visitReason,
     _visibility,
-    _notifyHoursBefore,
+    _notifyHours, // now a List<int>
   );
 }

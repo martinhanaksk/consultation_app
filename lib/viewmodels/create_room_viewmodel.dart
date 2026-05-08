@@ -1,14 +1,14 @@
 // create_room_viewmodel.dart
 // Author: Martin Hanak
 // Email: xhanakm00@stud.fit.vut.cz
-// ViewModel for the Create Room screen. Extends BaseRoomViewmodel and adds
+// ViewModel for the Create Room screen. Extends BaseRoomViewModel and adds
 // the createRoom action, which validates the accepted-email list
 // before calling the API.
 
 import 'package:consultation_app/setup.dart';
 import 'base_room_viewmodel.dart';
 
-class CreateRoomViewmodel extends BaseRoomViewmodel {
+class CreateRoomPageViewModel extends BaseRoomViewModel {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
   // ── Public Methods ─────────────────────────────────────────────────────────

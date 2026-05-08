@@ -15,13 +15,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
-class EditBlock extends StatefulWidget {
+class EditBlockPage extends StatefulWidget {
   final int roomId;
   final int blockId;
   // VoidCallback to refresh the parent page
   final VoidCallback? onSuccess;
 
-  const EditBlock({
+  const EditBlockPage({
     super.key,
     required this.roomId,
     required this.blockId,
@@ -29,16 +29,16 @@ class EditBlock extends StatefulWidget {
   });
 
   @override
-  State<EditBlock> createState() => _EditBlockState();
+  State<EditBlockPage> createState() => _EditBlockPageState();
 }
 
-class _EditBlockState extends State<EditBlock> {
-  late final EditBlockViewmodel _viewModel;
+class _EditBlockPageState extends State<EditBlockPage> {
+  late final EditBlockPageViewModel _viewModel;
 
   @override
   void initState() {
     super.initState();
-    _viewModel = EditBlockViewmodel();
+    _viewModel = EditBlockPageViewModel();
     _viewModel.init(widget.blockId, widget.roomId);
   }
 
@@ -52,7 +52,7 @@ class _EditBlockState extends State<EditBlock> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
       value: _viewModel,
-      child: Consumer<EditBlockViewmodel>(
+      child: Consumer<EditBlockPageViewModel>(
         builder: (context, viewModel, child) {
           return Scaffold(
             appBar: AppBarMenu(),
@@ -108,7 +108,8 @@ class _EditBlockState extends State<EditBlock> {
                                 Center(
                                   child: Container(
                                     clipBehavior: Clip.hardEdge,
-                                    width: MediaQuery.of(context).size.width * 0.9,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.9,
                                     decoration: constants.squircleShadow(
                                       hasBorder: true,
                                       color: constants.background,
@@ -121,30 +122,37 @@ class _EditBlockState extends State<EditBlock> {
                                           alignment: Alignment.center,
                                           children: [
                                             Padding(
-                                              padding: const EdgeInsets.fromLTRB(
-                                                20, 10, 20, 10,
-                                              ),
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                    20,
+                                                    10,
+                                                    20,
+                                                    10,
+                                                  ),
                                               child: Text(
                                                 viewModel.getBlockDate(),
                                                 style: TextStyle(
                                                   color: constants.darkGrey,
                                                   fontSize: constants.fsLabel,
-                                                  fontWeight: constants.fwSemiBold,
+                                                  fontWeight:
+                                                      constants.fwSemiBold,
                                                 ),
                                               ),
                                             ),
                                             Padding(
-                                              padding: const EdgeInsets.symmetric(
-                                                horizontal: 12.0,
-                                              ),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 12.0,
+                                                  ),
                                               child: GestureDetector(
                                                 onTap: () {
-                                                  nav.toAddSlot(
+                                                  nav.toAddSlotPage(
                                                     blockId: widget.blockId,
                                                     // Refreshes slot list after a new slot is added
-                                                    onSuccess: () => viewModel.refetchData(
-                                                      widget.blockId,
-                                                    ),
+                                                    onSuccess: () =>
+                                                        viewModel.refetchData(
+                                                          widget.blockId,
+                                                        ),
                                                   );
                                                 },
                                                 child: Row(
@@ -160,9 +168,12 @@ class _EditBlockState extends State<EditBlock> {
                                                     Text(
                                                       "Add Slot",
                                                       style: TextStyle(
-                                                        color: constants.primary,
-                                                        fontWeight: constants.fwSemiBold,
-                                                        fontSize: constants.fsLabel,
+                                                        color:
+                                                            constants.primary,
+                                                        fontWeight: constants
+                                                            .fwSemiBold,
+                                                        fontSize:
+                                                            constants.fsLabel,
                                                       ),
                                                     ),
                                                   ],
@@ -183,7 +194,9 @@ class _EditBlockState extends State<EditBlock> {
                                               )
                                             : viewModel.slots.isEmpty
                                             ? Padding(
-                                                padding: const EdgeInsets.all(24),
+                                                padding: const EdgeInsets.all(
+                                                  24,
+                                                ),
                                                 child: Text(
                                                   "No slots in this block.",
                                                   style: TextStyle(
@@ -194,21 +207,28 @@ class _EditBlockState extends State<EditBlock> {
                                               )
                                             : ListView.builder(
                                                 shrinkWrap: true,
-                                                physics: NeverScrollableScrollPhysics(),
+                                                physics:
+                                                    NeverScrollableScrollPhysics(),
                                                 padding: EdgeInsets.zero,
-                                                itemCount: viewModel.slots.length,
+                                                itemCount:
+                                                    viewModel.slots.length,
                                                 itemBuilder: (context, index) {
-                                                  final slot = viewModel.slots[index];
+                                                  final slot =
+                                                      viewModel.slots[index];
                                                   return _SlotRow(
                                                     slot: slot,
                                                     isFirst: index == 0,
-                                                    isLast: index == viewModel.slots.length - 1,
+                                                    isLast:
+                                                        index ==
+                                                        viewModel.slots.length -
+                                                            1,
                                                     onIsOnlineClicked: () =>
-                                                        viewModel.changeSlotMeetingType(
-                                                          slot.id,
-                                                        ),
-                                                    onDelete: () =>
-                                                        viewModel.deleteSlot(slot.id),
+                                                        viewModel
+                                                            .changeSlotMeetingType(
+                                                              slot.id,
+                                                            ),
+                                                    onDelete: () => viewModel
+                                                        .deleteSlot(slot.id),
                                                   );
                                                 },
                                               ),
@@ -271,7 +291,9 @@ class _EditBlockState extends State<EditBlock> {
                                     fixedSize: const Size(140, 120),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
-                                      side: BorderSide(color: constants.background),
+                                      side: BorderSide(
+                                        color: constants.background,
+                                      ),
                                     ),
                                     elevation: 0,
                                   ),
@@ -307,7 +329,9 @@ class _EditBlockState extends State<EditBlock> {
                                     fixedSize: const Size(140, 120),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
-                                      side: BorderSide(color: constants.background),
+                                      side: BorderSide(
+                                        color: constants.background,
+                                      ),
                                     ),
                                     elevation: 0,
                                   ),

@@ -9,7 +9,7 @@ import 'package:consultation_app/models/room_model.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:flutter/material.dart';
 
-class JoinRoomViewmodel extends ChangeNotifier {
+class JoinRoomPageViewModel extends ChangeNotifier {
   // ── State ────────────────────────────────────────────────────────────────────────────
 
   List<RoomModel> _allRooms = [];

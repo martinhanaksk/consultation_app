@@ -8,7 +8,7 @@ import 'package:consultation_app/models/room_model.dart';
 import 'package:consultation_app/setup.dart';
 import 'base_room_viewmodel.dart';
 
-class EditRoomViewmodel extends BaseRoomViewmodel {
+class EditRoomViewModel extends BaseRoomViewModel {
   RoomModel? room;
   String? errorMessage;
 

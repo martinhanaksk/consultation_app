@@ -33,7 +33,7 @@ class VerifyOtpPage extends StatefulWidget {
 }
 
 class _VerifyOtpPageState extends State<VerifyOtpPage> {
-  late final VerifyOtpViewmodel _viewModel;
+  late final VerifyOtpViewModel _viewModel;
   final TextEditingController otpcontroller = TextEditingController();
 
   @override
@@ -41,7 +41,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
     super.initState();
     // ViewModel is created here rather than inside build() to prevent
     // re-instantiation on every rebuild
-    _viewModel = VerifyOtpViewmodel();
+    _viewModel = VerifyOtpViewModel();
   }
 
   @override
@@ -56,7 +56,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
     // The viewmodel lifecycle is managed by this State
     return ChangeNotifierProvider.value(
       value: _viewModel,
-      child: Consumer<VerifyOtpViewmodel>(
+      child: Consumer<VerifyOtpViewModel>(
         builder: (context, viewModel, child) {
           return Scaffold(
             appBar: AppBarMenu(onVerificationPage: true),

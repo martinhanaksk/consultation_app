@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
 
 class AppBarMenu extends StatefulWidget implements PreferredSizeWidget {
-  final BaseConsultationsViewmodel? viewModel;
+  final BaseConsultationsViewModel? viewModel;
   // Optional centre widget; used for the owner/student AnimatedToggle on the home page
   final Widget? toggle;
   final bool onHomePage;
@@ -38,13 +38,6 @@ class AppBarMenu extends StatefulWidget implements PreferredSizeWidget {
 
 class _AppBarMenuState extends State<AppBarMenu> {
   // Cached once so FutureBuilder doesn't re-fire on every rebuild
-  late final Future<bool> _internetFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _internetFuture = helpers.handleIsInternetConnection();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,24 +101,27 @@ class _AppBarMenuState extends State<AppBarMenu> {
         ),
       ),
       // toggle is null on most pages
-      flexibleSpace: FutureBuilder<bool>(
-        future: _internetFuture,
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return SafeArea(child: Center(child: widget.toggle));
-          }
-          return snapshot.data!
-              ? SafeArea(child: Center(child: widget.toggle))
-              : SafeArea(
+      flexibleSpace: widget.viewModel != null
+          ? ListenableBuilder(
+              listenable: widget.viewModel!,
+              builder: (context, _) {
+                // null = loading/unknown → zobraz toggle (neblokuj UI)
+                final online = widget.viewModel!.isConnected ?? true;
+                return SafeArea(
                   child: Center(
-                    child: svgs.icon("no_connection", constants.red),
+                    child: online
+                        ? widget.toggle
+                        : svgs.icon("no_connection", constants.red),
                   ),
                 );
-        },
-      ),
+              },
+            )
+          : SafeArea(child: Center(child: widget.toggle)),
       actions: [
         // Settings icon is hidden on pages where navigating to settings makes no sense
-        widget.onSettingsPage || widget.onVerificationPage || widget.onRegistrationPage
+        widget.onSettingsPage ||
+                widget.onVerificationPage ||
+                widget.onRegistrationPage
             ? SizedBox.shrink()
             : Padding(
                 padding: EdgeInsets.only(right: 12),
@@ -145,7 +141,7 @@ class _AppBarMenuState extends State<AppBarMenu> {
                         width: constants.fsBody,
                       ),
                       onPressed: () {
-                        nav.toChangeSettings();
+                        nav.toChangeSettingsPage();
                       },
                     ),
                   ),

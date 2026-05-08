@@ -10,7 +10,7 @@ import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/base_consultations_viewmodel.dart';
 
 class NoRoomsFound extends StatelessWidget {
-  final BaseConsultationsViewmodel viewModel;
+  final BaseConsultationsViewModel viewModel;
   const NoRoomsFound({super.key, required this.viewModel});
   @override
   Widget build(BuildContext context) {
@@ -23,29 +23,46 @@ class NoRoomsFound extends StatelessWidget {
             children: [
               const SizedBox(height: 80),
               // ownerView == 0 means the current user is a student
-              viewModel.ownerView == 0
-                  ? GestureDetector(
-                      onTap: () => nav.toJoinRoom(),
-                      child: Text(
-                        "Try joining room to get started.",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: constants.fsTitle,
-                          color: constants.primary,
-                        ),
+              ListenableBuilder(
+                listenable: viewModel,
+                builder: (context, _) {
+                  final online = viewModel.isConnected ?? true;
+                  if (!online) {
+                    return Text(
+                      "No internet connection",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: constants.fsTitle,
+                        color: constants.red,
                       ),
-                    )
-                  : GestureDetector(
-                      onTap: () => nav.toCreateRoom(),
-                      child: Text(
-                        "Try creating room to get started.",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: constants.fsTitle,
-                          color: constants.primary,
-                        ),
-                      ),
-                    ),
+                    );
+                  }
+                  return viewModel.ownerView == 0
+                      ? GestureDetector(
+                          onTap: () => nav.toJoinRoomPage(),
+                          child: Text(
+                            "Try joining room to get started.",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: constants.fsTitle,
+                              color: constants.primary,
+                            ),
+                          ),
+                        )
+                      : GestureDetector(
+                          onTap: () => nav.toCreateRoomPage(),
+                          child: Text(
+                            "Try creating room to get started.",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: constants.fsTitle,
+                              color: constants.primary,
+                            ),
+                          ),
+                        );
+                },
+              ),
+
               const SizedBox(height: 20),
             ],
           ),

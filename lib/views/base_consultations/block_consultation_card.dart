@@ -12,7 +12,7 @@ import 'package:consultation_app/views/slots/slot_widget.dart';
 import 'package:provider/provider.dart';
 
 class ConsultationBlockCard extends StatelessWidget {
-  final BaseConsultationsViewmodel viewModel;
+  final BaseConsultationsViewModel viewModel;
   // blockEntry.key = block ID, blockEntry.value = list of slots in this block
   final MapEntry<int, List?> blockEntry;
   // Null in student view — presence of this callback switches the header action
@@ -115,7 +115,7 @@ class ConsultationBlockCard extends StatelessWidget {
                     final slot = slots[index];
                     // Selector rebuilds only this slot when its taking/release state changes,
                     // avoiding a full-list rebuild on every interaction
-                    return Selector<BaseConsultationsViewmodel, (bool, bool)>(
+                    return Selector<BaseConsultationsViewModel, (bool, bool)>(
                       selector: (context, vm) => (
                         vm.isTakingSlot(slot.id),
                         vm.isOptimisticallyReleased(slot.id),

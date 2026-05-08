@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class SliderMenuViewmodel extends ChangeNotifier {
+class SliderMenuViewModel extends ChangeNotifier {
   String _token = "";
   String? _email = "";
   bool? _isOwner;
@@ -41,15 +41,12 @@ class SliderMenuViewmodel extends ChangeNotifier {
     }
     try {
       _isLoading = true;
-      notifyListeners();
       _token = sm.token;
+      notifyListeners();
       sm.checkIfValidToken();
       _email = sm.email;
-      if (await helpers.handleIsInternetConnection()) {
-        bool isOwnerTemp = await api.getIsOwner();
-        notifyListeners();
-        _isOwner = isOwnerTemp;
-      }
+      _isOwner = sm.role == 'teacher';
+      notifyListeners();
     } finally {
       _isLoading = false;
       notifyListeners();

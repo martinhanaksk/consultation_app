@@ -8,7 +8,7 @@ import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/utils/time_utils.dart';
 import 'package:flutter/material.dart';
 
-class AddSlotViewmodel extends ChangeNotifier {
+class AddSlotPageViewModel extends ChangeNotifier {
   bool isLoading = false;
   bool _isOnline = false;
   bool get isOnline => _isOnline;

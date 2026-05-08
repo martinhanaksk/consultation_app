@@ -1,9 +1,6 @@
 // session_manager.dart
 // Author: Martin Hanak
 // Email: xhanakm00@stud.fit.vut.cz
-// Holds the authenticated user's session state in memory and keeps it
-// in sync with persistent storage. Extends ChangeNotifier so any widget
-// listening to it rebuilds automatically on session changes.
 
 import 'package:consultation_app/setup.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +13,7 @@ class SessionManager extends ChangeNotifier {
   static const String _roleKey = 'role';
   static const String _visibilityKey = 'visibility';
   static const String _visitReasonKey = 'visitReason';
-  static const String _notifyHoursBeforeKey = 'notifyHoursBefore';
+  static const String _notifyHoursKey = 'notifyHours';
   static const String _nameKey = 'name';
   static const String _surnameKey = 'surname';
   static const String _isDarkModeOnKey = 'darkMode';
@@ -29,11 +26,11 @@ class SessionManager extends ChangeNotifier {
   bool _visibility = true;
   bool _isDarkModeOn = false;
   String _visitReason = "";
-  int _notifyHoursBefore = 0;
+  // empty means no notifications
+  List<int> _notifyHours = [];
   String _name = "";
   String _surname = "";
   bool _isLoggedIn = true;
-  // Guards against concurrent logout triggers firing multiple times
   bool _isLoggingOut = false;
 
   // --- Getters ---
@@ -44,36 +41,30 @@ class SessionManager extends ChangeNotifier {
   bool get visibility => _visibility;
   bool get isDarkModeOn => _isDarkModeOn;
   String get visitReason => _visitReason;
-  int get notifyHoursBefore => _notifyHoursBefore;
+  List<int> get notifyHours => _notifyHours;
   String get name => _name;
   String get surname => _surname;
   bool get isLoggedIn => _isLoggedIn;
 
-  // Last room the teacher had open; used to restore context after navigation
+  List<int> get notifyHoursList {
+    if (_notifyHours.isEmpty) return [];
+    return _notifyHours..sort();
+  }
+
   int? _roomIdOwner;
   int? get roomIdOwner => _roomIdOwner;
 
-  // Last room the student had open; used to restore context after navigation
   int? _roomIdVisitor;
   int? get roomIdVisitor => _roomIdVisitor;
 
-  void resetRoomIdOwner() {
-    _roomIdOwner = null;
-  }
-
-  void setRoomIdOwner(int value) {
-    _roomIdOwner = value;
-  }
-
-  void setRoomIdVisitor(int value) {
-    _roomIdVisitor = value;
-  }
+  void resetRoomIdOwner() => _roomIdOwner = null;
+  void setRoomIdOwner(int value) => _roomIdOwner = value;
+  void setRoomIdVisitor(int value) => _roomIdVisitor = value;
 
   SessionManager();
 
   // --- Persistence ---
-
-  // Restores session from storage on app start; called once in main() before runApp
+  // Restores session from storage
   Future<void> load() async {
     _token = await securePrefs.getToken();
     _email = await prefs.getString(_emailKey);
@@ -81,29 +72,31 @@ class SessionManager extends ChangeNotifier {
     _visibility = await prefs.getBool(_visibilityKey);
     _isDarkModeOn = await prefs.getBool('darkMode');
     _visitReason = await prefs.getString(_visitReasonKey);
-    _notifyHoursBefore = await prefs.getInt(_notifyHoursBeforeKey);
+    String hrs = await prefs.getString(_notifyHoursKey);
+    _notifyHours = _decodeHours(hrs);
     _name = await prefs.getString(_nameKey);
     _surname = await prefs.getString(_surnameKey);
     notifyListeners();
   }
 
-  // Persists the full session after successful OTP verification and updates memory
+  // Persists the full session after successful OTP verification
   Future<void> saveSession(
     String token,
     String email,
     String role,
     bool visibility,
     String visitReason,
-    int notifyHoursBefore,
+    List<int> notifyHours,
     String name,
     String surname,
   ) async {
+    final encoded = _encodeHours(notifyHours);
     await securePrefs.saveToken(token);
     await prefs.saveItem(_emailKey, email);
     await prefs.saveItem(_roleKey, role);
     await prefs.saveItem(_visibilityKey, visibility);
     await prefs.saveItem(_visitReasonKey, visitReason);
-    await prefs.saveItem(_notifyHoursBeforeKey, notifyHoursBefore);
+    await prefs.saveItem(_notifyHoursKey, encoded);
     await prefs.saveItem(_nameKey, name);
     await prefs.saveItem(_surnameKey, surname);
     _token = token;
@@ -111,29 +104,29 @@ class SessionManager extends ChangeNotifier {
     _role = role;
     _visibility = visibility;
     _visitReason = visitReason;
-    _notifyHoursBefore = notifyHoursBefore;
+    _notifyHours = notifyHours;
     _name = name;
     _surname = surname;
     _isLoggedIn = true;
     notifyListeners();
   }
 
-  // Wipes all stored and in-memory session data; called on logout or token expiry
+  // Wipes all stored and in-memory session data
   Future<void> clear() async {
     await securePrefs.removeToken();
     await prefs.removeItem(_emailKey);
     await prefs.removeItem(_roleKey);
-    await prefs.removeItem('visibility');
-    await prefs.removeItem('visitReason');
-    await prefs.removeItem('notifyHoursBefore');
-    await prefs.removeItem('name');
-    await prefs.removeItem('surname');
+    await prefs.removeItem(_visibilityKey);
+    await prefs.removeItem(_visitReasonKey);
+    await prefs.removeItem(_notifyHoursKey);
+    await prefs.removeItem(_nameKey);
+    await prefs.removeItem(_surnameKey);
     _token = "";
     _email = "";
     _role = "";
     _visibility = true;
     _visitReason = "";
-    _notifyHoursBefore = 0;
+    _notifyHours = [];
     _name = "";
     _surname = "";
     _isLoggedIn = false;
@@ -178,9 +171,11 @@ class SessionManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateNotifyHoursBefore(int hours) async {
-    await prefs.saveItem(_notifyHoursBeforeKey, hours);
-    _notifyHoursBefore = hours;
+  // Accepts a List<int>, encodes to CSV, persists and updates memory
+  Future<void> updateNotifyHours(List<int> hours) async {
+    final encoded = _encodeHours(hours);
+    await prefs.saveItem(_notifyHoursKey, encoded);
+    _notifyHours = hours;
     notifyListeners();
   }
 
@@ -205,8 +200,7 @@ class SessionManager extends ChangeNotifier {
   }
 
   // --- Session validation ---
-
-  // Prevents duplicate logout calls if multiple widgets detect an invalid token simultaneously
+  // Prevents duplicate logout calls
   Future<void> checkIfValidToken() async {
     if (_isLoggingOut) return;
     _isLoggingOut = true;
@@ -223,7 +217,6 @@ class SessionManager extends ChangeNotifier {
   void checkIfInSharedPreferences() async {
     if (sm.role.isNotEmpty && sm.token.isNotEmpty && sm.email.isNotEmpty) {
       bool isExpired = JwtDecoder.isExpired(sm.token);
-
       if (!isExpired) {
         if (sm.role == 'teacher') {
           nav.toOwnerConsultations();
@@ -234,5 +227,24 @@ class SessionManager extends ChangeNotifier {
         sm.clear();
       }
     }
+  }
+
+  // --- Private helpers ---
+
+  // Encode to string for storing
+  String _encodeHours(List<int> hours) {
+    final sorted = List<int>.from(hours)..sort();
+    return sorted.join(',');
+  }
+
+  // Decode to string for use
+  List<int> _decodeHours(String hours) {
+    if (hours.trim().isEmpty) return [];
+    return hours
+        .split(',')
+        .map((e) => int.tryParse(e.trim()))
+        .whereType<int>()
+        .toList()
+      ..sort();
   }
 }
