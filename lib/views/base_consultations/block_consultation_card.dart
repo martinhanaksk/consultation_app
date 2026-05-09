@@ -32,7 +32,7 @@ class ConsultationBlockCard extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) {
-    final slots = blockEntry.value!;
+    final slots = blockEntry.value;
     return Center(
       child: Column(
         children: [
@@ -104,13 +104,13 @@ class ConsultationBlockCard extends StatelessWidget {
                   ),
                 ),
                 // Owner-only: button to insert a slot at the top of the block
-                if (addSlotBefore != null)
+                if (addSlotBefore != null && slots!=null)
                   addSlotBefore!(blockEntry.key, slots.isEmpty)!,
                 ListView.builder(
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   padding: EdgeInsets.zero,
-                  itemCount: slots.length,
+                  itemCount: slots!.length,
                   itemBuilder: (context, index) {
                     final slot = slots[index];
                     // Selector rebuilds only this slot when its taking/release state changes,

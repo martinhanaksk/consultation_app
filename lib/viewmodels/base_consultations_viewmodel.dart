@@ -8,7 +8,6 @@
 import 'package:consultation_app/models/block_model.dart';
 import 'package:consultation_app/models/room_model.dart';
 import 'package:consultation_app/models/slot_model.dart';
-import 'package:consultation_app/models/user_model.dart';
 import 'package:consultation_app/setup.dart';
 import 'package:flutter/foundation.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -22,7 +21,6 @@ class BaseConsultationsViewModel extends ChangeNotifier {
   bool blocksFiltered = false;
   bool noRoomsFound = false;
   List<int> subscribedBlocks = [];
-  List<UserModel>? users = [];
   List<RoomModel>? rooms = [];
   List<BlockModel> blocks = [];
   Map<int, List<SlotModel>?> slotsInBlocks = {};
@@ -116,10 +114,7 @@ class BaseConsultationsViewModel extends ChangeNotifier {
 
   Future<void> refreshRoomData(int roomId) async {
     _setLoading(true);
-    if (roomId == null) {
-      await init();
-      return;
-    }
+
     try {
       if (!await checkConnection()) return;
       List<int> subscriptions = [];
@@ -128,7 +123,6 @@ class BaseConsultationsViewModel extends ChangeNotifier {
       } catch (_) {
         notify.showToast('Could not load your subscriptions', isError: true);
       }
-      final newUsers = await api.getUsers();
       final newRooms = await fetchRooms();
       _visitReason = sm.visitReason;
       if (newRooms.isEmpty) {
@@ -145,7 +139,6 @@ class BaseConsultationsViewModel extends ChangeNotifier {
 
       // Assign all fetched data
       subscribedBlocks = subscriptions;
-      users = newUsers;
       rooms = newRooms;
       blocks = newBlocks;
       slotsInBlocks = newSlotsInBlocks;
@@ -379,7 +372,6 @@ class BaseConsultationsViewModel extends ChangeNotifier {
       isError: true,
     );
     _setLoading(false);
-    users = [];
     rooms = [];
     blocks = [];
     slotsInBlocks = {};
@@ -459,7 +451,7 @@ class BaseConsultationsViewModel extends ChangeNotifier {
   Future<Map<int, List<SlotModel>?>> _fetchSlotsForBlocks(
     List<BlockModel> blockList,
   ) async {
-    final result = <int, List<SlotModel>?>{};
+    final result = <int, List<SlotModel>>{};
     final today = _todayString();
 
     await Future.wait(

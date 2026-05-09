@@ -29,7 +29,11 @@ class _ConsultationsOwnerPageState extends State<ConsultationsOwnerPage> {
     _viewModel = OwnerConsultationsViewModel();
     initialize();
   }
-
+@override
+void dispose() {
+  _viewModel.dispose();
+  super.dispose();
+}
   // Separated from initState so async errors can be caught and shown as a toast
   void initialize() async {
     try {

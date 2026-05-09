@@ -5,6 +5,7 @@
 // Tracks route history to check the current and previous route at any time.
 
 import 'package:consultation_app/services/app_router.dart';
+import 'package:consultation_app/viewmodels/base_room_viewmodel.dart';
 import 'package:consultation_app/views/email_input_page.dart';
 import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
@@ -13,17 +14,9 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 class NavigationService {
   // Required by MaterialApp.navigatorKey to drive navigation from outside the widget tree
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+ final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
+  
 
-  // --- Route history ---
-
-  final List<String> _routeHistory = [];
-
-  String? get previousRoute => _routeHistory.length >= 2
-      ? _routeHistory[_routeHistory.length - 2]
-      : null;
-
-  String? get currentRoute =>
-      _routeHistory.isNotEmpty ? _routeHistory.last : null;
 
   // --- Core helpers ---
 
@@ -33,14 +26,12 @@ class NavigationService {
 
   // All named pushes go through here so _routeHistory stays in sync
   Future<dynamic> _pushNamed(String routeName, {Object? arguments}) {
-    _routeHistory.add(routeName);
     return _navigator()!.pushNamed(routeName, arguments: arguments);
   }
 
-  void pop<T extends Object?>([T? result]) {
-    if (_routeHistory.isNotEmpty) _routeHistory.removeLast();
-    _navigator()?.pop(result);
-  }
+ void pop([dynamic value]) {
+  _navigator()?.pop(value);
+}
 
   // --- Auth ---
 
@@ -65,7 +56,6 @@ class NavigationService {
     );
 
     await sm.clear();
-    _routeHistory.clear();
     await Future.delayed(const Duration(milliseconds: 400));
 
     _navigator()?.pushAndRemoveUntil(
@@ -91,7 +81,6 @@ class NavigationService {
   }
 
   void redirectToRegister(String email) {
-    _routeHistory.add(AppRouter.register);
     _pushNamed(
       AppRouter.register,
       arguments: <String, dynamic>{'email': email},
@@ -109,17 +98,13 @@ class NavigationService {
 
   // Resets the stack to a single root before replacing, preventing accumulating
   void toOwnerConsultations() {
-    _routeHistory.clear();
-    _routeHistory.add(AppRouter.consultationsOwnerPage);
     _navigator()?.popUntil((route) => route.isFirst);
-    _navigator()?.pushReplacementNamed(AppRouter.consultationsOwnerPage);
+    _pushNamed(AppRouter.consultationsOwnerPage);
   }
 
   void toBaseConsultations() {
-    _routeHistory.clear();
-    _routeHistory.add(AppRouter.consultationsBasePage);
     _navigator()?.popUntil((route) => route.isFirst);
-    _navigator()?.pushReplacementNamed(AppRouter.consultationsBasePage);
+    _pushNamed(AppRouter.consultationsBasePage);
   }
 
   // --- Rooms ---
@@ -141,17 +126,15 @@ class NavigationService {
     );
   }
 
-  void toDisplayListOfEmails({required dynamic viewModel}) {
+  void toDisplayListOfEmails({required BaseRoomViewModel viewModel}) {
     _pushNamed(
       AppRouter.displayListOfEmails,
-      arguments: <String, dynamic>{'viewModel': viewModel},
+      arguments: <String, BaseRoomViewModel>{'viewModel': viewModel},
     );
   }
 
   void toMyReservations() {
-    _pushNamed(
-      AppRouter.displayMyReservations,
-    );
+    _pushNamed(AppRouter.displayMyReservations);
   }
 
   void toDisplayNotifyHours({required dynamic viewModel}) {
@@ -207,4 +190,36 @@ class NavigationService {
   void toChangeSettingsPage() => _pushNamed(AppRouter.changeSettings);
 
   void toProvideFeedback() => _pushNamed(AppRouter.provideFeedback);
+}
+
+class NavigationObserver extends NavigatorObserver {
+  final List<String> history;
+  NavigationObserver(this.history);
+
+  @override
+  void didPop(Route route, Route? previousRoute) {
+    if (route.settings.name != null && history.isNotEmpty) {
+      history.removeLast();
+    }
+  }
+
+  @override
+  void didPush(Route route, Route? previousRoute) {
+    final name = route.settings.name;
+    if (name != null) history.add(name);
+  }
+
+  @override
+  void didReplace({Route? newRoute, Route? oldRoute}) {
+    if (history.isNotEmpty) history.removeLast();
+    final name = newRoute?.settings.name;
+    if (name != null) history.add(name);
+  }
+
+  @override
+  void didRemove(Route route, Route? previousRoute) {
+    if (route.settings.name != null && history.isNotEmpty) {
+      history.removeLast();
+    }
+  }
 }

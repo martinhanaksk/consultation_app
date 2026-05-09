@@ -4,12 +4,13 @@
 // Displays and manages the list of allowed email domains/addresses for a room.
 
 import 'package:consultation_app/setup.dart';
+import 'package:consultation_app/viewmodels/base_room_viewmodel.dart';
 import 'package:consultation_app/views/custom_widgets/app_bar_menu_widget.dart';
 import 'package:flutter/material.dart';
 
 class DisplayListOfEmailsPage extends StatefulWidget {
   // Typed as dynamic to accept both EditRoomViewModel and CreateRoomPageViewModel
-  final dynamic viewModel;
+  final BaseRoomViewModel viewModel;
 
   const DisplayListOfEmailsPage({super.key, required this.viewModel});
 

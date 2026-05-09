@@ -186,7 +186,7 @@ class CreateBlockPageViewModel extends ChangeNotifier {
     }
 
     _setLoading(true);
-
+    final createdBlockIds = <int>[];
     try {
       final note = noteController.text.trim();
       // API expects an integer flag: 1 = online, 0 = in-person
@@ -203,17 +203,22 @@ class CreateBlockPageViewModel extends ChangeNotifier {
           continue;
         }
 
-        notify.showToast('Blocks created successfully');
         final blockId = jsonDecode(response)['id'] as int;
+        createdBlockIds.add(blockId);
         final created = await _createSlotsForBlock(
           blockId,
           slotCount!,
           isOnline,
           note,
         );
-        // Abort the entire operation if slot creation fails for any block
-        if (!created) return;
+        if (!created) {
+          for (final id in createdBlockIds) {
+            await api.deleteBlock(id);
+          }
+          return;
+        }
       }
+       notify.showToast('Blocks created successfully');
     } finally {
       _setLoading(false);
     }

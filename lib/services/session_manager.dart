@@ -204,7 +204,7 @@ class SessionManager extends ChangeNotifier {
   Future<void> checkIfValidToken() async {
     if (_isLoggingOut) return;
     _isLoggingOut = true;
-    if (sm.token == "") {
+    if (_token.isEmpty || JwtDecoder.isExpired(_token)) {
       sm.clear();
       nav.toLogin();
     }

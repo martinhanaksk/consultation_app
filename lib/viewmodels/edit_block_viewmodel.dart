@@ -145,8 +145,6 @@ class EditBlockPageViewModel extends ChangeNotifier {
     } finally {
       _setLoading(false);
     }
-
-    nav.pop();
   }
 
   Future<void> deleteBlock(int blockId) async {

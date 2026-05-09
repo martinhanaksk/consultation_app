@@ -26,7 +26,11 @@ class _SliderMenuState extends State<SliderMenu> {
     // Loads data the menu needs before first paint
     _viewModel.checkSliderMenuFundamentals();
   }
-
+@override
+void dispose() {
+  _viewModel.dispose();
+  super.dispose();
+}
   @override
   Widget build(BuildContext context) {
     _viewModel.checkSliderMenuFundamentals();

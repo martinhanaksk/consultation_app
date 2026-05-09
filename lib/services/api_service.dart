@@ -695,14 +695,14 @@ class ApiService {
   /// GET /slot/get-my
   Future<List<Map<String, dynamic>>?> getMyReservations(String token) async {
     try {
-      final response = await http.get(
-        Uri.parse("${constants.url}/slot/get-my"),
-        headers: {
-          "Authorization": "Bearer $token",
-          "Content-Type": "application/json",
-        },
-      );
-
+       final response = await _safeRequest(() => http.get(
+    Uri.parse("${constants.url}/slot/get-my"),
+    headers: {
+      "Authorization": "Bearer $token",
+      "Content-Type": "application/json",
+    },
+  ));
+if (response == null) return null;
       if (response.statusCode == 200) {
         final List<dynamic> json = jsonDecode(response.body);
         return json.cast<Map<String, dynamic>>();

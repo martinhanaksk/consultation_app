@@ -31,7 +31,11 @@ class _DisplaySlotHistoryPageState extends State<DisplaySlotHistoryPage> {
     // Parses the raw history string into a list of HistoryItem objects
     _viewModel.init(widget.history);
   }
-
+@override
+void dispose() {
+  _viewModel.dispose();
+  super.dispose();
+}
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(

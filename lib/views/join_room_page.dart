@@ -31,7 +31,11 @@ class _JoinRoomPageState extends State<JoinRoomPage> {
     _viewModel = JoinRoomPageViewModel();
     _viewModel.init();
   }
-
+@override
+void dispose() {
+  _viewModel.dispose();
+  super.dispose();
+}
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(

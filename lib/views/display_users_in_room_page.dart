@@ -33,7 +33,11 @@ class _DisplayUsersInRoomPageState extends State<DisplayUsersInRoomPage> {
     _viewModel = DisplayUsersInRoomViewModel();
     _initialize();
   }
-
+@override
+void dispose() {
+  _viewModel.dispose();
+  super.dispose();
+}
   // Extracted so it can be called again from the error state's Retry button
   void _initialize() async {
     await _viewModel.init(widget.roomId);

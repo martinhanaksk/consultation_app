@@ -87,14 +87,7 @@ class _AppBarMenuState extends State<AppBarMenu> {
                       width: constants.fsTitle,
                     ),
                     onPressed: () {
-                      if (nav.previousRoute == "/consultationsOwnerPage") {
-                        nav.toOwnerConsultations();
-                      } else if (nav.previousRoute ==
-                          "/consultationsBasePage") {
-                        nav.toBaseConsultations();
-                      } else {
-                        nav.pop();
-                      }
+                      nav.pop(true);
                     },
                   ),
                 ),

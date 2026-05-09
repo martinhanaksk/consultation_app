@@ -39,22 +39,6 @@ class HelperFunctions {
     return dateTime.toIso8601String().split('.').first;
   }
 
-  // Descending comparator for "HH:mm:ss" strings
-  int compareTimeStringsDesc(String t1, String t2) {
-    final d1 = toDuration(t1);
-    final d2 = toDuration(t2);
-    return d2.compareTo(d1);
-  }
-
-  Duration toDuration(String t) {
-    final parts = t.split(':');
-    return Duration(
-      hours: parts.isNotEmpty ? (int.tryParse(parts[0]) ?? 0) : 0,
-      minutes: parts.length > 1 ? (int.tryParse(parts[1]) ?? 0) : 0,
-      seconds: parts.length > 2 ? (int.tryParse(parts[2]) ?? 0) : 0,
-    );
-  }
-
   // Returns "HH:mm" with zero-padded hours and minutes
   String getTimeOnlySimple(DateTime dateTime) {
     return "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}";

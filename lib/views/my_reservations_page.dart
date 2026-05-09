@@ -1,7 +1,7 @@
 // my_reservations_page.dart
 // Author: Martin Hanak
 // Email: xhanakm00@stud.fit.vut.cz
-// Displays the list of the current user's reservations fetched from
+// Displays the list of the current user's reservations
 
 import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/my_reservations_viewmodel.dart';
@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
+// Provides the ViewModel and switches between a loading spinner and the body.
 class MyReservationsPage extends StatelessWidget {
   const MyReservationsPage({super.key});
 
@@ -39,6 +40,7 @@ class MyReservationsPage extends StatelessWidget {
   }
 }
 
+// Renders the page header and either the reservation list or the empty state.
 class _ReservationsBody extends StatelessWidget {
   final MyReservationsViewModel viewModel;
 
@@ -83,7 +85,8 @@ class _ReservationsBody extends StatelessWidget {
                       separatorBuilder: (_, __) => const SizedBox(height: 12),
                       itemBuilder: (context, index) {
                         return _ReservationCard(
-                          slot: viewModel.reservations[index],
+                          index: index,
+                          viewModel: viewModel,
                         );
                       },
                     ),
@@ -95,24 +98,33 @@ class _ReservationsBody extends StatelessWidget {
   }
 }
 
-// ── Reservation card ─────────────────────────────────────────────────────────
+// Displays a single reservation with date, time, duration, meeting type
+// toggle, optional note, and a cancel button.
 
-class _ReservationCard extends StatelessWidget {
-  final Map<String, dynamic> slot;
-
-  const _ReservationCard({required this.slot});
+class _ReservationCard extends StatefulWidget {
+  final int index;
+  final MyReservationsViewModel viewModel;
+  const _ReservationCard({required this.index, required this.viewModel});
 
   @override
-  Widget build(BuildContext context) {
-    final String date = slot['date'] ?? '';
-    // start_time comes as "HH:mm:ss" – show only "HH:mm"
-    final String startTime = (slot['start_time'] as String? ?? '').length >= 5
-        ? (slot['start_time'] as String).substring(0, 5)
-        : slot['start_time'] ?? '';
-    final int duration = slot['duration'] ?? 0;
-    final String note = slot['note'] ?? '';
-    final bool isOnline = slot['is_online'] == 1 || slot['is_online'] == true;
+  State<_ReservationCard> createState() => _ReservationCardState();
+}
 
+class _ReservationCardState extends State<_ReservationCard> {
+  @override
+  Widget build(BuildContext context) {
+    final viewModel = widget.viewModel;
+    final s = viewModel.slotEssentials(widget.index);
+
+    final int slotId = s['slotId'];
+    final String date = s['date'];
+    final String roomName = s['roomName'];
+    final String startTime = s['startTime'];
+    final int duration = s['duration'];
+    final String note = s['note'];
+    final bool isOnline = s['isOnline'];
+    final bool isReleasing = s['isReleasing'];
+    final bool isChanging = s['isChanging'];
     return Container(
       decoration: constants.squircleShadow(
         hasBorder: true,
@@ -120,9 +132,21 @@ class _ReservationCard extends StatelessWidget {
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Header: date + online/in-person badge ────────────────────────
+          Center(
+            child: Text(
+              textAlign: TextAlign.center,
+              roomName,
+              style: TextStyle(
+                fontWeight: constants.fwSemiBold,
+                fontSize: constants.fsTitle,
+                color: constants.darkGrey,
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Row: date on the left, meeting type toggle on the right
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -130,111 +154,146 @@ class _ReservationCard extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  svgs.icon("calendar", constants.primary, width: 32),
+                  svgs.icon(
+                    "calendar",
+                    constants.primary,
+                    width: constants.fsBody,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     date.replaceAll("-", "."),
                     style: TextStyle(
-                      fontWeight: constants.fwSemiBold,
-                      fontSize: constants.fsTitle,
+                      fontWeight: constants.fwRegular,
+                      fontSize: constants.fsBody,
                       color: constants.darkGrey,
                     ),
                   ),
                 ],
               ),
-              _ModeBadge(isOnline: isOnline),
+              // Tapping opens the consultation-type bottom sheet;
+              GestureDetector(
+                onTap: isChanging || isReleasing
+                    ? null
+                    : () => viewModel.openTypeSheet(context, slotId, isOnline),
+                child: isChanging
+                    ? SpinKitPouringHourGlass(
+                        color: constants.primary,
+                        size: constants.fsTitle,
+                      )
+                    : _MeetingTypeSelector(isOnline: isOnline),
+              ),
             ],
           ),
 
-          const SizedBox(height: 12),
-
-          // ── Time + duration ───────────────────────────────────────────────
+          const SizedBox(height: 16),
+          // Row: start time + duration on the left, cancel button on the right
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  svgs.icon("clock", constants.darkGrey, width: 24),
+                  svgs.icon(
+                    "clock",
+                    constants.darkGrey,
+                    width: constants.fsLabel,
+                  ),
                   const SizedBox(width: 4),
                   Text(
                     startTime,
                     style: TextStyle(
-                      fontSize: constants.fsBody,
+                      fontSize: constants.fsLabel,
                       color: constants.darkGrey,
                     ),
                   ),
-                ],
-              ),
-              Text(
-                "  -  ",
-                style: TextStyle(
-                  fontSize: constants.fsHeadline,
-                  color: constants.darkGrey,
-                ),
-              ),
-              Row(
-                children: [
-                  svgs.icon("hourglass", constants.darkGrey, width: 24),
+                  Text(
+                    "  –  ",
+                    style: TextStyle(
+                      fontSize: constants.fsLabel,
+                      color: constants.darkGrey150,
+                    ),
+                  ),
+                  svgs.icon(
+                    "hourglass",
+                    constants.darkGrey,
+                    width: constants.fsLabel,
+                  ),
                   const SizedBox(width: 4),
                   Text(
                     "$duration min",
                     style: TextStyle(
-                      fontSize: constants.fsBody,
+                      fontSize: constants.fsLabel,
                       color: constants.darkGrey,
                     ),
                   ),
                 ],
               ),
-              SizedBox(width: 12),
+              const Spacer(),
+              // Cancel button — shows a spinner while the release is pending.
+              GestureDetector(
+                onTap: isReleasing || isChanging
+                    ? null
+                    : () => viewModel.releaseSlot(slotId),
+                child: isReleasing
+                    ? SpinKitPouringHourGlass(
+                        color: constants.red,
+                        size: constants.fsBody,
+                      )
+                    : svgs.icon(
+                        "cross",
+                        constants.red,
+                        width: constants.fsHeadline,
+                      ),
+              ),
             ],
           ),
-
-          // ── Note / reason ─────────────────────────────────────────────────
-          if (note.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                svgs.icon("pencil", constants.darkGrey, width: 24),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: Text(
-                    note,
-                    style: TextStyle(
-                      fontSize: constants.fsBody,
-                      color: constants.darkGrey,
+          note.isEmpty ? SizedBox.shrink() : const SizedBox(height: 16),
+          // hidden entirely when note is empty.
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              note.isEmpty
+                  ? SizedBox.shrink()
+                  : svgs.icon(
+                      "pencil",
+                      constants.darkGrey,
+                      width: constants.fsLabel,
                     ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-
-          const SizedBox(height: 8),
+              note.isEmpty ? SizedBox.shrink() : SizedBox(width: 12),
+              note.isEmpty
+                  ? SizedBox.shrink()
+                  : Expanded(
+                      child: Text(
+                        note,
+                        style: TextStyle(
+                          fontSize: constants.fsLabel,
+                          color: constants.darkGrey,
+                        ),
+                      ),
+                    ),
+            ],
+          ),
         ],
       ),
     );
   }
 }
 
-// ── Mode badge (Online / In-person) ──────────────────────────────────────────
-
-class _ModeBadge extends StatelessWidget {
+// Shows a screen icon for online or a location pin for in-person.
+class _MeetingTypeSelector extends StatelessWidget {
   final bool isOnline;
 
-  const _ModeBadge({required this.isOnline});
+  const _MeetingTypeSelector({required this.isOnline});
 
   @override
   Widget build(BuildContext context) {
     return isOnline
-        ? svgs.icon('screen', constants.primary, width: 32)
-        : svgs.icon('location', constants.primary, width: 32);
+        ? svgs.icon('screen', constants.primary, width: constants.fsHeadline)
+        : svgs.icon('location', constants.primary, width: constants.fsHeadline);
   }
 }
 
-// ── Empty state ───────────────────────────────────────────────────────────────
-
+// Shown when the user has no reservations.
 class _EmptyState extends StatelessWidget {
   const _EmptyState();
 
@@ -255,7 +314,7 @@ class _EmptyState extends StatelessWidget {
                 color: constants.darkGrey,
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             Text(
               "Join a room to book your first slot",
               style: TextStyle(

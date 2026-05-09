@@ -5,10 +5,13 @@
 // loads the session on success, and routes to the correct home screen based
 // on the user's role.
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
 
 class VerifyOtpViewModel extends ChangeNotifier {
+  Timer? _loadingTimer;
   bool _isLoading = false;
   bool isLoading() {
     return _isLoading;
@@ -19,9 +22,17 @@ class VerifyOtpViewModel extends ChangeNotifier {
     if (_isLoading) return;
     _isLoading = true;
     notifyListeners();
+    _loadingTimer?.cancel();
+  _loadingTimer = Timer(const Duration(seconds: 10), () {
+    if (_isLoading) {
+      _isLoading = false;
+      notifyListeners();
+      notify.showToast('Request timed out', isError: true);
+    }
+  });
     try {
       final success = await api.connect(email, otp, rememberMe);
-
+ _loadingTimer?.cancel();
       if (success) {
         // Reload session so role and token are available for the routing decision below
         await sm.load();
@@ -35,15 +46,17 @@ class VerifyOtpViewModel extends ChangeNotifier {
         notifyListeners();
         notify.showToast('Please enter a valid code');
       }
-    } catch (e, stacktrace) {
+    } catch (e) { _loadingTimer?.cancel();
       _isLoading = false;
       notifyListeners();
-      print(e);
-      print(stacktrace);
       notify.showToast(
         'Connection failed, please try again later',
         isError: true,
       );
     }
-  }
+  }@override
+void dispose() {
+  _loadingTimer?.cancel();
+  super.dispose();
+}
 }

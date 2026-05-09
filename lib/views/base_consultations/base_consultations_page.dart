@@ -42,7 +42,7 @@ class BaseConsultationsPage extends StatefulWidget {
   State<BaseConsultationsPage> createState() => _BaseConsultationsPageState();
 }
 
-class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
+class _BaseConsultationsPageState extends State<BaseConsultationsPage>  with RouteAware { 
   late final BaseConsultationsViewModel _viewModel;
   @override
   void initState() {
@@ -51,6 +51,19 @@ class _BaseConsultationsPageState extends State<BaseConsultationsPage> {
     // otherwise create a default one and run init() to fetch initial data
     _viewModel = widget.viewModel ?? BaseConsultationsViewModel();
     if (widget.viewModel == null) _viewModel.init();
+  }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route is PageRoute) {
+      nav.routeObserver.subscribe(this, route); // ← safe cast guard
+    }
+  }
+    // Called every time the user pops back to this page
+  @override
+  void didPopNext() {
+    _viewModel.init();
   }
 
   @override

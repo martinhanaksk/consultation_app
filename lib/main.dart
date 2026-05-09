@@ -44,6 +44,7 @@ class MyApp extends StatelessWidget {
           child: MaterialApp(
             // Global navigator key allows navigation from outside the widget tree
             navigatorKey: nav.navigatorKey,
+            navigatorObservers: [nav.routeObserver],
             title: 'Consultations',
             theme: ThemeData(
               primaryColor: constants.primary,

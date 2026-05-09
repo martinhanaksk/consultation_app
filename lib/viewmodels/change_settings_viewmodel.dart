@@ -65,7 +65,6 @@ class ChangeSettingsPageViewModel extends ChangeNotifier {
 
   Future<void> setTheme(bool? val) async {
     await themeSelector.setDarkMode(val ?? false);
-    notifyListeners();
   }
 
   Future<void> setVisibility() async {

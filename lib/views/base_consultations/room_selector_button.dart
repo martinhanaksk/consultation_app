@@ -95,11 +95,13 @@ class RoomSelectorButton extends StatelessWidget {
                           softWrap: false,
                           viewModel.isLoading
                               ? "Loading..."
+                              : viewModel.isConnected == false
+                              ? "No internet connection"
                               : noRoom
                               ? "No rooms created"
                               : viewModel.selectedRoom != null
                               ? '${viewModel.selectedRoom!.title} - ${viewModel.selectedRoom!.description}'
-                              : 'No connection',
+                              : 'Room not ound',
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: constants.fwSemiBold,

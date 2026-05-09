@@ -39,17 +39,24 @@ class SliderMenuViewModel extends ChangeNotifier {
     if (_isLoading) {
       return;
     }
-    try {
-      _isLoading = true;
-      _token = sm.token;
-      notifyListeners();
-      sm.checkIfValidToken();
-      _email = sm.email;
-      _isOwner = sm.role == 'teacher';
-      notifyListeners();
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (_isLoading) return;
+      try {
+        _isLoading = true;
+        _token = sm.token;
+        notifyListeners();
+        await sm.checkIfValidToken();
+        _email = sm.email;
+        _isOwner = sm.role == 'teacher';
+        notifyListeners();
+      } finally {
+        _isLoading = false;
+        notifyListeners();
+      }
+    });
   }
+  @override
+void dispose() {
+  super.dispose();
+}
 }

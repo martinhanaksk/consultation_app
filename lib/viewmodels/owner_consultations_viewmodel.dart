@@ -91,7 +91,9 @@ class OwnerConsultationsViewModel extends BaseConsultationsViewModel {
       if (slots == null) return;
       final slot = slots.firstWhere((s) => s.id == slotId);
       nav.toDisplaySlotHistory(history: slot.history ?? '');
-    } catch (_) {}
+    } catch (_) {
+      notify.showToast("Slot not found", isError: true);
+    }
   }
 
   Future<void> addSlotBeforeBlock(int blockId) =>
@@ -241,7 +243,14 @@ class OwnerConsultationsViewModel extends BaseConsultationsViewModel {
       }
 
       // Replace the placeholder with the real slot data from the server
-      await refreshBlock(blockId);
+      try {
+        await refreshBlock(blockId);
+      } catch (e) {
+        currentSlots.removeWhere((s) => s.id == tempSlot.id);
+        slotsInBlocks[blockId] = currentSlots;
+        notifyListeners();
+        notify.showToast('Slot created but failed to refresh', isError: true);
+      }
     } catch (_) {
       notify.showToast('Error adding slot', isError: true);
       await refreshBlock(blockId);
@@ -250,5 +259,10 @@ class OwnerConsultationsViewModel extends BaseConsultationsViewModel {
           ? setAddingSlotAfter(blockId, false)
           : setAddingSlotBefore(blockId, false);
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }
