@@ -16,6 +16,7 @@ class ConsultationTypeToggle extends StatelessWidget {
   final bool isOnlineTeacherSelected;
   // Occupant's name; displayed only when non-empty (owner view)
   final String name;
+  final String reason;
   final ValueChanged<bool> onChanged;
 
   const ConsultationTypeToggle({
@@ -23,6 +24,7 @@ class ConsultationTypeToggle extends StatelessWidget {
     required this.isOnlineSelected,
     required this.isOnlineTeacherSelected,
     required this.name,
+    required this.reason,
     required this.onChanged,
   });
 
@@ -33,8 +35,8 @@ class ConsultationTypeToggle extends StatelessWidget {
     final bool effectivelyOnline = sm.role == "teacher"
         ? isOnlineSelected
         : isOnlineTeacherSelected
-            ? true
-            : isOnlineSelected;
+        ? true
+        : isOnlineSelected;
 
     return Column(
       children: [
@@ -56,6 +58,27 @@ class ConsultationTypeToggle extends StatelessWidget {
               children: [
                 TextSpan(
                   text: name,
+                  style: TextStyle(
+                    fontSize: constants.fsBody,
+                    fontWeight: constants.fwSemiBold,
+                    color: constants.primary,
+                  ),
+                ),
+              ],
+              style: TextStyle(
+                fontSize: constants.fsBody,
+                fontWeight: constants.fwRegular,
+                color: constants.darkGrey,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          RichText(
+            text: TextSpan(
+              text: 'Purpose: ',
+              children: [
+                TextSpan(
+                  text: reason,
                   style: TextStyle(
                     fontSize: constants.fsBody,
                     fontWeight: constants.fwSemiBold,

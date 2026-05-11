@@ -41,7 +41,7 @@ void dispose() {
           return SafeArea(
             child: Drawer(
               backgroundColor: constants.background,
-              width: 240,
+              width: 248,
               child: NotificationListener<ScrollStartNotification>(
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 32, horizontal: 20),
@@ -203,11 +203,13 @@ void dispose() {
                                   width: 22,
                                 ),
                                 const SizedBox(width: 12),
-                                Text(
-                                  "Provide Feedback",
-                                  style: TextStyle(
-                                    fontSize: constants.fsBody,
-                                    color: constants.darkGrey,
+                                Expanded(
+                                  child: Text(overflow: TextOverflow.ellipsis,
+                                    "Provide Feedback",
+                                    style: TextStyle(
+                                      fontSize: constants.fsBody,
+                                      color: constants.darkGrey,
+                                    ),
                                   ),
                                 ),
                               ],

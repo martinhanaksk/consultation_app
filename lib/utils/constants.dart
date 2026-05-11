@@ -29,7 +29,6 @@ class Constants {
   Color darkGrey200 = Color(0xff191c1f).withAlpha(200);
   Color darkGrey = Color(0xff191c1f);
   Color textUnavailableGrey = Color(0xfffdc6c1);
-  Color green = Color(0xff15803d);
   Color red = Color(0xffb71c1c);
   Color red30 = Color(0xffb71c1c).withAlpha(30);
   Color primary = Color(0xff1a56be);

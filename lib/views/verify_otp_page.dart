@@ -64,82 +64,91 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
             body: SafeArea(
               child: Padding(
                 padding: EdgeInsets.all(24.0),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 200),
-                    Text(
-                      'Verification',
-                      style: TextStyle(
-                        fontSize: constants.fsHeadline,
-                        fontWeight: constants.fwSemiBold,
-                        color: constants.darkGrey,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Center(
-                      child: Text(
-                        'Enter OTP from email.',
-                        style: TextStyle(
-                          fontSize: constants.fsLabel,
-                          fontWeight: constants.fwRegular,
-                          color: constants.darkGrey150,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Center(
+                        child: svgs.icon(
+                          "logo-whole",
+                          constants.primary,
+                          width: 100,
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    Container(
-                      clipBehavior: Clip.none,
-                      decoration: constants.squircleShadow(
-                        color: constants.background,
+                      const SizedBox(height: 100),
+                      Text(
+                        'Verification',
+                        style: TextStyle(
+                          fontSize: constants.fsHeadline,
+                          fontWeight: constants.fwSemiBold,
+                          color: constants.darkGrey,
+                        ),
                       ),
-                      child: CustomInputTextField(
-                        controller: otpcontroller,
-                        hintText: "Code",
-                        keyboardType: TextInputType.number,
-                        maxLength: 4,
-                        textCounterEnabled: false,
+                      const SizedBox(height: 16),
+                      Center(
+                        child: Text(
+                          'Enter OTP from email.',
+                          style: TextStyle(
+                            fontSize: constants.fsLabel,
+                            fontWeight: constants.fwRegular,
+                            color: constants.darkGrey150,
+                          ),
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 32),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48,
-                      // Replaces the button with a spinner for the duration of the API call
-                      child: viewModel.isLoading()
-                          ? SpinKitPouringHourGlass(
-                              color: constants.primary,
-                              size: constants.fsBody,
-                            )
-                          : ElevatedButton(
-                              onPressed: () {
-                                // Dismiss keyboard before triggering the network request
-                                FocusScope.of(context).unfocus();
-                                viewModel.connect(
-                                  widget.email,
-                                  otpcontroller.text.trim(),
-                                  widget.rememberMe,
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: constants.primary,
-                                disabledBackgroundColor: constants.primary,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(14),
+                      const SizedBox(height: 20),
+                      Container(
+                        clipBehavior: Clip.none,
+                        decoration: constants.squircleShadow(
+                          color: constants.background,
+                        ),
+                        child: CustomInputTextField(
+                          controller: otpcontroller,
+                          hintText: "Code",
+                          keyboardType: TextInputType.number,
+                          maxLength: 4,
+                          textCounterEnabled: false,
+                        ),
+                      ),
+                      SizedBox(height: 32),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        // Replaces the button with a spinner for the duration of the API call
+                        child: viewModel.isLoading()
+                            ? SpinKitPouringHourGlass(
+                                color: constants.primary,
+                                size: constants.fsBody,
+                              )
+                            : ElevatedButton(
+                                onPressed: () {
+                                  // Dismiss keyboard before triggering the network request
+                                  FocusScope.of(context).unfocus();
+                                  viewModel.connect(
+                                    widget.email,
+                                    otpcontroller.text.trim(),
+                                    widget.rememberMe,
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: constants.primary,
+                                  disabledBackgroundColor: constants.primary,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                  elevation: 2,
+                                  shadowColor: constants.primary,
                                 ),
-                                elevation: 2,
-                                shadowColor: constants.primary,
-                              ),
-                              child: Text(
-                                'Connect',
-                                style: TextStyle(
-                                  fontSize: constants.fsBody,
-                                  fontWeight: constants.fwSemiBold,
-                                  color: constants.background,
+                                child: Text(
+                                  'Connect',
+                                  style: TextStyle(
+                                    fontSize: constants.fsBody,
+                                    fontWeight: constants.fwSemiBold,
+                                    color: constants.background,
+                                  ),
                                 ),
                               ),
-                            ),
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

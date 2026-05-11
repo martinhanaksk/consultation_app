@@ -101,7 +101,7 @@ class RoomSelectorButton extends StatelessWidget {
                               ? "No rooms created"
                               : viewModel.selectedRoom != null
                               ? '${viewModel.selectedRoom!.title} - ${viewModel.selectedRoom!.description}'
-                              : 'Room not ound',
+                              : 'Room not found',
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: constants.fwSemiBold,

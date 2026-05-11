@@ -24,9 +24,10 @@ class OwnerConsultationsViewModel extends BaseConsultationsViewModel {
   // and resolve each mode's initial selected room from session storage
   @override
   Future<void> init() async {
-    _setLoading(true);
-    if (!await checkConnection()) return;
+    setLoading(true);
     try {
+      if (!await checkConnection()) return;
+
       sm.checkIfValidToken();
       isOwner = await resolveUserRole(sm.email);
       _visitorRooms = await api.getJoinedRooms();
@@ -47,20 +48,19 @@ class OwnerConsultationsViewModel extends BaseConsultationsViewModel {
           ? ownerSelectedRoomId
           : visitorSelectedRoomId;
       if (selectedRoomId != null) await refreshRoomData(selectedRoomId!);
-    } catch (e, stacktrace) {
-      print(stacktrace);
+    } catch (e) {
       notify.showToast(
         'Failed to load consultations. Please try again.',
         isError: true,
       );
     } finally {
-      _setLoading(false);
+      setLoading(false);
     }
   }
 
   // ── Public Methods ───────────────────────────────────────────────────────────────────────────
   Future<void> deleteRoom() async {
-    _setLoading(true);
+    setLoading(true);
     try {
       final deleted = await api.deleteRoom(selectedRoomId!);
       nav.pop();
@@ -71,7 +71,7 @@ class OwnerConsultationsViewModel extends BaseConsultationsViewModel {
       nav.pop();
       notify.showToast('Error while deleting room', isError: true);
     } finally {
-      _setLoading(false);
+      setLoading(false);
       // Always navigate back to the owner list so the deleted room is no longer shown
       nav.toOwnerConsultations();
     }
@@ -125,9 +125,9 @@ class OwnerConsultationsViewModel extends BaseConsultationsViewModel {
       }
       selectedRoomId = fallbackId;
     }
-    _setLoading(true);
+    setLoading(true);
     await loadRoom();
-    _setLoading(false);
+    setLoading(false);
   }
 
   Future<void> refreshBlock(int blockId) async {
@@ -167,10 +167,6 @@ class OwnerConsultationsViewModel extends BaseConsultationsViewModel {
   }
 
   // ── Private Helpers ────────────────────────────────────────────────────────────────────────────
-  void _setLoading(bool value) {
-    isLoading = value;
-    notifyListeners();
-  }
 
   String _todayString() => DateTime.now().toString().substring(0, 10);
   // Inserts a slot immediately before or after the block's boundary slot.

@@ -16,6 +16,7 @@ class ConsultationTypeBottomSheet extends StatefulWidget {
   final int isOnline;
   final int isOnlineTeacher;
   final String name;
+  final String reason;
 
   const ConsultationTypeBottomSheet({
     super.key,
@@ -23,6 +24,7 @@ class ConsultationTypeBottomSheet extends StatefulWidget {
     required this.isOnline,
     required this.isOnlineTeacher,
     required this.name,
+    required this.reason,
   });
 
   @override
@@ -50,9 +52,12 @@ class _ConsultationTypeBottomSheetState
   Widget build(BuildContext context) {
     return KeyboardPadding(
       child: Container(
-        decoration: constants.squircleShadow(
+        decoration: BoxDecoration(
           color: constants.background,
-          hasBorder: false,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
         ),
         padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
         child: Column(
@@ -63,6 +68,7 @@ class _ConsultationTypeBottomSheetState
               isOnlineSelected: isOnlineSelected,
               isOnlineTeacherSelected: isOnlineTeacherSelected,
               name: widget.name,
+              reason: widget.reason,
               onChanged: (bool newValue) =>
                   setState(() => isOnlineSelected = newValue),
             ),

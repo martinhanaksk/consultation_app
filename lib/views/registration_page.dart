@@ -64,11 +64,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
             resizeToAvoidBottomInset: true,
             body: SafeArea(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24.0),
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 72),
+                    Center(
+                      child: svgs.icon(
+                        "logo-whole",
+                        constants.primary,
+                        width: 100,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
                     Center(
                       child: Text(
                         'Create new account',
@@ -111,7 +118,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       height: 50,
                       child: viewModel.isLoading
                           ? SpinKitPouringHourGlass(
-                              color: constants.green,
+                              color: constants.primary,
                               size: constants.fsTitle,
                             )
                           : ElevatedButton(
@@ -163,13 +170,13 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 }
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: constants.green,
-                                disabledBackgroundColor: constants.green,
+                                backgroundColor: constants.primary,
+                                disabledBackgroundColor: constants.primary,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(14),
                                 ),
                                 elevation: 2,
-                                shadowColor: constants.green,
+                                shadowColor: constants.primary,
                               ),
                               child: Text(
                                 'Register',

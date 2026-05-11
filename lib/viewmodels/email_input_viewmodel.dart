@@ -36,12 +36,15 @@ class EmailInputViewModel extends ChangeNotifier {
 
     try {
       final response = await api.requestLoginOtp(trimmedEmail);
-       _loadingTimer?.cancel();
-      if (response == null) return;
+      _loadingTimer?.cancel();
+      if (response == null) {
+        resetLoading();
+        return;
+      }
       // Delegates navigation and session handling based on the server response
-      helpers.handleServer(response, trimmedEmail, _isChecked);
+      helpers.handleServer(response, trimmedEmail, _isChecked);resetLoading(); 
     } catch (e) {
-       _loadingTimer?.cancel();
+      _loadingTimer?.cancel();
       notify.showToast("Please, check your internet connection", isError: true);
       resetLoading();
     }

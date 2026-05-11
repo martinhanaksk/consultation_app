@@ -46,7 +46,6 @@ class ThemeSelector extends ChangeNotifier {
       constants.darkGrey150 = const Color(0xfff5f5f5).withAlpha(150);
       constants.darkGrey200 = const Color(0xfff5f5f5).withAlpha(200);
       constants.textUnavailableGrey = const Color.fromARGB(255, 112, 88, 86);
-      constants.green = const Color(0xff4ade80);
       constants.red = const Color(0xfff87171);
       constants.red30 = const Color(0xffb71c1c).withAlpha(30);
       constants.primary = const Color(0xff7fb3ff);
@@ -60,7 +59,6 @@ class ThemeSelector extends ChangeNotifier {
       constants.darkGrey200 = const Color(0xff191c1f).withAlpha(200);
       constants.darkGrey = const Color(0xff191c1f);
       constants.textUnavailableGrey = const Color(0xfffdc6c1);
-      constants.green = const Color(0xff15803d);
       constants.red = const Color(0xffb71c1c);
       constants.red30 = const Color(0xffb71c1c).withAlpha(30);
       constants.primary = const Color(0xff1a56be);

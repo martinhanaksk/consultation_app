@@ -99,7 +99,7 @@ class MyReservationsViewModel extends ChangeNotifier {
       builder: (_) => ConsultationTypeBottomSheet(
         isOnline: isOnline ? 1 : 0,
         isOnlineTeacher: isOnline ? 1 : 0,
-        name: '',
+        name: '',reason: "",
         onChangeConsultationType: () => changeType(slotId),
       ),
     );

@@ -72,9 +72,12 @@ class _TakeSlotBottomSheetState extends State<TakeSlotBottomSheet> {
   Widget build(BuildContext context) {
     return KeyboardPadding(
       child: Container(
-        decoration: constants.squircleShadow(
+        decoration: BoxDecoration(
           color: constants.background,
-          hasBorder: false,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
         ),
         padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
         child: Column(
@@ -109,6 +112,7 @@ class _TakeSlotBottomSheetState extends State<TakeSlotBottomSheet> {
               isOnlineSelected: _isOnlineSelected,
               isOnlineTeacherSelected: _isOnlineTeacherSelected,
               name: "",
+              reason: "",
               onChanged: (bool newValue) =>
                   setState(() => _isOnlineSelected = newValue),
             ),
@@ -183,6 +187,7 @@ class SlotInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final parts = startTime.split(":");
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -194,7 +199,11 @@ class SlotInfoCard extends StatelessWidget {
         children: [
           _InfoRow(name: 'calendar', label: "Date", value: date),
           const SizedBox(height: 12),
-          _InfoRow(name: 'clock', label: "Time", value: startTime),
+          _InfoRow(
+            name: 'clock',
+            label: "Start time",
+            value: '${parts[0]}:${parts[1]}',
+          ),
           const SizedBox(height: 12),
           _InfoRow(
             name: 'hourglass',

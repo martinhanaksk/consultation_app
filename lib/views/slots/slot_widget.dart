@@ -86,6 +86,7 @@ class SlotWidget extends StatelessWidget {
   Future<void> _showChangeConsultationTypeDialog(
     BuildContext context,
     String name,
+    String reason,
     int isOnline,
     int isOnlineTeacher,
   ) async {
@@ -98,6 +99,7 @@ class SlotWidget extends StatelessWidget {
         isOnline: isOnline,
         isOnlineTeacher: isOnlineTeacher,
         name: name,
+        reason: reason,
         onChangeConsultationType: onChangeConsultationType,
       ),
     );
@@ -137,6 +139,7 @@ class SlotWidget extends StatelessWidget {
           context,
           // Name is passed only when the viewer has visibility enabled
           canSeeIdentity ? (slot.takenByName ?? "") : "",
+          slot.takenByReason ?? "",
           slot.isOnline,
           slot.isOnlineTeacher,
         ),
@@ -153,6 +156,7 @@ class SlotWidget extends StatelessWidget {
             ? () => _showChangeConsultationTypeDialog(
                 context,
                 canSeeIdentity ? (slot.takenByName ?? "") : "",
+                 (slot.takenByReason ?? "") ,
                 slot.isOnline,
                 slot.isOnlineTeacher,
               )
