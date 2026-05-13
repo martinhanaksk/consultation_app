@@ -9,8 +9,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class UserPreferences {
-  // Initialize shared_preferences 
-  final Future<SharedPreferences> _prefsFuture = SharedPreferences.getInstance();
+  // Initialize shared_preferences
+  final Future<SharedPreferences> _prefsFuture =
+      SharedPreferences.getInstance();
 
   // Resolves the correct setter at runtime based on the value type;
   // falls back to setString for any unrecognised type

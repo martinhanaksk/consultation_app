@@ -9,12 +9,13 @@ import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
 
 class MyReservationsViewModel extends ChangeNotifier {
-
   // ─── State ────────────────────────────────────────────────────────────────
 
   List<Map<String, dynamic>> _reservations = [];
   bool _isLoading = false;
   late List<RoomModel> _cachedRooms;
+  // Prevents notifyListeners() from firing after the widget tree is disposed
+  bool _disposed = false;
 
   // Tracks per-slot pending operations so the UI can react immediately
   // before the server responds.
@@ -99,8 +100,10 @@ class MyReservationsViewModel extends ChangeNotifier {
       builder: (_) => ConsultationTypeBottomSheet(
         isOnline: isOnline ? 1 : 0,
         isOnlineTeacher: isOnline ? 1 : 0,
-        name: '',reason: "",
+        name: '',
+        reason: "",
         onChangeConsultationType: () => changeType(slotId),
+        isTeacher: sm.role == 'teacher',
       ),
     );
   }
@@ -170,5 +173,17 @@ class MyReservationsViewModel extends ChangeNotifier {
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  // Overridden to guard against async callbacks firing after dispose()
+  @override
+  void notifyListeners() {
+    if (!_disposed) super.notifyListeners();
   }
 }

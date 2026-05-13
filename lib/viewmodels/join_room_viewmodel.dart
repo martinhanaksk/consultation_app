@@ -18,6 +18,8 @@ class JoinRoomPageViewModel extends ChangeNotifier {
   // Separate flag so the room list shows independently of join-action loading
   bool _isLoadingRooms = false;
   int? _selectedId;
+  // Prevents notifyListeners() from firing after the widget tree is disposed
+  bool _disposed = false;
 
   final TextEditingController idController = TextEditingController();
 
@@ -33,6 +35,7 @@ class JoinRoomPageViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
+    _disposed = true;
     idController.dispose();
     super.dispose();
   }
@@ -120,5 +123,11 @@ class JoinRoomPageViewModel extends ChangeNotifier {
     } catch (_) {
       notify.showToast('You cannot join this room');
     }
+  }
+
+  // Overridden to guard against async callbacks firing after dispose()
+  @override
+  void notifyListeners() {
+    if (!_disposed) super.notifyListeners();
   }
 }

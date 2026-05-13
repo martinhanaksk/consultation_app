@@ -103,7 +103,7 @@ class _AppBarMenuState extends State<AppBarMenu> {
                 return SafeArea(
                   child: Center(
                     child: online
-                        ? widget.toggle
+                        ? widget.toggle??null
                         : svgs.icon("no_connection", constants.red),
                   ),
                 );
@@ -143,7 +143,4 @@ class _AppBarMenuState extends State<AppBarMenu> {
       ],
     );
   }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

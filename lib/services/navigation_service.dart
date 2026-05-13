@@ -14,9 +14,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 class NavigationService {
   // Required by MaterialApp.navigatorKey to drive navigation from outside the widget tree
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
- final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
-  
-
+  final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
   // --- Core helpers ---
 
@@ -29,9 +27,9 @@ class NavigationService {
     return _navigator()!.pushNamed(routeName, arguments: arguments);
   }
 
- void pop([dynamic value]) {
-  _navigator()?.pop(value);
-}
+  void pop([dynamic value]) {
+    _navigator()?.pop(value);
+  }
 
   // --- Auth ---
 

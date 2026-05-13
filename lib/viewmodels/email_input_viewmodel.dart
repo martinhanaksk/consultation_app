@@ -11,6 +11,8 @@ import 'package:consultation_app/setup.dart';
 class EmailInputViewModel extends ChangeNotifier {
   bool _isLoading = false;
   bool _isChecked = false;
+  // Prevents notifyListeners() from firing after the widget tree is disposed
+  bool _disposed = false;
   String? _errorMessage;
   // Cancels itself if a response arrives before the timeout fires
   Timer? _loadingTimer;
@@ -42,12 +44,17 @@ class EmailInputViewModel extends ChangeNotifier {
         return;
       }
       // Delegates navigation and session handling based on the server response
-      helpers.handleServer(response, trimmedEmail, _isChecked);resetLoading(); 
+      helpers.handleServer(response, trimmedEmail, _isChecked);
+      resetLoading();
     } catch (e) {
       _loadingTimer?.cancel();
       notify.showToast("Please, check your internet connection", isError: true);
       resetLoading();
     }
+  }
+
+  void checkAutoLogin() {
+    sm.checkIfInSharedPreferences();
   }
 
   void setLoading(bool loading) {
@@ -76,8 +83,15 @@ class EmailInputViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
+    _disposed = true;
     _loadingTimer?.cancel();
     emailController.dispose();
     super.dispose();
+  }
+
+  // Overridden to guard against async callbacks firing after dispose()
+  @override
+  void notifyListeners() {
+    if (!_disposed) super.notifyListeners();
   }
 }

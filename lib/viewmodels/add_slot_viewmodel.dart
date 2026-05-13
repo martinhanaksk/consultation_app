@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 
 class AddSlotPageViewModel extends ChangeNotifier {
   bool isLoading = false;
+  // Prevents notifyListeners() from firing after the widget tree is disposed
+  bool _disposed = false;
   bool _isOnline = false;
   bool get isOnline => _isOnline;
   final TextEditingController noteController = TextEditingController();
@@ -83,7 +85,13 @@ class AddSlotPageViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
-    noteController.dispose();
+    _disposed = true;
     super.dispose();
+  }
+
+  // Overridden to guard against async callbacks firing after dispose()
+  @override
+  void notifyListeners() {
+    if (!_disposed) super.notifyListeners();
   }
 }

@@ -25,5 +25,4 @@ class BlockModel {
     roomId: json['room_id'],
     isOnline: json['is_online'],
   );
-
 }

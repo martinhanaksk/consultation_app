@@ -30,7 +30,6 @@ class SlotWidget extends StatelessWidget {
   final void Function(String note, int isOnline) onTakeSlot;
   final VoidCallback onReleaseSlot;
   final VoidCallback onChangeConsultationType;
-  final BuildContext context;
   // True while a booking API call is in progress (optimistic update pending)
   final bool isTakingSlot;
   final bool isOptimisticallyReleased;
@@ -38,6 +37,9 @@ class SlotWidget extends StatelessWidget {
   final bool isFirst;
   final bool isLast;
   final String date;
+  final String? currentUserEmail;
+  final bool canSeeIdentity;
+  final bool isTeacher;
 
   const SlotWidget({
     super.key,
@@ -52,10 +54,11 @@ class SlotWidget extends StatelessWidget {
     required this.isTakingSlot,
     required this.onReleaseSlot,
     required this.onChangeConsultationType,
-    required this.context,
     required this.isFirst,
     required this.isLast,
     required this.date,
+    this.currentUserEmail,
+    required this.canSeeIdentity, required this.isTeacher,
   });
 
   Future<void> _showTakeSlotDialog(
@@ -63,6 +66,7 @@ class SlotWidget extends StatelessWidget {
     String startTime,
     int duration,
     String date,
+    bool isTeacher,
   ) async {
     await showModalBottomSheet(
       context: context,
@@ -79,6 +83,7 @@ class SlotWidget extends StatelessWidget {
         date: date,
         onTakeSlot: onTakeSlot,
         onCancel: () => Navigator.pop(context),
+        isTeacher: isTeacher,
       ),
     );
   }
@@ -89,6 +94,7 @@ class SlotWidget extends StatelessWidget {
     String reason,
     int isOnline,
     int isOnlineTeacher,
+    bool isTeacher,
   ) async {
     await showModalBottomSheet(
       context: context,
@@ -101,6 +107,7 @@ class SlotWidget extends StatelessWidget {
         name: name,
         reason: reason,
         onChangeConsultationType: onChangeConsultationType,
+        isTeacher: isTeacher,
       ),
     );
   }
@@ -110,9 +117,8 @@ class SlotWidget extends StatelessWidget {
     // A slot is considered free if it has no owner OR if the local release is
     // still pending (optimistic UI). The server will confirm asynchronously
     final bool isFree = slot.takenBy == null || isOptimisticallyReleased;
-    final bool isMySlot = !isFree && slot.takenBy == sm.email;
+    final bool isMySlot = !isFree && slot.takenBy == currentUserEmail;
     final bool isSomeonesSlot = !isFree && !isMySlot;
-    final bool canSeeIdentity = sm.visibility == true;
 
     if (isFree) {
       return FreeSlot(
@@ -121,8 +127,13 @@ class SlotWidget extends StatelessWidget {
         isTakingSlot: isTakingSlot,
         showHistoryOption: showHistoryOption,
         blockId: blockId,
-        onTap: () =>
-            _showTakeSlotDialog(context, slot.startTime, slot.duration, date),
+        onTap: () => _showTakeSlotDialog(
+          context,
+          slot.startTime,
+          slot.duration,
+          date,
+          isTeacher,
+        ),
       );
     }
 
@@ -142,7 +153,9 @@ class SlotWidget extends StatelessWidget {
           slot.note ?? "",
           slot.isOnline,
           slot.isOnlineTeacher,
+          isTeacher,
         ),
+        canSeeIdentity: canSeeIdentity,
       );
     }
 
@@ -156,11 +169,13 @@ class SlotWidget extends StatelessWidget {
             ? () => _showChangeConsultationTypeDialog(
                 context,
                 canSeeIdentity ? (slot.takenByName ?? "") : "",
-                 (slot.note ?? "") ,
+                (slot.note ?? ""),
                 slot.isOnline,
                 slot.isOnlineTeacher,
+                isTeacher,
               )
-            : null,
+            : () => notify.showToast('This slot is already taken'),
+        canSeeIdentity: canSeeIdentity,
       );
     }
 

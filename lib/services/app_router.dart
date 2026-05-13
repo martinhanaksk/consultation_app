@@ -131,7 +131,8 @@ class AppRouter {
         final args = settings.arguments as Map<String, BaseRoomViewModel>;
         return MaterialPageRoute(
           settings: settings,
-          builder: (_) => DisplayListOfEmailsPage(viewModel: args['viewModel']!),
+          builder: (_) =>
+              DisplayListOfEmailsPage(viewModel: args['viewModel']!),
         );
       case displayNotifyHours:
         final args = settings.arguments as Map<String, dynamic>;
@@ -165,7 +166,7 @@ class AppRouter {
           settings: settings,
           builder: (_) => ChangeSettingsPage(),
         );
-         // Fallback for any unregistered route — redirect to email input page instead of a blank crash screen
+      // Fallback for any unregistered route — redirect to email input page instead of a blank crash screen
       default:
         return MaterialPageRoute(
           settings: settings,

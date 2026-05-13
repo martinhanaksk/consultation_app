@@ -18,21 +18,21 @@ class ConsultationTypeToggle extends StatelessWidget {
   final String name;
   final String reason;
   final ValueChanged<bool> onChanged;
-
+final bool isTeacher;
   const ConsultationTypeToggle({
     super.key,
     required this.isOnlineSelected,
     required this.isOnlineTeacherSelected,
     required this.name,
     required this.reason,
-    required this.onChanged,
+    required this.onChanged, required this.isTeacher,
   });
 
   @override
   Widget build(BuildContext context) {
     // Teachers can set online/offline, while students are locked to online
     // if the teacher has set to online
-    final bool effectivelyOnline = sm.role == "teacher"
+    final bool effectivelyOnline = isTeacher
         ? isOnlineSelected
         : isOnlineTeacherSelected
         ? true

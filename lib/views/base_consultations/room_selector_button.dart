@@ -61,7 +61,9 @@ class RoomSelectorButton extends StatelessWidget {
                           ),
                           // Bold primary text highlights the currently active room
                           child: Text(
-                            '${value.title} - ${value.description}',
+                            value.description.trim().isEmpty
+                                ? value.title
+                                : '${value.title} - ${value.description}',
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: isSelected
@@ -100,7 +102,11 @@ class RoomSelectorButton extends StatelessWidget {
                               : noRoom
                               ? "No rooms yet"
                               : viewModel.selectedRoom != null
-                              ? '${viewModel.selectedRoom!.title} - ${viewModel.selectedRoom!.description}'
+                              ? viewModel.selectedRoom!.description
+                                        .trim()
+                                        .isEmpty
+                                    ? viewModel.selectedRoom!.title
+                                    : '${viewModel.selectedRoom!.title} - ${viewModel.selectedRoom!.description}'
                               : 'Room not found',
                           style: TextStyle(
                             fontSize: 15,

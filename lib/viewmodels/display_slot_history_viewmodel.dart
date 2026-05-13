@@ -20,6 +20,8 @@ class DisplaySlotHistoryViewModel extends ChangeNotifier {
   List<HistoryItem> get historyItems => _historyItems;
   bool get isLoading => _isLoading;
   bool get hasError => _hasError;
+  // Prevents notifyListeners() from firing after the widget tree is disposed
+  bool _disposed = false;
   // Parses rawHistory, which is a JSON-encoded list of strings in the form
   void init(String rawHistory) {
     _isLoading = true;
@@ -47,5 +49,17 @@ class DisplaySlotHistoryViewModel extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  // Overridden to guard against async callbacks firing after dispose()
+  @override
+  void notifyListeners() {
+    if (!_disposed) super.notifyListeners();
   }
 }

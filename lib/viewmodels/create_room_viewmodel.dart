@@ -11,6 +11,8 @@ import 'base_room_viewmodel.dart';
 class CreateRoomPageViewModel extends BaseRoomViewModel {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
+  // Prevents notifyListeners() from firing after the widget tree is disposed
+  bool _disposed = false;
   // ── Public Methods ─────────────────────────────────────────────────────────
   Future<void> createRoom(
     String link,
@@ -51,5 +53,17 @@ class CreateRoomPageViewModel extends BaseRoomViewModel {
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  // Overridden to guard against async callbacks firing after dispose()
+  @override
+  void notifyListeners() {
+    if (!_disposed) super.notifyListeners();
   }
 }

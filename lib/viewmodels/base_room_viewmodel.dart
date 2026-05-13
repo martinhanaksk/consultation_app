@@ -13,7 +13,8 @@ abstract class BaseRoomViewModel extends ChangeNotifier {
   final TextEditingController acceptedEmailController = TextEditingController();
   final TextEditingController cancellationHoursController =
       TextEditingController();
-
+  // Prevents notifyListeners() from firing after the widget tree is disposed
+  bool _disposed = false;
   List<String> acceptedEmails = [];
 
   void addToAcceptedEmails(String value) {
@@ -33,11 +34,18 @@ abstract class BaseRoomViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
+    _disposed = true;
     linkController.dispose();
     titleController.dispose();
     descriptionController.dispose();
     acceptedEmailController.dispose();
     cancellationHoursController.dispose();
     super.dispose();
+  }
+
+  // Overridden to guard against async callbacks firing after dispose()
+  @override
+  void notifyListeners() {
+    if (!_disposed) super.notifyListeners();
   }
 }

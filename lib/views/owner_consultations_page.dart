@@ -337,7 +337,7 @@ class _DeleteRoomDialog extends StatelessWidget {
                         onTap: () async {
                           await viewModel.deleteRoom();
                           //reset view for owner since selected room was deleted
-                          sm.resetRoomIdOwner();
+                         
                           viewModel.init();
                         },
                         child: Container(

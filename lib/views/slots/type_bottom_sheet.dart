@@ -17,14 +17,14 @@ class ConsultationTypeBottomSheet extends StatefulWidget {
   final int isOnlineTeacher;
   final String name;
   final String reason;
-
+final bool isTeacher;
   const ConsultationTypeBottomSheet({
     super.key,
     required this.onChangeConsultationType,
     required this.isOnline,
     required this.isOnlineTeacher,
     required this.name,
-    required this.reason,
+    required this.reason,required this.isTeacher
   });
 
   @override
@@ -71,6 +71,7 @@ class _ConsultationTypeBottomSheetState
               reason: widget.reason,
               onChanged: (bool newValue) =>
                   setState(() => isOnlineSelected = newValue),
+              isTeacher: widget.isTeacher,
             ),
             const SizedBox(height: 20),
             Row(

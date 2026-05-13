@@ -21,14 +21,14 @@ class EmailInputPage extends StatefulWidget {
 }
 
 class _EmailInputPageState extends State<EmailInputPage> {
+  bool _initialized = false;
   @override
   void initState() {
     super.initState();
     // addPostFrameCallback ensures the widget tree is fully built first
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      FlutterNativeSplash.remove();
-      sm.checkIfInSharedPreferences();
-    });
+    FlutterNativeSplash.remove();
+  });
   }
 
   @override
@@ -37,6 +37,13 @@ class _EmailInputPageState extends State<EmailInputPage> {
       create: (_) => EmailInputViewModel(),
       child: Consumer<EmailInputViewModel>(
         builder: (context, viewModel, child) {
+           if (!_initialized) {
+            _initialized = true;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              FlutterNativeSplash.remove();
+              viewModel.checkAutoLogin();
+            });
+          }
           // Prevents the user from navigating back from the login screen
           return PopScope(
             canPop: false,

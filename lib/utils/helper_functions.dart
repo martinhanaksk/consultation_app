@@ -84,7 +84,7 @@ class HelperFunctions {
     } else if (response.statusCode == 400) {
       redirectToRegister(email, rememberMe);
     } else {
-      notify.showToast('Failed to send OTP, try again later',isError: true);
+      notify.showToast('Failed to send OTP, try again later', isError: true);
     }
   }
 

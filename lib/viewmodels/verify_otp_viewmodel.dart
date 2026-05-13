@@ -6,13 +6,14 @@
 // on the user's role.
 
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:consultation_app/setup.dart';
 
 class VerifyOtpViewModel extends ChangeNotifier {
   Timer? _loadingTimer;
   bool _isLoading = false;
+  // Prevents notifyListeners() from firing after the widget tree is disposed
+  bool _disposed = false;
   bool isLoading() {
     return _isLoading;
   }
@@ -23,16 +24,16 @@ class VerifyOtpViewModel extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     _loadingTimer?.cancel();
-  _loadingTimer = Timer(const Duration(seconds: 10), () {
-    if (_isLoading) {
-      _isLoading = false;
-      notifyListeners();
-      notify.showToast('Request timed out', isError: true);
-    }
-  });
+    _loadingTimer = Timer(const Duration(seconds: 10), () {
+      if (_isLoading) {
+        _isLoading = false;
+        notifyListeners();
+        notify.showToast('Request timed out', isError: true);
+      }
+    });
     try {
       final success = await api.connect(email, otp, rememberMe);
- _loadingTimer?.cancel();
+      _loadingTimer?.cancel();
       if (success) {
         // Reload session so role and token are available for the routing decision below
         await sm.load();
@@ -46,7 +47,8 @@ class VerifyOtpViewModel extends ChangeNotifier {
         notifyListeners();
         notify.showToast('Please enter a valid code');
       }
-    } catch (e) { _loadingTimer?.cancel();
+    } catch (e) {
+      _loadingTimer?.cancel();
       _isLoading = false;
       notifyListeners();
       notify.showToast(
@@ -54,9 +56,18 @@ class VerifyOtpViewModel extends ChangeNotifier {
         isError: true,
       );
     }
-  }@override
-void dispose() {
-  _loadingTimer?.cancel();
-  super.dispose();
-}
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    _loadingTimer?.cancel();
+    super.dispose();
+  }
+
+  // Overridden to guard against async callbacks firing after dispose()
+  @override
+  void notifyListeners() {
+    if (!_disposed) super.notifyListeners();
+  }
 }

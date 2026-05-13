@@ -26,7 +26,7 @@ class CurrentUserSlot extends StatelessWidget {
   showHistoryOption;
   final VoidCallback onRelease;
   final VoidCallback onTap;
-
+final bool canSeeIdentity;
   const CurrentUserSlot({
     super.key,
     required this.slot,
@@ -36,7 +36,7 @@ class CurrentUserSlot extends StatelessWidget {
     required this.isOptimisticallyReleased,
     required this.showHistoryOption,
     required this.onRelease,
-    required this.onTap,
+    required this.onTap, required this.canSeeIdentity
   });
 
   void _handleRelease(BuildContext context) {
@@ -125,19 +125,16 @@ class CurrentUserSlot extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
+              flex: 6,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   SlotTime(time: slot.startTime, color: constants.background),
                   const SizedBox(width: 12),
-                  Flexible(
-                    flex: 2,
-                    fit: FlexFit.loose,
+                  Expanded(
                     child: Text(
                       // Mirrors the same visibility gate used in AnotherUsersSlot
-                      sm.visibility == true
-                          ? helpers.cropText(slot.takenByName ?? '')
-                          : '',
+                      canSeeIdentity ? slot.takenByName ?? '' : '',
                       style: TextStyle(
                         color: constants.background,
                         fontSize: constants.fsLabel,
@@ -151,17 +148,17 @@ class CurrentUserSlot extends StatelessWidget {
                 ],
               ),
             ),
-            Flexible(
+            Expanded(
+              flex: 4,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Flexible(
-                    flex: 2,
-                    fit: FlexFit.loose,
+                  Expanded(
                     child: Text(
                       slot.note ?? '',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.end,
                       style: TextStyle(
                         color: constants.background,
                         fontSize: constants.fsLabel,
@@ -169,6 +166,7 @@ class CurrentUserSlot extends StatelessWidget {
                       ),
                     ),
                   ),
+
                   const SizedBox(width: 8),
                   if (showHistoryOption != null)
                     showHistoryOption!(

@@ -11,7 +11,6 @@ class TimeValidationUtils {
     if (duration == null || duration.inMinutes == 0) {
       return 'Please set a duration';
     }
-
     return null;
   }
 

@@ -26,14 +26,15 @@ class _SliderMenuState extends State<SliderMenu> {
     // Loads data the menu needs before first paint
     _viewModel.checkSliderMenuFundamentals();
   }
-@override
-void dispose() {
-  _viewModel.dispose();
-  super.dispose();
-}
+
+  @override
+  void dispose() {
+    _viewModel.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    _viewModel.checkSliderMenuFundamentals();
     return ChangeNotifierProvider.value(
       value: _viewModel,
       child: Consumer<SliderMenuViewModel>(
@@ -63,18 +64,16 @@ void dispose() {
                               ),
                               onTap: () {
                                 // Verify the session token is still valid before navigating
-                                sm.checkIfValidToken();
-                                if (viewModel.isOwner != null) {
-                                  viewModel.isOwner!
-                                      ? nav.toOwnerConsultations()
-                                      : nav.toBaseConsultations();
-                                  viewModel.closeDrawer(context);
-                                } else {
-                                  notify.showToast(
-                                    "Check your internet connection",
-                                    isError: true,
-                                  );
-                                }
+                                final navigated = viewModel.validateAndNavigate(
+                                  context,
+                                  () {
+                                    viewModel.isOwner!
+                                        ? nav.toOwnerConsultations()
+                                        : nav.toBaseConsultations();
+                                  },
+                                  requiresOwnerResolved: true,
+                                );
+                                if (navigated) viewModel.closeDrawer(context);
                               },
                             ),
                           ),
@@ -99,18 +98,16 @@ void dispose() {
                               ],
                             ),
                             onTap: () {
-                              sm.checkIfValidToken();
-                              if (viewModel.isOwner != null) {
-                                viewModel.isOwner!
-                                    ? nav.toOwnerConsultations()
-                                    : nav.toBaseConsultations();
-                                viewModel.closeDrawer(context);
-                              } else {
-                                notify.showToast(
-                                  "Check your internet connection",
-                                  isError: true,
-                                );
-                              }
+                              final navigated = viewModel.validateAndNavigate(
+                                context,
+                                () {
+                                  viewModel.isOwner!
+                                      ? nav.toOwnerConsultations()
+                                      : nav.toBaseConsultations();
+                                },
+                                requiresOwnerResolved: true,
+                              );
+                              if (navigated) viewModel.closeDrawer(context);
                             },
                           ),
                           const SizedBox(height: 20),
@@ -129,8 +126,10 @@ void dispose() {
                               ],
                             ),
                             onTap: () {
-                              sm.checkIfValidToken();
-                              nav.toMyReservations();
+                              viewModel.validateAndNavigate(
+                                context,
+                                () => nav.toMyReservations(),
+                              );
                               viewModel.closeDrawer(context);
                             },
                           ),
@@ -154,8 +153,10 @@ void dispose() {
                               ],
                             ),
                             onTap: () {
-                              sm.checkIfValidToken();
-                              nav.toJoinRoomPage();
+                              viewModel.validateAndNavigate(
+                                context,
+                                () => nav.toJoinRoomPage(),
+                              );
                               viewModel.closeDrawer(context);
                             },
                           ),
@@ -183,8 +184,10 @@ void dispose() {
                                         ],
                                       ),
                                       onTap: () {
-                                        sm.checkIfValidToken();
-                                        nav.toCreateRoomPage();
+                                        viewModel.validateAndNavigate(
+                                          context,
+                                          () => nav.toCreateRoomPage(),
+                                        );
                                         viewModel.closeDrawer(context);
                                       },
                                     ),
@@ -204,7 +207,8 @@ void dispose() {
                                 ),
                                 const SizedBox(width: 12),
                                 Expanded(
-                                  child: Text(overflow: TextOverflow.ellipsis,
+                                  child: Text(
+                                    overflow: TextOverflow.ellipsis,
                                     "Provide Feedback",
                                     style: TextStyle(
                                       fontSize: constants.fsBody,
@@ -215,8 +219,7 @@ void dispose() {
                               ],
                             ),
                             onTap: () {
-                              sm.checkIfValidToken();
-                              showDialog(
+                             viewModel.validateAndNavigate(context, () => showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
                                   return AlertDialog(
@@ -282,7 +285,8 @@ void dispose() {
                                     ],
                                   );
                                 },
-                              );
+                              ));
+                              
                             },
                           ),
                         ],
@@ -309,8 +313,10 @@ void dispose() {
                               ],
                             ),
                             onTap: () {
-                              sm.checkIfValidToken();
-                              nav.toChangeSettingsPage();
+                              viewModel.validateAndNavigate(
+                                context,
+                                () => nav.toChangeSettingsPage(),
+                              );
                               viewModel.closeDrawer(context);
                             },
                           ),

@@ -24,6 +24,8 @@ class CreateBlockPageViewModel extends ChangeNotifier {
   Duration? _startTime;
   Duration? _endTime;
   Duration? _duration;
+  // Prevents notifyListeners() from firing after the widget tree is disposed
+  bool _disposed = false;
   DateRangePickerSelectionMode _selectionMode =
       DateRangePickerSelectionMode.multiple;
   dynamic _selectedDates;
@@ -44,6 +46,7 @@ class CreateBlockPageViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
+    _disposed = true;
     noteController.dispose();
     slotNumberController.dispose();
     super.dispose();
@@ -218,7 +221,7 @@ class CreateBlockPageViewModel extends ChangeNotifier {
         }
         anySucceeded = true;
       }
-       if (anySucceeded) {
+      if (anySucceeded) {
         notify.showToast('Blocks created successfully');
       }
     } finally {
@@ -279,5 +282,11 @@ class CreateBlockPageViewModel extends ChangeNotifier {
       }
     }
     return true;
+  }
+
+  // Overridden to guard against async callbacks firing after dispose()
+  @override
+  void notifyListeners() {
+    if (!_disposed) super.notifyListeners();
   }
 }

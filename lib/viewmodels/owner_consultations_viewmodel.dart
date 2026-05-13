@@ -15,6 +15,8 @@ class OwnerConsultationsViewModel extends BaseConsultationsViewModel {
   // Two separate room lists so switching views does not require a network call
   List<RoomModel> _ownerRooms = [];
   List<RoomModel> _visitorRooms = [];
+  // Prevents notifyListeners() from firing after the widget tree is disposed
+  bool _disposed = false;
   // ── Overrides ───────────────────────────────────────────────────────────────────────────
   // Returns the correct cached room list for the active view mode
   @override
@@ -72,6 +74,7 @@ class OwnerConsultationsViewModel extends BaseConsultationsViewModel {
       notify.showToast('Error while deleting room', isError: true);
     } finally {
       setLoading(false);
+      sm.resetRoomIdOwner();
       // Always navigate back to the owner list so the deleted room is no longer shown
       nav.toOwnerConsultations();
     }
@@ -259,6 +262,13 @@ class OwnerConsultationsViewModel extends BaseConsultationsViewModel {
 
   @override
   void dispose() {
+    _disposed = true;
     super.dispose();
+  }
+
+  // Overridden to guard against async callbacks firing after dispose()
+  @override
+  void notifyListeners() {
+    if (!_disposed) super.notifyListeners();
   }
 }

@@ -11,6 +11,8 @@ import 'package:consultation_app/setup.dart';
 class RegisterViewModel extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
+  // Prevents notifyListeners() from firing after the widget tree is disposed
+  bool _disposed = false;
 
   void setIsLoading(bool value) {
     _isLoading = value;
@@ -36,5 +38,16 @@ class RegisterViewModel extends ChangeNotifier {
       notify.showToast('Failed to register user', isError: true);
       setIsLoading(false);
     }
+  }
+   @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  // Overridden to guard against async callbacks firing after dispose()
+  @override
+  void notifyListeners() {
+    if (!_disposed) super.notifyListeners();
   }
 }

@@ -23,7 +23,7 @@ class TakeSlotBottomSheet extends StatefulWidget {
   final String date;
   final void Function(String note, int isOnline) onTakeSlot;
   final VoidCallback onCancel;
-
+  final bool isTeacher;
   const TakeSlotBottomSheet({
     super.key,
     required this.visitReason,
@@ -34,6 +34,7 @@ class TakeSlotBottomSheet extends StatefulWidget {
     required this.date,
     required this.onTakeSlot,
     required this.onCancel,
+    required this.isTeacher,
   });
 
   @override
@@ -115,6 +116,7 @@ class _TakeSlotBottomSheetState extends State<TakeSlotBottomSheet> {
               reason: "",
               onChanged: (bool newValue) =>
                   setState(() => _isOnlineSelected = newValue),
+              isTeacher: widget.isTeacher,
             ),
             Row(
               children: [

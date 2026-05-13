@@ -136,6 +136,13 @@ class _EmailDomainField extends StatelessWidget {
           focusedBorder: _border(constants.primary, width: 1.5),
           suffixIcon: GestureDetector(
             onTap: () {
+              if (!viewModel.acceptedEmailController.text.trim().contains(
+                '@',
+              )) {
+                // reuse whatever your notify/snackbar util is
+                notify.showToast('Must contain @');
+                return;
+              }
               // Validate before adding; validator shows its own error feedback
               if (validator.validateNotEmpty(
                 viewModel.acceptedEmailController.text.trim(),

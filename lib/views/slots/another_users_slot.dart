@@ -16,13 +16,13 @@ class AnotherUsersSlot extends StatelessWidget {
   // Nullable: only provided in owner view to show the slot history button
   final Widget? Function(int slotId, int blockId, Color color)? showHistoryOption;
   final VoidCallback? onTap;
-
+final bool canSeeIdentity;
   const AnotherUsersSlot({
     super.key,
     required this.slot,
     required this.blockId,
     required this.showHistoryOption,
-    required this.onTap,
+    required this.onTap, required this.canSeeIdentity,
   });
 
   @override
@@ -41,6 +41,7 @@ class AnotherUsersSlot extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
+              flex: 6,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -49,13 +50,9 @@ class AnotherUsersSlot extends StatelessWidget {
                     color: constants.textUnavailableGrey,
                   ),
                   const SizedBox(width: 12),
-                  Flexible(
-                    flex: 2,
-                    fit: FlexFit.loose,
+                  Expanded(
                     child: Text(
-                      // Shows the occupant's name only when the viewer has
-                      // visibility turned on; otherwise renders an empty string
-                      sm.visibility == true
+                      canSeeIdentity
                           ? helpers.cropText(slot.takenByName ?? '')
                           : '',
                       style: TextStyle(
@@ -71,16 +68,17 @@ class AnotherUsersSlot extends StatelessWidget {
                 ],
               ),
             ),
-            Flexible(
+            Expanded(
+              flex: 4,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Flexible(
-                    flex: 2,
-                    fit: FlexFit.loose,
                     child: Text(
                       slot.note ?? '',
-                      maxLines: 1,overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.end,
                       style: TextStyle(
                         color: constants.textUnavailableGrey,
                         fontSize: constants.fsLabel,
@@ -89,7 +87,6 @@ class AnotherUsersSlot extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  // showHistoryOption returns null when the slot has no history to show
                   if (showHistoryOption != null)
                     showHistoryOption!(slot.id, blockId, constants.background) ??
                         const SizedBox.shrink(),

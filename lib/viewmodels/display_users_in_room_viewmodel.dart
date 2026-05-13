@@ -14,6 +14,8 @@ class DisplayUsersInRoomViewModel extends ChangeNotifier {
   List<String> get users => _users;
   bool get isLoading => _isLoading;
   bool get hasError => _hasError;
+  // Prevents notifyListeners() from firing after the widget tree is disposed
+  bool _disposed = false;
   Future<void> init(int roomId) async {
     _isLoading = true;
     _hasError = false;
@@ -27,5 +29,17 @@ class DisplayUsersInRoomViewModel extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  // Overridden to guard against async callbacks firing after dispose()
+  @override
+  void notifyListeners() {
+    if (!_disposed) super.notifyListeners();
   }
 }

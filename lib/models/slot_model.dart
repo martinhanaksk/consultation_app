@@ -58,6 +58,4 @@ class SlotModel {
     isOnlineTeacher: json['teacher_is_online'],
     roomId: json['room_id'],
   );
-
- 
 }

@@ -12,6 +12,8 @@ class EditRoomViewModel extends BaseRoomViewModel {
   RoomModel? room;
   String? errorMessage;
 
+  // Prevents notifyListeners() from firing after the widget tree is disposed
+  bool _disposed = false;
   bool _isLoading = true;
   bool _isSaving = false;
 
@@ -109,5 +111,17 @@ class EditRoomViewModel extends BaseRoomViewModel {
   void _setSaving(bool value) {
     _isSaving = value;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  // Overridden to guard against async callbacks firing after dispose()
+  @override
+  void notifyListeners() {
+    if (!_disposed) super.notifyListeners();
   }
 }

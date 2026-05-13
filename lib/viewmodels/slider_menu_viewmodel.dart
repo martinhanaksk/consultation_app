@@ -14,6 +14,8 @@ class SliderMenuViewModel extends ChangeNotifier {
   String? _email = "";
   bool? _isOwner;
   bool _isLoading = false;
+  // Prevents notifyListeners() from firing after the widget tree is disposed
+  bool _disposed = false;
 
   Future<void> launchFeedbackWebsite() async {
     if (!await launchUrl(constants.feedbackUrl)) {
@@ -55,8 +57,31 @@ class SliderMenuViewModel extends ChangeNotifier {
       }
     });
   }
+
+  /// Validates the session token, then executes onValid if the token is still good.
+  bool validateAndNavigate(
+    BuildContext context,
+    VoidCallback onValid, {
+    bool requiresOwnerResolved = false,
+  }) {
+    sm.checkIfValidToken();
+    if (requiresOwnerResolved && _isOwner == null) {
+      notify.showToast("Check your internet connection", isError: true);
+      return false;
+    }
+    onValid();
+    return true;
+  }
+
   @override
-void dispose() {
-  super.dispose();
-}
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  // Overridden to guard against async callbacks firing after dispose()
+  @override
+  void notifyListeners() {
+    if (!_disposed) super.notifyListeners();
+  }
 }

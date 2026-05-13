@@ -18,6 +18,8 @@ class ChangeSettingsPageViewModel extends ChangeNotifier {
   bool _isLoading = false;
   bool _hasBeenInitialized = false;
   List<int> _notifyHours = [];
+  // Prevents notifyListeners() from firing after the widget tree is disposed
+  bool _disposed = false;
 
   // ── Getters ────────────────────────────────────────────────────────────────
   String get name => _name;
@@ -170,4 +172,16 @@ class ChangeSettingsPageViewModel extends ChangeNotifier {
     _visibility,
     _notifyHours,
   );
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  // Overridden to guard against async callbacks firing after dispose()
+  @override
+  void notifyListeners() {
+    if (!_disposed) super.notifyListeners();
+  }
 }

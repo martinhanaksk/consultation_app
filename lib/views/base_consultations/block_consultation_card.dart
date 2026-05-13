@@ -104,7 +104,7 @@ class ConsultationBlockCard extends StatelessWidget {
                   ),
                 ),
                 // Owner-only: button to insert a slot at the top of the block
-                if (addSlotBefore != null && slots!=null)
+                if (addSlotBefore != null && slots != null)
                   addSlotBefore!(blockEntry.key, slots.isEmpty)!,
                 ListView.builder(
                   physics: const NeverScrollableScrollPhysics(),
@@ -139,7 +139,6 @@ class ConsultationBlockCard extends StatelessWidget {
                             onTakeSlot: (note, isOnline) =>
                                 viewModel.takeSlot(slot.id, note, isOnline),
                             onReleaseSlot: () => viewModel.releaseSlot(slot.id),
-                            context: context,
                             isTakingSlot: slotState.$1,
                             isOptimisticallyReleased: slotState.$2,
                             isFirst: index == 0,
@@ -148,6 +147,8 @@ class ConsultationBlockCard extends StatelessWidget {
                             date: viewModel
                                 .blockDate(blockEntry.key)
                                 .substring(0, 10),
+                            currentUserEmail: viewModel.currentUserEmail,
+                            canSeeIdentity: viewModel.canSeeIdentity,isTeacher: viewModel.isTeacher,
                           ),
                         );
                       },
