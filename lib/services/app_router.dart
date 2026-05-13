@@ -4,7 +4,6 @@
 // Centralises all named routes and argument parsing for the app.
 // Every navigation target is declared here
 
-import 'package:consultation_app/setup.dart';
 import 'package:consultation_app/viewmodels/base_room_viewmodel.dart';
 import 'package:consultation_app/views/base_consultations/base_consultations_page.dart';
 import 'package:consultation_app/views/display_notify_hours_page.dart';
@@ -166,22 +165,11 @@ class AppRouter {
           settings: settings,
           builder: (_) => ChangeSettingsPage(),
         );
-         // Fallback for any unregistered route — shown instead of a blank crash screen
+         // Fallback for any unregistered route — redirect to email input page instead of a blank crash screen
       default:
         return MaterialPageRoute(
           settings: settings,
-          builder: (_) => Scaffold(
-            backgroundColor: constants.background,
-            body: Center(
-              child: Text(
-                'Page not found',
-                style: TextStyle(
-                  color: constants.darkGrey,
-                  fontSize: constants.fsTitle,
-                ),
-              ),
-            ),
-          ),
+          builder: (_) => const EmailInputPage(),
         );
     }
   }

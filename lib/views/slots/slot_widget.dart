@@ -139,7 +139,7 @@ class SlotWidget extends StatelessWidget {
           context,
           // Name is passed only when the viewer has visibility enabled
           canSeeIdentity ? (slot.takenByName ?? "") : "",
-          slot.takenByReason ?? "",
+          slot.note ?? "",
           slot.isOnline,
           slot.isOnlineTeacher,
         ),
@@ -156,7 +156,7 @@ class SlotWidget extends StatelessWidget {
             ? () => _showChangeConsultationTypeDialog(
                 context,
                 canSeeIdentity ? (slot.takenByName ?? "") : "",
-                 (slot.takenByReason ?? "") ,
+                 (slot.note ?? "") ,
                 slot.isOnline,
                 slot.isOnlineTeacher,
               )

@@ -1,0 +1,144 @@
+\chapter{Testovanie a nasadenie aplikácie}
+\label{chap:testovanie}
+
+\section{Manuálne testovanie}
+
+Manuálne testovanie prebiehalo na fyzickom zariadení aj na emulátore s cieľom overiť správanie aplikácie v rôznych hardvérových a softvérových konfiguráciách. Konkrétne boli použité nasledujúce konfigurácie:
+\begin{itemize}
+    \item Xiaomi Redmi Note 11 Pro 5G (fyzické zariadenie, Android 13),
+    \item Google Pixel 5 (emulátor, Android 11).
+\end{itemize}
+
+Osobitná pozornosť sa venovala hraničným situáciám, ktoré môžu 
+v reálnom použití nastať. Testoval sa výpadok siete počas aktívnej relácie, vstupné polia s neplatnými hodnotami (napríklad neprimerane dlhé reťazce alebo znaky), ktoré nie sú povolené 
+(napr. emoji). Tieto testy odhalili niekoľko okrajových prípadov, 
+ktoré bolo potrebné ošetriť na úrovni validácie formulárov.
+
+\section{Používateľské testovanie}
+
+Používateľské testovanie sa uskutočnilo s cieľom získať spätnú väzbu 
+od reálnych používateľov. Ešte pred formálnym testovaním hotovej 
+aplikácie prebehla neformálna konzultácia prototypov so spolužiakmi, 
+ktorá pomohla odhaliť skoré nejasnosti v návrhu rozhrania a overiť 
+základné koncepty ovládania. Následné testovanie funkčnej aplikácie 
+prebehlo opäť so spolužiakmi a vedúcim záverečnej práce, teda 
+s používateľmi, ktorí by aplikáciu mohli v budúcnosti reálne 
+využívať. Takéto zloženie skupiny testerov umožnilo zachytiť 
+problémy na viacerých úrovniach – od technických nedostatkov 
+až po nejasnosti v používateľskom rozhraní.
+
+\subsection{Metodológia testovania}
+
+Pri osobnom testovaní bola využitá metóda testovania pozorovaním 
+(angl. \textit{observation-based testing})~\cite{krug_rocket}. 
+Pri tomto type testovania vývojár sleduje vybraných používateľov 
+priamo počas používania aplikácie a zaznamenáva ich správanie 
+bez aktívneho zasahovania. Sleduje sa, či sa používateľ vie 
+plynulo pohybovať po aplikácii, či nachádza požadované funkcie 
+bez váhania a či mu spôsobuje neistotu niektorý prvok rozhrania. 
+Výhodou tejto metódy je, že odhaľuje skutočné problémy s použiteľnosťou, 
+ktoré si vývojár po dlhodobej práci na projekte sám nevšimne. 
+Testovanie pozorovaním bolo doplnené krátkym rozhovorom 
+po skončení každého sedenia, počas ktorého tester vyjadril 
+celkový dojem a návrhy na zlepšenie.
+\subsection{Priebeh testovania}
+
+Testovanie prebiehalo v dvoch paralelných formách. Osobné testovanie
+s vybranými testermi zahŕňalo samostatnú registráciu každého testera
+a splnenie konkrétnych scenárov. Pre potreby testovania funkcionality
+učiteľa bol v API k dispozícii endpoint
+\textbf{GET /users/test-switch-role}, určený výhradne na testovacie
+účely, ktorý umožnil prepnúť rolu používateľského konta
+z roly Návštevníka na rolu Majiteľa. Vďaka tomu testeri po
+štandardnej registrácii získali učiteľské oprávnenia. Testeri riešili nasledujúce scenáre:
+
+\begin{itemize}
+    \item \textbf{Rezervovanie termínu:} Tester sa prihlásil do 
+          existujúcej miestnosti a zarezervoval si dostupný slot. 
+          Scenár overoval správnosť zobrazovania dostupných termínov, 
+          funkčnosť výberu typu konzultácie a správne uloženie rezervácie.
+        \item \textbf{Vytvorenie miestnosti a bloku termínov:} Pomocou 
+          učiteľského konta tester vytvoril novú miestnosť, nakonfiguroval 
+          jej nastavenia a vygeneroval blok na niekoľko dní. 
+          Scenár overoval validáciu vstupných polí a správne vytvorenie blokov.
+        \item \textbf{Zrušenie existujúcej rezervácie:} Tester zrušil 
+          predtým vytvorenú rezerváciu. Scenár overoval, či sa slot 
+          správne uvoľní a či je zmena viditeľná v reálnom čase.
+        \item \textbf{Zmena nastavení profilu a miestnosti:} Tester upravil 
+          nastavenia svojho profilu a následne aj 
+          nastavenia miestnosti. Scenár overoval správnosť ukladania zmien a ich okamžité premietnutie.
+\end{itemize}
+
+Osobné testovanie prebiehalo na internátnej izbe, kde bol každý 
+tester posadený za počítač so spusteným emulátorom. Počas plnenia 
+scenárov autor sledoval vývojársku konzolu a zaznamenával chyby 
+v reálnom čase. Po skončení scenárov prebehol krátky rozhovor 
+zameraný na celkový dojem a návrhy na zlepšenie. Súbežne 
+s osobným testovaním prebiehalo aj vzdialené testovanie v rámci 
+schvaľovacieho procesu obchodu \textbf{Google Play}. Vzdialení 
+testeri mali k dispozícii možnosť \textit{Provide Feedback} 
+v menu aplikácie, ktorá otvorila Google formulár umožňujúci 
+zaslanie spätnej väzby priamo z ich zariadenia.
+
+\section{Výsledky testovania a implementované zmeny}
+\subsection{Získaná spätná väzba}
+
+Testeri poskytli pestrú spätnú väzbu. Viacerí sa zhodli na tom, že aplikácia je funkčná, no v niektorých častiach rozhrania pôsobí neintuitívne. Konkrétne postrehy možno rozdeliť do nasledujúcich skupín:
+
+\begin{itemize}
+    \item \textbf{Navigácia:} Testeri si všimli, že po návrate do zoznamu miestností sa vždy zobrazí prvá miestnosť, nie tá naposledy navštívená. Navrhli zapamätanie poslednej aktívnej miestnosti.
+    \item \textbf{Informovanosť používateľa:} Pri nepripojení do miestnosti neboli zobrazené povolené domény, čo bolo mätúce. Tester nevedel, prečo sa pripojiť nedá.
+    \item \textbf{Pomenovanie tlačidiel:} Generické názvy ako \uv{Submit} či \uv{Confirm} nepôsobili prirodzene. Testeri navrhli použitie popisnejších, kontextovo vhodnejších názvov. Napríklad \uv{Take}, \uv{Change} a \uv{Create}.
+    \item \textbf{Zmena dôvodu návštevy:} Pri zmene slotu nebol predvyplnený dôvod návštevy, čo testeri považovali za nepohodlné a zbytočne zdĺhavé.
+    \item \textbf{Neaktívne prvky:} Keď je spôsob stretnutia implicitne nastavený učiteľom (napr. online), pole sa napriek tomu javilo ako editovateľné. Testeri navrhli, aby bolo viditeľne neaktívne (\uv{unclickable}).
+    \item \textbf{Chyba pri navigácii:} Pri použití tlačidla späť na úvodnej obrazovke (\uv{landing screen}) sa zobrazila stránka \uv{Page Not Found}.
+    \item \textbf{Prehľad vlastných rezervácií:} Aplikácia neposkytovala celkový prehľad rezervácií naprieč všetkými miestnosťami na jednom mieste, čo testeri považovali za chýbajúcu funkciu.
+    \item \textbf{Upozornenia pred konzultáciou:} Bolo možné nastaviť iba jedno upozornenie pred konzultáciou, čo testeri považovali za obmedzujúce. Navrhli možnosť nastavenia viacerých upozornení.
+\end{itemize}
+
+
+Na základe spätnej väzby boli problémy identifikované a opravené. Podrobnejší popis je zaznamenaný v tabuľke~\ref{tab:testovanie-zmeny}.
+
+\begin{table}[t]
+\centering
+\caption{Prehľad zistených problémov a implementovaných zmien}
+\label{tab:testovanie-zmeny}
+\begin{tabular}{|p{4.5cm}|p{3cm}|p{5cm}|}
+\hline
+\textbf{Problém} & \textbf{Kto nahlásil} & \textbf{Implementovaná zmena} \\
+\hline
+Po návrate do zoznamu sa vždy otvorí prvá miestnosť & Vzdialené testovanie & Aplikácia si pamätá naposledy otvorenú miestnosť \\
+\hline
+Nepripojenie bez zobrazenia povolených domén & Vzdialené testovanie & Pri chybe pripojenia sa zobrazia povolené domény \\
+\hline
+\textbf{Page Not Found} pri navigácii späť z úvodnej obrazovky & Vzdialené testovanie & Opravené smerovanie navigácie \\
+\hline
+Chýbal prehľad vlastných rezervácií naprieč miestnosťami & Osobné testovanie & Pridaná obrazovka My Reservations s možnosťou zrušenia a zmeny typu konzultácie \\
+\hline
+Nevhodné pomenovanie tlačidiel & Osobné testovanie & Tlačidlá premenované na kontextovo výstižnejšie názvy \\
+\hline
+Predvyplnenie dôvodu návštevy pri zmene slotu & Osobné testovanie & Dôvod návštevy sa predvypĺňa z pôvodnej rezervácie \\
+\hline
+Editovateľný prepínač napriek obmedzeniu učiteľom & Osobné testovanie & Pole je zobrazené ako neaktívne (disabled) \\
+\hline
+Možnosť nastaviť iba jedno upozornenie pred konzultáciou & Osobné testovanie & Predvoľba \textit{Notify me before} rozšírená na zoznam hodnôt umožňujúci viacnásobné upozornenia \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Nasadenie aplikácie}
+
+\subsection{Publikácia v obchode Google Play}
+
+Na publikáciu aplikácie bolo potrebné vytvoriť vývojársky účet v službe \textbf{Google Play Console}, čo zahŕňa jednorazový registračný poplatok (v čase písania 25 USD)~\cite{google_play_fee}. Pred odoslaním do obchodu bol zostavený \textbf{release build} pomocou príkazu \textbf{flutter build appbundle -{}-release} a výsledný balíček vo formáte \textbf{AAB} (Android App Bundle) bol nahratý do konzoly.
+
+Proces schvaľovania nebol bezproblémový. Keďže vývojársky účet 
+bol vytvorený po 13.~novembri 2023, Google vyžaduje pre nové 
+osobné účty uzavreté testovanie s minimálne 12 testermi po dobu 
+14 dní pred získaním prístupu do produkcie~\cite{google_play_testing_requirements}. 
+Prvá žiadosť o postup do produkčného vydania bola preto zamietnutá 
+z dôvodu nedostatočného otestovania aplikácie v uzavretej testovacej 
+fáze. Po predĺžení testovacej periódy a aktívnejšom zapojení 
+testerov bola žiadosť odoslaná druhýkrát a následne úspešne 
+schválená. Aplikácia je sprístupnená v obchode \textbf{Google Play}.%
+\footnote{\url{https://play.google.com/store/apps/details?id=com.mhanak.consultation_app}.}

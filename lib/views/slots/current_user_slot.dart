@@ -22,7 +22,8 @@ class CurrentUserSlot extends StatelessWidget {
   // True while the optimistic UI release is in progress (API call not yet confirmed)
   final bool isOptimisticallyReleased;
   // Nullable: only provided in owner view to show the slot history button
-  final Widget? Function(int slotId, int blockId, Color color)? showHistoryOption;
+  final Widget? Function(int slotId, int blockId, Color color)?
+  showHistoryOption;
   final VoidCallback onRelease;
   final VoidCallback onTap;
 
@@ -123,30 +124,32 @@ class CurrentUserSlot extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SlotTime(time: slot.startTime, color: constants.background),
-                const SizedBox(width: 12),
-                Flexible(
-                  flex: 2,
-                  fit: FlexFit.loose,
-                  child: Text(
-                    // Mirrors the same visibility gate used in AnotherUsersSlot
-                    sm.visibility == true
-                        ? helpers.cropText(slot.takenByName ?? '')
-                        : '',
-                    style: TextStyle(
-                      color: constants.background,
-                      fontSize: constants.fsLabel,
-                      fontWeight: constants.fwRegular,
+            Expanded(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SlotTime(time: slot.startTime, color: constants.background),
+                  const SizedBox(width: 12),
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.loose,
+                    child: Text(
+                      // Mirrors the same visibility gate used in AnotherUsersSlot
+                      sm.visibility == true
+                          ? helpers.cropText(slot.takenByName ?? '')
+                          : '',
+                      style: TextStyle(
+                        color: constants.background,
+                        fontSize: constants.fsLabel,
+                        fontWeight: constants.fwRegular,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                const SizedBox(width: 12),
-              ],
+                  const SizedBox(width: 12),
+                ],
+              ),
             ),
             Flexible(
               child: Row(
@@ -158,6 +161,7 @@ class CurrentUserSlot extends StatelessWidget {
                     child: Text(
                       slot.note ?? '',
                       maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: constants.background,
                         fontSize: constants.fsLabel,
@@ -167,12 +171,19 @@ class CurrentUserSlot extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   if (showHistoryOption != null)
-                    showHistoryOption!(slot.id, blockId, constants.background) ??
+                    showHistoryOption!(
+                          slot.id,
+                          blockId,
+                          constants.background,
+                        ) ??
                         const SizedBox.shrink(),
                   if (slot.isOnline == 1) ...[
                     const SizedBox(width: 8),
-                    svgs.icon('screen', constants.background,
-                        width: constants.fsTitle),
+                    svgs.icon(
+                      'screen',
+                      constants.background,
+                      width: constants.fsTitle,
+                    ),
                   ],
                   const SizedBox(width: 8),
                   // The release button becomes a spinner while the optimistic

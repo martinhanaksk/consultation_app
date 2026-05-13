@@ -14,7 +14,7 @@ class Constants {
   );
 
   // Server url
-  String url = 'https://office-hours.fit.vutbr.cz/api/dev';
+  String url = 'https://office-hours.fit.vutbr.cz/api';
 
   // --- Colours ---
 

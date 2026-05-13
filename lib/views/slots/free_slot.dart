@@ -42,7 +42,7 @@ class FreeSlot extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            SlotTime(time: slot.startTime, color: constants.darkGrey),
+            SlotTime(time: slot.startTime, color: constants.darkGrey),const SizedBox(width: 12),
             Flexible(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -53,6 +53,7 @@ class FreeSlot extends StatelessWidget {
                     child: Text(
                       slot.note ?? '',
                       maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: constants.darkGrey,
                         fontSize: constants.fsLabel,

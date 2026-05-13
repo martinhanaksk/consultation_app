@@ -179,14 +179,13 @@ class CreateBlockPageViewModel extends ChangeNotifier {
       slotCount: slotCount,
       endTime: _endTime,
     );
-
     if (error != null) {
       notify.showToast(error, isError: true);
       return;
     }
-
     _setLoading(true);
     final createdBlockIds = <int>[];
+    var anySucceeded = false;
     try {
       final note = noteController.text.trim();
       // API expects an integer flag: 1 = online, 0 = in-person
@@ -217,8 +216,11 @@ class CreateBlockPageViewModel extends ChangeNotifier {
           }
           return;
         }
+        anySucceeded = true;
       }
-       notify.showToast('Blocks created successfully');
+       if (anySucceeded) {
+        notify.showToast('Blocks created successfully');
+      }
     } finally {
       _setLoading(false);
     }

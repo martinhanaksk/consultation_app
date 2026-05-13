@@ -40,34 +40,36 @@ class AnotherUsersSlot extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SlotTime(
-                  time: slot.startTime,
-                  color: constants.textUnavailableGrey,
-                ),
-                const SizedBox(width: 12),
-                Flexible(
-                  flex: 2,
-                  fit: FlexFit.loose,
-                  child: Text(
-                    // Shows the occupant's name only when the viewer has
-                    // visibility turned on; otherwise renders an empty string
-                    sm.visibility == true
-                        ? helpers.cropText(slot.takenByName ?? '')
-                        : '',
-                    style: TextStyle(
-                      color: constants.textUnavailableGrey,
-                      fontSize: constants.fsLabel,
-                      fontWeight: constants.fwRegular,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+            Expanded(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SlotTime(
+                    time: slot.startTime,
+                    color: constants.textUnavailableGrey,
                   ),
-                ),
-                const SizedBox(width: 12),
-              ],
+                  const SizedBox(width: 12),
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.loose,
+                    child: Text(
+                      // Shows the occupant's name only when the viewer has
+                      // visibility turned on; otherwise renders an empty string
+                      sm.visibility == true
+                          ? helpers.cropText(slot.takenByName ?? '')
+                          : '',
+                      style: TextStyle(
+                        color: constants.textUnavailableGrey,
+                        fontSize: constants.fsLabel,
+                        fontWeight: constants.fwRegular,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                ],
+              ),
             ),
             Flexible(
               child: Row(
@@ -78,7 +80,7 @@ class AnotherUsersSlot extends StatelessWidget {
                     fit: FlexFit.loose,
                     child: Text(
                       slot.note ?? '',
-                      maxLines: 1,
+                      maxLines: 1,overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: constants.textUnavailableGrey,
                         fontSize: constants.fsLabel,

@@ -1,0 +1,14 @@
+\chapter{Úvod}\label{chap:uvod}
+Cieľom tejto bakalárskej práce je navrhnúť a implementovať modernú, bezpečnú a multiplatformovú mobilnú aplikáciu \uv{Office Hours}, ktorá rieši dlhodobé problémy s organizáciou konzultačných hodín na Fakulte informačných technológií VUT v Brne. Súčasné systémy pre plánovanie stretnutí medzi študentmi a vyučujúcimi trpia absenciou mobilného rozhrania, neoptimalizovanými procesmi a najmä nedostatočným zabezpečením proti nežiaducim úpravám či rušeniu cudzích termínov. Tieto nedostatky sťažujú študentom orientáciu a zbytočne zvyšujú administratívnu záťaž vyučujúcich pri riešení konfliktov.
+
+Výsledná aplikácia tieto prekážky priamo odstraňuje poskytnutím možnosti 
+správy a rezervácie termínov prostredníctvom smartfónu. Systém podporuje 
+dve roly – Návštevníka a Majiteľa – pričom jeden používateľ môže 
+v rôznych miestnostiach vystupovať v oboch. Detailná špecifikácia 
+funkčných požiadaviek pre každú rolu je uvedená v kapitole~\ref{chap:analyza}. 
+Systém zamieňa tradičné prihlasovanie heslom za modernú autentifikáciu 
+pomocou jednorazového kódu (OTP). Študenti majú možnosť aktivovať si 
+e-mailové notifikácie, prispôsobiť vizuálny štýl aplikácie a spravovať 
+vlastný profil vrátane nastavení súkromia.
+
+Predmetom tejto práce je vývoj klientskej časti systému. Aby bola výsledná aplikácia spustiteľná na platformách Android aj iOS, bol zvolený \textit{framework Flutter}. Podrobné zdôvodnenie jeho výberu oproti alternatívnym riešeniam je uvedené v kapitole~\ref{chap:technologie}. Spracovanie dát a aplikačnej logiky zabezpečuje dedikované REST API, ktorého vývoj však nie je súčasťou tejto práce, ale je predmetom samostatnej bakalárskej práce iného študenta. Paralelne vzniká webová verzia aplikácie ako predmet súbežne riešenej bakalárskej práce inej študentky. Mobilná aplikácia, webové rozhranie aj serverová časť boli počas vývoja úzko koordinované, pričom klientska aplikácia so serverom bezpečne komunikuje prostredníctvom prístupových tokenov.

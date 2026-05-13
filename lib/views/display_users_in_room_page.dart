@@ -75,7 +75,10 @@ void dispose() {
           children: [
             Text(
               'Failed to load users',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: TextStyle(
+            color: constants.darkGrey150,
+            fontSize: constants.fsBody,
+          ),
             ),
             const SizedBox(height: 12),
             TextButton(onPressed: _initialize, child: const Text('Retry')),
@@ -88,9 +91,10 @@ void dispose() {
       return Center(
         child: Text(
           'No users in this room yet',
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(color: constants.grey),
+          style: TextStyle(
+            color: constants.darkGrey150,
+            fontSize: constants.fsBody,
+          ),
         ),
       );
     }
